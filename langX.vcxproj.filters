@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="source">
+      <UniqueIdentifier>{16c58bca-1c05-4fdf-9adb-89680c723ac5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{45d15545-2d91-4c91-b664-280f8bfa8da2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\ASTNode.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ASTRoot.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ASTLeaf.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Token.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\ASTLeaf.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ASTNode.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ASTRoot.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Token.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
