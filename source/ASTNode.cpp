@@ -1,4 +1,4 @@
-#include "..\include\ASTNode.h"
+#include "../include/ASTNode.h"
 
 namespace langX {
 	ASTNode::ASTNode(const std::string & value)

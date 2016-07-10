@@ -1,4 +1,4 @@
-#include "..\include\ASTRoot.h"
+#include "../include/ASTRoot.h"
 
 namespace langX {
 	ASTNode * ASTRoot::child(int i) const

@@ -27,16 +27,40 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="extern\y.tab.h" />
     <ClInclude Include="include\ASTLeaf.h" />
     <ClInclude Include="include\ASTNode.h" />
     <ClInclude Include="include\ASTRoot.h" />
+    <ClInclude Include="include\Class.h" />
+    <ClInclude Include="include\ExecNode.h" />
+    <ClInclude Include="include\Execption.h" />
+    <ClInclude Include="include\Function.h" />
+    <ClInclude Include="include\langX.h" />
+    <ClInclude Include="include\Number.h" />
+    <ClInclude Include="include\Object.h" />
+    <ClInclude Include="include\String.h" />
     <ClInclude Include="include\Token.h" />
+    <ClInclude Include="include\YLlangX.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="extern\lex.yy.c" />
+    <ClCompile Include="extern\y.tab.c" />
     <ClCompile Include="source\ASTLeaf.cpp" />
     <ClCompile Include="source\ASTNode.cpp" />
     <ClCompile Include="source\ASTRoot.cpp" />
+    <ClCompile Include="source\ExecNode.cpp" />
+    <ClCompile Include="source\Execption.cpp" />
+    <ClCompile Include="source\Function.cpp" />
+    <ClCompile Include="source\langX.cpp" />
+    <ClCompile Include="source\Number.cpp" />
+    <ClCompile Include="source\Object.cpp" />
     <ClCompile Include="source\Token.cpp" />
+    <ClCompile Include="source\YLlangX.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="extern\a.l" />
+    <None Include="extern\a.y" />
+    <None Include="makefile" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{d44b07e4-99fa-4485-ba6f-1b9bf41172c1}</ProjectGuid>
@@ -75,6 +99,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Link>
+      <AdditionalOptions>-ll %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

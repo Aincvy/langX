@@ -1,4 +1,4 @@
-#include "..\include\Token.h"
+#include "../include/Token.h"
 
 namespace langX {
 	Token::Token(int line_number)
