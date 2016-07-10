@@ -1,0 +1,69 @@
+program
+	: program statement
+	| 
+	;
+
+statement
+	: control_expression
+	| loop_expression
+	| expr ';'
+	;
+
+control_expression
+	: IF '(' conditional_expression ')' block
+	;
+
+//  代码块
+block
+	: '{' statement '}'
+
+conditional_expression
+	: expr01
+	| expr01 AND_OP conditional_expression
+	| expr01 OR_OP conditional_expression
+	| value_expression '>' value_expression
+	| value_expression '<' value_expression
+	| value_expression LE_OP value_expression
+	| value_expression GE_OP value_expression
+	| value_expression EQ_OP value_expression
+	| value_expression NE_OP value_expression
+	;
+	
+//  判断条件用的
+expr01
+	: value_expression
+	| assign_expression
+	| arithmetic_expression
+	;
+	
+loop_expression
+	: WHILE '(' conditional_expression ')' block
+	;
+
+//  表达式， 单条语句 
+expr
+	: '(' expr ')'
+	| arithmetic_expression
+	| assign_expression
+	| value_expression
+	| conditional_expression
+	| 
+	;
+
+//  算术表达式，  至少含有一个运算符号则不能具有赋值操作的表达式
+arithmetic_expression
+	: value_expression '+' arithmetic_expression
+	| value_expression '-' arithmetic_expression
+	| value_expression '*' arithmetic_expression
+	| value_expression '/' arithmetic_expression
+	;
+
+// 赋值表达式：  具有赋值操作
+assign_expression
+	: VARIABLE '=' expr ';' 
+	;
+
+value_expression
+	: VARIABLE  { $$ = $1; }
+	| NUMBER { $$ = $1;}
+	;

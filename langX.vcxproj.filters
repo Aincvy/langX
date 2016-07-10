@@ -7,6 +7,9 @@
     <Filter Include="include">
       <UniqueIdentifier>{45d15545-2d91-4c91-b664-280f8bfa8da2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="extern">
+      <UniqueIdentifier>{ab11a9ab-0a86-4e41-badf-df4d9603d3e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ASTNode.h">
@@ -19,6 +22,36 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\Token.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\YLlangX.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\y.tab.h">
+      <Filter>extern</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Object.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Number.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\String.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Function.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Class.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\langX.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ExecNode.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Execption.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,5 +68,41 @@
     <ClCompile Include="source\Token.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="extern\lex.yy.c">
+      <Filter>extern</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\y.tab.c">
+      <Filter>extern</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Object.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Number.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Function.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\langX.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\YLlangX.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ExecNode.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Execption.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="extern\a.l">
+      <Filter>extern</Filter>
+    </None>
+    <None Include="extern\a.y">
+      <Filter>extern</Filter>
+    </None>
+    <None Include="makefile" />
   </ItemGroup>
 </Project>

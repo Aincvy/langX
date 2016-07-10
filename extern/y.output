@@ -1,0 +1,384 @@
+   0  $accept : program $end
+
+   1  program : statement_list
+
+   2  statement_list : statement_list statement
+   3                 |
+
+   4  statement : ';'
+   5            | expr ';'
+   6            | VARIABLE '=' expr ';'
+   7            | IF '(' expr ')' block
+
+   8  block : '{' expr_list '}'
+   9        | statement
+
+  10  expr_list : expr_list statement
+  11            | statement
+
+  12  expr : NUMBER
+  13       | VARIABLE
+  14       | expr '+' expr
+  15       | expr '-' expr
+  16       | expr '*' expr
+  17       | expr '/' expr
+  18       | '(' expr ')'
+
+state 0
+	$accept : . program $end  (0)
+	statement_list : .  (3)
+
+	.  reduce 3
+
+	program  goto 1
+	statement_list  goto 2
+
+
+state 1
+	$accept : program . $end  (0)
+
+	$end  accept
+
+
+state 2
+	program : statement_list .  (1)
+	statement_list : statement_list . statement  (2)
+
+	NUMBER  shift 3
+	VARIABLE  shift 4
+	IF  shift 5
+	';'  shift 6
+	'('  shift 7
+	$end  reduce 1
+
+	expr  goto 8
+	statement  goto 9
+
+
+state 3
+	expr : NUMBER .  (12)
+
+	.  reduce 12
+
+
+state 4
+	statement : VARIABLE . '=' expr ';'  (6)
+	expr : VARIABLE .  (13)
+
+	'='  shift 10
+	'+'  reduce 13
+	'-'  reduce 13
+	'*'  reduce 13
+	'/'  reduce 13
+	';'  reduce 13
+
+
+state 5
+	statement : IF . '(' expr ')' block  (7)
+
+	'('  shift 11
+	.  error
+
+
+state 6
+	statement : ';' .  (4)
+
+	.  reduce 4
+
+
+state 7
+	expr : '(' . expr ')'  (18)
+
+	NUMBER  shift 3
+	VARIABLE  shift 12
+	'('  shift 7
+	.  error
+
+	expr  goto 13
+
+
+state 8
+	statement : expr . ';'  (5)
+	expr : expr . '+' expr  (14)
+	expr : expr . '-' expr  (15)
+	expr : expr . '*' expr  (16)
+	expr : expr . '/' expr  (17)
+
+	'+'  shift 14
+	'-'  shift 15
+	'*'  shift 16
+	'/'  shift 17
+	';'  shift 18
+	.  error
+
+
+state 9
+	statement_list : statement_list statement .  (2)
+
+	.  reduce 2
+
+
+state 10
+	statement : VARIABLE '=' . expr ';'  (6)
+
+	NUMBER  shift 3
+	VARIABLE  shift 12
+	'('  shift 7
+	.  error
+
+	expr  goto 19
+
+
+state 11
+	statement : IF '(' . expr ')' block  (7)
+
+	NUMBER  shift 3
+	VARIABLE  shift 12
+	'('  shift 7
+	.  error
+
+	expr  goto 20
+
+
+state 12
+	expr : VARIABLE .  (13)
+
+	.  reduce 13
+
+
+state 13
+	expr : expr . '+' expr  (14)
+	expr : expr . '-' expr  (15)
+	expr : expr . '*' expr  (16)
+	expr : expr . '/' expr  (17)
+	expr : '(' expr . ')'  (18)
+
+	'+'  shift 14
+	'-'  shift 15
+	'*'  shift 16
+	'/'  shift 17
+	')'  shift 21
+	.  error
+
+
+state 14
+	expr : expr '+' . expr  (14)
+
+	NUMBER  shift 3
+	VARIABLE  shift 12
+	'('  shift 7
+	.  error
+
+	expr  goto 22
+
+
+state 15
+	expr : expr '-' . expr  (15)
+
+	NUMBER  shift 3
+	VARIABLE  shift 12
+	'('  shift 7
+	.  error
+
+	expr  goto 23
+
+
+state 16
+	expr : expr '*' . expr  (16)
+
+	NUMBER  shift 3
+	VARIABLE  shift 12
+	'('  shift 7
+	.  error
+
+	expr  goto 24
+
+
+state 17
+	expr : expr '/' . expr  (17)
+
+	NUMBER  shift 3
+	VARIABLE  shift 12
+	'('  shift 7
+	.  error
+
+	expr  goto 25
+
+
+state 18
+	statement : expr ';' .  (5)
+
+	.  reduce 5
+
+
+state 19
+	statement : VARIABLE '=' expr . ';'  (6)
+	expr : expr . '+' expr  (14)
+	expr : expr . '-' expr  (15)
+	expr : expr . '*' expr  (16)
+	expr : expr . '/' expr  (17)
+
+	'+'  shift 14
+	'-'  shift 15
+	'*'  shift 16
+	'/'  shift 17
+	';'  shift 26
+	.  error
+
+
+state 20
+	statement : IF '(' expr . ')' block  (7)
+	expr : expr . '+' expr  (14)
+	expr : expr . '-' expr  (15)
+	expr : expr . '*' expr  (16)
+	expr : expr . '/' expr  (17)
+
+	'+'  shift 14
+	'-'  shift 15
+	'*'  shift 16
+	'/'  shift 17
+	')'  shift 27
+	.  error
+
+
+state 21
+	expr : '(' expr ')' .  (18)
+
+	.  reduce 18
+
+
+state 22
+	expr : expr . '+' expr  (14)
+	expr : expr '+' expr .  (14)
+	expr : expr . '-' expr  (15)
+	expr : expr . '*' expr  (16)
+	expr : expr . '/' expr  (17)
+
+	'*'  shift 16
+	'/'  shift 17
+	'+'  reduce 14
+	'-'  reduce 14
+	';'  reduce 14
+	')'  reduce 14
+
+
+state 23
+	expr : expr . '+' expr  (14)
+	expr : expr . '-' expr  (15)
+	expr : expr '-' expr .  (15)
+	expr : expr . '*' expr  (16)
+	expr : expr . '/' expr  (17)
+
+	'*'  shift 16
+	'/'  shift 17
+	'+'  reduce 15
+	'-'  reduce 15
+	';'  reduce 15
+	')'  reduce 15
+
+
+state 24
+	expr : expr . '+' expr  (14)
+	expr : expr . '-' expr  (15)
+	expr : expr . '*' expr  (16)
+	expr : expr '*' expr .  (16)
+	expr : expr . '/' expr  (17)
+
+	.  reduce 16
+
+
+state 25
+	expr : expr . '+' expr  (14)
+	expr : expr . '-' expr  (15)
+	expr : expr . '*' expr  (16)
+	expr : expr . '/' expr  (17)
+	expr : expr '/' expr .  (17)
+
+	.  reduce 17
+
+
+state 26
+	statement : VARIABLE '=' expr ';' .  (6)
+
+	.  reduce 6
+
+
+state 27
+	statement : IF '(' expr ')' . block  (7)
+
+	NUMBER  shift 3
+	VARIABLE  shift 4
+	IF  shift 5
+	';'  shift 6
+	'('  shift 7
+	'{'  shift 28
+	.  error
+
+	expr  goto 8
+	statement  goto 29
+	block  goto 30
+
+
+state 28
+	block : '{' . expr_list '}'  (8)
+
+	NUMBER  shift 3
+	VARIABLE  shift 4
+	IF  shift 5
+	';'  shift 6
+	'('  shift 7
+	.  error
+
+	expr  goto 8
+	statement  goto 31
+	expr_list  goto 32
+
+
+state 29
+	block : statement .  (9)
+
+	.  reduce 9
+
+
+state 30
+	statement : IF '(' expr ')' block .  (7)
+
+	.  reduce 7
+
+
+state 31
+	expr_list : statement .  (11)
+
+	.  reduce 11
+
+
+state 32
+	block : '{' expr_list . '}'  (8)
+	expr_list : expr_list . statement  (10)
+
+	NUMBER  shift 3
+	VARIABLE  shift 4
+	IF  shift 5
+	';'  shift 6
+	'('  shift 7
+	'}'  shift 33
+	.  error
+
+	expr  goto 8
+	statement  goto 34
+
+
+state 33
+	block : '{' expr_list '}' .  (8)
+
+	.  reduce 8
+
+
+state 34
+	expr_list : expr_list statement .  (10)
+
+	.  reduce 10
+
+
+33 terminals, 7 nonterminals
+19 grammar rules, 35 states

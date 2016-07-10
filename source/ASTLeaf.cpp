@@ -1,5 +1,5 @@
-#include "..\include\ASTLeaf.h"
-#include "..\include\ASTNode.h"
+#include "../include/ASTLeaf.h"
+#include "../include/ASTNode.h"
 
 namespace langX {
 
