@@ -28,9 +28,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="extern\y.tab.h" />
-    <ClInclude Include="include\ASTLeaf.h" />
-    <ClInclude Include="include\ASTNode.h" />
-    <ClInclude Include="include\ASTRoot.h" />
     <ClInclude Include="include\Class.h" />
     <ClInclude Include="include\ExecNode.h" />
     <ClInclude Include="include\Execption.h" />
@@ -45,15 +42,13 @@
   <ItemGroup>
     <ClCompile Include="extern\lex.yy.c" />
     <ClCompile Include="extern\y.tab.c" />
-    <ClCompile Include="source\ASTLeaf.cpp" />
-    <ClCompile Include="source\ASTNode.cpp" />
-    <ClCompile Include="source\ASTRoot.cpp" />
     <ClCompile Include="source\ExecNode.cpp" />
     <ClCompile Include="source\Execption.cpp" />
     <ClCompile Include="source\Function.cpp" />
     <ClCompile Include="source\langX.cpp" />
     <ClCompile Include="source\Number.cpp" />
     <ClCompile Include="source\Object.cpp" />
+    <ClCompile Include="source\String.cpp" />
     <ClCompile Include="source\Token.cpp" />
     <ClCompile Include="source\YLlangX.cpp" />
   </ItemGroup>

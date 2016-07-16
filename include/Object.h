@@ -27,7 +27,7 @@ namespace langX {
 		/* 当前值可以表示为真么？  null,0,false 都不会表示为真  */
 		virtual bool isTrue() const = 0;
 		/* 获得当前对象的类型  */
-		virtual ObjectType getType() const;
+		virtual ObjectType getType() const = 0;
 	private:
 
 	};
@@ -68,6 +68,8 @@ namespace langX {
 		int opr;
 		// 当前操作产生的结果, 这个对象 在FreeNode 函数中并不会释放
 		Object *obj;
+		// 临时存放bool 结果
+		bool bool_value;
 	};
 
 	struct Node

@@ -86,6 +86,18 @@ void freeXVariable(XVariable* p) {
 	free(p);
 }
 
+XNode * string(char *v)
+{
+	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
+	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
+
+	node->type = NODE_CONSTANT_STRING;
+	// v 是已经申请过的内存 ， 直接复制就OK
+	node->con_obj->sValue = v;
+	//printf("createNumberNode: %d\n",i);
+	return node;
+}
+
 XNode * number(double a)
 {
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
@@ -94,7 +106,7 @@ XNode * number(double a)
 	node->type = NODE_CONSTANT_NUMBER;
 	node->con_obj->dValue = a;
 	node->con_obj->sValue = NULL;
-	//printf("createNumberNode: %d\n",i);
+	printf("createNumberNode: %.5f\n",a);
 	return node;
 }
 
@@ -122,6 +134,7 @@ XNode * opr(int opr, int npos, ...)
 	node->opr_obj->obj = NULL;
 
 	node->type = NODE_OPERATOR;
+	node->opr_obj->bool_value = false;
 	node->opr_obj->opr = opr;
 	node->opr_obj->op_count = npos;
 
@@ -132,7 +145,7 @@ XNode * opr(int opr, int npos, ...)
 	}
 	va_end(ap);
 	
-	printf("new opr node, opr is: %d\n" , opr);
+	//printf("new opr node, opr is: %d\n" , opr);
 	//printf("opr npos: %d\n", npos);
 	//printf("node npos: %d\n", node->opr_obj->op_count);
 	//printf("createOperatorNode: %p\n",node);

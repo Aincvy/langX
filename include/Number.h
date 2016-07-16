@@ -10,6 +10,9 @@ namespace langX {
 		Number(double);
 		~Number();
 
+		// 更新当前对象的值为参数的值 
+		void update(double);
+
 		int getIntValue() const;
 		double getDoubleValue() const;
 
@@ -22,6 +25,7 @@ namespace langX {
 		Number operator- (const Number&);
 		Number operator* (const Number&);
 		Number operator/ (const Number&);
+		Number operator= (const Number&);
 	private:
 		double m_value = 0;
 	};

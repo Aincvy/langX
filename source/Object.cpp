@@ -7,8 +7,4 @@ namespace langX {
 	Object::~Object()
 	{
 	}
-	ObjectType Object::getType() const
-	{
-		return UNKNOWN;
-	}
 }

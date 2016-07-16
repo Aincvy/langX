@@ -19,16 +19,20 @@ extern YYSTYPE yylval;
 "else" {return ELSE;}
 "while" {return WHILE;}
 "for" {return FOR;}
+"false" { yylval.bValue = false; return TBOOL;}
+"true" { yylval.bValue = false; return TBOOL;}
 
+\"(.)*\"   { yylval.sValue = strdup(yytext); return TSTRING;}
 [a-zA-Z][a-zA-Z0-9]* { /*printf("get var: %s, length: %d\n" , yytext,yyleng); */ yylval.sValue=strdup(yytext); return VARIABLE;}
-[0-9]+ { yylval.iValue = atoi(yytext); return NUMBER;}
+([1-9][0-9]*)|0|((0|[1-9][0-9]*)\.[0-9]+) { yylval.iValue = atof(yytext); return TDOUBLE;}
 
-">" {return '>'; }
-"<" {return '<'; }
-"{" { return '{';}
-"}" {return '}' ;}
-";" { return ';' ;}
+">" { return '>'; }
+"<" { return '<'; }
+"{" { return '{'; }
+"}" { return '}'; }
+";" { return ';'; }
 "=" { return '='; }
+"," { return ','; }
 [+-/*()] {return *yytext;}
 [ \t\n] ;
 "&&" { return AND_OP;}
