@@ -20,6 +20,11 @@ namespace langX {
 		printf("~Number");
 	}
 
+	void Number::update(double a)
+	{
+		this->m_value = a;
+	}
+
 	int Number::getIntValue() const
 	{
 		return (int)this->m_value;
@@ -27,7 +32,7 @@ namespace langX {
 
 	double Number::getDoubleValue() const
 	{
-		return m_value;
+		return this->m_value;
 	}
 
 	bool Number::isTrue() const
@@ -53,18 +58,27 @@ namespace langX {
 	}
 	Number Number::operator+(const Number &right)
 	{
-		return this->m_value + right.getDoubleValue();
+		this->m_value += right.getDoubleValue();
+		return *this;
 	}
 	Number Number::operator-(const Number &right)
 	{
-		return this->m_value - right.getDoubleValue();
+		this->m_value -= right.getDoubleValue();
+		return *this;
 	}
 	Number Number::operator*(const Number &right)
 	{
-		return this->m_value * right.getDoubleValue();
+		this->m_value *= right.getDoubleValue();
+		return *this;
 	}
 	Number Number::operator/(const Number &right)
 	{
-		return this->m_value / right.getDoubleValue();
+		this->m_value /= right.getDoubleValue();
+		return *this;
+	}
+	Number Number::operator=(const Number &right)
+	{
+		this->m_value = right.getDoubleValue();
+		return *this;
 	}
 }

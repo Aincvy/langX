@@ -19,17 +19,25 @@ namespace langX {
 	void langXState::putObject(const char * name, Object *obj)
 	{
 		std::string str = std::string(name);
-		if (this->m_objects_map.find(str) != this->m_objects_map.end()) {
-			printf("putObject..delete\n");
-			delete (this->m_objects_map[str]);
-		}
-		this->m_objects_map[str]= obj;
+		auto a = this->m_objects_map.find(str);
+		if (a != this->m_objects_map.end()) {
+			Object * old_obj = a->second;
+			if (old_obj->getType() == NUMBER && obj->getType() == NUMBER)
+			{
+				Number *n = (Number*)old_obj;
+				n->update(((Number*)obj)->getDoubleValue());
+				return;
+			}
 
+			delete a->second;
+		}
+
+		this->m_objects_map[str]= obj;
 		if (obj->getType() == NUMBER)
 		{
-			printf("putObject.. is Number,addr is: %p\n" , obj);
+			//printf("putObject.. is Number,addr is: %p\n" , obj);
 			Number * number = (Number*)obj;
-			printf("putObject.. number value is: %.2f\n" , number->getDoubleValue());
+			printf("putObject.. number %s value is: %.2f\n" ,name, number->getDoubleValue());
 		}
 	}
 

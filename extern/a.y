@@ -12,23 +12,27 @@ extern "C" {
 %}
 
 %union {
- double iValue; /* integer value */
+ double iValue; /* double value */
  bool bValue; /* bool value */
  char* sValue; /* string value */
  XNode* node;  /* var value */
 };
 
-%token <iValue> NUMBER 
-%token <sValue> VARIABLE
+%token <iValue> TDOUBLE 
+%token <sValue> VARIABLE TSTRING
+%token <bValue> TBOOL
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP
 %token AUTO IF ELSE WHILE FOR
-%type <iValue> NUMBER 
+
+%type <iValue> TDOUBLE 
 %type <node> expr statement block expr_list
+%type <sValue> TSTRING
 
 %nonassoc ELSE
 
+%left ','
 %right '='
-%left GE LE EQ NE '>' '<'
+%left LE_OP GE_OP EQ_OP NE_OP '>' '<'
 %left '+' '-'
 %left '*' '/'
 
@@ -46,8 +50,9 @@ statement_list
 statement
 	: ';'      { $$ = opr(';' , 0 ); }
 	| expr ';' { $$ = $1; }
-	| VARIABLE '=' expr ';' { $$ = opr('=',2,var($1),$3 ); }
 	| IF '(' expr ')' block { $$ = opr(IF ,2,$3,$5) ; }
+	| WHILE '(' expr ')' block { $$ = opr(WHILE , 2, $3, $5 ); }
+	| FOR '(' expr ';' expr ';' expr ')' block { $$ = opr(FOR,4,$3,$5,$7,$9); }
 	;
 
 block
@@ -62,13 +67,22 @@ expr_list
 	
 //  表达式， 单条语句 
 expr
-	: NUMBER { $$ = number($1); }
+	: TDOUBLE { $$ = number($1); }
 	| VARIABLE { /*printf("VARIABLE $1= %s\n" , $1);*/ $$ = var($1); }
+	| TSTRING  { printf("get a string: %s\n" , $1); $$ = string($1); }
 	| expr '+' expr { $$ = opr('+',2,$1,$3);}
 	| expr '-' expr { $$ = opr('-',2,$1,$3);}
 	| expr '*' expr { $$ = opr('*',2,$1,$3);}
 	| expr '/' expr { $$ = opr('/',2,$1,$3);}
+	| expr '>' expr { $$ = opr('>',2,$1,$3);}
+	| expr '<' expr { $$ = opr('<',2,$1,$3);}
+	| expr LE_OP expr { $$ = opr( LE_OP,2,$1,$3);}
+	| expr GE_OP expr { $$ = opr( GE_OP,2,$1,$3);}
+	| expr EQ_OP expr { $$ = opr( EQ_OP,2,$1,$3);}
+	| expr NE_OP expr { $$ = opr( NE_OP,2,$1,$3);}
+	| expr ',' expr { $$ = opr(',',2,$1,$3);}
 	| '(' expr ')'  { $$ = $2; }
+	| VARIABLE '=' expr { $$ = opr('=',2,var($1),$3 ); }
 	;
 
 %%

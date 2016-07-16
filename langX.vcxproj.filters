@@ -12,15 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\ASTNode.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ASTRoot.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ASTLeaf.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\Token.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -56,15 +47,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\ASTLeaf.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ASTNode.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ASTRoot.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="source\Token.cpp">
       <Filter>source</Filter>
     </ClCompile>
@@ -93,6 +75,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\Execption.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\String.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

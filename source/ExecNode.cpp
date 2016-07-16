@@ -3,6 +3,7 @@
 #include "../include/YLlangX.h"
 #include "../include/Object.h"
 #include "../include/Number.h"
+#include "../include/String.h"
 #include "../extern/y.tab.h"
 
 namespace langX {
@@ -13,13 +14,16 @@ namespace langX {
 			return -1;
 		}
 
+		//printf("__readRealNumber1\n");
 		if (obj->getType() != NUMBER)
 		{
 			return -1;
 		}
+		//printf("__readRealNumber2\n");
 
 		Number * a = (Number*)obj;
 		*v = a->getDoubleValue();
+		//printf("__readRealNumber: %.2f\n" , (*v));
 		return 0;
 	}
 
@@ -56,7 +60,7 @@ namespace langX {
 			Object *obj = n->opr_obj->obj;
 			if (obj == NULL)
 			{
-				return false;
+				return n->opr_obj->bool_value;
 			}
 			return obj->isTrue();
 		}
@@ -85,10 +89,13 @@ namespace langX {
 		}
 		else if (n->type == NODE_VARIABLE)
 		{
+			//printf("__getNumberValue::  NODE_VARIABLE");
 			__execNode(n);
 			__readRealNumber(n->var_obj->obj, v);
 		}
 		else {
+			//printf("__getNumberValue::  else");
+
 			__execNode(n);
 			__readRealNumber(n->opr_obj->obj, v);
 		}
@@ -146,8 +153,11 @@ namespace langX {
 		n->opr_obj->obj = new Number(a/b);
 		printf("%.2f\n", a/b);
 
-	}
+		for (size_t i = 0; i < 10; i++)
+		{
 
+		}
+	}
 
 	// 赋值操作 = 
 	void __exec61(Node *n) {
@@ -163,19 +173,27 @@ namespace langX {
 		Node *right = n->opr_obj->op[1];
 		if (right->type == NODE_CONSTANT_NUMBER)
 		{
-			assignment(left->var_obj->name, new Number(right->con_obj->dValue));
+			n->opr_obj->obj = new Number(right->con_obj->dValue);
+		}
+		else if (right->type == NODE_CONSTANT_STRING)
+		{
+			n->opr_obj->obj = new String(right->con_obj->sValue);
+			//assignment(left->var_obj->name, new String(right->con_obj->sValue));
 		}
 		else if (right->type == NODE_VARIABLE)
 		{
 			__execNode(right);
-			assignment(left->var_obj->name, right->var_obj->obj);
+			n->opr_obj->obj = right->var_obj->obj;
+			//assignment(left->var_obj->name, right->var_obj->obj);
 		}
 		else if (right->type == NODE_OPERATOR)
 		{
 			__execNode(right);
-			assignment(left->var_obj->name, right->opr_obj->obj);
+			n->opr_obj->obj = right->opr_obj->obj;
+			//assignment(left->var_obj->name, right->opr_obj->obj);
 		}
 
+		assignment(left->var_obj->name, n->opr_obj->obj);
 	}
 
 	// 分号 ;
@@ -196,6 +214,110 @@ namespace langX {
 		}
 	}
 
+	// 逗号表达式
+	void __exec44(Node *n) {
+		// 操作和 分号表达式差不多应该， 这样应该就OK了。 
+		__exec59(n);
+	}
+
+	// 符号： >
+	void __exec62(Node *n) {
+		double a = 0;
+		__getNumberValue(n->opr_obj->op[0], &a);
+		double b = 0;
+		__getNumberValue(n->opr_obj->op[1], &b);
+
+		if (a > b)
+		{
+			n->opr_obj->bool_value = true;
+		}else{
+			n->opr_obj->bool_value = false;
+		}
+		
+	}
+
+	// 大于等于
+	void __execGE_OP(Node *n) {
+		double a = 0;
+		__getNumberValue(n->opr_obj->op[0], &a);
+		double b = 0;
+		__getNumberValue(n->opr_obj->op[1], &b);
+
+		if (a >= b)
+		{
+			n->opr_obj->bool_value = true;
+		}
+		else {
+			n->opr_obj->bool_value = false;
+		}
+
+	}
+
+	// 符号： <
+	void __exec60(Node *n) {
+		double a = 0;
+		__getNumberValue(n->opr_obj->op[0], &a);
+		double b = 0;
+		__getNumberValue(n->opr_obj->op[1], &b);
+
+		if (a < b)
+		{
+			n->opr_obj->bool_value = true;
+		}
+		else {
+			n->opr_obj->bool_value = false;
+		}
+	}
+
+	// 小于等于
+	void __execLE_OP(Node *n) {
+		double a = 0;
+		__getNumberValue(n->opr_obj->op[0], &a);
+		double b = 0;
+		__getNumberValue(n->opr_obj->op[1], &b);
+
+		if (a <= b)
+		{
+			n->opr_obj->bool_value = true;
+		}
+		else {
+			n->opr_obj->bool_value = false;
+		}
+	}
+
+	// 等于
+	void __execEQ_OP(Node *n) {
+		double a = 0;
+		__getNumberValue(n->opr_obj->op[0], &a);
+		double b = 0;
+		__getNumberValue(n->opr_obj->op[1], &b);
+
+		if (a == b)
+		{
+			n->opr_obj->bool_value = true;
+		}
+		else {
+			n->opr_obj->bool_value = false;
+		}
+	}
+
+	// 不等于
+	void __execNE_OP(Node *n) {
+		double a = 0;
+		__getNumberValue(n->opr_obj->op[0], &a);
+		double b = 0;
+		__getNumberValue(n->opr_obj->op[1], &b);
+
+		if (a != b)
+		{
+			n->opr_obj->bool_value = true;
+		}
+		else {
+			n->opr_obj->bool_value = false;
+		}
+	}
+
+
 	void __execIF(Node *n) {
 		if (n == NULL)
 		{
@@ -208,6 +330,29 @@ namespace langX {
 		}
 	}
 
+	void __execWHILE(Node *n) {
+		if (n == NULL || n->opr_obj  == NULL || n->opr_obj->op_count != 2)
+		{
+			return;
+		}
+
+		while (__tryConvertToBool(n->opr_obj->op[0]))
+		{
+			__execNode(n->opr_obj->op[1]);
+		}
+	}
+
+	void __execFOR(Node *n) {
+		if (n == NULL || n->opr_obj == NULL || n->opr_obj->op_count != 4)
+		{
+			return;
+		}
+
+		for (__execNode(n->opr_obj->op[0]);  __tryConvertToBool(n->opr_obj->op[1]) ; __execNode(n->opr_obj->op[2]))
+		{
+			__execNode(n->opr_obj->op[3]);
+		}
+	}
 
 	void __execNode(Node *node) {
 		if (node == NULL)
@@ -285,9 +430,31 @@ namespace langX {
 		case ';':
 			__exec59(node);
 			break;
+		case '>':
+			__exec62(node);
+			break;
+		case '<':
+			__exec60(node);
+			break;
+		case LE_OP:
+			__execLE_OP(node);
+			break;
+		case GE_OP:
+			__execGE_OP(node);
+			break;
+		case EQ_OP:
+			__execEQ_OP(node);
+			break;
+		case NE_OP:
+			__execNE_OP(node);
+			break;
 		case IF:
 			__execIF(node);
 			break;
+		case WHILE:
+			__execWHILE(node);
+		case FOR:
+			__execFOR(node);
 		default:
 			break;
 		}

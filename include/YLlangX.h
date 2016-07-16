@@ -28,6 +28,8 @@ extern "C" {
 
 	void freeXVariable(XVariable*);
 
+	// 创建一个字符串值得节点
+	XNode * string(char *);
 	// 创建一个含有数字值得 节点
 	XNode * number(double );
 	// 创建一个变量节点， 注意， 变量节点的名字 请使用 malloc等函数分配内存
