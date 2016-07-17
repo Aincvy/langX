@@ -104,6 +104,7 @@ XNode * number(double a)
 	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
 
 	node->type = NODE_CONSTANT_NUMBER;
+	node->freeOnExeced = true;
 	node->con_obj->dValue = a;
 	node->con_obj->sValue = NULL;
 	printf("createNumberNode: %.5f\n",a);
@@ -116,6 +117,7 @@ XNode * var(char *name)
 	node->var_obj = (langX::Variable*) malloc(sizeof(langX::Variable) * 1);
 
 	node->type = NODE_VARIABLE;
+	node->freeOnExeced = true;
 	node->var_obj->name = name;
 	node->var_obj->obj = NULL;
 
@@ -134,6 +136,7 @@ XNode * opr(int opr, int npos, ...)
 	node->opr_obj->obj = NULL;
 
 	node->type = NODE_OPERATOR;
+	node->freeOnExeced = true;
 	node->opr_obj->bool_value = false;
 	node->opr_obj->opr = opr;
 	node->opr_obj->op_count = npos;
@@ -152,10 +155,20 @@ XNode * opr(int opr, int npos, ...)
 	return node;
 }
 
+XNode * func(char *, XNode *)
+{
+
+	return nullptr;
+}
+
 void freeNode(XNode * n) {
 	if (n == NULL)
 	{
 		return;
+	}
+	if (!n->freeOnExeced)
+	{
+		return ;
 	}
 
 	//printf("free node\n");

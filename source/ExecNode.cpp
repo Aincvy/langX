@@ -317,6 +317,36 @@ namespace langX {
 		}
 	}
 
+	void __execOPAND(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		if (__tryConvertToBool(n->opr_obj->op[0]))
+		{
+			n->opr_obj->bool_value = __tryConvertToBool(n->opr_obj->op[1]);
+			//__execNode(n->opr_obj->op[1]);
+		}
+		else {
+			n->opr_obj->bool_value = false;
+		}
+	}
+
+	void __execOPOR(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		if (__tryConvertToBool(n->opr_obj->op[0]))
+		{
+			n->opr_obj->bool_value = true;
+		}
+		else {
+			n->opr_obj->bool_value = __tryConvertToBool(n->opr_obj->op[1]);
+		}
+	}
 
 	void __execIF(Node *n) {
 		if (n == NULL)
@@ -327,6 +357,12 @@ namespace langX {
 		if (__tryConvertToBool(n->opr_obj->op[0]))
 		{
 			__execNode(n->opr_obj->op[1]);
+		}
+		else {
+			if (n->opr_obj->op_count >= 3)
+			{
+				__execNode(n->opr_obj->op[2]);
+			}
 		}
 	}
 
@@ -448,6 +484,11 @@ namespace langX {
 		case NE_OP:
 			__execNE_OP(node);
 			break;
+		case AND_OP:
+			__execOPAND(node);
+			break;
+		case OR_OP:
+			__execOPOR(node);
 		case IF:
 			__execIF(node);
 			break;
