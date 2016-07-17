@@ -75,6 +75,8 @@ namespace langX {
 	struct Node
 	{
 		NodeType type;
+		// 在执行结束之后是否进行 free 操作
+		bool freeOnExeced;
 
 		Variable *var_obj;
 		Constant *con_obj;

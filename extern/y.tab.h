@@ -15,6 +15,7 @@
 #define ELSE 271
 #define WHILE 272
 #define FOR 273
+#define IFX 274
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

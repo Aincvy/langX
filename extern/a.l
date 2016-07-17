@@ -19,8 +19,9 @@ extern YYSTYPE yylval;
 "else" {return ELSE;}
 "while" {return WHILE;}
 "for" {return FOR;}
-"false" { yylval.bValue = false; return TBOOL;}
-"true" { yylval.bValue = false; return TBOOL;}
+"false" { yylval.iValue = 0.0; return TBOOL;}
+"true" { yylval.iValue = 1.0; return TBOOL;}
+"=>"   { return FUNC_OP; }
 
 \"(.)*\"   { yylval.sValue = strdup(yytext); return TSTRING;}
 [a-zA-Z][a-zA-Z0-9]* { /*printf("get var: %s, length: %d\n" , yytext,yyleng); */ yylval.sValue=strdup(yytext); return VARIABLE;}

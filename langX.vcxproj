@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClInclude Include="extern\y.tab.h" />
     <ClInclude Include="include\Class.h" />
+    <ClInclude Include="include\Environment.h" />
     <ClInclude Include="include\ExecNode.h" />
     <ClInclude Include="include\Execption.h" />
     <ClInclude Include="include\Function.h" />
@@ -42,6 +43,7 @@
   <ItemGroup>
     <ClCompile Include="extern\lex.yy.c" />
     <ClCompile Include="extern\y.tab.c" />
+    <ClCompile Include="source\Environment.cpp" />
     <ClCompile Include="source\ExecNode.cpp" />
     <ClCompile Include="source\Execption.cpp" />
     <ClCompile Include="source\Function.cpp" />
