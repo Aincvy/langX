@@ -155,9 +155,23 @@ XNode * opr(int opr, int npos, ...)
 	return node;
 }
 
-XNode * func(char *, XNode *)
+XNode * func(char *name, XNode *node)
 {
+	node->freeOnExeced = false;
+	Function *func = new Function(name,node);
+	getState()->getCurrentEnv()->putFunction(name, func);
+	return nullptr;
+}
 
+XNode * call(char *name)
+{
+	Function *function = getState()->getCurrentEnv()->getFunction(name);
+	if (function == NULL)
+	{
+		printf("cannot find function %s\n",name);
+		return NULL;
+	}
+	function->call();
 	return nullptr;
 }
 

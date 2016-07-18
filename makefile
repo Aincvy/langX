@@ -2,11 +2,11 @@
 
 TARGET = langX
 
-OBJ = extern/lex.yy.o extern/y.tab.o source/YLlangX.o source/Object.o source/Number.o source/langX.o source/ExecNode.o source/String.o source/Environment.o 
+OBJ = extern/lex.yy.o extern/y.tab.o source/YLlangX.o source/Object.o source/Number.o source/langX.o source/ExecNode.o source/String.o source/Environment.o source/Function.o
 
-HEADER = extern/y.tab.h include/YLlangX.h include/Object.h include/Number.h include/langX.h include/ExecNode.h include/String.h include/Environment.h 
+HEADER = extern/y.tab.h include/YLlangX.h include/Object.h include/Number.h include/langX.h include/ExecNode.h include/String.h include/Environment.h include/Function.h
 
-SRC = extern/lex.yy.c extern/y.tab.c source/YLlangX.cpp source/Object.cpp source/Number.cpp source/langX.cpp source/ExecNode.cpp source/String.cpp source/Environment.cpp 
+SRC = extern/lex.yy.c extern/y.tab.c source/YLlangX.cpp source/Object.cpp source/Number.cpp source/langX.cpp source/ExecNode.cpp source/String.cpp source/Environment.cpp source/Function.cpp
 
 DFLAGS = -ll
 

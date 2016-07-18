@@ -15,6 +15,7 @@ namespace langX {
 	{
 	public:
 		Environment();
+		/* 在释放这个对象的时候并不会施放他的父级环境对象 */
 		~Environment();
 
 		void putObject(const char*, Object*);
@@ -25,11 +26,15 @@ namespace langX {
 		void putFunction(const std::string &, Function*);
 		Function* getFunction(const std::string &);
 
+		Environment *getParent() const;
+		void setParent(Environment *);
+
 	private:
 		std::map<std::string, Object*> m_objects_map;
 		std::map<std::string, Function*> m_functions_map;
 		std::map<std::string, Object*> m_classes_map;
 
+		Environment *m_parent = nullptr;
 	};
 
 }

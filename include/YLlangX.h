@@ -38,6 +38,8 @@ extern "C" {
 	XNode * opr(int opr, int npos, ...);
 	// 创建一个函数节点
 	XNode * func(char *,XNode *);
+	// 使用一个函数
+	XNode * call(char *);
 
 	// 运算这个节点
 	void execNode(XNode *);

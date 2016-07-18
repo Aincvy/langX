@@ -1,7 +1,7 @@
 #define TDOUBLE 257
-#define VARIABLE 258
-#define TSTRING 259
-#define TBOOL 260
+#define TBOOL 258
+#define VARIABLE 259
+#define TSTRING 260
 #define OP_CALC 261
 #define AND_OP 262
 #define OR_OP 263
@@ -24,7 +24,6 @@
 #define YYSTYPE_IS_DECLARED 1
 typedef union {
  double iValue; /* double value */
- bool bValue; /* bool value */
  char* sValue; /* string value */
  XNode* node;  /* var value */
 } YYSTYPE;

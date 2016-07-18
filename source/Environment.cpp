@@ -7,10 +7,12 @@ namespace langX {
 
 	Environment::Environment()
 	{
+		this->m_parent = NULL;
 	}
 
 	Environment::~Environment()
 	{
+		this->m_parent = NULL;
 		printf("~Environment\n");
 		if (!m_objects_map.empty())
 		{
@@ -61,6 +63,10 @@ namespace langX {
 
 		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
+			if (this->m_parent != NULL)
+			{
+				return this->m_parent->getObject(name);
+			}
 			return NULL;
 		}
 
@@ -81,12 +87,22 @@ namespace langX {
 
 	void Environment::putFunction(const std::string &name, Function *obj)
 	{
-
+		this->m_functions_map[name] = obj;
 	}
 
 	Function * Environment::getFunction(const std::string &name)
 	{
-		return nullptr;
+		return this->m_functions_map[name];
+	}
+
+	Environment * Environment::getParent() const
+	{
+		return this->m_parent;
+	}
+
+	void Environment::setParent(Environment *env)
+	{
+		this->m_parent = env;
 	}
 
 }
