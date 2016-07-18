@@ -1,6 +1,9 @@
-for(a=0,sum=0; a<10;a = a + 1){
-  sum = sum + a ;
-}
+if(false)
+  if(false)
+    a=1;
+  else
+    a=2;
+else
+  a=3;
 
-if(1)
-  sum;
+a;

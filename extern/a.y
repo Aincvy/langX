@@ -55,6 +55,7 @@ statement
 	| WHILE '(' expr ')' block { $$ = opr(WHILE , 2, $3, $5 ); }
 	| FOR '(' expr ';' expr ';' expr ')' block { $$ = opr(FOR,4,$3,$5,$7,$9); }
 	| VARIABLE FUNC_OP '{' expr_list '}' { $$ = func($1,$4);}
+	| VARIABLE '(' ')' ';' { $$ = call($1); }
 	;
 
 block
