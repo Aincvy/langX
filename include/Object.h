@@ -82,4 +82,12 @@ namespace langX {
 		Constant *con_obj;
 		Operator *opr_obj;
 	};
+
+	// 参数列表 ,最大不超过30个参数
+	struct ArgsList
+	{
+		char* args[30];
+		// 参数索引
+		int index;
+	};
 }
