@@ -23,7 +23,7 @@ extern "C" {
 %token AUTO IF ELSE WHILE FOR
 
 %type <iValue> TDOUBLE 
-%type <node> expr statement block expr_list
+%type <node> expr statement block expr_list args_list
 %type <sValue> TSTRING
 
 %nonassoc IFX
@@ -54,8 +54,24 @@ statement
 	| IF '(' expr ')' block ELSE block { $$ = opr(IF ,3,$3,$5,$7) ; }
 	| WHILE '(' expr ')' block { $$ = opr(WHILE , 2, $3, $5 ); }
 	| FOR '(' expr ';' expr ';' expr ')' block { $$ = opr(FOR,4,$3,$5,$7,$9); }
-	| VARIABLE FUNC_OP '{' expr_list '}' { $$ = func($1,$4);}
-	| VARIABLE '(' ')' ';' { $$ = call($1); }
+	| VARIABLE FUNC_OP param_list '{' expr_list '}' { $$ = func($1,$3,$5);}
+	| VARIABLE '(' args_list ')' ';' { $$ = call($1 , $3 ); }
+	;
+
+param_list
+	: 
+	| '(' var_list ')'
+	;
+
+var_list
+	:
+	| var_list VARIABLE
+	;
+
+args_list
+	: expr          { $$ = $1; }
+	| expr ',' expr { opr(',',2,$1,$3); }
+	|               { $$ = NULL; }
 	;
 
 block
