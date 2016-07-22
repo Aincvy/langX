@@ -13,6 +13,7 @@
 
 typedef langX::Variable XVariable;
 typedef langX::Node XNode;
+typedef langX::ArgsList XArgsList;
 
 
 //  lex/yacc 是C语言的
@@ -37,7 +38,7 @@ extern "C" {
 	// 创建一个 操作符节点 
 	XNode * opr(int opr, int npos, ...);
 	// 创建一个函数节点
-	XNode * func(char *,XNode *);
+	XNode * func(char *, XArgsList *,XNode *);
 	// 使用一个函数
 	XNode * call(char *);
 

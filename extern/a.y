@@ -15,22 +15,26 @@ extern "C" {
  double iValue; /* double value */
  char* sValue; /* string value */
  XNode* node;  /* var value */
+ XArgsList* args;
 };
 
 %token <iValue> TDOUBLE TBOOL
 %token <sValue> VARIABLE TSTRING
-%token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP
+%token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP 
+%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
 %token AUTO IF ELSE WHILE FOR
 
 %type <iValue> TDOUBLE 
 %type <node> expr statement block expr_list args_list
 %type <sValue> TSTRING
+%type <args> param_list
+
 
 %nonassoc IFX
 %nonassoc ELSE
 
 %left ','
-%right '='
+%right '=' ADD_EQ SUB_EQ MUL_EQ DIV_EQ
 %left AND_OP OR_OP
 %left LE_OP GE_OP EQ_OP NE_OP '>' '<'
 %left '+' '-'
@@ -55,17 +59,12 @@ statement
 	| WHILE '(' expr ')' block { $$ = opr(WHILE , 2, $3, $5 ); }
 	| FOR '(' expr ';' expr ';' expr ')' block { $$ = opr(FOR,4,$3,$5,$7,$9); }
 	| VARIABLE FUNC_OP param_list '{' expr_list '}' { $$ = func($1,$3,$5);}
-	| VARIABLE '(' args_list ')' ';' { $$ = call($1 , $3 ); }
+	| VARIABLE '(' ')' ';' { $$ = call($1 ); }
 	;
 
 param_list
-	: 
-	| '(' var_list ')'
-	;
-
-var_list
-	:
-	| var_list VARIABLE
+	:           { $$ = NULL; }
+	| '(' ')'   { $$ = NULL; }
 	;
 
 args_list
@@ -104,6 +103,10 @@ expr
 	| expr AND_OP expr { $$ = opr(AND_OP,2,$1,$3);}
 	| expr OR_OP expr  { $$ = opr(OR_OP,2,$1,$3); }
 	| '(' expr ')'  { $$ = $2; }
+	| VARIABLE ADD_EQ expr { $$ = opr(ADD_EQ,2,$1,$3);}
+	| VARIABLE SUB_EQ expr { $$ = opr(SUB_EQ,2,$1,$3);}
+	| VARIABLE MUL_EQ expr { $$ = opr(MUL_EQ,2,$1,$3);}
+	| VARIABLE DIV_EQ expr { $$ = opr(DIV_EQ,2,$1,$3);}
 	| VARIABLE '=' expr { $$ = opr('=',2,var($1),$3 ); }
 	;
 

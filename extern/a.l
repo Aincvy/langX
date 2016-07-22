@@ -22,6 +22,8 @@ extern YYSTYPE yylval;
 "false" { yylval.iValue = 0.0; return TBOOL;}
 "true" { yylval.iValue = 1.0; return TBOOL;}
 "=>"   { return FUNC_OP; }
+"++"   { return INC_OP;}
+"--"   { return DEC_OP;}
 
 \"(.)*\"   { yylval.sValue = strdup(yytext); return TSTRING;}
 [a-zA-Z][a-zA-Z0-9]* { /*printf("get var: %s, length: %d\n" , yytext,yyleng); */ yylval.sValue=strdup(yytext); return VARIABLE;}
@@ -42,5 +44,9 @@ extern YYSTYPE yylval;
 ">=" { return GE_OP;}
 "==" { return EQ_OP;}
 "!=" { return NE_OP;}
+"+=" { return ADD_EQ; }
+"-=" { return SUB_EQ; }
+"*=" { return MUL_EQ; }
+"/=" { return DIV_EQ; }
 
 %%

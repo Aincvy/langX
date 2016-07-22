@@ -155,7 +155,7 @@ XNode * opr(int opr, int npos, ...)
 	return node;
 }
 
-XNode * func(char *name, XNode *node)
+XNode * func(char *name, XArgsList *args, XNode *node)
 {
 	node->freeOnExeced = false;
 	Function *func = new Function(name,node);
