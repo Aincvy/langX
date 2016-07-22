@@ -10,22 +10,22 @@
 #define EQ_OP 266
 #define NE_OP 267
 #define FUNC_OP 268
-#define AUTO 269
-#define IF 270
-#define ELSE 271
-#define WHILE 272
-#define FOR 273
-#define IFX 274
-#ifdef YYSTYPE
-#undef  YYSTYPE_IS_DECLARED
-#define YYSTYPE_IS_DECLARED 1
-#endif
-#ifndef YYSTYPE_IS_DECLARED
-#define YYSTYPE_IS_DECLARED 1
+#define INC_OP 269
+#define DEC_OP 270
+#define ADD_EQ 271
+#define SUB_EQ 272
+#define MUL_EQ 273
+#define DIV_EQ 274
+#define AUTO 275
+#define IF 276
+#define ELSE 277
+#define WHILE 278
+#define FOR 279
+#define IFX 280
 typedef union {
  double iValue; /* double value */
  char* sValue; /* string value */
  XNode* node;  /* var value */
+ XArgsList* args;
 } YYSTYPE;
-#endif /* !YYSTYPE_IS_DECLARED */
 extern YYSTYPE yylval;
