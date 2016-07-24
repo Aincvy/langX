@@ -48,6 +48,10 @@ namespace langX {
 	{
 		return NUMBER;
 	}
+	Object * Number::clone() const
+	{
+		return new Number(this->m_value);
+	}
 	Number::operator int() const
 	{
 		return (int)this->m_value;
@@ -80,5 +84,9 @@ namespace langX {
 	{
 		this->m_value = right.getDoubleValue();
 		return *this;
+	}
+	void Number::finalize()
+	{
+		delete this;
 	}
 }

@@ -17,7 +17,7 @@ namespace langX {
 		if (!m_objects_map.empty())
 		{
 			for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++) {
-				delete (a->second);
+				a->second->decRefCount();
 			}
 		}
 	}
@@ -42,6 +42,7 @@ namespace langX {
 			delete a->second;
 		}
 
+		obj->incRefCount();
 		this->m_objects_map[name] = obj;
 		if (obj->getType() == NUMBER)
 		{
@@ -58,8 +59,8 @@ namespace langX {
 		//{
 		//	printf("name: %s\n",a->first.c_str());
 		//}
-		//
-		//printf("want to get value: %s\n", name.c_str());
+		
+		printf("want to get value: %s\n", name.c_str());
 
 		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
@@ -71,6 +72,10 @@ namespace langX {
 		}
 
 		Object * obj = this->m_objects_map[name];
+		if (obj == NULL)
+		{
+			return NULL;
+		}
 		if (obj->getType() == NUMBER)
 		{
 			printf("get a number object: %s\n", name.c_str());

@@ -24,19 +24,33 @@ namespace langX {
 		Object();
 		~Object();
 
+		/* 自增当前对象的引用次数 */
+		void incRefCount();
+		/* 自减当前对象的引用次数， 如果当前对象的引用次数小于等于0  ， 则销毁当前对象   */
+		void decRefCount();
+
 		/* 当前值可以表示为真么？  null,0,false 都不会表示为真  */
 		virtual bool isTrue() const = 0;
 		/* 获得当前对象的类型  */
 		virtual ObjectType getType() const = 0;
-	private:
+		/* 克隆当前对象， 返回出一个新的对象 */
+		virtual Object* clone() const = 0;
 
+	private:
+		int m_ref_count;
+
+		/* 命名借用了java 里面的命名， 好像意思是定案，
+		在当前语境下， 这个函数应该完成的功能为： 干掉自己   */
+		virtual void finalize() = 0;
 	};
 
 	struct Variable
 	{
 		char * name;
+		
+		// 07-23 注释  统一将节点的运算结果放在 Node.value 中
 		// 这个变量的值，   这个对象 在FreeNode 函数中并不会释放
-		Object *obj;
+		//Object *obj;
 	};
 
 	enum NodeType
@@ -66,10 +80,12 @@ namespace langX {
 		int op_count;
 		// 操作符是什么
 		int opr;
-		// 当前操作产生的结果, 这个对象 在FreeNode 函数中并不会释放
-		Object *obj;
 		// 临时存放bool 结果
 		bool bool_value;
+
+		// 07-23 注释， 结果放在 Node.value 中
+		// 当前操作产生的结果, 这个对象 在FreeNode 函数中并不会释放
+		//Object *obj;
 	};
 
 	struct Node
@@ -77,6 +93,8 @@ namespace langX {
 		NodeType type;
 		// 在执行结束之后是否进行 free 操作
 		bool freeOnExeced;
+		// 当前节点的值 .  如果当前结点是一个常量数字， 则free 的时候会施放这个值得内存
+		Object *value;
 
 		Variable *var_obj;
 		Constant *con_obj;

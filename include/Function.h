@@ -20,11 +20,15 @@ namespace langX {
 
 		bool isTrue() const;
 		ObjectType getType() const;
+		/* 函数返回一个自己的指针 */
+		Object* clone() const;
 
 	private:
 		// 内部函数执行的根节点
 		Node * m_node_root = nullptr;
 		char * m_name;
+
+		void finalize();
 	};
 
 }

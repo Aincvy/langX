@@ -21,11 +21,19 @@
 #define ELSE 277
 #define WHILE 278
 #define FOR 279
-#define IFX 280
+#define DELETE 280
+#define IFX 281
+#ifdef YYSTYPE
+#undef  YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
+#endif
+#ifndef YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
 typedef union {
  double iValue; /* double value */
  char* sValue; /* string value */
  XNode* node;  /* var value */
  XArgsList* args;
 } YYSTYPE;
+#endif /* !YYSTYPE_IS_DECLARED */
 extern YYSTYPE yylval;

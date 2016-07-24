@@ -8,6 +8,19 @@
 
 namespace langX {
 
+	/* 检测一下节点是否存在 值， 如果不存在， 则运算他 */
+	void checkValue(Node * node) {
+		if (node == NULL)
+		{
+			return;
+		}
+
+		if (node->value == NULL)
+		{
+			__execNode(node);
+		}
+	}
+
 	int __readRealNumber(Object *obj, double* v) {
 		if (obj == NULL)
 		{
@@ -33,37 +46,13 @@ namespace langX {
 			return false;
 		}
 
-		if (n->type == NODE_CONSTANT_NUMBER)
+		checkValue(n);
+		if (n->value == NULL)
 		{
-			if (n->con_obj->dValue == 0)
-			{
-				return false;
-			}
-			return true;
+			return false;
 		}
-		else if (n->type == NODE_CONSTANT_STRING)
-		{
-			return true;
-		}
-		else if (n->type == NODE_VARIABLE)
-		{
-			__execNode(n);
-			Object *obj = n->var_obj->obj;
-			if (obj == NULL)
-			{
-				return false;
-			}
-			return obj->isTrue();
-		}
-		else {
-			__execNode(n);
-			Object *obj = n->opr_obj->obj;
-			if (obj == NULL)
-			{
-				return n->opr_obj->bool_value;
-			}
-			return obj->isTrue();
-		}
+
+		return n->value->isTrue();
 	}
 
 	int __getNumberValue(Node*n, double *v) {
@@ -73,35 +62,8 @@ namespace langX {
 			return -1;
 		}
 
-
-		//printf("n type: %d\n", n->type);
-		//printf("n addr: %p\n" , n);
-
-		if (n->type == NODE_CONSTANT_STRING)
-		{
-			return -1;
-		}
-
-		if (n->type == NODE_CONSTANT_NUMBER)
-		{
-			//printf("__getNumberValue01  \n");
-			*v = n->con_obj->dValue;
-		}
-		else if (n->type == NODE_VARIABLE)
-		{
-			//printf("__getNumberValue::  NODE_VARIABLE");
-			__execNode(n);
-			__readRealNumber(n->var_obj->obj, v);
-		}
-		else {
-			//printf("__getNumberValue::  else");
-
-			__execNode(n);
-			__readRealNumber(n->opr_obj->obj, v);
-		}
-		
-
-		return 0;
+		checkValue(n);
+		return __readRealNumber(n->value, v);
 	}
 
 	// +  
@@ -114,8 +76,8 @@ namespace langX {
 		double b = 0;
 		__getNumberValue(n->opr_obj->op[1], &b);
 
-		n->opr_obj->obj = new Number(a+b);
-		printf("%.2f\n", a+b);
+		n->value = new Number(a + b);
+		printf("%.2f\n", a + b);
 	}
 
 	// -
@@ -125,8 +87,8 @@ namespace langX {
 		double b = 0;
 		__getNumberValue(n->opr_obj->op[1], &b);
 
-		n->opr_obj->obj = new Number(a-b);
-		printf("%.2f\n", a-b );
+		n->value = new Number(a - b);
+		printf("%.2f\n", a - b);
 	}
 
 	// *
@@ -137,7 +99,7 @@ namespace langX {
 		double b = 0;
 		__getNumberValue(n->opr_obj->op[1], &b);
 
-		n->opr_obj->obj = new Number(a*b);
+		n->value = new Number(a*b);
 		printf("%.2f\n", a*b);
 
 	}
@@ -150,13 +112,8 @@ namespace langX {
 		double b = 0;
 		__getNumberValue(n->opr_obj->op[1], &b);
 
-		n->opr_obj->obj = new Number(a/b);
-		printf("%.2f\n", a/b);
-
-		for (size_t i = 0; i < 10; i++)
-		{
-
-		}
+		n->value = new Number(a / b);
+		printf("%.2f\n", a / b);
 	}
 
 	// 赋值操作 = 
@@ -169,32 +126,51 @@ namespace langX {
 			return;
 		}
 
-		printf("__exec61 left name: %s\n" , left->var_obj->name);
+		printf("__exec61 left name: %s\n", left->var_obj->name);
 		Node *right = n->opr_obj->op[1];
-		if (right->type == NODE_CONSTANT_NUMBER)
+		checkValue(right);
+		// 赋值操作的结果 为 右值的结果
+		if (right->value == NULL)
 		{
-			n->opr_obj->obj = new Number(right->con_obj->dValue);
+			n->value = NULL;
 		}
-		else if (right->type == NODE_CONSTANT_STRING)
-		{
-			n->opr_obj->obj = new String(right->con_obj->sValue);
-			//assignment(left->var_obj->name, new String(right->con_obj->sValue));
-		}
-		else if (right->type == NODE_VARIABLE)
-		{
-			__execNode(right);
-			n->opr_obj->obj = right->var_obj->obj;
-			//assignment(left->var_obj->name, right->var_obj->obj);
-		}
-		else if (right->type == NODE_OPERATOR)
-		{
-			__execNode(right);
-			n->opr_obj->obj = right->opr_obj->obj;
-			//assignment(left->var_obj->name, right->opr_obj->obj);
+		else {
+			n->value = right->value->clone();
 		}
 
-		assignment(left->var_obj->name, n->opr_obj->obj);
+		assignment(left->var_obj->name, n->value);
 	}
+
+	void __execADD_EQ(Node *n) {
+		printf("__execADD_EQ\n");
+		Node *left = n->opr_obj->op[0];
+		if (left->type != NODE_VARIABLE)
+		{
+			printf("left not the NODE_VARIABLE: %d\n",left->type);
+			return;
+		}
+		double a = 0;
+		__getNumberValue(left, &a);
+		double b = 0;
+		__getNumberValue(n->opr_obj->op[1], &b);
+		n->value = new Number(a + b);
+		assignment(left->var_obj->name, n->value);
+
+		printf("__execADD_EQ END \n");
+	}
+
+	void __execSUB_EQ(Node *n) {
+		printf("__execSUB_EQ\n");
+	}
+
+	void __execMUL_EQ(Node *n) {
+		printf("__execMUL_EQ\n");
+	}
+
+	void __execDIV_EQ(Node *n) {
+		printf("__execDIV_EQ\n");
+	}
+
 
 	// 分号 ;
 	void __exec59(Node *n) {
@@ -205,7 +181,7 @@ namespace langX {
 
 		if (n->opr_obj == NULL || n->opr_obj->op_count == 0)
 		{
-			return; 
+			return;
 		}
 
 		for (size_t i = 0; i < n->opr_obj->op_count; i++)
@@ -230,10 +206,11 @@ namespace langX {
 		if (a > b)
 		{
 			n->opr_obj->bool_value = true;
-		}else{
+		}
+		else {
 			n->opr_obj->bool_value = false;
 		}
-		
+
 	}
 
 	// 大于等于
@@ -367,7 +344,7 @@ namespace langX {
 	}
 
 	void __execWHILE(Node *n) {
-		if (n == NULL || n->opr_obj  == NULL || n->opr_obj->op_count != 2)
+		if (n == NULL || n->opr_obj == NULL || n->opr_obj->op_count != 2)
 		{
 			return;
 		}
@@ -384,33 +361,43 @@ namespace langX {
 			return;
 		}
 
-		for (__execNode(n->opr_obj->op[0]);  __tryConvertToBool(n->opr_obj->op[1]) ; __execNode(n->opr_obj->op[2]))
+		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(n->opr_obj->op[1]); __execNode(n->opr_obj->op[2]))
 		{
 			__execNode(n->opr_obj->op[3]);
 		}
 	}
 
+	/*
+	 * 执行节点，  节点的结果 将 放在  Node.value 上
+	 * 这是一个 Object 类型的指针    07-24
+	 */
 	void __execNode(Node *node) {
 		if (node == NULL)
 		{
 			return;
 		}
+		// 如果节点存在值， 那说明这个节点已经运算过了
+		// 会重新进行计算和赋值
+		//if (node->value != NULL)
+		//{
+		//	return;
+		//}
 
 		//printf("__execNode 01x\n");
 		//printf("node addr: %p\n",node);
 		if (node->type == NODE_VARIABLE)
 		{
-			//printf("__execNode 01y");
+			printf("__execNode NODE_VARIABLE\n");
 			// 协调程序， 使变量的 obj 处于赋值状态
-			if (node->var_obj->obj == NULL)
+			if (node->value == NULL)
 			{
-				printf("__execNode 01\n");
+				//printf("__execNode 01\n");
 				Object *obj = getValue(node->var_obj->name);
 
-				if (obj  == NULL)
+				if (obj == NULL)
 				{
 					printf("var %s=null \n", node->var_obj->name);
-					node->var_obj->obj = NULL;
+					node->value = NULL;
 				}
 				else {
 					if (obj->getType() == NUMBER)
@@ -419,33 +406,27 @@ namespace langX {
 						printf("var %s=%.2f \n", node->var_obj->name, number->getDoubleValue());
 					}
 
-					node->var_obj->obj = obj;
+					node->value = obj;
 				}
 
 			}
-
-			//printf("__execNode 02");
-			/*if (node->var_obj->obj == NULL)
-			{
-				printf("var %s=null \n" , node->var_obj->name);
-			}
-			else {
-				if (node->var_obj->obj->getType() == NUMBER)
-				{
-					printf("var %s=%.2f", node->var_obj->name, (double)(*dynamic_cast<Number*>(node->var_obj->obj)));
-				}
-			}*/
-
 
 			return;
 		}
-
-		if (node->type != NODE_OPERATOR)
+		else if (node->type == NODE_CONSTANT_NUMBER)
 		{
+			printf("__execNode NODE_CONSTANT_NUMBER\n");
+			node->value = new Number(node->con_obj->dValue);
+			return;
+		}
+		else if (node->type == NODE_CONSTANT_STRING)
+		{
+			printf("__execNode NODE_CONSTANT_STRING\n");
 			return;
 		}
 
-		printf("exec operator node. opr is: %d\n" , node->opr_obj->opr);
+
+		printf("exec operator node. opr is: %d\n", node->opr_obj->opr);
 		switch (node->opr_obj->opr)
 		{
 		case '+':
@@ -471,6 +452,18 @@ namespace langX {
 			break;
 		case '<':
 			__exec60(node);
+			break;
+		case ADD_EQ:
+			__execADD_EQ(node);
+			break;
+		case SUB_EQ:
+			__execSUB_EQ(node);
+			break;
+		case MUL_EQ:
+			__execMUL_EQ(node);
+			break;
+		case DIV_EQ:
+			__execDIV_EQ(node);
 			break;
 		case LE_OP:
 			__execLE_OP(node);

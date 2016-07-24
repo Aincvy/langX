@@ -22,7 +22,7 @@ extern "C" {
 %token <sValue> VARIABLE TSTRING
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP 
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
-%token AUTO IF ELSE WHILE FOR
+%token AUTO IF ELSE WHILE FOR DELETE
 
 %type <iValue> TDOUBLE 
 %type <node> expr statement block expr_list args_list
@@ -103,10 +103,11 @@ expr
 	| expr AND_OP expr { $$ = opr(AND_OP,2,$1,$3);}
 	| expr OR_OP expr  { $$ = opr(OR_OP,2,$1,$3); }
 	| '(' expr ')'  { $$ = $2; }
-	| VARIABLE ADD_EQ expr { $$ = opr(ADD_EQ,2,$1,$3);}
-	| VARIABLE SUB_EQ expr { $$ = opr(SUB_EQ,2,$1,$3);}
-	| VARIABLE MUL_EQ expr { $$ = opr(MUL_EQ,2,$1,$3);}
-	| VARIABLE DIV_EQ expr { $$ = opr(DIV_EQ,2,$1,$3);}
+	| DELETE VARIABLE { $$ = opr(DELETE, 1 ,$2 ); }
+	| VARIABLE ADD_EQ expr { $$ = opr(ADD_EQ,2,var($1),$3);}
+	| VARIABLE SUB_EQ expr { $$ = opr(SUB_EQ,2,var($1),$3);}
+	| VARIABLE MUL_EQ expr { $$ = opr(MUL_EQ,2,var($1),$3);}
+	| VARIABLE DIV_EQ expr { $$ = opr(DIV_EQ,2,var($1),$3);}
 	| VARIABLE '=' expr { $$ = opr('=',2,var($1),$3 ); }
 	;
 

@@ -25,10 +25,6 @@ extern "C" {
 
 	double getNumberValue(const char*);
 
-	XVariable* createXVariable(char *);
-
-	void freeXVariable(XVariable*);
-
 	// 创建一个字符串值得节点
 	XNode * string(char *);
 	// 创建一个含有数字值得 节点

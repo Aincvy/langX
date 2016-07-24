@@ -22,4 +22,12 @@ namespace langX {
 	{
 		return ObjectType::STRING;
 	}
+	Object * String::clone() const
+	{
+		return nullptr;
+	}
+	void String::finalize()
+	{
+		delete this;
+	}
 }
