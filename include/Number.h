@@ -18,6 +18,7 @@ namespace langX {
 
 		bool isTrue() const;
 		ObjectType getType() const;
+		Object* clone() const;
 
 		operator int() const;
 		operator double() const;
@@ -28,5 +29,7 @@ namespace langX {
 		Number operator= (const Number&);
 	private:
 		double m_value = 0;
+
+		void finalize();
 	};
 }

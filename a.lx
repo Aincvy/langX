@@ -1,9 +1,6 @@
-if(false)
-  if(false)
-    a=1;
-  else
-    a=2;
-else
-  a=3;
-
+// this is the comment.
+a= 1;
+a;
+a;
+a += 1;
 a;

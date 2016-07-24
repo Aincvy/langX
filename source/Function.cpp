@@ -59,7 +59,7 @@ namespace langX {
 		}
 
 		__execNode(m_node_root);
-		return m_node_root->opr_obj->obj;
+		return m_node_root->value;
 	}
 
 	bool Function::isTrue() const
@@ -70,6 +70,16 @@ namespace langX {
 	ObjectType Function::getType() const
 	{
 		return FUNCTION;
+	}
+
+	Object * Function::clone() const
+	{
+		return (Object*)this;
+	}
+
+	void Function::finalize()
+	{
+		delete this;
 	}
 
 }

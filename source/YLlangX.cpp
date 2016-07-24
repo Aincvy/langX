@@ -63,29 +63,6 @@ double getNumberValue(const char *n)
 	return 0;
 }
 
-XVariable * createXVariable(char *n)
-{
-	if (n == NULL)
-	{
-		return NULL;
-	}
-
-	XVariable* p = (XVariable*)malloc(sizeof(XVariable) * 1);
-	p->name = strdup(n);
-	p->obj = NULL;
-	return p;
-}
-
-void freeXVariable(XVariable* p) {
-	if (p == NULL)
-	{
-		return;
-	}
-
-	free(p->name);
-	free(p);
-}
-
 XNode * string(char *v)
 {
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
@@ -107,7 +84,7 @@ XNode * number(double a)
 	node->freeOnExeced = true;
 	node->con_obj->dValue = a;
 	node->con_obj->sValue = NULL;
-	printf("createNumberNode: %.5f\n",a);
+	//printf("createNumberNode: %.5f\n",a);
 	return node;
 }
 
@@ -118,10 +95,10 @@ XNode * var(char *name)
 
 	node->type = NODE_VARIABLE;
 	node->freeOnExeced = true;
+	node->value = NULL;
 	node->var_obj->name = name;
-	node->var_obj->obj = NULL;
 
-	//printf("createVarNode: %s\n", name);
+	printf("createVarNode: %s\n", name);
 	//printf("addr: %p\n" , node);
 	return node;
 }
@@ -133,8 +110,8 @@ XNode * opr(int opr, int npos, ...)
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
 	node->opr_obj = (langX::Operator*) malloc(sizeof(langX::Operator) * 1);
 	node->opr_obj->op = (XNode**)malloc(sizeof(XNode*) * npos);
-	node->opr_obj->obj = NULL;
-
+	
+	node->value = NULL;
 	node->type = NODE_OPERATOR;
 	node->freeOnExeced = true;
 	node->opr_obj->bool_value = false;
@@ -189,6 +166,11 @@ void freeNode(XNode * n) {
 	if (n->type == NODE_CONSTANT_NUMBER)
 	{
 		free(n->con_obj);
+		if (n->value != NULL)
+		{
+			delete n->value;
+			n->value = NULL;
+		}
 		free(n);
 	}
 	else if (n->type == NODE_VARIABLE)
