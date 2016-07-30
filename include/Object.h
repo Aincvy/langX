@@ -36,6 +36,9 @@ namespace langX {
 		/* 克隆当前对象， 返回出一个新的对象 */
 		virtual Object* clone() const = 0;
 
+		/* 把自己Update 成目标的值 */
+		virtual void update(Object *) = 0;
+
 	private:
 		int m_ref_count;
 

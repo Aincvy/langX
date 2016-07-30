@@ -5,8 +5,89 @@
 #include "../include/Number.h"
 #include "../include/String.h"
 #include "../extern/y.tab.h"
+#include "../include/Allocator.h"
 
 namespace langX {
+	// 内存的 管理器
+	Allocator m_exec_alloc;
+
+	/*
+	  将节点的值更新到当前环境中
+	*/
+	void setValueToEnv(const char*name, Object *val) {
+		if (val == NULL || name == NULL)
+		{
+			printf("setValueToEnv Node Args Error. \n");
+			return;
+		}
+
+		Environment * env = getState()->getCurrentEnv();
+		Object *obj = env->getObject(name);
+		if (obj == NULL)
+		{
+			env->putObject(name, val->clone());
+		}
+		else {
+			obj->update(val);
+		}
+	}
+
+	/*
+	  执行这个节点的所有子节点
+	*/
+	void doSubNodes(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		for (int i = 0; i < n->opr_obj->op_count; i++)
+		{
+			__execNode(n->opr_obj->op[i]);
+		}
+	}
+
+	/*
+	  释放当前节点的子节点的值 内存
+	*/
+	void freeSubNodes(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		for (int i = 0; i < n->opr_obj->op_count; i++)
+		{
+			m_exec_alloc.free(n->opr_obj->op[i]->value);
+			n->opr_obj->op[i]->value = NULL;
+		}
+	}
+
+	/* 如果这个变量不存在， 则new 一个放上去
+	   并且会放到当前的环境里面
+	   调用这个函数之后 会强制改写 left->value 的值 
+		
+	   0730 赋值给左值的值为 放入 Environment 里面的值的克隆
+	*/
+	void checkVarValue(Node *left, ObjectType rightType) {
+		if (left == NULL)
+		{
+			return;
+		}
+		// 不是变量 ， 不做任何处理
+		if (left->type != NODE_VARIABLE)
+		{
+			return;
+		}
+
+		Object *obj = getState()->getObject(left->var_obj->name);
+		if (obj == NULL || obj->getType() != rightType)
+		{
+			obj = m_exec_alloc.allocate(rightType);
+			getState()->putObject(left->var_obj->name, obj);
+		}
+		left->value = obj->clone();
+	}
 
 	/* 检测一下节点是否存在 值， 如果不存在， 则运算他 */
 	void checkValue(Node * node) {
@@ -71,54 +152,55 @@ namespace langX {
 	void __exec43(Node *n) {
 		//printf("__exec43 n addr: %p\n", n);
 		//printf("op_count: %d\n" , n->opr_obj->op_count);
-		double a = 0;
-		__getNumberValue(n->opr_obj->op[0], &a);
-		double b = 0;
-		__getNumberValue(n->opr_obj->op[1], &b);
+		//__execNode(n->opr_obj->op[0]);
+		//__execNode(n->opr_obj->op[1]);
+		doSubNodes(n);
 
-		n->value = new Number(a + b);
-		printf("%.2f\n", a + b);
+		// 子节点的值是为了计算当前结点的值， 如果当前结点的值 计算 结束， 则释放掉子节点值得内存
+		// 子节点的值如果是一个常量， 则该值是一个 new 的内存， 如果是一个变量， 则该值是一个 clone 出现的对象
+
+		//n->value = new Number(a + b);
+		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() + ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
+
+		//m_exec_alloc.free(n->opr_obj->op[0]->value);
+		//m_exec_alloc.free(n->opr_obj->op[1]->value);
+		//n->opr_obj->op[0]->value = n->opr_obj->op[1]->value = NULL;
+		freeSubNodes(n);
+
+		printf("%.2f\n", ((Number*)n->value)->getDoubleValue() );
 	}
 
 	// -
 	void __exec45(Node *n) {
-		double a = 0;
-		__getNumberValue(n->opr_obj->op[0], &a);
-		double b = 0;
-		__getNumberValue(n->opr_obj->op[1], &b);
+		doSubNodes(n);
+		//n->value = new Number(a - b);
+		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() - ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
+		freeSubNodes(n);
 
-		n->value = new Number(a - b);
-		printf("%.2f\n", a - b);
+		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// *
 	void __exec42(Node *n) {
+		doSubNodes(n);
+		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() * ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
+		freeSubNodes(n);
 
-		double a = 0;
-		__getNumberValue(n->opr_obj->op[0], &a);
-		double b = 0;
-		__getNumberValue(n->opr_obj->op[1], &b);
-
-		n->value = new Number(a*b);
-		printf("%.2f\n", a*b);
-
+		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// /
 	void __exec47(Node *n) {
+		doSubNodes(n);
+		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() / ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
+		freeSubNodes(n);
 
-		double a = 0;
-		__getNumberValue(n->opr_obj->op[0], &a);
-		double b = 0;
-		__getNumberValue(n->opr_obj->op[1], &b);
-
-		n->value = new Number(a / b);
-		printf("%.2f\n", a / b);
+		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// 赋值操作 = 
 	void __exec61(Node *n) {
-		printf("__exec61 start\n");
+		//printf("__exec61 start\n");
 		Node *left = n->opr_obj->op[0];
 		if (left->type != NODE_VARIABLE)
 		{
@@ -128,6 +210,7 @@ namespace langX {
 
 		printf("__exec61 left name: %s\n", left->var_obj->name);
 		Node *right = n->opr_obj->op[1];
+		printf("right->value: %p\n", right->value);
 		checkValue(right);
 		// 赋值操作的结果 为 右值的结果
 		if (right->value == NULL)
@@ -135,40 +218,63 @@ namespace langX {
 			n->value = NULL;
 		}
 		else {
-			n->value = right->value->clone();
+			checkVarValue(left, right->value->getType());
+			left->value->update(right->value);
+
+			// 释放右值的内存 
+			m_exec_alloc.free(right->value);
+			right->value = NULL;
+
+			n->value = m_exec_alloc.copy(left->value);
+			// 左值是指向 Environment 内的内存的复制， 需要释放
+			m_exec_alloc.free(left->value);
+			left->value = NULL;
+
+			// 更新值到 Environment 
+			setValueToEnv(left->var_obj->name,n->value);
 		}
 
-		assignment(left->var_obj->name, n->value);
+		//assignment(left->var_obj->name, n->value);
 	}
 
 	void __execADD_EQ(Node *n) {
-		printf("__execADD_EQ\n");
+		doSubNodes(n);
 		Node *left = n->opr_obj->op[0];
-		if (left->type != NODE_VARIABLE)
-		{
-			printf("left not the NODE_VARIABLE: %d\n",left->type);
-			return;
-		}
-		double a = 0;
-		__getNumberValue(left, &a);
-		double b = 0;
-		__getNumberValue(n->opr_obj->op[1], &b);
-		n->value = new Number(a + b);
-		assignment(left->var_obj->name, n->value);
+		n->value = m_exec_alloc.allocateNumber(((Number*)left->value)->getDoubleValue() + ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
 
-		printf("__execADD_EQ END \n");
+		setValueToEnv(left->var_obj->name, n->value);
+
+		freeSubNodes(n);
 	}
 
 	void __execSUB_EQ(Node *n) {
-		printf("__execSUB_EQ\n");
+		doSubNodes(n);
+		Node *left = n->opr_obj->op[0];
+		n->value = m_exec_alloc.allocateNumber(((Number*)left->value)->getDoubleValue() - ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
+
+		setValueToEnv(left->var_obj->name, n->value);
+
+		freeSubNodes(n);
 	}
 
 	void __execMUL_EQ(Node *n) {
-		printf("__execMUL_EQ\n");
+		doSubNodes(n);
+		Node *left = n->opr_obj->op[0];
+		n->value = m_exec_alloc.allocateNumber(((Number*)left->value)->getDoubleValue() * ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
+
+		setValueToEnv(left->var_obj->name, n->value);
+
+		freeSubNodes(n);
 	}
 
 	void __execDIV_EQ(Node *n) {
-		printf("__execDIV_EQ\n");
+		doSubNodes(n);
+		Node *left = n->opr_obj->op[0];
+		n->value = m_exec_alloc.allocateNumber(((Number*)left->value)->getDoubleValue() / ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
+
+		setValueToEnv(left->var_obj->name, n->value);
+
+		freeSubNodes(n);
 	}
 
 
@@ -406,7 +512,8 @@ namespace langX {
 						printf("var %s=%.2f \n", node->var_obj->name, number->getDoubleValue());
 					}
 
-					node->value = obj;
+					// 变量类型为 一个 copy 
+					node->value = obj->clone();
 				}
 
 			}
@@ -416,7 +523,7 @@ namespace langX {
 		else if (node->type == NODE_CONSTANT_NUMBER)
 		{
 			printf("__execNode NODE_CONSTANT_NUMBER\n");
-			node->value = new Number(node->con_obj->dValue);
+			node->value = m_exec_alloc.allocateNumber(node->con_obj->dValue);
 			return;
 		}
 		else if (node->type == NODE_CONSTANT_STRING)

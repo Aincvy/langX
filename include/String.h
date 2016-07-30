@@ -22,6 +22,8 @@ namespace langX {
 
 		Object* clone() const;
 
+		void update(Object *);
+
 	private:
 		std::string m_value;
 

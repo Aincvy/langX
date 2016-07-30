@@ -33,7 +33,7 @@ void comment(void);
 
 \"(.)*\"   { yylval.sValue = strdup(yytext); return TSTRING;}
 [a-zA-Z][a-zA-Z0-9]* { /*printf("get var: %s, length: %d\n" , yytext,yyleng); */ yylval.sValue=strdup(yytext); return VARIABLE;}
-([1-9][0-9]*)|0|((0|[1-9][0-9]*)\.[0-9]+) { yylval.iValue = atof(yytext); return TDOUBLE;}
+([1-9][0-9]*)|0|((0|[1-9][0-9]*)\.[0-9]+) { yylval.iValue = atof(yytext); /*printf("get a double value: %f\n",yylval.iValue );*/ return TDOUBLE;}
 
 "<=" { return LE_OP;}
 ">=" { return GE_OP;}

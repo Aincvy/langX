@@ -77,6 +77,10 @@ namespace langX {
 		return (Object*)this;
 	}
 
+	void Function::update(Object *)
+	{
+	}
+
 	void Function::finalize()
 	{
 		delete this;

@@ -81,10 +81,11 @@ XNode * number(double a)
 	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
 
 	node->type = NODE_CONSTANT_NUMBER;
+	node->value = NULL;
 	node->freeOnExeced = true;
 	node->con_obj->dValue = a;
 	node->con_obj->sValue = NULL;
-	//printf("createNumberNode: %.5f\n",a);
+	printf("createNumberNode: %.5f\n",a);
 	return node;
 }
 
@@ -98,7 +99,7 @@ XNode * var(char *name)
 	node->value = NULL;
 	node->var_obj->name = name;
 
-	printf("createVarNode: %s\n", name);
+	//printf("createVarNode: %s\n", name);
 	//printf("addr: %p\n" , node);
 	return node;
 }
@@ -162,15 +163,16 @@ void freeNode(XNode * n) {
 		return ;
 	}
 
+	if (n->value != NULL)
+	{
+		getState()->getAllocator().free(n->value);
+		n->value = NULL;
+	}
+
 	//printf("free node\n");
 	if (n->type == NODE_CONSTANT_NUMBER)
 	{
 		free(n->con_obj);
-		if (n->value != NULL)
-		{
-			delete n->value;
-			n->value = NULL;
-		}
 		free(n);
 	}
 	else if (n->type == NODE_VARIABLE)
