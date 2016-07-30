@@ -3,13 +3,17 @@
 #include "../include/Number.h"
 
 namespace langX {
+
 	langXState::langXState()
 	{
-		this->m_current_env = new Environment();
+		this->m_global_env = new Environment();
+		this->m_current_env = this->m_global_env;
+		this->m_allocator = new Allocator();
 	}
 	langXState::~langXState()
 	{
 		//delete this->m_current_env;
+		delete this->m_allocator;
 	}
 	void langXState::putObject(const char * name, Object *obj)
 	{
@@ -25,7 +29,7 @@ namespace langX {
 		return this->m_current_env->getObject(name);
 	}
 
-
+	
 
 	Environment * langXState::newEnv()
 	{
@@ -49,6 +53,16 @@ namespace langX {
 	Environment * langXState::getCurrentEnv() const
 	{
 		return this->m_current_env;
+	}
+
+	Environment * langXState::getGlobalEnv() const
+	{
+		return this->m_global_env;
+	}
+
+	Allocator & langXState::getAllocator() const
+	{
+		return (*this->m_allocator);
 	}
 
 }

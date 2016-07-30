@@ -22,6 +22,7 @@ namespace langX {
 		ObjectType getType() const;
 		/* 函数返回一个自己的指针 */
 		Object* clone() const;
+		void update(Object *);
 
 	private:
 		// 内部函数执行的根节点

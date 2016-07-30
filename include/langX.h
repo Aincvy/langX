@@ -3,6 +3,7 @@
 #include <string>
 #include "Object.h"
 #include "Environment.h"
+#include "Allocator.h"
 
 namespace langX {
 	class langXState
@@ -21,10 +22,15 @@ namespace langX {
 		void backEnv();
 
 		Environment *getCurrentEnv() const;
+		Environment *getGlobalEnv() const;
+
+		Allocator &getAllocator() const;
 
 	private:
 		// 全局环境
-		//Environment m_global_env;
+		Environment *m_global_env = nullptr;
 		Environment *m_current_env = nullptr;
+		Allocator  *m_allocator = nullptr;
+
 	};
 }

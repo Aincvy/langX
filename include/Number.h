@@ -19,6 +19,7 @@ namespace langX {
 		bool isTrue() const;
 		ObjectType getType() const;
 		Object* clone() const;
+		void update(Object *);
 
 		operator int() const;
 		operator double() const;

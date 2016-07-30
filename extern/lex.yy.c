@@ -860,7 +860,7 @@ YY_RULE_SETUP
 case 16:
 YY_RULE_SETUP
 #line 36 "a.l"
-{ yylval.iValue = atof(yytext); return TDOUBLE;}
+{ yylval.iValue = atof(yytext); /*printf("get a double value: %f\n",yylval.iValue );*/ return TDOUBLE;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP

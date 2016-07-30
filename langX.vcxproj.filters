@@ -48,6 +48,9 @@
     <ClInclude Include="include\Environment.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\Allocator.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Token.cpp">
@@ -84,6 +87,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\Environment.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Allocator.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -26,6 +26,15 @@ namespace langX {
 	{
 		return nullptr;
 	}
+	void String::update(Object *right)
+	{
+		if (right == NULL || right->getType() != STRING)
+		{
+			return;
+		}
+		this->m_value = ((String*)right)->getValue();
+	}
+
 	void String::finalize()
 	{
 		delete this;

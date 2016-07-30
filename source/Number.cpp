@@ -17,7 +17,7 @@ namespace langX {
 
 	Number::~Number()
 	{
-		printf("~Number");
+		//printf("~Number\n");
 	}
 
 	void Number::update(double a)
@@ -51,6 +51,15 @@ namespace langX {
 	Object * Number::clone() const
 	{
 		return new Number(this->m_value);
+	}
+	void Number::update(Object *right)
+	{
+		if (right == NULL || right->getType() != NUMBER)
+		{
+			return;
+		}
+		
+		this->m_value = ((Number*)right)->getDoubleValue();
 	}
 	Number::operator int() const
 	{
