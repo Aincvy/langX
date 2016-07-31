@@ -23,6 +23,7 @@
 #define FOR 279
 #define DELETE 280
 #define IFX 281
+#define UMINUS 282
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
