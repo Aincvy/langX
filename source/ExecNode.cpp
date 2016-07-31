@@ -8,11 +8,11 @@
 #include "../include/Allocator.h"
 
 namespace langX {
-	// ÄÚ´æµÄ ¹ÜÀíÆ÷
+	// å†…å­˜çš„ ç®¡ç†å™¨
 	Allocator m_exec_alloc;
 
 	/*
-	  ½«½ÚµãµÄÖµ¸üÐÂµ½µ±Ç°»·¾³ÖÐ
+	  å°†èŠ‚ç‚¹çš„å€¼æ›´æ–°åˆ°å½“å‰çŽ¯å¢ƒä¸­
 	*/
 	void setValueToEnv(const char*name, Object *val) {
 		if (val == NULL || name == NULL)
@@ -33,7 +33,7 @@ namespace langX {
 	}
 
 	/*
-	  Ö´ÐÐÕâ¸ö½ÚµãµÄËùÓÐ×Ó½Úµã
+	  æ‰§è¡Œè¿™ä¸ªèŠ‚ç‚¹çš„æ‰€æœ‰å­èŠ‚ç‚¹
 	*/
 	void doSubNodes(Node *n) {
 		if (n == NULL)
@@ -48,7 +48,7 @@ namespace langX {
 	}
 
 	/*
-	  ÊÍ·Åµ±Ç°½ÚµãµÄ×Ó½ÚµãµÄÖµ ÄÚ´æ
+	  é‡Šæ”¾å½“å‰èŠ‚ç‚¹çš„å­èŠ‚ç‚¹çš„å€¼ å†…å­˜
 	*/
 	void freeSubNodes(Node *n) {
 		if (n == NULL)
@@ -63,18 +63,18 @@ namespace langX {
 		}
 	}
 
-	/* Èç¹ûÕâ¸ö±äÁ¿²»´æÔÚ£¬ Ôònew Ò»¸ö·ÅÉÏÈ¥
-	   ²¢ÇÒ»á·Åµ½µ±Ç°µÄ»·¾³ÀïÃæ
-	   µ÷ÓÃÕâ¸öº¯ÊýÖ®ºó »áÇ¿ÖÆ¸ÄÐ´ left->value µÄÖµ 
-		
-	   0730 ¸³Öµ¸ø×óÖµµÄÖµÎª ·ÅÈë Environment ÀïÃæµÄÖµµÄ¿ËÂ¡
+	/* å¦‚æžœè¿™ä¸ªå˜é‡ä¸å­˜åœ¨ï¼Œ åˆ™new ä¸€ä¸ªæ”¾ä¸ŠåŽ»
+	   å¹¶ä¸”ä¼šæ”¾åˆ°å½“å‰çš„çŽ¯å¢ƒé‡Œé¢
+	   è°ƒç”¨è¿™ä¸ªå‡½æ•°ä¹‹åŽ ä¼šå¼ºåˆ¶æ”¹å†™ left->value çš„å€¼
+
+	   0730 èµ‹å€¼ç»™å·¦å€¼çš„å€¼ä¸º æ”¾å…¥ Environment é‡Œé¢çš„å€¼çš„å…‹éš†
 	*/
 	void checkVarValue(Node *left, ObjectType rightType) {
 		if (left == NULL)
 		{
 			return;
 		}
-		// ²»ÊÇ±äÁ¿ £¬ ²»×öÈÎºÎ´¦Àí
+		// ä¸æ˜¯å˜é‡ ï¼Œ ä¸åšä»»ä½•å¤„ç†
 		if (left->type != NODE_VARIABLE)
 		{
 			return;
@@ -89,7 +89,7 @@ namespace langX {
 		left->value = obj->clone();
 	}
 
-	/* ¼ì²âÒ»ÏÂ½ÚµãÊÇ·ñ´æÔÚ Öµ£¬ Èç¹û²»´æÔÚ£¬ ÔòÔËËãËû */
+	/* æ£€æµ‹ä¸€ä¸‹èŠ‚ç‚¹æ˜¯å¦å­˜åœ¨ å€¼ï¼Œ å¦‚æžœä¸å­˜åœ¨ï¼Œ åˆ™è¿ç®—ä»– */
 	void checkValue(Node * node) {
 		if (node == NULL)
 		{
@@ -148,7 +148,7 @@ namespace langX {
 	}
 
 	// +  
-	// ²Ù×÷½á¹û£¬ »á½«½á¹û´æ´¢ÔÚµ±Ç°½ÚµãÖÐ 
+	// æ“ä½œç»“æžœï¼Œ ä¼šå°†ç»“æžœå­˜å‚¨åœ¨å½“å‰èŠ‚ç‚¹ä¸­ 
 	void __exec43(Node *n) {
 		//printf("__exec43 n addr: %p\n", n);
 		//printf("op_count: %d\n" , n->opr_obj->op_count);
@@ -156,8 +156,8 @@ namespace langX {
 		//__execNode(n->opr_obj->op[1]);
 		doSubNodes(n);
 
-		// ×Ó½ÚµãµÄÖµÊÇÎªÁË¼ÆËãµ±Ç°½áµãµÄÖµ£¬ Èç¹ûµ±Ç°½áµãµÄÖµ ¼ÆËã ½áÊø£¬ ÔòÊÍ·Åµô×Ó½ÚµãÖµµÃÄÚ´æ
-		// ×Ó½ÚµãµÄÖµÈç¹ûÊÇÒ»¸ö³£Á¿£¬ Ôò¸ÃÖµÊÇÒ»¸ö new µÄÄÚ´æ£¬ Èç¹ûÊÇÒ»¸ö±äÁ¿£¬ Ôò¸ÃÖµÊÇÒ»¸ö clone ³öÏÖµÄ¶ÔÏó
+		// å­èŠ‚ç‚¹çš„å€¼æ˜¯ä¸ºäº†è®¡ç®—å½“å‰ç»“ç‚¹çš„å€¼ï¼Œ å¦‚æžœå½“å‰ç»“ç‚¹çš„å€¼ è®¡ç®— ç»“æŸï¼Œ åˆ™é‡Šæ”¾æŽ‰å­èŠ‚ç‚¹å€¼å¾—å†…å­˜
+		// å­èŠ‚ç‚¹çš„å€¼å¦‚æžœæ˜¯ä¸€ä¸ªå¸¸é‡ï¼Œ åˆ™è¯¥å€¼æ˜¯ä¸€ä¸ª new çš„å†…å­˜ï¼Œ å¦‚æžœæ˜¯ä¸€ä¸ªå˜é‡ï¼Œ åˆ™è¯¥å€¼æ˜¯ä¸€ä¸ª clone å‡ºçŽ°çš„å¯¹è±¡
 
 		//n->value = new Number(a + b);
 		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() + ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
@@ -167,7 +167,7 @@ namespace langX {
 		//n->opr_obj->op[0]->value = n->opr_obj->op[1]->value = NULL;
 		freeSubNodes(n);
 
-		printf("%.2f\n", ((Number*)n->value)->getDoubleValue() );
+		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// -
@@ -198,7 +198,7 @@ namespace langX {
 		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
-	// ¸³Öµ²Ù×÷ = 
+	// èµ‹å€¼æ“ä½œ = 
 	void __exec61(Node *n) {
 		//printf("__exec61 start\n");
 		Node *left = n->opr_obj->op[0];
@@ -208,30 +208,31 @@ namespace langX {
 			return;
 		}
 
-		printf("__exec61 left name: %s\n", left->var_obj->name);
+		//printf("__exec61 left name: %s\n", left->var_obj->name);
 		Node *right = n->opr_obj->op[1];
-		printf("right->value: %p\n", right->value);
+		//printf("right->value: %p\n", right->value);
 		checkValue(right);
-		// ¸³Öµ²Ù×÷µÄ½á¹û Îª ÓÒÖµµÄ½á¹û
+		// èµ‹å€¼æ“ä½œçš„ç»“æžœ ä¸º å³å€¼çš„ç»“æžœ
 		if (right->value == NULL)
 		{
 			n->value = NULL;
+			printf("right Value is NULL, DO NOT SET.\n");
 		}
 		else {
 			checkVarValue(left, right->value->getType());
 			left->value->update(right->value);
 
-			// ÊÍ·ÅÓÒÖµµÄÄÚ´æ 
+			// é‡Šæ”¾å³å€¼çš„å†…å­˜ 
 			m_exec_alloc.free(right->value);
 			right->value = NULL;
 
 			n->value = m_exec_alloc.copy(left->value);
-			// ×óÖµÊÇÖ¸Ïò Environment ÄÚµÄÄÚ´æµÄ¸´ÖÆ£¬ ÐèÒªÊÍ·Å
+			// å·¦å€¼æ˜¯æŒ‡å‘ Environment å†…çš„å†…å­˜çš„å¤åˆ¶ï¼Œ éœ€è¦é‡Šæ”¾
 			m_exec_alloc.free(left->value);
 			left->value = NULL;
 
-			// ¸üÐÂÖµµ½ Environment 
-			setValueToEnv(left->var_obj->name,n->value);
+			// æ›´æ–°å€¼åˆ° Environment 
+			setValueToEnv(left->var_obj->name, n->value);
 		}
 
 		//assignment(left->var_obj->name, n->value);
@@ -277,8 +278,30 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
+	// è‡ªå¢žè¿ç®—ç¬¦ ++ 
+	void __execINC_OP(Node *n) {
+		doSubNodes(n);
 
-	// ·ÖºÅ ;
+		Node *n1 = n->opr_obj->op[0];
+		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() + 1 );
+		setValueToEnv(n1->var_obj->name, n->value);
+
+		freeSubNodes(n);
+	}
+
+	// è‡ªå‡è¿ç®—ç¬¦ -- 
+	void __execDEC_OP(Node *n) {
+		doSubNodes(n);
+
+		Node *n1 = n->opr_obj->op[0];
+		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() - 1);
+		setValueToEnv(n1->var_obj->name, n->value);
+
+		freeSubNodes(n);
+	}
+
+
+	// åˆ†å· ;
 	void __exec59(Node *n) {
 		if (n == NULL)
 		{
@@ -296,13 +319,13 @@ namespace langX {
 		}
 	}
 
-	// ¶ººÅ±í´ïÊ½
+	// é€—å·è¡¨è¾¾å¼
 	void __exec44(Node *n) {
-		// ²Ù×÷ºÍ ·ÖºÅ±í´ïÊ½²î²»¶àÓ¦¸Ã£¬ ÕâÑùÓ¦¸Ã¾ÍOKÁË¡£ 
+		// æ“ä½œå’Œ åˆ†å·è¡¨è¾¾å¼å·®ä¸å¤šåº”è¯¥ï¼Œ è¿™æ ·åº”è¯¥å°±OKäº†ã€‚ 
 		__exec59(n);
 	}
 
-	// ·ûºÅ£º >
+	// ç¬¦å·ï¼š >
 	void __exec62(Node *n) {
 		double a = 0;
 		__getNumberValue(n->opr_obj->op[0], &a);
@@ -319,7 +342,7 @@ namespace langX {
 
 	}
 
-	// ´óÓÚµÈÓÚ
+	// å¤§äºŽç­‰äºŽ
 	void __execGE_OP(Node *n) {
 		double a = 0;
 		__getNumberValue(n->opr_obj->op[0], &a);
@@ -336,7 +359,7 @@ namespace langX {
 
 	}
 
-	// ·ûºÅ£º <
+	// ç¬¦å·ï¼š <
 	void __exec60(Node *n) {
 		double a = 0;
 		__getNumberValue(n->opr_obj->op[0], &a);
@@ -352,7 +375,7 @@ namespace langX {
 		}
 	}
 
-	// Ð¡ÓÚµÈÓÚ
+	// å°äºŽç­‰äºŽ
 	void __execLE_OP(Node *n) {
 		double a = 0;
 		__getNumberValue(n->opr_obj->op[0], &a);
@@ -368,7 +391,7 @@ namespace langX {
 		}
 	}
 
-	// µÈÓÚ
+	// ç­‰äºŽ
 	void __execEQ_OP(Node *n) {
 		double a = 0;
 		__getNumberValue(n->opr_obj->op[0], &a);
@@ -384,7 +407,7 @@ namespace langX {
 		}
 	}
 
-	// ²»µÈÓÚ
+	// ä¸ç­‰äºŽ
 	void __execNE_OP(Node *n) {
 		double a = 0;
 		__getNumberValue(n->opr_obj->op[0], &a);
@@ -473,17 +496,43 @@ namespace langX {
 		}
 	}
 
+	void __execUMINUS(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		doSubNodes(n);
+		Node *n1 = n->opr_obj->op[0];
+
+		if (n1->value == NULL) {
+			printf("__execUMINUS n1->value is NULL\n");
+			return;
+		}
+		if (n1->value->getType() != NUMBER)
+		{
+			printf("ERROR:  __execUMINUS is NOT NUMBER...  \n");
+			n->value = m_exec_alloc.allocateNumber();
+		}
+		else {
+			n->value = m_exec_alloc.allocateNumber( -((Number*)n1->value)->getDoubleValue());
+		}
+		
+		freeSubNodes(n);
+		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
+	}
+
 	/*
-	 * Ö´ÐÐ½Úµã£¬  ½ÚµãµÄ½á¹û ½« ·ÅÔÚ  Node.value ÉÏ
-	 * ÕâÊÇÒ»¸ö Object ÀàÐÍµÄÖ¸Õë    07-24
+	 * æ‰§è¡ŒèŠ‚ç‚¹ï¼Œ  èŠ‚ç‚¹çš„ç»“æžœ å°† æ”¾åœ¨  Node.value ä¸Š
+	 * è¿™æ˜¯ä¸€ä¸ª Object ç±»åž‹çš„æŒ‡é’ˆ    07-24
 	 */
 	void __execNode(Node *node) {
 		if (node == NULL)
 		{
 			return;
 		}
-		// Èç¹û½Úµã´æÔÚÖµ£¬ ÄÇËµÃ÷Õâ¸ö½ÚµãÒÑ¾­ÔËËã¹ýÁË
-		// »áÖØÐÂ½øÐÐ¼ÆËãºÍ¸³Öµ
+		// å¦‚æžœèŠ‚ç‚¹å­˜åœ¨å€¼ï¼Œ é‚£è¯´æ˜Žè¿™ä¸ªèŠ‚ç‚¹å·²ç»è¿ç®—è¿‡äº†
+		// ä¼šé‡æ–°è¿›è¡Œè®¡ç®—å’Œèµ‹å€¼
 		//if (node->value != NULL)
 		//{
 		//	return;
@@ -494,7 +543,7 @@ namespace langX {
 		if (node->type == NODE_VARIABLE)
 		{
 			printf("__execNode NODE_VARIABLE\n");
-			// Ð­µ÷³ÌÐò£¬ Ê¹±äÁ¿µÄ obj ´¦ÓÚ¸³Öµ×´Ì¬
+			// åè°ƒç¨‹åºï¼Œ ä½¿å˜é‡çš„ obj å¤„äºŽèµ‹å€¼çŠ¶æ€
 			if (node->value == NULL)
 			{
 				//printf("__execNode 01\n");
@@ -512,7 +561,7 @@ namespace langX {
 						printf("var %s=%.2f \n", node->var_obj->name, number->getDoubleValue());
 					}
 
-					// ±äÁ¿ÀàÐÍÎª Ò»¸ö copy 
+					// å˜é‡ç±»åž‹ä¸º ä¸€ä¸ª copy 
 					node->value = obj->clone();
 				}
 
@@ -559,6 +608,15 @@ namespace langX {
 			break;
 		case '<':
 			__exec60(node);
+			break;
+		case UMINUS:
+			__execUMINUS(node);
+			break;
+		case INC_OP:
+			__execINC_OP(node);
+			break;
+		case DEC_OP:
+			__execDEC_OP(node);
 			break;
 		case ADD_EQ:
 			__execADD_EQ(node);
