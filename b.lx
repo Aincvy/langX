@@ -3,8 +3,14 @@ funcA => {
 	c=2;
 }
 
-b=c=10;
+funcB => (p1,p2,p3){
+	b=1;
+	c=2;
+}
+a = 1;
+a;
+
 funcA();
-funcB();
+funcB(1,2,3);
 b;
 c;

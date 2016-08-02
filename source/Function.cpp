@@ -46,6 +46,16 @@ namespace langX {
 		this->m_name = name;
 	}
 
+	void Function::setParamsList(ParamsList *list)
+	{
+		this->m_params_list = list;
+	}
+
+	ParamsList * Function::getParamsList()
+	{
+		return this->m_params_list;
+	}
+
 	int Function::getArgsCount() const
 	{
 		return 0;

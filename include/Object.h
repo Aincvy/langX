@@ -10,6 +10,9 @@
 
 namespace langX {
 
+//  参数的个数
+#define PARAM_COUNT 30
+
 
 	// 对象类型
 	enum ObjectType
@@ -105,10 +108,18 @@ namespace langX {
 	};
 
 	// 参数列表 ,最大不超过30个参数
+	struct ParamsList
+	{
+		char* args[PARAM_COUNT];
+		// 参数索引
+		int index;
+	};
+
+	// 这是实参
 	struct ArgsList
 	{
-		char* args[30];
-		// 参数索引
+		Node *args[PARAM_COUNT];
+		// 实参索引
 		int index;
 	};
 }

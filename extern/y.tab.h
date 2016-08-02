@@ -34,7 +34,8 @@ typedef union {
  double iValue; /* double value */
  char* sValue; /* string value */
  XNode* node;  /* var value */
- XArgsList* args;
+ XParamsList* params; /* params value */
+ XArgsList *args;    /* args value */
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
 extern YYSTYPE yylval;
