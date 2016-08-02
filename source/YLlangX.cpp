@@ -30,7 +30,7 @@ void closeLangX()
 	}
 }
 
-void assignment(const char *n,langX::Object * obj)
+void assignment(const char *n, langX::Object * obj)
 {
 	state->putObject(n, obj);
 }
@@ -49,11 +49,11 @@ langX::langXState * getState()
 double getNumberValue(const char *n)
 {
 	//printf("getNumberValue length: %d\n" , strlen(n));
-	
+
 	Object*p = getValue(n);
 	if (p == NULL)
 	{
-		printf("var %s not found.\n" , n );
+		printf("var %s not found.\n", n);
 		return 0;
 	}
 	if (p->getType() == NUMBER)
@@ -69,7 +69,7 @@ XNode * string(char *v)
 	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
 
 	node->type = NODE_CONSTANT_STRING;
-	// v ���Ѿ���������ڴ� �� ֱ�Ӹ��ƾ�OK
+	// v 是已经申请过的内存 ， 直接复制就OK
 	node->con_obj->sValue = v;
 	//printf("createNumberNode: %d\n",i);
 	return node;
@@ -85,7 +85,7 @@ XNode * number(double a)
 	node->freeOnExeced = true;
 	node->con_obj->dValue = a;
 	node->con_obj->sValue = NULL;
-	printf("createNumberNode: %.5f\n",a);
+	printf("createNumberNode: %.5f\n", a);
 	return node;
 }
 
@@ -111,7 +111,7 @@ XNode * opr(int opr, int npos, ...)
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
 	node->opr_obj = (langX::Operator*) malloc(sizeof(langX::Operator) * 1);
 	node->opr_obj->op = (XNode**)malloc(sizeof(XNode*) * npos);
-	
+
 	node->value = NULL;
 	node->type = NODE_OPERATOR;
 	node->freeOnExeced = true;
@@ -125,7 +125,7 @@ XNode * opr(int opr, int npos, ...)
 		node->opr_obj->op[i] = va_arg(ap, XNode*);
 	}
 	va_end(ap);
-	
+
 	//printf("new opr node, opr is: %d\n" , opr);
 	//printf("opr npos: %d\n", npos);
 	//printf("node npos: %d\n", node->opr_obj->op_count);
@@ -133,24 +133,93 @@ XNode * opr(int opr, int npos, ...)
 	return node;
 }
 
-XNode * func(char *name, XArgsList *args, XNode *node)
+XNode * func(char *name, XParamsList *params, XNode *node)
 {
-	node->freeOnExeced = false;
-	Function *func = new Function(name,node);
+	if (node != NULL)
+	{
+		node->freeOnExeced = false;
+	}
+	
+	Function *func = new Function(name, node);
+	func->setParamsList(params);
 	getState()->getCurrentEnv()->putFunction(name, func);
 	return nullptr;
 }
 
-XNode * call(char *name)
+XNode * call(char *name, XArgsList* args)
 {
 	Function *function = getState()->getCurrentEnv()->getFunction(name);
 	if (function == NULL)
 	{
-		printf("cannot find function %s\n",name);
+		printf("cannot find function %s\n", name);
 		return NULL;
 	}
-	function->call();
+
+	Environment * env = getState()->newEnv();
+	if (args != NULL)
+	{
+		XParamsList *params = function->getParamsList();
+		for (int i = 0; i < args->index ; i++)
+		{
+			if (i >= params->index)
+			{
+				break;
+			}
+
+			if (args->args[i] != NULL)
+			{
+				execNode(args->args[i]);
+				env->putObject(params->args[i], args->args[i]->value);
+				printf("put object: %s\n", params->args[i]);
+			}
+		}
+
+		function->call();
+
+	}
+	else {
+		function->call();
+	}
+	getState()->backEnv();
+	
 	return nullptr;
+}
+
+XParamsList * params(XParamsList *args, char *name)
+{
+	XParamsList * list = NULL;
+	if (args == NULL)
+	{
+		list = (XParamsList* )calloc(1, sizeof(XParamsList));
+		list->index = 0;
+	}
+	else {
+		list = args;
+	}
+
+	// name 的内存是申请过的， 现在直接使用， 等不用的时候释放掉就OK了
+	printf("第 %d 个参数，名字: %s\n",list->index,name);
+	list->args[list->index] = name;
+	list->index++;
+
+	return	list;
+}
+
+XArgsList * xArgs(XArgsList *args, XNode *node) {
+	XArgsList *list = NULL;
+	if (args == NULL)
+	{
+		list = (XArgsList*)calloc(1, sizeof(XArgsList));
+		list->index = 0;
+	}
+	else {
+		list = args;
+	}
+
+	list->args[list->index] = node;
+	list->index++;
+
+	return list;
 }
 
 void freeNode(XNode * n) {
@@ -160,7 +229,7 @@ void freeNode(XNode * n) {
 	}
 	if (!n->freeOnExeced)
 	{
-		return ;
+		return;
 	}
 
 	if (n->value != NULL)

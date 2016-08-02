@@ -13,6 +13,7 @@
 
 typedef langX::Variable XVariable;
 typedef langX::Node XNode;
+typedef langX::ParamsList XParamsList;
 typedef langX::ArgsList XArgsList;
 
 
@@ -34,9 +35,14 @@ extern "C" {
 	// 创建一个 操作符节点 
 	XNode * opr(int opr, int npos, ...);
 	// 创建一个函数节点
-	XNode * func(char *, XArgsList *,XNode *);
+	XNode * func(char *, XParamsList *,XNode *);
 	// 使用一个函数
-	XNode * call(char *);
+	XNode * call(char *, XArgsList *);
+
+	// 创建一个形参列表， 或者 追加一个参数到 列表中
+	XParamsList * params(XParamsList *, char *);
+	// 创建一个实参列表 ， 或者追加一个实参到列表中
+	XArgsList * xArgs(XArgsList *, XNode *);
 
 	// 运算这个节点
 	void execNode(XNode *);
