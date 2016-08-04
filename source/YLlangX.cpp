@@ -85,7 +85,7 @@ XNode * number(double a)
 	node->freeOnExeced = true;
 	node->con_obj->dValue = a;
 	node->con_obj->sValue = NULL;
-	printf("createNumberNode: %.5f\n", a);
+	//printf("createNumberNode: %.5f\n", a);
 	return node;
 }
 
@@ -139,14 +139,15 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	{
 		node->freeOnExeced = false;
 	}
-	
+	//printf("create Func: %s\n" , name);
+
 	Function *func = new Function(name, node);
 	func->setParamsList(params);
 	getState()->getCurrentEnv()->putFunction(name, func);
 	return nullptr;
 }
 
-XNode * call(char *name, XArgsList* args)
+XObject * call(char *name, XArgsList* args)
 {
 	Function *function = getState()->getCurrentEnv()->getFunction(name);
 	if (function == NULL)
@@ -185,6 +186,15 @@ XNode * call(char *name, XArgsList* args)
 	return nullptr;
 }
 
+XNode * argsNode(XArgsList * args) {
+	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
+	node->type = NODE_ARGS;
+	node->value = NULL;
+	node->ptr_u = args;
+
+	return node;
+}
+
 XParamsList * params(XParamsList *args, char *name)
 {
 	XParamsList * list = NULL;
@@ -198,7 +208,7 @@ XParamsList * params(XParamsList *args, char *name)
 	}
 
 	// name 的内存是申请过的， 现在直接使用， 等不用的时候释放掉就OK了
-	printf("第 %d 个参数，名字: %s\n",list->index,name);
+	//printf("第 %d 个参数，名字: %s\n",list->index,name);
 	list->args[list->index] = name;
 	list->index++;
 

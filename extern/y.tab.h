@@ -1,6 +1,6 @@
 #define TDOUBLE 257
 #define TBOOL 258
-#define VARIABLE 259
+#define IDENTIFIER 259
 #define TSTRING 260
 #define OP_CALC 261
 #define AND_OP 262
@@ -12,18 +12,19 @@
 #define FUNC_OP 268
 #define INC_OP 269
 #define DEC_OP 270
-#define ADD_EQ 271
-#define SUB_EQ 272
-#define MUL_EQ 273
-#define DIV_EQ 274
-#define AUTO 275
-#define IF 276
-#define ELSE 277
-#define WHILE 278
-#define FOR 279
-#define DELETE 280
-#define IFX 281
-#define UMINUS 282
+#define FUNC_CALL 271
+#define ADD_EQ 272
+#define SUB_EQ 273
+#define MUL_EQ 274
+#define DIV_EQ 275
+#define AUTO 276
+#define IF 277
+#define ELSE 278
+#define WHILE 279
+#define FOR 280
+#define DELETE 281
+#define IFX 282
+#define UMINUS 283
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

@@ -7,77 +7,102 @@
 
    4  statement : ';'
    5            | expr ';'
-   6            | DELETE VARIABLE
-   7            | IF '(' expr ')' block
-   8            | IF '(' expr ')' block ELSE block
-   9            | WHILE '(' expr ')' block
-  10            | FOR '(' expr ';' expr ';' expr ')' block
-  11            | VARIABLE FUNC_OP param_list '{' expr_list '}'
-  12            | VARIABLE '(' args_list ')' ';'
+   6            | DELETE IDENTIFIER
+   7            | IF '(' bool_expr ')' block
+   8            | IF '(' bool_expr ')' block ELSE block
+   9            | WHILE '(' bool_expr ')' block
+  10            | FOR '(' expr ';' bool_expr ';' expr ')' block
+  11            | IDENTIFIER FUNC_OP param_list '{' expr_list '}'
+  12            | call_statement
 
-  13  param_list :
-  14             | '(' parameter ')'
+  13  call_statement : IDENTIFIER '(' args_list ')' ';'
 
-  15  parameter : VARIABLE
-  16            | parameter ',' VARIABLE
-  17            |
+  14  param_list :
+  15             | '(' parameter ')'
 
-  18  args_list :
-  19            | args_expr
+  16  parameter : IDENTIFIER
+  17            | parameter ',' IDENTIFIER
+  18            |
 
-  20  args_expr : args_expr_collection
-  21            | args_expr ',' args_expr_collection
+  19  args_list :
+  20            | args_expr
 
-  22  args_expr_collection : TBOOL
-  23                       | TDOUBLE
-  24                       | VARIABLE
-  25                       | TSTRING
-  26                       | '-' double_or_ps_expr
+  21  args_expr : args_expr_collection
+  22            | args_expr ',' args_expr_collection
 
-  27  block : '{' expr_list '}'
-  28        | statement
+  23  args_expr_collection : t_bool_expr
+  24                       | double_expr
+  25                       | id_expr
+  26                       | string_expr
+  27                       | uminus_expr
+  28                       | call_statement
+  29                       | bool_expr
 
-  29  expr_list : expr_list statement
-  30            |
+  30  block : '{' expr_list '}'
+  31        | statement
 
-  31  expr : TBOOL
-  32       | TDOUBLE
-  33       | VARIABLE
-  34       | TSTRING
-  35       | '-' double_or_ps_expr
-  36       | arithmetic_expr
-  37       | expr ',' expr
-  38       | parentheses_expr
-  39       | bool_expr
+  32  expr_list : expr_list statement
+  33            |
 
-  40  double_or_ps_expr : TDOUBLE
-  41                    | parentheses_expr
+  34  expr : t_bool_expr
+  35       | double_expr
+  36       | id_expr
+  37       | TSTRING
+  38       | uminus_expr
+  39       | arithmetic_expr
+  40       | expr ',' expr
+  41       | parentheses_expr
+  42       | assign_expr
 
-  42  parentheses_expr : '(' expr ')'
+  43  double_or_ps_expr : double_expr
+  44                    | parentheses_expr
 
-  43  arithmetic_expr : expr '+' expr
-  44                  | expr '-' expr
-  45                  | expr '*' expr
-  46                  | expr '/' expr
+  45  parentheses_expr : '(' expr ')'
 
-  47  bool_expr : expr '>' expr
-  48            | expr '<' expr
-  49            | expr LE_OP expr
-  50            | expr GE_OP expr
-  51            | expr EQ_OP expr
-  52            | expr NE_OP expr
-  53            | expr AND_OP expr
-  54            | expr OR_OP expr
+  46  arithmetic_expr : number_value_expr '+' number_value_expr
+  47                  | number_value_expr '-' number_value_expr
+  48                  | number_value_expr '*' number_value_expr
+  49                  | number_value_expr '/' number_value_expr
 
-  55  assign_expr : INC_OP VARIABLE
-  56              | DEC_OP VARIABLE
-  57              | VARIABLE INC_OP
-  58              | VARIABLE DEC_OP
-  59              | VARIABLE '=' expr
-  60              | VARIABLE ADD_EQ expr
-  61              | VARIABLE SUB_EQ expr
-  62              | VARIABLE MUL_EQ expr
-  63              | VARIABLE DIV_EQ expr
+  50  number_value_expr : id_expr
+  51                    | double_expr
+  52                    | uminus_expr
+  53                    | self_assign_expr
+
+  54  id_expr : IDENTIFIER
+
+  55  t_bool_expr : TBOOL
+
+  56  double_expr : TDOUBLE
+
+  57  uminus_expr : '-' double_or_ps_expr
+
+  58  string_expr : TSTRING
+
+  59  bool_param_expr : number_value_expr
+  60                  | call_statement
+
+  61  bool_expr : bool_param_expr
+  62            | bool_param_expr '>' bool_param_expr
+  63            | bool_param_expr '<' bool_param_expr
+  64            | bool_param_expr LE_OP bool_param_expr
+  65            | bool_param_expr GE_OP bool_param_expr
+  66            | bool_param_expr EQ_OP bool_param_expr
+  67            | bool_param_expr NE_OP bool_param_expr
+  68            | bool_expr AND_OP bool_expr
+  69            | bool_expr OR_OP bool_expr
+
+  70  self_assign_expr : INC_OP id_expr
+  71                   | DEC_OP id_expr
+  72                   | id_expr INC_OP
+  73                   | id_expr DEC_OP
+
+  74  assign_expr : self_assign_expr
+  75              | id_expr '=' args_expr_collection
+  76              | id_expr ADD_EQ args_expr_collection
+  77              | id_expr SUB_EQ args_expr_collection
+  78              | id_expr MUL_EQ args_expr_collection
+  79              | id_expr DIV_EQ args_expr_collection
 
 state 0
 	$accept : . program $end  (0)
@@ -101,852 +126,904 @@ state 2
 
 	TDOUBLE  shift 3
 	TBOOL  shift 4
-	VARIABLE  shift 5
+	IDENTIFIER  shift 5
 	TSTRING  shift 6
-	IF  shift 7
-	WHILE  shift 8
-	FOR  shift 9
-	DELETE  shift 10
-	'-'  shift 11
-	';'  shift 12
-	'('  shift 13
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	IF  shift 9
+	WHILE  shift 10
+	FOR  shift 11
+	DELETE  shift 12
+	'-'  shift 13
+	';'  shift 14
+	'('  shift 15
 	$end  reduce 1
 
-	expr  goto 14
-	statement  goto 15
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	expr  goto 16
+	statement  goto 17
+	assign_expr  goto 18
+	arithmetic_expr  goto 19
+	parentheses_expr  goto 20
+	number_value_expr  goto 21
+	id_expr  goto 22
+	t_bool_expr  goto 23
+	double_expr  goto 24
+	uminus_expr  goto 25
+	self_assign_expr  goto 26
+	call_statement  goto 27
 
 
 state 3
-	expr : TDOUBLE .  (32)
+	double_expr : TDOUBLE .  (56)
 
-	.  reduce 32
+	.  reduce 56
 
 
 state 4
-	expr : TBOOL .  (31)
+	t_bool_expr : TBOOL .  (55)
 
-	.  reduce 31
+	.  reduce 55
 
 
 state 5
-	statement : VARIABLE . FUNC_OP param_list '{' expr_list '}'  (11)
-	statement : VARIABLE . '(' args_list ')' ';'  (12)
-	expr : VARIABLE .  (33)
+	statement : IDENTIFIER . FUNC_OP param_list '{' expr_list '}'  (11)
+	call_statement : IDENTIFIER . '(' args_list ')' ';'  (13)
+	id_expr : IDENTIFIER .  (54)
 
-	FUNC_OP  shift 19
-	'('  shift 20
-	AND_OP  reduce 33
-	OR_OP  reduce 33
-	LE_OP  reduce 33
-	GE_OP  reduce 33
-	EQ_OP  reduce 33
-	NE_OP  reduce 33
-	','  reduce 33
-	'>'  reduce 33
-	'<'  reduce 33
-	'+'  reduce 33
-	'-'  reduce 33
-	'*'  reduce 33
-	'/'  reduce 33
-	';'  reduce 33
+	FUNC_OP  shift 28
+	'('  shift 29
+	INC_OP  reduce 54
+	DEC_OP  reduce 54
+	ADD_EQ  reduce 54
+	SUB_EQ  reduce 54
+	MUL_EQ  reduce 54
+	DIV_EQ  reduce 54
+	','  reduce 54
+	'='  reduce 54
+	'+'  reduce 54
+	'-'  reduce 54
+	'*'  reduce 54
+	'/'  reduce 54
+	';'  reduce 54
 
 
 state 6
-	expr : TSTRING .  (34)
+	expr : TSTRING .  (37)
 
-	.  reduce 34
+	.  reduce 37
 
 
 state 7
-	statement : IF . '(' expr ')' block  (7)
-	statement : IF . '(' expr ')' block ELSE block  (8)
+	self_assign_expr : INC_OP . id_expr  (70)
 
-	'('  shift 21
+	IDENTIFIER  shift 30
 	.  error
+
+	id_expr  goto 31
 
 
 state 8
-	statement : WHILE . '(' expr ')' block  (9)
+	self_assign_expr : DEC_OP . id_expr  (71)
 
-	'('  shift 22
+	IDENTIFIER  shift 30
 	.  error
+
+	id_expr  goto 32
 
 
 state 9
-	statement : FOR . '(' expr ';' expr ';' expr ')' block  (10)
+	statement : IF . '(' bool_expr ')' block  (7)
+	statement : IF . '(' bool_expr ')' block ELSE block  (8)
 
-	'('  shift 23
+	'('  shift 33
 	.  error
 
 
 state 10
-	statement : DELETE . VARIABLE  (6)
+	statement : WHILE . '(' bool_expr ')' block  (9)
 
-	VARIABLE  shift 24
+	'('  shift 34
 	.  error
 
 
 state 11
-	expr : '-' . double_or_ps_expr  (35)
+	statement : FOR . '(' expr ';' bool_expr ';' expr ')' block  (10)
 
-	TDOUBLE  shift 25
-	'('  shift 13
+	'('  shift 35
 	.  error
-
-	parentheses_expr  goto 26
-	double_or_ps_expr  goto 27
 
 
 state 12
+	statement : DELETE . IDENTIFIER  (6)
+
+	IDENTIFIER  shift 36
+	.  error
+
+
+state 13
+	uminus_expr : '-' . double_or_ps_expr  (57)
+
+	TDOUBLE  shift 3
+	'('  shift 15
+	.  error
+
+	parentheses_expr  goto 37
+	double_or_ps_expr  goto 38
+	double_expr  goto 39
+
+
+state 14
 	statement : ';' .  (4)
 
 	.  reduce 4
 
 
-state 13
-	parentheses_expr : '(' . expr ')'  (42)
+state 15
+	parentheses_expr : '(' . expr ')'  (45)
 
 	TDOUBLE  shift 3
 	TBOOL  shift 4
-	VARIABLE  shift 28
+	IDENTIFIER  shift 30
 	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	'('  shift 15
 	.  error
 
-	expr  goto 29
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	expr  goto 40
+	assign_expr  goto 18
+	arithmetic_expr  goto 19
+	parentheses_expr  goto 20
+	number_value_expr  goto 21
+	id_expr  goto 22
+	t_bool_expr  goto 23
+	double_expr  goto 24
+	uminus_expr  goto 25
+	self_assign_expr  goto 26
 
 
-state 14
+state 16
 	statement : expr . ';'  (5)
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+	expr : expr . ',' expr  (40)
 
-	AND_OP  shift 30
-	OR_OP  shift 31
-	LE_OP  shift 32
-	GE_OP  shift 33
-	EQ_OP  shift 34
-	NE_OP  shift 35
-	','  shift 36
-	'>'  shift 37
-	'<'  shift 38
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	';'  shift 43
+	','  shift 41
+	';'  shift 42
 	.  error
 
 
-state 15
+state 17
 	statement_list : statement_list statement .  (2)
 
 	.  reduce 2
 
 
-state 16
-	expr : bool_expr .  (39)
+state 18
+	expr : assign_expr .  (42)
+
+	.  reduce 42
+
+
+state 19
+	expr : arithmetic_expr .  (39)
 
 	.  reduce 39
 
 
-state 17
-	expr : arithmetic_expr .  (36)
-
-	.  reduce 36
-
-
-state 18
-	expr : parentheses_expr .  (38)
-
-	.  reduce 38
-
-
-state 19
-	statement : VARIABLE FUNC_OP . param_list '{' expr_list '}'  (11)
-	param_list : .  (13)
-
-	'('  shift 44
-	'{'  reduce 13
-
-	param_list  goto 45
-
-
 state 20
-	statement : VARIABLE '(' . args_list ')' ';'  (12)
-	args_list : .  (18)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 47
-	VARIABLE  shift 48
-	TSTRING  shift 49
-	'-'  shift 50
-	')'  reduce 18
-
-	args_expr_collection  goto 51
-	args_list  goto 52
-	args_expr  goto 53
-
-
-state 21
-	statement : IF '(' . expr ')' block  (7)
-	statement : IF '(' . expr ')' block ELSE block  (8)
-
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 54
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
-
-
-state 22
-	statement : WHILE '(' . expr ')' block  (9)
-
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 55
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
-
-
-state 23
-	statement : FOR '(' . expr ';' expr ';' expr ')' block  (10)
-
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 56
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
-
-
-state 24
-	statement : DELETE VARIABLE .  (6)
-
-	.  reduce 6
-
-
-state 25
-	double_or_ps_expr : TDOUBLE .  (40)
-
-	.  reduce 40
-
-
-state 26
-	double_or_ps_expr : parentheses_expr .  (41)
+	expr : parentheses_expr .  (41)
 
 	.  reduce 41
 
 
-state 27
-	expr : '-' double_or_ps_expr .  (35)
+state 21
+	arithmetic_expr : number_value_expr . '+' number_value_expr  (46)
+	arithmetic_expr : number_value_expr . '-' number_value_expr  (47)
+	arithmetic_expr : number_value_expr . '*' number_value_expr  (48)
+	arithmetic_expr : number_value_expr . '/' number_value_expr  (49)
 
-	.  reduce 35
+	'+'  shift 43
+	'-'  shift 44
+	'*'  shift 45
+	'/'  shift 46
+	.  error
+
+
+state 22
+	expr : id_expr .  (36)
+	number_value_expr : id_expr .  (50)
+	self_assign_expr : id_expr . INC_OP  (72)
+	self_assign_expr : id_expr . DEC_OP  (73)
+	assign_expr : id_expr . '=' args_expr_collection  (75)
+	assign_expr : id_expr . ADD_EQ args_expr_collection  (76)
+	assign_expr : id_expr . SUB_EQ args_expr_collection  (77)
+	assign_expr : id_expr . MUL_EQ args_expr_collection  (78)
+	assign_expr : id_expr . DIV_EQ args_expr_collection  (79)
+
+	INC_OP  shift 47
+	DEC_OP  shift 48
+	ADD_EQ  shift 49
+	SUB_EQ  shift 50
+	MUL_EQ  shift 51
+	DIV_EQ  shift 52
+	'='  shift 53
+	','  reduce 36
+	'+'  reduce 50
+	'-'  reduce 50
+	'*'  reduce 50
+	'/'  reduce 50
+	';'  reduce 36
+	')'  reduce 36
+
+
+state 23
+	expr : t_bool_expr .  (34)
+
+	.  reduce 34
+
+
+state 24
+	expr : double_expr .  (35)
+	number_value_expr : double_expr .  (51)
+
+	','  reduce 35
+	'+'  reduce 51
+	'-'  reduce 51
+	'*'  reduce 51
+	'/'  reduce 51
+	';'  reduce 35
+	')'  reduce 35
+
+
+state 25
+	expr : uminus_expr .  (38)
+	number_value_expr : uminus_expr .  (52)
+
+	','  reduce 38
+	'+'  reduce 52
+	'-'  reduce 52
+	'*'  reduce 52
+	'/'  reduce 52
+	';'  reduce 38
+	')'  reduce 38
+
+
+state 26
+	number_value_expr : self_assign_expr .  (53)
+	assign_expr : self_assign_expr .  (74)
+
+	','  reduce 74
+	'+'  reduce 53
+	'-'  reduce 53
+	'*'  reduce 53
+	'/'  reduce 53
+	';'  reduce 74
+	')'  reduce 74
+
+
+state 27
+	statement : call_statement .  (12)
+
+	.  reduce 12
 
 
 state 28
-	expr : VARIABLE .  (33)
+	statement : IDENTIFIER FUNC_OP . param_list '{' expr_list '}'  (11)
+	param_list : .  (14)
 
-	.  reduce 33
+	'('  shift 54
+	'{'  reduce 14
+
+	param_list  goto 55
 
 
 state 29
-	expr : expr . ',' expr  (37)
-	parentheses_expr : '(' expr . ')'  (42)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+	call_statement : IDENTIFIER '(' . args_list ')' ';'  (13)
+	args_list : .  (19)
 
-	AND_OP  shift 30
-	OR_OP  shift 31
-	LE_OP  shift 32
-	GE_OP  shift 33
-	EQ_OP  shift 34
-	NE_OP  shift 35
-	','  shift 36
-	'>'  shift 37
-	'<'  shift 38
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	')'  shift 57
-	.  error
+	TDOUBLE  shift 3
+	TBOOL  shift 4
+	IDENTIFIER  shift 56
+	TSTRING  shift 57
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	')'  reduce 19
+
+	bool_expr  goto 58
+	args_expr_collection  goto 59
+	number_value_expr  goto 60
+	id_expr  goto 61
+	t_bool_expr  goto 62
+	double_expr  goto 63
+	uminus_expr  goto 64
+	string_expr  goto 65
+	self_assign_expr  goto 66
+	call_statement  goto 67
+	bool_param_expr  goto 68
+	args_list  goto 69
+	args_expr  goto 70
 
 
 state 30
-	bool_expr : expr AND_OP . expr  (53)
+	id_expr : IDENTIFIER .  (54)
 
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 58
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	.  reduce 54
 
 
 state 31
-	bool_expr : expr OR_OP . expr  (54)
+	self_assign_expr : INC_OP id_expr .  (70)
 
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 59
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	.  reduce 70
 
 
 state 32
-	bool_expr : expr LE_OP . expr  (49)
+	self_assign_expr : DEC_OP id_expr .  (71)
 
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 60
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	.  reduce 71
 
 
 state 33
-	bool_expr : expr GE_OP . expr  (50)
+	statement : IF '(' . bool_expr ')' block  (7)
+	statement : IF '(' . bool_expr ')' block ELSE block  (8)
 
 	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
+	IDENTIFIER  shift 56
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
 	.  error
 
-	expr  goto 61
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	bool_expr  goto 71
+	number_value_expr  goto 60
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+	call_statement  goto 75
+	bool_param_expr  goto 68
 
 
 state 34
-	bool_expr : expr EQ_OP . expr  (51)
+	statement : WHILE '(' . bool_expr ')' block  (9)
 
 	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
+	IDENTIFIER  shift 56
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
 	.  error
 
-	expr  goto 62
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	bool_expr  goto 76
+	number_value_expr  goto 60
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+	call_statement  goto 75
+	bool_param_expr  goto 68
 
 
 state 35
-	bool_expr : expr NE_OP . expr  (52)
+	statement : FOR '(' . expr ';' bool_expr ';' expr ')' block  (10)
 
 	TDOUBLE  shift 3
 	TBOOL  shift 4
-	VARIABLE  shift 28
+	IDENTIFIER  shift 30
 	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	'('  shift 15
 	.  error
 
-	expr  goto 63
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	expr  goto 77
+	assign_expr  goto 18
+	arithmetic_expr  goto 19
+	parentheses_expr  goto 20
+	number_value_expr  goto 21
+	id_expr  goto 22
+	t_bool_expr  goto 23
+	double_expr  goto 24
+	uminus_expr  goto 25
+	self_assign_expr  goto 26
 
 
 state 36
-	expr : expr ',' . expr  (37)
+	statement : DELETE IDENTIFIER .  (6)
 
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 64
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	.  reduce 6
 
 
 state 37
-	bool_expr : expr '>' . expr  (47)
+	double_or_ps_expr : parentheses_expr .  (44)
 
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 65
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	.  reduce 44
 
 
 state 38
-	bool_expr : expr '<' . expr  (48)
+	uminus_expr : '-' double_or_ps_expr .  (57)
 
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 66
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	.  reduce 57
 
 
 state 39
-	arithmetic_expr : expr '+' . expr  (43)
+	double_or_ps_expr : double_expr .  (43)
 
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 67
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	.  reduce 43
 
 
 state 40
-	arithmetic_expr : expr '-' . expr  (44)
+	expr : expr . ',' expr  (40)
+	parentheses_expr : '(' expr . ')'  (45)
 
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
+	','  shift 41
+	')'  shift 78
 	.  error
-
-	expr  goto 68
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
 
 
 state 41
-	arithmetic_expr : expr '*' . expr  (45)
+	expr : expr ',' . expr  (40)
 
 	TDOUBLE  shift 3
 	TBOOL  shift 4
-	VARIABLE  shift 28
+	IDENTIFIER  shift 30
 	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	'('  shift 15
 	.  error
 
-	expr  goto 69
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	expr  goto 79
+	assign_expr  goto 18
+	arithmetic_expr  goto 19
+	parentheses_expr  goto 20
+	number_value_expr  goto 21
+	id_expr  goto 22
+	t_bool_expr  goto 23
+	double_expr  goto 24
+	uminus_expr  goto 25
+	self_assign_expr  goto 26
 
 
 state 42
-	arithmetic_expr : expr '/' . expr  (46)
-
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 70
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
-
-
-state 43
 	statement : expr ';' .  (5)
 
 	.  reduce 5
 
 
+state 43
+	arithmetic_expr : number_value_expr '+' . number_value_expr  (46)
+
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 30
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	number_value_expr  goto 80
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+
+
 state 44
-	param_list : '(' . parameter ')'  (14)
-	parameter : .  (17)
+	arithmetic_expr : number_value_expr '-' . number_value_expr  (47)
 
-	VARIABLE  shift 71
-	','  reduce 17
-	')'  reduce 17
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 30
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
 
-	parameter  goto 72
+	number_value_expr  goto 81
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
 
 
 state 45
-	statement : VARIABLE FUNC_OP param_list . '{' expr_list '}'  (11)
+	arithmetic_expr : number_value_expr '*' . number_value_expr  (48)
 
-	'{'  shift 73
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 30
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
 	.  error
+
+	number_value_expr  goto 82
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
 
 
 state 46
-	args_expr_collection : TDOUBLE .  (23)
+	arithmetic_expr : number_value_expr '/' . number_value_expr  (49)
 
-	.  reduce 23
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 30
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	number_value_expr  goto 83
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
 
 
 state 47
-	args_expr_collection : TBOOL .  (22)
+	self_assign_expr : id_expr INC_OP .  (72)
 
-	.  reduce 22
+	.  reduce 72
 
 
 state 48
-	args_expr_collection : VARIABLE .  (24)
+	self_assign_expr : id_expr DEC_OP .  (73)
 
-	.  reduce 24
+	.  reduce 73
 
 
 state 49
-	args_expr_collection : TSTRING .  (25)
+	assign_expr : id_expr ADD_EQ . args_expr_collection  (76)
 
-	.  reduce 25
+	TDOUBLE  shift 3
+	TBOOL  shift 4
+	IDENTIFIER  shift 56
+	TSTRING  shift 57
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	bool_expr  goto 58
+	args_expr_collection  goto 84
+	number_value_expr  goto 60
+	id_expr  goto 61
+	t_bool_expr  goto 62
+	double_expr  goto 63
+	uminus_expr  goto 64
+	string_expr  goto 65
+	self_assign_expr  goto 66
+	call_statement  goto 67
+	bool_param_expr  goto 68
 
 
 state 50
-	args_expr_collection : '-' . double_or_ps_expr  (26)
+	assign_expr : id_expr SUB_EQ . args_expr_collection  (77)
 
-	TDOUBLE  shift 25
-	'('  shift 13
+	TDOUBLE  shift 3
+	TBOOL  shift 4
+	IDENTIFIER  shift 56
+	TSTRING  shift 57
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
 	.  error
 
-	parentheses_expr  goto 26
-	double_or_ps_expr  goto 74
+	bool_expr  goto 58
+	args_expr_collection  goto 85
+	number_value_expr  goto 60
+	id_expr  goto 61
+	t_bool_expr  goto 62
+	double_expr  goto 63
+	uminus_expr  goto 64
+	string_expr  goto 65
+	self_assign_expr  goto 66
+	call_statement  goto 67
+	bool_param_expr  goto 68
 
 
 state 51
-	args_expr : args_expr_collection .  (20)
+	assign_expr : id_expr MUL_EQ . args_expr_collection  (78)
 
-	.  reduce 20
+	TDOUBLE  shift 3
+	TBOOL  shift 4
+	IDENTIFIER  shift 56
+	TSTRING  shift 57
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	bool_expr  goto 58
+	args_expr_collection  goto 86
+	number_value_expr  goto 60
+	id_expr  goto 61
+	t_bool_expr  goto 62
+	double_expr  goto 63
+	uminus_expr  goto 64
+	string_expr  goto 65
+	self_assign_expr  goto 66
+	call_statement  goto 67
+	bool_param_expr  goto 68
 
 
 state 52
-	statement : VARIABLE '(' args_list . ')' ';'  (12)
+	assign_expr : id_expr DIV_EQ . args_expr_collection  (79)
 
-	')'  shift 75
+	TDOUBLE  shift 3
+	TBOOL  shift 4
+	IDENTIFIER  shift 56
+	TSTRING  shift 57
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
 	.  error
+
+	bool_expr  goto 58
+	args_expr_collection  goto 87
+	number_value_expr  goto 60
+	id_expr  goto 61
+	t_bool_expr  goto 62
+	double_expr  goto 63
+	uminus_expr  goto 64
+	string_expr  goto 65
+	self_assign_expr  goto 66
+	call_statement  goto 67
+	bool_param_expr  goto 68
 
 
 state 53
-	args_list : args_expr .  (19)
-	args_expr : args_expr . ',' args_expr_collection  (21)
+	assign_expr : id_expr '=' . args_expr_collection  (75)
 
-	','  shift 76
-	')'  reduce 19
+	TDOUBLE  shift 3
+	TBOOL  shift 4
+	IDENTIFIER  shift 56
+	TSTRING  shift 57
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	bool_expr  goto 58
+	args_expr_collection  goto 88
+	number_value_expr  goto 60
+	id_expr  goto 61
+	t_bool_expr  goto 62
+	double_expr  goto 63
+	uminus_expr  goto 64
+	string_expr  goto 65
+	self_assign_expr  goto 66
+	call_statement  goto 67
+	bool_param_expr  goto 68
 
 
 state 54
-	statement : IF '(' expr . ')' block  (7)
-	statement : IF '(' expr . ')' block ELSE block  (8)
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+	param_list : '(' . parameter ')'  (15)
+	parameter : .  (18)
 
-	AND_OP  shift 30
-	OR_OP  shift 31
-	LE_OP  shift 32
-	GE_OP  shift 33
-	EQ_OP  shift 34
-	NE_OP  shift 35
-	','  shift 36
-	'>'  shift 37
-	'<'  shift 38
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	')'  shift 77
-	.  error
+	IDENTIFIER  shift 89
+	','  reduce 18
+	')'  reduce 18
+
+	parameter  goto 90
 
 
 state 55
-	statement : WHILE '(' expr . ')' block  (9)
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+	statement : IDENTIFIER FUNC_OP param_list . '{' expr_list '}'  (11)
 
-	AND_OP  shift 30
-	OR_OP  shift 31
-	LE_OP  shift 32
-	GE_OP  shift 33
-	EQ_OP  shift 34
-	NE_OP  shift 35
-	','  shift 36
-	'>'  shift 37
-	'<'  shift 38
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	')'  shift 78
+	'{'  shift 91
 	.  error
 
 
 state 56
-	statement : FOR '(' expr . ';' expr ';' expr ')' block  (10)
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+	call_statement : IDENTIFIER . '(' args_list ')' ';'  (13)
+	id_expr : IDENTIFIER .  (54)
 
-	AND_OP  shift 30
-	OR_OP  shift 31
-	LE_OP  shift 32
-	GE_OP  shift 33
-	EQ_OP  shift 34
-	NE_OP  shift 35
-	','  shift 36
-	'>'  shift 37
-	'<'  shift 38
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	';'  shift 79
-	.  error
-
-
-state 57
-	parentheses_expr : '(' expr ')' .  (42)
-
-	.  reduce 42
-
-
-state 58
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr AND_OP expr .  (53)
-	bool_expr : expr . OR_OP expr  (54)
-
-	LE_OP  shift 32
-	GE_OP  shift 33
-	EQ_OP  shift 34
-	NE_OP  shift 35
-	'>'  shift 37
-	'<'  shift 38
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	AND_OP  reduce 53
-	OR_OP  reduce 53
-	','  reduce 53
-	';'  reduce 53
-	')'  reduce 53
-
-
-state 59
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
-	bool_expr : expr OR_OP expr .  (54)
-
-	LE_OP  shift 32
-	GE_OP  shift 33
-	EQ_OP  shift 34
-	NE_OP  shift 35
-	'>'  shift 37
-	'<'  shift 38
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
+	'('  shift 29
 	AND_OP  reduce 54
 	OR_OP  reduce 54
+	LE_OP  reduce 54
+	GE_OP  reduce 54
+	EQ_OP  reduce 54
+	NE_OP  reduce 54
+	INC_OP  reduce 54
+	DEC_OP  reduce 54
 	','  reduce 54
+	'>'  reduce 54
+	'<'  reduce 54
 	';'  reduce 54
 	')'  reduce 54
 
 
+state 57
+	string_expr : TSTRING .  (58)
+
+	.  reduce 58
+
+
+state 58
+	args_expr_collection : bool_expr .  (29)
+	bool_expr : bool_expr . AND_OP bool_expr  (68)
+	bool_expr : bool_expr . OR_OP bool_expr  (69)
+
+	AND_OP  shift 92
+	OR_OP  shift 93
+	','  reduce 29
+	';'  reduce 29
+	')'  reduce 29
+
+
+state 59
+	args_expr : args_expr_collection .  (21)
+
+	.  reduce 21
+
+
 state 60
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr LE_OP expr .  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+	bool_param_expr : number_value_expr .  (59)
 
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	AND_OP  reduce 49
-	OR_OP  reduce 49
-	LE_OP  reduce 49
-	GE_OP  reduce 49
-	EQ_OP  reduce 49
-	NE_OP  reduce 49
-	','  reduce 49
-	'>'  reduce 49
-	'<'  reduce 49
-	';'  reduce 49
-	')'  reduce 49
+	.  reduce 59
 
 
+61: reduce/reduce conflict (reduce 25, reduce 50) on ','
+61: reduce/reduce conflict (reduce 25, reduce 50) on ';'
+61: reduce/reduce conflict (reduce 25, reduce 50) on ')'
 state 61
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr GE_OP expr .  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+	args_expr_collection : id_expr .  (25)
+	number_value_expr : id_expr .  (50)
+	self_assign_expr : id_expr . INC_OP  (72)
+	self_assign_expr : id_expr . DEC_OP  (73)
 
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
+	INC_OP  shift 47
+	DEC_OP  shift 48
+	AND_OP  reduce 50
+	OR_OP  reduce 50
+	LE_OP  reduce 50
+	GE_OP  reduce 50
+	EQ_OP  reduce 50
+	NE_OP  reduce 50
+	','  reduce 25
+	'>'  reduce 50
+	'<'  reduce 50
+	';'  reduce 25
+	')'  reduce 25
+
+
+state 62
+	args_expr_collection : t_bool_expr .  (23)
+
+	.  reduce 23
+
+
+63: reduce/reduce conflict (reduce 24, reduce 51) on ','
+63: reduce/reduce conflict (reduce 24, reduce 51) on ';'
+63: reduce/reduce conflict (reduce 24, reduce 51) on ')'
+state 63
+	args_expr_collection : double_expr .  (24)
+	number_value_expr : double_expr .  (51)
+
+	AND_OP  reduce 51
+	OR_OP  reduce 51
+	LE_OP  reduce 51
+	GE_OP  reduce 51
+	EQ_OP  reduce 51
+	NE_OP  reduce 51
+	','  reduce 24
+	'>'  reduce 51
+	'<'  reduce 51
+	';'  reduce 24
+	')'  reduce 24
+
+
+64: reduce/reduce conflict (reduce 27, reduce 52) on ','
+64: reduce/reduce conflict (reduce 27, reduce 52) on ';'
+64: reduce/reduce conflict (reduce 27, reduce 52) on ')'
+state 64
+	args_expr_collection : uminus_expr .  (27)
+	number_value_expr : uminus_expr .  (52)
+
+	AND_OP  reduce 52
+	OR_OP  reduce 52
+	LE_OP  reduce 52
+	GE_OP  reduce 52
+	EQ_OP  reduce 52
+	NE_OP  reduce 52
+	','  reduce 27
+	'>'  reduce 52
+	'<'  reduce 52
+	';'  reduce 27
+	')'  reduce 27
+
+
+state 65
+	args_expr_collection : string_expr .  (26)
+
+	.  reduce 26
+
+
+state 66
+	number_value_expr : self_assign_expr .  (53)
+
+	.  reduce 53
+
+
+67: reduce/reduce conflict (reduce 28, reduce 60) on ','
+67: reduce/reduce conflict (reduce 28, reduce 60) on ';'
+67: reduce/reduce conflict (reduce 28, reduce 60) on ')'
+state 67
+	args_expr_collection : call_statement .  (28)
+	bool_param_expr : call_statement .  (60)
+
+	AND_OP  reduce 60
+	OR_OP  reduce 60
+	LE_OP  reduce 60
+	GE_OP  reduce 60
+	EQ_OP  reduce 60
+	NE_OP  reduce 60
+	','  reduce 28
+	'>'  reduce 60
+	'<'  reduce 60
+	';'  reduce 28
+	')'  reduce 28
+
+
+state 68
+	bool_expr : bool_param_expr .  (61)
+	bool_expr : bool_param_expr . '>' bool_param_expr  (62)
+	bool_expr : bool_param_expr . '<' bool_param_expr  (63)
+	bool_expr : bool_param_expr . LE_OP bool_param_expr  (64)
+	bool_expr : bool_param_expr . GE_OP bool_param_expr  (65)
+	bool_expr : bool_param_expr . EQ_OP bool_param_expr  (66)
+	bool_expr : bool_param_expr . NE_OP bool_param_expr  (67)
+
+	LE_OP  shift 94
+	GE_OP  shift 95
+	EQ_OP  shift 96
+	NE_OP  shift 97
+	'>'  shift 98
+	'<'  shift 99
+	AND_OP  reduce 61
+	OR_OP  reduce 61
+	','  reduce 61
+	';'  reduce 61
+	')'  reduce 61
+
+
+state 69
+	call_statement : IDENTIFIER '(' args_list . ')' ';'  (13)
+
+	')'  shift 100
+	.  error
+
+
+state 70
+	args_list : args_expr .  (20)
+	args_expr : args_expr . ',' args_expr_collection  (22)
+
+	','  shift 101
+	')'  reduce 20
+
+
+state 71
+	statement : IF '(' bool_expr . ')' block  (7)
+	statement : IF '(' bool_expr . ')' block ELSE block  (8)
+	bool_expr : bool_expr . AND_OP bool_expr  (68)
+	bool_expr : bool_expr . OR_OP bool_expr  (69)
+
+	AND_OP  shift 92
+	OR_OP  shift 93
+	')'  shift 102
+	.  error
+
+
+state 72
+	number_value_expr : id_expr .  (50)
+	self_assign_expr : id_expr . INC_OP  (72)
+	self_assign_expr : id_expr . DEC_OP  (73)
+
+	INC_OP  shift 47
+	DEC_OP  shift 48
 	AND_OP  reduce 50
 	OR_OP  reduce 50
 	LE_OP  reduce 50
@@ -960,468 +1037,548 @@ state 61
 	')'  reduce 50
 
 
-state 62
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr EQ_OP expr .  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+state 73
+	number_value_expr : double_expr .  (51)
 
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	AND_OP  reduce 51
-	OR_OP  reduce 51
-	LE_OP  reduce 51
-	GE_OP  reduce 51
-	EQ_OP  reduce 51
-	NE_OP  reduce 51
-	','  reduce 51
-	'>'  reduce 51
-	'<'  reduce 51
-	';'  reduce 51
-	')'  reduce 51
+	.  reduce 51
 
 
-state 63
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr NE_OP expr .  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+state 74
+	number_value_expr : uminus_expr .  (52)
 
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	AND_OP  reduce 52
-	OR_OP  reduce 52
-	LE_OP  reduce 52
-	GE_OP  reduce 52
-	EQ_OP  reduce 52
-	NE_OP  reduce 52
-	','  reduce 52
-	'>'  reduce 52
-	'<'  reduce 52
-	';'  reduce 52
-	')'  reduce 52
+	.  reduce 52
 
 
-state 64
-	expr : expr . ',' expr  (37)
-	expr : expr ',' expr .  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+state 75
+	bool_param_expr : call_statement .  (60)
 
-	AND_OP  shift 30
-	OR_OP  shift 31
-	LE_OP  shift 32
-	GE_OP  shift 33
-	EQ_OP  shift 34
-	NE_OP  shift 35
-	'>'  shift 37
-	'<'  shift 38
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	','  reduce 37
-	';'  reduce 37
-	')'  reduce 37
+	.  reduce 60
 
 
-state 65
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr '>' expr .  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+state 76
+	statement : WHILE '(' bool_expr . ')' block  (9)
+	bool_expr : bool_expr . AND_OP bool_expr  (68)
+	bool_expr : bool_expr . OR_OP bool_expr  (69)
 
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	AND_OP  reduce 47
-	OR_OP  reduce 47
-	LE_OP  reduce 47
-	GE_OP  reduce 47
-	EQ_OP  reduce 47
-	NE_OP  reduce 47
-	','  reduce 47
-	'>'  reduce 47
-	'<'  reduce 47
-	';'  reduce 47
-	')'  reduce 47
+	AND_OP  shift 92
+	OR_OP  shift 93
+	')'  shift 103
+	.  error
 
 
-state 66
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr '<' expr .  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+state 77
+	statement : FOR '(' expr . ';' bool_expr ';' expr ')' block  (10)
+	expr : expr . ',' expr  (40)
 
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	AND_OP  reduce 48
-	OR_OP  reduce 48
-	LE_OP  reduce 48
-	GE_OP  reduce 48
-	EQ_OP  reduce 48
-	NE_OP  reduce 48
-	','  reduce 48
-	'>'  reduce 48
-	'<'  reduce 48
-	';'  reduce 48
-	')'  reduce 48
+	','  shift 41
+	';'  shift 104
+	.  error
 
 
-state 67
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr '+' expr .  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
-
-	'*'  shift 41
-	'/'  shift 42
-	AND_OP  reduce 43
-	OR_OP  reduce 43
-	LE_OP  reduce 43
-	GE_OP  reduce 43
-	EQ_OP  reduce 43
-	NE_OP  reduce 43
-	','  reduce 43
-	'>'  reduce 43
-	'<'  reduce 43
-	'+'  reduce 43
-	'-'  reduce 43
-	';'  reduce 43
-	')'  reduce 43
-
-
-state 68
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr '-' expr .  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
-
-	'*'  shift 41
-	'/'  shift 42
-	AND_OP  reduce 44
-	OR_OP  reduce 44
-	LE_OP  reduce 44
-	GE_OP  reduce 44
-	EQ_OP  reduce 44
-	NE_OP  reduce 44
-	','  reduce 44
-	'>'  reduce 44
-	'<'  reduce 44
-	'+'  reduce 44
-	'-'  reduce 44
-	';'  reduce 44
-	')'  reduce 44
-
-
-state 69
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr '*' expr .  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+state 78
+	parentheses_expr : '(' expr ')' .  (45)
 
 	.  reduce 45
 
 
-state 70
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	arithmetic_expr : expr '/' expr .  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+state 79
+	expr : expr . ',' expr  (40)
+	expr : expr ',' expr .  (40)
+
+	.  reduce 40
+
+
+state 80
+	arithmetic_expr : number_value_expr '+' number_value_expr .  (46)
 
 	.  reduce 46
 
 
-state 71
-	parameter : VARIABLE .  (15)
+state 81
+	arithmetic_expr : number_value_expr '-' number_value_expr .  (47)
+
+	.  reduce 47
+
+
+state 82
+	arithmetic_expr : number_value_expr '*' number_value_expr .  (48)
+
+	.  reduce 48
+
+
+state 83
+	arithmetic_expr : number_value_expr '/' number_value_expr .  (49)
+
+	.  reduce 49
+
+
+state 84
+	assign_expr : id_expr ADD_EQ args_expr_collection .  (76)
+
+	.  reduce 76
+
+
+state 85
+	assign_expr : id_expr SUB_EQ args_expr_collection .  (77)
+
+	.  reduce 77
+
+
+state 86
+	assign_expr : id_expr MUL_EQ args_expr_collection .  (78)
+
+	.  reduce 78
+
+
+state 87
+	assign_expr : id_expr DIV_EQ args_expr_collection .  (79)
+
+	.  reduce 79
+
+
+state 88
+	assign_expr : id_expr '=' args_expr_collection .  (75)
+
+	.  reduce 75
+
+
+state 89
+	parameter : IDENTIFIER .  (16)
+
+	.  reduce 16
+
+
+state 90
+	param_list : '(' parameter . ')'  (15)
+	parameter : parameter . ',' IDENTIFIER  (17)
+
+	','  shift 105
+	')'  shift 106
+	.  error
+
+
+state 91
+	statement : IDENTIFIER FUNC_OP param_list '{' . expr_list '}'  (11)
+	expr_list : .  (33)
+
+	.  reduce 33
+
+	expr_list  goto 107
+
+
+state 92
+	bool_expr : bool_expr AND_OP . bool_expr  (68)
+
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 56
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	bool_expr  goto 108
+	number_value_expr  goto 60
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+	call_statement  goto 75
+	bool_param_expr  goto 68
+
+
+state 93
+	bool_expr : bool_expr OR_OP . bool_expr  (69)
+
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 56
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	bool_expr  goto 109
+	number_value_expr  goto 60
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+	call_statement  goto 75
+	bool_param_expr  goto 68
+
+
+state 94
+	bool_expr : bool_param_expr LE_OP . bool_param_expr  (64)
+
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 56
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	number_value_expr  goto 60
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+	call_statement  goto 75
+	bool_param_expr  goto 110
+
+
+state 95
+	bool_expr : bool_param_expr GE_OP . bool_param_expr  (65)
+
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 56
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	number_value_expr  goto 60
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+	call_statement  goto 75
+	bool_param_expr  goto 111
+
+
+state 96
+	bool_expr : bool_param_expr EQ_OP . bool_param_expr  (66)
+
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 56
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	number_value_expr  goto 60
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+	call_statement  goto 75
+	bool_param_expr  goto 112
+
+
+state 97
+	bool_expr : bool_param_expr NE_OP . bool_param_expr  (67)
+
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 56
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	number_value_expr  goto 60
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+	call_statement  goto 75
+	bool_param_expr  goto 113
+
+
+state 98
+	bool_expr : bool_param_expr '>' . bool_param_expr  (62)
+
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 56
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	number_value_expr  goto 60
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+	call_statement  goto 75
+	bool_param_expr  goto 114
+
+
+state 99
+	bool_expr : bool_param_expr '<' . bool_param_expr  (63)
+
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 56
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	number_value_expr  goto 60
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+	call_statement  goto 75
+	bool_param_expr  goto 115
+
+
+state 100
+	call_statement : IDENTIFIER '(' args_list ')' . ';'  (13)
+
+	';'  shift 116
+	.  error
+
+
+state 101
+	args_expr : args_expr ',' . args_expr_collection  (22)
+
+	TDOUBLE  shift 3
+	TBOOL  shift 4
+	IDENTIFIER  shift 56
+	TSTRING  shift 57
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	bool_expr  goto 58
+	args_expr_collection  goto 117
+	number_value_expr  goto 60
+	id_expr  goto 61
+	t_bool_expr  goto 62
+	double_expr  goto 63
+	uminus_expr  goto 64
+	string_expr  goto 65
+	self_assign_expr  goto 66
+	call_statement  goto 67
+	bool_param_expr  goto 68
+
+
+state 102
+	statement : IF '(' bool_expr ')' . block  (7)
+	statement : IF '(' bool_expr ')' . block ELSE block  (8)
+
+	TDOUBLE  shift 3
+	TBOOL  shift 4
+	IDENTIFIER  shift 5
+	TSTRING  shift 6
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	IF  shift 9
+	WHILE  shift 10
+	FOR  shift 11
+	DELETE  shift 12
+	'-'  shift 13
+	';'  shift 14
+	'('  shift 15
+	'{'  shift 118
+	.  error
+
+	expr  goto 16
+	statement  goto 119
+	block  goto 120
+	assign_expr  goto 18
+	arithmetic_expr  goto 19
+	parentheses_expr  goto 20
+	number_value_expr  goto 21
+	id_expr  goto 22
+	t_bool_expr  goto 23
+	double_expr  goto 24
+	uminus_expr  goto 25
+	self_assign_expr  goto 26
+	call_statement  goto 27
+
+
+state 103
+	statement : WHILE '(' bool_expr ')' . block  (9)
+
+	TDOUBLE  shift 3
+	TBOOL  shift 4
+	IDENTIFIER  shift 5
+	TSTRING  shift 6
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	IF  shift 9
+	WHILE  shift 10
+	FOR  shift 11
+	DELETE  shift 12
+	'-'  shift 13
+	';'  shift 14
+	'('  shift 15
+	'{'  shift 118
+	.  error
+
+	expr  goto 16
+	statement  goto 119
+	block  goto 121
+	assign_expr  goto 18
+	arithmetic_expr  goto 19
+	parentheses_expr  goto 20
+	number_value_expr  goto 21
+	id_expr  goto 22
+	t_bool_expr  goto 23
+	double_expr  goto 24
+	uminus_expr  goto 25
+	self_assign_expr  goto 26
+	call_statement  goto 27
+
+
+state 104
+	statement : FOR '(' expr ';' . bool_expr ';' expr ')' block  (10)
+
+	TDOUBLE  shift 3
+	IDENTIFIER  shift 56
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	.  error
+
+	bool_expr  goto 122
+	number_value_expr  goto 60
+	id_expr  goto 72
+	double_expr  goto 73
+	uminus_expr  goto 74
+	self_assign_expr  goto 66
+	call_statement  goto 75
+	bool_param_expr  goto 68
+
+
+state 105
+	parameter : parameter ',' . IDENTIFIER  (17)
+
+	IDENTIFIER  shift 123
+	.  error
+
+
+state 106
+	param_list : '(' parameter ')' .  (15)
 
 	.  reduce 15
 
 
-state 72
-	param_list : '(' parameter . ')'  (14)
-	parameter : parameter . ',' VARIABLE  (16)
-
-	','  shift 80
-	')'  shift 81
-	.  error
-
-
-state 73
-	statement : VARIABLE FUNC_OP param_list '{' . expr_list '}'  (11)
-	expr_list : .  (30)
-
-	.  reduce 30
-
-	expr_list  goto 82
-
-
-state 74
-	args_expr_collection : '-' double_or_ps_expr .  (26)
-
-	.  reduce 26
-
-
-state 75
-	statement : VARIABLE '(' args_list ')' . ';'  (12)
-
-	';'  shift 83
-	.  error
-
-
-state 76
-	args_expr : args_expr ',' . args_expr_collection  (21)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 47
-	VARIABLE  shift 48
-	TSTRING  shift 49
-	'-'  shift 50
-	.  error
-
-	args_expr_collection  goto 84
-
-
-state 77
-	statement : IF '(' expr ')' . block  (7)
-	statement : IF '(' expr ')' . block ELSE block  (8)
+state 107
+	statement : IDENTIFIER FUNC_OP param_list '{' expr_list . '}'  (11)
+	expr_list : expr_list . statement  (32)
 
 	TDOUBLE  shift 3
 	TBOOL  shift 4
-	VARIABLE  shift 5
+	IDENTIFIER  shift 5
 	TSTRING  shift 6
-	IF  shift 7
-	WHILE  shift 8
-	FOR  shift 9
-	DELETE  shift 10
-	'-'  shift 11
-	';'  shift 12
-	'('  shift 13
-	'{'  shift 85
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	IF  shift 9
+	WHILE  shift 10
+	FOR  shift 11
+	DELETE  shift 12
+	'-'  shift 13
+	';'  shift 14
+	'('  shift 15
+	'}'  shift 124
 	.  error
 
-	expr  goto 14
-	statement  goto 86
-	block  goto 87
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	expr  goto 16
+	statement  goto 125
+	assign_expr  goto 18
+	arithmetic_expr  goto 19
+	parentheses_expr  goto 20
+	number_value_expr  goto 21
+	id_expr  goto 22
+	t_bool_expr  goto 23
+	double_expr  goto 24
+	uminus_expr  goto 25
+	self_assign_expr  goto 26
+	call_statement  goto 27
 
 
-state 78
-	statement : WHILE '(' expr ')' . block  (9)
+state 108
+	bool_expr : bool_expr . AND_OP bool_expr  (68)
+	bool_expr : bool_expr AND_OP bool_expr .  (68)
+	bool_expr : bool_expr . OR_OP bool_expr  (69)
 
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 5
-	TSTRING  shift 6
-	IF  shift 7
-	WHILE  shift 8
-	FOR  shift 9
-	DELETE  shift 10
-	'-'  shift 11
-	';'  shift 12
-	'('  shift 13
-	'{'  shift 85
-	.  error
-
-	expr  goto 14
-	statement  goto 86
-	block  goto 88
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	.  reduce 68
 
 
-state 79
-	statement : FOR '(' expr ';' . expr ';' expr ')' block  (10)
+state 109
+	bool_expr : bool_expr . AND_OP bool_expr  (68)
+	bool_expr : bool_expr . OR_OP bool_expr  (69)
+	bool_expr : bool_expr OR_OP bool_expr .  (69)
 
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 28
-	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
-	.  error
-
-	expr  goto 89
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	.  reduce 69
 
 
-state 80
-	parameter : parameter ',' . VARIABLE  (16)
+state 110
+	bool_expr : bool_param_expr LE_OP bool_param_expr .  (64)
 
-	VARIABLE  shift 90
-	.  error
-
-
-state 81
-	param_list : '(' parameter ')' .  (14)
-
-	.  reduce 14
+	.  reduce 64
 
 
-state 82
-	statement : VARIABLE FUNC_OP param_list '{' expr_list . '}'  (11)
-	expr_list : expr_list . statement  (29)
+state 111
+	bool_expr : bool_param_expr GE_OP bool_param_expr .  (65)
 
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 5
-	TSTRING  shift 6
-	IF  shift 7
-	WHILE  shift 8
-	FOR  shift 9
-	DELETE  shift 10
-	'-'  shift 11
-	';'  shift 12
-	'('  shift 13
-	'}'  shift 91
-	.  error
-
-	expr  goto 14
-	statement  goto 92
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	.  reduce 65
 
 
-state 83
-	statement : VARIABLE '(' args_list ')' ';' .  (12)
+state 112
+	bool_expr : bool_param_expr EQ_OP bool_param_expr .  (66)
 
-	.  reduce 12
-
-
-state 84
-	args_expr : args_expr ',' args_expr_collection .  (21)
-
-	.  reduce 21
+	.  reduce 66
 
 
-state 85
-	block : '{' . expr_list '}'  (27)
-	expr_list : .  (30)
+state 113
+	bool_expr : bool_param_expr NE_OP bool_param_expr .  (67)
 
-	.  reduce 30
-
-	expr_list  goto 93
+	.  reduce 67
 
 
-state 86
-	block : statement .  (28)
+state 114
+	bool_expr : bool_param_expr '>' bool_param_expr .  (62)
 
-	.  reduce 28
+	.  reduce 62
 
 
-state 87
-	statement : IF '(' expr ')' block .  (7)
-	statement : IF '(' expr ')' block . ELSE block  (8)
+state 115
+	bool_expr : bool_param_expr '<' bool_param_expr .  (63)
 
-	ELSE  shift 94
+	.  reduce 63
+
+
+state 116
+	call_statement : IDENTIFIER '(' args_list ')' ';' .  (13)
+
+	.  reduce 13
+
+
+state 117
+	args_expr : args_expr ',' args_expr_collection .  (22)
+
+	.  reduce 22
+
+
+state 118
+	block : '{' . expr_list '}'  (30)
+	expr_list : .  (33)
+
+	.  reduce 33
+
+	expr_list  goto 126
+
+
+state 119
+	block : statement .  (31)
+
+	.  reduce 31
+
+
+state 120
+	statement : IF '(' bool_expr ')' block .  (7)
+	statement : IF '(' bool_expr ')' block . ELSE block  (8)
+
+	ELSE  shift 127
 	$end  reduce 7
 	TDOUBLE  reduce 7
 	TBOOL  reduce 7
-	VARIABLE  reduce 7
+	IDENTIFIER  reduce 7
 	TSTRING  reduce 7
+	INC_OP  reduce 7
+	DEC_OP  reduce 7
 	IF  reduce 7
 	WHILE  reduce 7
 	FOR  reduce 7
@@ -1432,217 +1589,200 @@ state 87
 	'}'  reduce 7
 
 
-state 88
-	statement : WHILE '(' expr ')' block .  (9)
+state 121
+	statement : WHILE '(' bool_expr ')' block .  (9)
 
 	.  reduce 9
 
 
-state 89
-	statement : FOR '(' expr ';' expr . ';' expr ')' block  (10)
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+state 122
+	statement : FOR '(' expr ';' bool_expr . ';' expr ')' block  (10)
+	bool_expr : bool_expr . AND_OP bool_expr  (68)
+	bool_expr : bool_expr . OR_OP bool_expr  (69)
 
-	AND_OP  shift 30
-	OR_OP  shift 31
-	LE_OP  shift 32
-	GE_OP  shift 33
-	EQ_OP  shift 34
-	NE_OP  shift 35
-	','  shift 36
-	'>'  shift 37
-	'<'  shift 38
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	';'  shift 95
+	AND_OP  shift 92
+	OR_OP  shift 93
+	';'  shift 128
 	.  error
 
 
-state 90
-	parameter : parameter ',' VARIABLE .  (16)
+state 123
+	parameter : parameter ',' IDENTIFIER .  (17)
 
-	.  reduce 16
+	.  reduce 17
 
 
-state 91
-	statement : VARIABLE FUNC_OP param_list '{' expr_list '}' .  (11)
+state 124
+	statement : IDENTIFIER FUNC_OP param_list '{' expr_list '}' .  (11)
 
 	.  reduce 11
 
 
-state 92
-	expr_list : expr_list statement .  (29)
+state 125
+	expr_list : expr_list statement .  (32)
 
-	.  reduce 29
-
-
-state 93
-	block : '{' expr_list . '}'  (27)
-	expr_list : expr_list . statement  (29)
-
-	TDOUBLE  shift 3
-	TBOOL  shift 4
-	VARIABLE  shift 5
-	TSTRING  shift 6
-	IF  shift 7
-	WHILE  shift 8
-	FOR  shift 9
-	DELETE  shift 10
-	'-'  shift 11
-	';'  shift 12
-	'('  shift 13
-	'}'  shift 96
-	.  error
-
-	expr  goto 14
-	statement  goto 92
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	.  reduce 32
 
 
-state 94
-	statement : IF '(' expr ')' block ELSE . block  (8)
+state 126
+	block : '{' expr_list . '}'  (30)
+	expr_list : expr_list . statement  (32)
 
 	TDOUBLE  shift 3
 	TBOOL  shift 4
-	VARIABLE  shift 5
+	IDENTIFIER  shift 5
 	TSTRING  shift 6
-	IF  shift 7
-	WHILE  shift 8
-	FOR  shift 9
-	DELETE  shift 10
-	'-'  shift 11
-	';'  shift 12
-	'('  shift 13
-	'{'  shift 85
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	IF  shift 9
+	WHILE  shift 10
+	FOR  shift 11
+	DELETE  shift 12
+	'-'  shift 13
+	';'  shift 14
+	'('  shift 15
+	'}'  shift 129
 	.  error
 
-	expr  goto 14
-	statement  goto 86
-	block  goto 97
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	expr  goto 16
+	statement  goto 125
+	assign_expr  goto 18
+	arithmetic_expr  goto 19
+	parentheses_expr  goto 20
+	number_value_expr  goto 21
+	id_expr  goto 22
+	t_bool_expr  goto 23
+	double_expr  goto 24
+	uminus_expr  goto 25
+	self_assign_expr  goto 26
+	call_statement  goto 27
 
 
-state 95
-	statement : FOR '(' expr ';' expr ';' . expr ')' block  (10)
+state 127
+	statement : IF '(' bool_expr ')' block ELSE . block  (8)
 
 	TDOUBLE  shift 3
 	TBOOL  shift 4
-	VARIABLE  shift 28
+	IDENTIFIER  shift 5
 	TSTRING  shift 6
-	'-'  shift 11
-	'('  shift 13
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	IF  shift 9
+	WHILE  shift 10
+	FOR  shift 11
+	DELETE  shift 12
+	'-'  shift 13
+	';'  shift 14
+	'('  shift 15
+	'{'  shift 118
 	.  error
 
-	expr  goto 98
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	expr  goto 16
+	statement  goto 119
+	block  goto 130
+	assign_expr  goto 18
+	arithmetic_expr  goto 19
+	parentheses_expr  goto 20
+	number_value_expr  goto 21
+	id_expr  goto 22
+	t_bool_expr  goto 23
+	double_expr  goto 24
+	uminus_expr  goto 25
+	self_assign_expr  goto 26
+	call_statement  goto 27
 
 
-state 96
-	block : '{' expr_list '}' .  (27)
+state 128
+	statement : FOR '(' expr ';' bool_expr ';' . expr ')' block  (10)
 
-	.  reduce 27
+	TDOUBLE  shift 3
+	TBOOL  shift 4
+	IDENTIFIER  shift 30
+	TSTRING  shift 6
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	'-'  shift 13
+	'('  shift 15
+	.  error
+
+	expr  goto 131
+	assign_expr  goto 18
+	arithmetic_expr  goto 19
+	parentheses_expr  goto 20
+	number_value_expr  goto 21
+	id_expr  goto 22
+	t_bool_expr  goto 23
+	double_expr  goto 24
+	uminus_expr  goto 25
+	self_assign_expr  goto 26
 
 
-state 97
-	statement : IF '(' expr ')' block ELSE block .  (8)
+state 129
+	block : '{' expr_list '}' .  (30)
+
+	.  reduce 30
+
+
+state 130
+	statement : IF '(' bool_expr ')' block ELSE block .  (8)
 
 	.  reduce 8
 
 
-state 98
-	statement : FOR '(' expr ';' expr ';' expr . ')' block  (10)
-	expr : expr . ',' expr  (37)
-	arithmetic_expr : expr . '+' expr  (43)
-	arithmetic_expr : expr . '-' expr  (44)
-	arithmetic_expr : expr . '*' expr  (45)
-	arithmetic_expr : expr . '/' expr  (46)
-	bool_expr : expr . '>' expr  (47)
-	bool_expr : expr . '<' expr  (48)
-	bool_expr : expr . LE_OP expr  (49)
-	bool_expr : expr . GE_OP expr  (50)
-	bool_expr : expr . EQ_OP expr  (51)
-	bool_expr : expr . NE_OP expr  (52)
-	bool_expr : expr . AND_OP expr  (53)
-	bool_expr : expr . OR_OP expr  (54)
+state 131
+	statement : FOR '(' expr ';' bool_expr ';' expr . ')' block  (10)
+	expr : expr . ',' expr  (40)
 
-	AND_OP  shift 30
-	OR_OP  shift 31
-	LE_OP  shift 32
-	GE_OP  shift 33
-	EQ_OP  shift 34
-	NE_OP  shift 35
-	','  shift 36
-	'>'  shift 37
-	'<'  shift 38
-	'+'  shift 39
-	'-'  shift 40
-	'*'  shift 41
-	'/'  shift 42
-	')'  shift 99
+	','  shift 41
+	')'  shift 132
 	.  error
 
 
-state 99
-	statement : FOR '(' expr ';' expr ';' expr ')' . block  (10)
+state 132
+	statement : FOR '(' expr ';' bool_expr ';' expr ')' . block  (10)
 
 	TDOUBLE  shift 3
 	TBOOL  shift 4
-	VARIABLE  shift 5
+	IDENTIFIER  shift 5
 	TSTRING  shift 6
-	IF  shift 7
-	WHILE  shift 8
-	FOR  shift 9
-	DELETE  shift 10
-	'-'  shift 11
-	';'  shift 12
-	'('  shift 13
-	'{'  shift 85
+	INC_OP  shift 7
+	DEC_OP  shift 8
+	IF  shift 9
+	WHILE  shift 10
+	FOR  shift 11
+	DELETE  shift 12
+	'-'  shift 13
+	';'  shift 14
+	'('  shift 15
+	'{'  shift 118
 	.  error
 
-	expr  goto 14
-	statement  goto 86
-	block  goto 100
-	bool_expr  goto 16
-	arithmetic_expr  goto 17
-	parentheses_expr  goto 18
+	expr  goto 16
+	statement  goto 119
+	block  goto 133
+	assign_expr  goto 18
+	arithmetic_expr  goto 19
+	parentheses_expr  goto 20
+	number_value_expr  goto 21
+	id_expr  goto 22
+	t_bool_expr  goto 23
+	double_expr  goto 24
+	uminus_expr  goto 25
+	self_assign_expr  goto 26
+	call_statement  goto 27
 
 
-state 100
-	statement : FOR '(' expr ';' expr ';' expr ')' block .  (10)
+state 133
+	statement : FOR '(' expr ';' bool_expr ';' expr ')' block .  (10)
 
 	.  reduce 10
 
 
-Rules never reduced:
-	assign_expr : INC_OP VARIABLE  (55)
-	assign_expr : DEC_OP VARIABLE  (56)
-	assign_expr : VARIABLE INC_OP  (57)
-	assign_expr : VARIABLE DEC_OP  (58)
-	assign_expr : VARIABLE '=' expr  (59)
-	assign_expr : VARIABLE ADD_EQ expr  (60)
-	assign_expr : VARIABLE SUB_EQ expr  (61)
-	assign_expr : VARIABLE MUL_EQ expr  (62)
-	assign_expr : VARIABLE DIV_EQ expr  (63)
+State 61 contains 3 reduce/reduce conflicts.
+State 63 contains 3 reduce/reduce conflicts.
+State 64 contains 3 reduce/reduce conflicts.
+State 67 contains 3 reduce/reduce conflicts.
 
 
-41 terminals, 17 nonterminals
-64 grammar rules, 101 states
+42 terminals, 26 nonterminals
+80 grammar rules, 134 states

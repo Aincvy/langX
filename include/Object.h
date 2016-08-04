@@ -68,7 +68,9 @@ namespace langX {
 		// 变量节点
 		NODE_VARIABLE ,
 		// 操作符节点
-		NODE_OPERATOR
+		NODE_OPERATOR ,
+		// 实参节点   
+		NODE_ARGS 
 	};
 
 	struct Constant
@@ -101,6 +103,8 @@ namespace langX {
 		bool freeOnExeced;
 		// 当前节点的值 .  如果当前结点是一个常量数字， 则free 的时候会施放这个值得内存
 		Object *value;
+		// 万能指针 ， 主要用于放置参数什么的
+		void *ptr_u;
 
 		Variable *var_obj;
 		Constant *con_obj;

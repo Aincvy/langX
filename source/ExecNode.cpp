@@ -522,6 +522,20 @@ namespace langX {
 		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
+	// 执行一个函数
+	void __execFUNC_CALL(Node *n) {
+		if (n == NULL  )
+		{
+			return;
+		}
+
+		char * name = n->opr_obj->op[0]->var_obj->name;
+		XArgsList *args = (XArgsList *) n->opr_obj->op[1]->ptr_u;
+		n->value = call(name, args);
+		printf("func %s exec end\n" , name);
+	}
+
+
 	/*
 	 * 执行节点，  节点的结果 将 放在  Node.value 上
 	 * 这是一个 Object 类型的指针    07-24
@@ -581,8 +595,13 @@ namespace langX {
 			return;
 		}
 
+		if (node->type != NODE_OPERATOR)
+		{
+			printf("undeal type: %d\n" , node->type);
+			return;
+		}
 
-		printf("exec operator node. opr is: %d\n", node->opr_obj->opr);
+		//printf("exec operator node. opr is: %d\n", node->opr_obj->opr);
 		switch (node->opr_obj->opr)
 		{
 		case '+':
@@ -654,6 +673,9 @@ namespace langX {
 			__execWHILE(node);
 		case FOR:
 			__execFOR(node);
+		case FUNC_CALL:
+			__execFUNC_CALL(node);
+			break;
 		default:
 			break;
 		}

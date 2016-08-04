@@ -15,6 +15,7 @@ typedef langX::Variable XVariable;
 typedef langX::Node XNode;
 typedef langX::ParamsList XParamsList;
 typedef langX::ArgsList XArgsList;
+typedef langX::Object XObject;
 
 
 //  lex/yacc 是C语言的
@@ -37,7 +38,9 @@ extern "C" {
 	// 创建一个函数节点
 	XNode * func(char *, XParamsList *,XNode *);
 	// 使用一个函数
-	XNode * call(char *, XArgsList *);
+	XObject * call(char *, XArgsList *);
+	// 创建一个节点， 节点内容为实参列表
+	XNode * argsNode(XArgsList *);
 
 	// 创建一个形参列表， 或者 追加一个参数到 列表中
 	XParamsList * params(XParamsList *, char *);
