@@ -104,6 +104,14 @@ namespace langX {
 
 	Function * Environment::getFunction(const std::string &name)
 	{
+		if (this->m_functions_map.find(name) == this->m_functions_map.end())
+		{
+			if (this->m_parent != NULL)
+			{
+				return this->m_parent->getFunction(name);
+			}
+			return NULL;
+		}
 		return this->m_functions_map[name];
 	}
 

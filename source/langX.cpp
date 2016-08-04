@@ -7,6 +7,7 @@ namespace langX {
 	langXState::langXState()
 	{
 		this->m_global_env = new Environment();
+		this->m_global_env->setParent(NULL);
 		this->m_current_env = this->m_global_env;
 		this->m_allocator = new Allocator();
 	}

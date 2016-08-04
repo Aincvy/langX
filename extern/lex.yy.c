@@ -855,7 +855,7 @@ YY_RULE_SETUP
 case 15:
 YY_RULE_SETUP
 #line 35 "a.l"
-{ /*printf("get var: %s, length: %d\n" , yytext,yyleng); */ yylval.sValue=strdup(yytext); return VARIABLE;}
+{ /*printf("get var: %s, length: %d\n" , yytext,yyleng); */ yylval.sValue=strdup(yytext); return IDENTIFIER;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
