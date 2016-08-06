@@ -23,8 +23,10 @@
 #define WHILE 279
 #define FOR 280
 #define DELETE 281
-#define IFX 282
-#define UMINUS 283
+#define BREAK 282
+#define RETURN 283
+#define IFX 284
+#define UMINUS 285
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

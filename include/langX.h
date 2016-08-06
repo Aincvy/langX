@@ -4,6 +4,7 @@
 #include "Object.h"
 #include "Environment.h"
 #include "Allocator.h"
+#include "Function.h"
 
 namespace langX {
 	class langXState
@@ -24,6 +25,11 @@ namespace langX {
 
 		Environment *getCurrentEnv() const;
 		Environment *getGlobalEnv() const;
+
+		// 注册一个第三方函数
+		void reg3rd(const char *, X3rdFuncWorker worker);
+		// 解除函数的注册
+		void unreg3rd(const char *);
 
 		Allocator &getAllocator() const;
 

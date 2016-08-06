@@ -12,6 +12,8 @@ int yylex(void);
 extern YYSTYPE yylval;
 
 void comment(void);
+int column = 0; 
+void count(void);
 
 %}
 
@@ -19,41 +21,45 @@ void comment(void);
 "/*"			{ comment(); }
 "//"[^\n]*      { /* consume //-comment */ }
 
-"auto" {return AUTO;}
-"if" {return IF;}
-"else" {return ELSE;}
-"while" {return WHILE;}
-"for" {return FOR;}
-"delete" {return DELETE;}
-"false" { yylval.iValue = 0.0; return TBOOL;}
-"true" { yylval.iValue = 1.0; return TBOOL;}
-"=>"   { return FUNC_OP; }
-"++"   { return INC_OP;}
-"--"   { return DEC_OP;}
+"auto" {count(); return AUTO;}
+"if" {count(); return IF;}
+"else" {count(); return ELSE;}
+"while" {count(); return WHILE;}
+"for" {count(); return FOR;}
+"delete" {count(); count(); return DELETE;}
+"false" {count();  yylval.iValue = 0.0; return TBOOL;}
+"true" {count();  yylval.iValue = 1.0; return TBOOL;}
+"break" {count(); return BREAK;}
+"return" {count(); return RETURN; }
+"=>"   {count();  return FUNC_OP; }
+"++"   {count();  return INC_OP;}
+"--"   {count();  return DEC_OP;}
 
-\"(.)*\"   { yylval.sValue = strdup(yytext); return TSTRING;}
-[a-zA-Z][a-zA-Z0-9]* { /*printf("get var: %s, length: %d\n" , yytext,yyleng); */ yylval.sValue=strdup(yytext); return IDENTIFIER;}
-([1-9][0-9]*)|0|((0|[1-9][0-9]*)\.[0-9]+) { yylval.iValue = atof(yytext); /*printf("get a double value: %f\n",yylval.iValue );*/ return TDOUBLE;}
+\"(\\.|[^\\"\n])*\"   {count();  yylval.sValue = strdup(yytext); return TSTRING;}
+[a-zA-Z][a-zA-Z0-9]*  {count();  yylval.sValue=strdup(yytext); return IDENTIFIER;}
+([1-9][0-9]*)|0|((0|[1-9][0-9]*)\.[0-9]+) { count(); yylval.iValue = atof(yytext); return TDOUBLE;}
 
-"<=" { return LE_OP;}
-">=" { return GE_OP;}
-"==" { return EQ_OP;}
-"!=" { return NE_OP;}
-"+=" { return ADD_EQ; }
-"-=" { return SUB_EQ; }
-"*=" { return MUL_EQ; }
-"/=" { return DIV_EQ; }
-">" { return '>'; }
-"<" { return '<'; }
-"{" { return '{'; }
-"}" { return '}'; }
-";" { return ';'; }
-"=" { return '='; }
-"," { return ','; }
-[+-/*()] {return *yytext;}
-[ \t\n] ;
-"&&" { return AND_OP;}
-"||" { return OR_OP;}
+"<=" {count(); return LE_OP;}
+">=" {count(); return GE_OP;}
+"==" {count(); return EQ_OP;}
+"!=" {count(); return NE_OP;}
+"+=" {count(); return ADD_EQ; }
+"-=" {count(); return SUB_EQ; }
+"*=" {count(); return MUL_EQ; }
+"/=" {count(); return DIV_EQ; }
+">" {count(); return '>'; }
+"<" {count(); return '<'; }
+"{" {count(); return '{'; }
+"}" {count(); return '}'; }
+";" {count(); return ';'; }
+"=" {count(); return '='; }
+"," {count(); return ','; }
+[+-/*()] {count(); return *yytext;}
+"&&" {count(); return AND_OP;}
+"||" {count(); return OR_OP;}
+
+[ \t]  {count(); }
+[\n]   {count(); yylineno++; }
 
 %%
 
@@ -68,4 +74,19 @@ void comment(void)
 		prev = c;
 	}
 	//error("unterminated comment");
+}
+
+void count(void)
+{
+	int i;
+
+	for (i = 0; yytext[i] != '\0'; i++)
+		if (yytext[i] == '\n')
+			column = 0;
+		else if (yytext[i] == '\t')
+			column += 8 - (column % 8);
+		else
+			column++;
+
+	/*ECHO; */
 }

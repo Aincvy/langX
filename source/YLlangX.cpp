@@ -6,6 +6,7 @@
 #include "../include/Object.h"
 #include "../include/Number.h"
 #include "../include/ExecNode.h"
+#include "../include/RegFunctions.h"
 
 using namespace langX;
 
@@ -17,6 +18,8 @@ void initLangX()
 	{
 		printf("initLangX\n");
 		state = new langXState();
+
+		regFunctions(state);
 	}
 }
 
@@ -69,9 +72,9 @@ XNode * string(char *v)
 	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
 
 	node->type = NODE_CONSTANT_STRING;
-	// v 是已经申请过的内存 ， 直接复制就OK
+	// v 是已经申请过的内存 ， 直接赋值就OK
 	node->con_obj->sValue = v;
-	//printf("createNumberNode: %d\n",i);
+	//printf("createStringNode: %d\n",i);
 	return node;
 }
 
@@ -115,7 +118,6 @@ XNode * opr(int opr, int npos, ...)
 	node->value = NULL;
 	node->type = NODE_OPERATOR;
 	node->freeOnExeced = true;
-	node->opr_obj->bool_value = false;
 	node->opr_obj->opr = opr;
 	node->opr_obj->op_count = npos;
 
@@ -144,6 +146,7 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	Function *func = new Function(name, node);
 	func->setParamsList(params);
 	getState()->getCurrentEnv()->putFunction(name, func);
+	free(name);
 	return nullptr;
 }
 
@@ -154,6 +157,25 @@ XObject * call(char *name, XArgsList* args)
 	{
 		printf("cannot find function %s\n", name);
 		return NULL;
+	}
+
+	if (function->is3rd())
+	{
+		// 第三方函数 
+		X3rdFunction *x3rdfunc = (X3rdFunction*)function;
+		X3rdArgs _3rdArgs;
+		for (int i = 0; i < args->index; i++)
+		{
+			if (args->args[i] == NULL)
+			{
+				_3rdArgs.args[i] = NULL;
+				continue;
+			}
+			execNode(args->args[i]);
+			_3rdArgs.args[i] = args->args[i]->value;
+		}
+		_3rdArgs.index = args->index; 
+		return x3rdfunc->call(_3rdArgs);
 	}
 
 	Environment * env = getState()->newEnv();
@@ -171,7 +193,7 @@ XObject * call(char *name, XArgsList* args)
 			{
 				execNode(args->args[i]);
 				env->putObject(params->args[i], args->args[i]->value);
-				printf("put object: %s\n", params->args[i]);
+				//printf("put object: %s\n", params->args[i]);
 			}
 		}
 
@@ -251,6 +273,15 @@ void freeNode(XNode * n) {
 	//printf("free node\n");
 	if (n->type == NODE_CONSTANT_NUMBER)
 	{
+		free(n->con_obj);
+		free(n);
+	}
+	else if (n->type == NODE_CONSTANT_STRING)
+	{
+		if (n->con_obj->sValue != NULL)
+		{
+			free(n->con_obj->sValue);
+		}
 		free(n->con_obj);
 		free(n);
 	}

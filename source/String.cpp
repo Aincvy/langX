@@ -1,14 +1,21 @@
 #include "../include/String.h"
 
 namespace langX {
-	String::String(char *v)
+	String::String(const char *v)
 	{
 		this->m_value = std::string(v);
-		free(v);
 	}
 	String::~String()
 	{
 
+	}
+	void String::add(const char * str)
+	{
+		this->m_value += str;
+	}
+	void String::add(String *str)
+	{
+		add(str->getValue());
 	}
 	const char * String::getValue()
 	{
@@ -24,7 +31,7 @@ namespace langX {
 	}
 	Object * String::clone() const
 	{
-		return nullptr;
+		return new String(this->m_value.c_str());
 	}
 	void String::update(Object *right)
 	{

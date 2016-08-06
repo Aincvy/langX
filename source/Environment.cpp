@@ -13,7 +13,7 @@ namespace langX {
 	Environment::~Environment()
 	{
 		this->m_parent = NULL;
-		printf("~Environment\n");
+		//printf("~Environment\n");
 		if (!m_objects_map.empty())
 		{
 			for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++) {
