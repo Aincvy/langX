@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "Number.h"
+#include  "String.h"
 
 namespace langX {
 	class Allocator
@@ -17,6 +18,10 @@ namespace langX {
 		Number *allocateNumber() const;
 		Number *allocateNumber(double ) const;
 		void freeNumber(Number *);
+
+		String *allocateString() const;
+		String *allocateString(const char *) const;
+		void freeString(String *);
 
 	private:
 

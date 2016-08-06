@@ -1,16 +1,6 @@
-funcA => {
-	b=1;
-	c=2;
-}
+a = "hello" + ",world";
+print(a);
 
-funcB => (p1,p2,p3){
-	b=1;
-	c=2;
-}
-a = 1;
-a;
-
-funcA();
-funcB(1,2,3);
-b;
-c;
+print(111);
+print("222");
+print(123 + "456");

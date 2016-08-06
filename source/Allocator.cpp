@@ -77,5 +77,24 @@ namespace langX {
 		delete v;
 	}
 
+	String * Allocator::allocateString() const
+	{
+		return new String("");
+	}
+
+	String * Allocator::allocateString(const char *str) const
+	{
+		return new String(str);
+	}
+
+	void Allocator::freeString(String *str)
+	{
+		if (str == NULL)
+		{
+			return;
+		}
+		delete str;
+	}
+
 
 }

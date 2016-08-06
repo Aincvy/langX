@@ -61,6 +61,21 @@ namespace langX {
 		return this->m_global_env;
 	}
 
+	void langXState::reg3rd(const char *name, X3rdFuncWorker worker)
+	{
+		X3rdFunction *func = new X3rdFunction();
+		func->setName(name);
+		func->setWorker(worker);
+		func->setParamsList(NULL);
+		func->setLangX(this);
+		this->m_global_env->putFunction(name, func);
+	}
+
+	void langXState::unreg3rd(const char *name)
+	{
+		// do nothing now. 
+	}
+
 	Allocator & langXState::getAllocator() const
 	{
 		return (*this->m_allocator);

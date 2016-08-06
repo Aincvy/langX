@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include <sstream>
 #include "../include/ExecNode.h"
 #include "../include/YLlangX.h"
 #include "../include/Object.h"
@@ -58,6 +60,12 @@ namespace langX {
 
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
+			if (n->opr_obj->op[i] == NULL)
+			{
+				continue;
+			}
+
+			//printf("freeSubNodes: %d\n" , i);
 			m_exec_alloc.free(n->opr_obj->op[i]->value);
 			n->opr_obj->op[i]->value = NULL;
 		}
@@ -74,6 +82,7 @@ namespace langX {
 		{
 			return;
 		}
+
 		// 不是变量 ， 不做任何处理
 		if (left->type != NODE_VARIABLE)
 		{
@@ -121,6 +130,9 @@ namespace langX {
 		return 0;
 	}
 
+	//  尝试吧这个节点的 值 转换成一个 布尔值。
+	// 如果这个节点并没有被运算， 则会运算这个节点
+	// 判断之后， 并不会释放这个节点的内存
 	bool __tryConvertToBool(Node *n) {
 		if (n == NULL)
 		{
@@ -136,38 +148,56 @@ namespace langX {
 		return n->value->isTrue();
 	}
 
-	int __getNumberValue(Node*n, double *v) {
-		//printf("__getNumberValue00   \n");
-		if (n == NULL || v == NULL)
-		{
-			return -1;
-		}
-
-		checkValue(n);
-		return __readRealNumber(n->value, v);
-	}
-
 	// +  
 	// 操作结果， 会将结果存储在当前节点中 
 	void __exec43(Node *n) {
-		//printf("__exec43 n addr: %p\n", n);
-		//printf("op_count: %d\n" , n->opr_obj->op_count);
-		//__execNode(n->opr_obj->op[0]);
-		//__execNode(n->opr_obj->op[1]);
 		doSubNodes(n);
 
 		// 子节点的值是为了计算当前结点的值， 如果当前结点的值 计算 结束， 则释放掉子节点值得内存
 		// 子节点的值如果是一个常量， 则该值是一个 new 的内存， 如果是一个变量， 则该值是一个 clone 出现的对象
+		Object * left = n->opr_obj->op[0]->value;
+		Object * right = n->opr_obj->op[1]->value;
 
-		//n->value = new Number(a + b);
-		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() + ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
+		if (left->getType() == NUMBER && right->getType() == NUMBER)
+		{
+			n->value = m_exec_alloc.allocateNumber(((Number*)left)->getDoubleValue() + ((Number*)right)->getDoubleValue());
+		}
+		else if (left->getType() == STRING || right->getType() == STRING)
+		{
+			// 字符串拼接 
+			std::stringstream ss;
+			if (left->getType() == STRING)
+			{
+				ss << ((String*)left)->getValue();
+			}
+			else if (left->getType() == NUMBER)
+			{
+				ss << ((Number*)left)->getDoubleValue();
+			}
+			else {
+				printf("error type in do add opr! \n");
+				return;
+			}
 
-		//m_exec_alloc.free(n->opr_obj->op[0]->value);
-		//m_exec_alloc.free(n->opr_obj->op[1]->value);
-		//n->opr_obj->op[0]->value = n->opr_obj->op[1]->value = NULL;
+			if (right->getType() == STRING)
+			{
+				ss << ((String*)right)->getValue();
+			}
+			else if (right->getType() == NUMBER)
+			{
+				ss << ((Number*)right)->getDoubleValue();
+			}
+			else {
+				printf("error type in do add opr! \n");
+				return;
+			}
+
+			n->value = m_exec_alloc.allocateString(ss.str().c_str());
+		}
+
 		freeSubNodes(n);
 
-		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
+		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// -
@@ -177,7 +207,7 @@ namespace langX {
 		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() - ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
 		freeSubNodes(n);
 
-		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
+		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// *
@@ -186,7 +216,7 @@ namespace langX {
 		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() * ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
 		freeSubNodes(n);
 
-		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
+		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// /
@@ -195,7 +225,7 @@ namespace langX {
 		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() / ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
 		freeSubNodes(n);
 
-		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
+		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// 赋值操作 = 
@@ -327,100 +357,109 @@ namespace langX {
 
 	// 符号： >
 	void __exec62(Node *n) {
-		double a = 0;
-		__getNumberValue(n->opr_obj->op[0], &a);
-		double b = 0;
-		__getNumberValue(n->opr_obj->op[1], &b);
+		doSubNodes(n);
+
+		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
+		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
 
 		if (a > b)
 		{
-			n->opr_obj->bool_value = true;
+			n->value = m_exec_alloc.allocateNumber(1);
 		}
 		else {
-			n->opr_obj->bool_value = false;
+			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
+		freeSubNodes(n);
 	}
 
 	// 大于等于
 	void __execGE_OP(Node *n) {
-		double a = 0;
-		__getNumberValue(n->opr_obj->op[0], &a);
-		double b = 0;
-		__getNumberValue(n->opr_obj->op[1], &b);
+		doSubNodes(n);
+
+		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
+		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
 
 		if (a >= b)
 		{
-			n->opr_obj->bool_value = true;
+			n->value = m_exec_alloc.allocateNumber(1);
 		}
 		else {
-			n->opr_obj->bool_value = false;
+			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
+		freeSubNodes(n);
 	}
 
 	// 符号： <
 	void __exec60(Node *n) {
-		double a = 0;
-		__getNumberValue(n->opr_obj->op[0], &a);
-		double b = 0;
-		__getNumberValue(n->opr_obj->op[1], &b);
+		doSubNodes(n);
+
+		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
+		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
 
 		if (a < b)
 		{
-			n->opr_obj->bool_value = true;
+			n->value = m_exec_alloc.allocateNumber(1);
 		}
 		else {
-			n->opr_obj->bool_value = false;
+			n->value = m_exec_alloc.allocateNumber(0);
 		}
+
+		freeSubNodes(n);
 	}
 
 	// 小于等于
 	void __execLE_OP(Node *n) {
-		double a = 0;
-		__getNumberValue(n->opr_obj->op[0], &a);
-		double b = 0;
-		__getNumberValue(n->opr_obj->op[1], &b);
+		doSubNodes(n);
+
+		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
+		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
 
 		if (a <= b)
 		{
-			n->opr_obj->bool_value = true;
+			n->value = m_exec_alloc.allocateNumber(1);
 		}
 		else {
-			n->opr_obj->bool_value = false;
+			n->value = m_exec_alloc.allocateNumber(0);
 		}
+
+		freeSubNodes(n);
 	}
 
 	// 等于
 	void __execEQ_OP(Node *n) {
-		double a = 0;
-		__getNumberValue(n->opr_obj->op[0], &a);
-		double b = 0;
-		__getNumberValue(n->opr_obj->op[1], &b);
+		doSubNodes(n);
+
+		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
+		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
 
 		if (a == b)
 		{
-			n->opr_obj->bool_value = true;
+			n->value = m_exec_alloc.allocateNumber(1);
 		}
 		else {
-			n->opr_obj->bool_value = false;
+			n->value = m_exec_alloc.allocateNumber(0);
 		}
+
+		freeSubNodes(n);
 	}
 
 	// 不等于
 	void __execNE_OP(Node *n) {
-		double a = 0;
-		__getNumberValue(n->opr_obj->op[0], &a);
-		double b = 0;
-		__getNumberValue(n->opr_obj->op[1], &b);
+		doSubNodes(n);
+
+		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
+		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
 
 		if (a != b)
 		{
-			n->opr_obj->bool_value = true;
+			n->value = m_exec_alloc.allocateNumber(1);
 		}
 		else {
-			n->opr_obj->bool_value = false;
+			n->value = m_exec_alloc.allocateNumber(0);
 		}
+		freeSubNodes(n);
 	}
 
 	void __execOPAND(Node *n) {
@@ -431,12 +470,13 @@ namespace langX {
 
 		if (__tryConvertToBool(n->opr_obj->op[0]))
 		{
-			n->opr_obj->bool_value = __tryConvertToBool(n->opr_obj->op[1]);
-			//__execNode(n->opr_obj->op[1]);
+			n->value = __tryConvertToBool(n->opr_obj->op[1]) ? n->value = m_exec_alloc.allocateNumber(1): n->value = m_exec_alloc.allocateNumber(0);
 		}
 		else {
-			n->opr_obj->bool_value = false;
+			n->value = m_exec_alloc.allocateNumber(0);
 		}
+
+		freeSubNodes(n);
 	}
 
 	void __execOPOR(Node *n) {
@@ -447,11 +487,13 @@ namespace langX {
 
 		if (__tryConvertToBool(n->opr_obj->op[0]))
 		{
-			n->opr_obj->bool_value = true;
+			n->value = m_exec_alloc.allocateNumber(1);
 		}
 		else {
-			n->opr_obj->bool_value = __tryConvertToBool(n->opr_obj->op[1]);
+			n->value = __tryConvertToBool(n->opr_obj->op[1]) ? n->value = m_exec_alloc.allocateNumber(1) : n->value = m_exec_alloc.allocateNumber(0);
 		}
+
+		freeSubNodes(n);
 	}
 
 	void __execIF(Node *n) {
@@ -470,6 +512,9 @@ namespace langX {
 				__execNode(n->opr_obj->op[2]);
 			}
 		}
+
+		// 清理掉 所有复制  值 占用的内存
+		freeSubNodes(n);
 	}
 
 	void __execWHILE(Node *n) {
@@ -478,10 +523,19 @@ namespace langX {
 			return;
 		}
 
-		while (__tryConvertToBool(n->opr_obj->op[0]))
+		// 先执行条件 节点 ,然后判断条件 节点的值， 然后释放条件 节点的内存
+		// 循环执行结束 ， 释放掉  所有节点值 的内存
+
+		Node *conNode = n->opr_obj->op[0];
+		while (__tryConvertToBool(conNode))
 		{
+			m_exec_alloc.free(conNode->value);
+			conNode->value = NULL;
+
 			__execNode(n->opr_obj->op[1]);
 		}
+		
+		freeSubNodes(n);
 	}
 
 	void __execFOR(Node *n) {
@@ -490,10 +544,16 @@ namespace langX {
 			return;
 		}
 
-		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(n->opr_obj->op[1]); __execNode(n->opr_obj->op[2]))
+		Node *conNode = n->opr_obj->op[1];
+		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode); __execNode(n->opr_obj->op[2]))
 		{
+			m_exec_alloc.free(conNode->value);
+			conNode->value = NULL;
+
 			__execNode(n->opr_obj->op[3]);
 		}
+
+		freeSubNodes(n);
 	}
 
 	void __execUMINUS(Node *n) {
@@ -519,7 +579,7 @@ namespace langX {
 		}
 		
 		freeSubNodes(n);
-		printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
+		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// 执行一个函数
@@ -532,7 +592,7 @@ namespace langX {
 		char * name = n->opr_obj->op[0]->var_obj->name;
 		XArgsList *args = (XArgsList *) n->opr_obj->op[1]->ptr_u;
 		n->value = call(name, args);
-		printf("func %s exec end\n" , name);
+		//printf("func %s exec end\n" , name);
 	}
 
 
@@ -556,7 +616,7 @@ namespace langX {
 		//printf("node addr: %p\n",node);
 		if (node->type == NODE_VARIABLE)
 		{
-			printf("__execNode NODE_VARIABLE\n");
+			//printf("__execNode NODE_VARIABLE\n");
 			// 协调程序， 使变量的 obj 处于赋值状态
 			if (node->value == NULL)
 			{
@@ -565,14 +625,19 @@ namespace langX {
 
 				if (obj == NULL)
 				{
-					printf("var %s=null \n", node->var_obj->name);
+					//printf("var %s=null \n", node->var_obj->name);
 					node->value = NULL;
 				}
 				else {
 					if (obj->getType() == NUMBER)
 					{
 						Number * number = (Number*)obj;
-						printf("var %s=%.2f \n", node->var_obj->name, number->getDoubleValue());
+						//printf("var %s=%.2f \n", node->var_obj->name, number->getDoubleValue());
+					}
+					else if (obj->getType() == STRING)
+					{
+						String *string = (String*)obj;
+						//printf("var %s=\"%s\" \n" , node->var_obj->name, string->getValue());
 					}
 
 					// 变量类型为 一个 copy 
@@ -585,13 +650,18 @@ namespace langX {
 		}
 		else if (node->type == NODE_CONSTANT_NUMBER)
 		{
-			printf("__execNode NODE_CONSTANT_NUMBER\n");
+			//printf("__execNode NODE_CONSTANT_NUMBER\n");
 			node->value = m_exec_alloc.allocateNumber(node->con_obj->dValue);
 			return;
 		}
 		else if (node->type == NODE_CONSTANT_STRING)
 		{
-			printf("__execNode NODE_CONSTANT_STRING\n");
+			//printf("__execNode NODE_CONSTANT_STRING\n");
+			//  因为匹配出的字符串是带有 双引号的， 现在要去掉这个双引号
+			char *tmp = strndup(node->con_obj->sValue + 1, strlen(node->con_obj->sValue) - 2);
+			node->value = m_exec_alloc.allocateString(tmp);
+			free(tmp);
+
 			return;
 		}
 
@@ -671,8 +741,10 @@ namespace langX {
 			break;
 		case WHILE:
 			__execWHILE(node);
+			break;
 		case FOR:
 			__execFOR(node);
+			break;
 		case FUNC_CALL:
 			__execFUNC_CALL(node);
 			break;

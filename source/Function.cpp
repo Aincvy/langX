@@ -1,6 +1,8 @@
 #include <stdlib.h>
+#include <string.h>
 #include "../include/Function.h"
 #include "../include/ExecNode.h"
+#include "../include/langX.h"
 
 namespace langX {
 
@@ -16,9 +18,9 @@ namespace langX {
 		this->m_node_root = root;
 	}
 
-	Function::Function(char *name, Node *node)
-	{
-		this->m_name = name;
+	Function::Function(const char *name, Node *node)
+	{	
+		setName(name);
 		this->m_node_root = node;
 	}
 
@@ -36,14 +38,14 @@ namespace langX {
 		return this->m_name;
 	}
 
-	void Function::setName(char *name)
+	void Function::setName(const char *name)
 	{
 		if (this->m_name != NULL)
 		{
 			free(this->m_name);
 			this->m_name = NULL;
 		}
-		this->m_name = name;
+		this->m_name = strdup(name);
 	}
 
 	void Function::setParamsList(ParamsList *list)
@@ -91,9 +93,59 @@ namespace langX {
 	{
 	}
 
+	bool Function::is3rd() const
+	{
+		return false;
+	}
+
 	void Function::finalize()
 	{
 		delete this;
 	}
+
+
+
+
+
+	X3rdFunction::X3rdFunction()
+	{
+		m_worker = NULL;
+		m_state = NULL;
+	}
+
+	X3rdFunction::~X3rdFunction()
+	{
+	}
+
+	void X3rdFunction::setLangX(langXState *x)
+	{
+		this->m_state = x;
+	}
+
+	langXState * X3rdFunction::getLangX() const
+	{
+		return this->m_state;
+	}
+
+	void X3rdFunction::setWorker(X3rdFuncWorker worker)
+	{
+		this->m_worker = worker;
+	}
+
+	X3rdFuncWorker X3rdFunction::getWorker() const
+	{
+		return this->m_worker;
+	}
+
+	bool X3rdFunction::is3rd() const
+	{
+		return true;
+	}
+
+	Object * X3rdFunction::call(const X3rdArgs & args)
+	{
+		return m_worker(this,args);
+	}
+
 
 }

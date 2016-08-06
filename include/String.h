@@ -10,8 +10,13 @@ namespace langX {
 	class String : public Object
 	{
 	public:
-		String(char *);
+		String(const char *);
 		~String();
+
+		//  将参数的值追加到当前字符串的后面
+		void add(const char*);
+		//  将参数的值追加到当前字符串的后面
+		void add(String *);
 
 		const char * getValue();
 

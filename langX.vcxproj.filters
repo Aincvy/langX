@@ -51,6 +51,9 @@
     <ClInclude Include="include\Allocator.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\RegFunctions.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Token.cpp">
@@ -90,6 +93,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\Allocator.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RegFunctions.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

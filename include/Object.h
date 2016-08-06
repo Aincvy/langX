@@ -88,8 +88,6 @@ namespace langX {
 		int op_count;
 		// 操作符是什么
 		int opr;
-		// 临时存放bool 结果
-		bool bool_value;
 
 		// 07-23 注释， 结果放在 Node.value 中
 		// 当前操作产生的结果, 这个对象 在FreeNode 函数中并不会释放
@@ -124,6 +122,13 @@ namespace langX {
 	{
 		Node *args[PARAM_COUNT];
 		// 实参索引
+		int index;
+	};
+
+	struct X3rdArgs
+	{
+		Object *args[PARAM_COUNT];
+		// 实参索引, 一般表示 数量了
 		int index;
 	};
 }

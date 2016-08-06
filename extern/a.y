@@ -9,6 +9,10 @@ extern "C" {
 	void yyerror(char *);
 }
 
+extern int yyget_lineno(void);
+extern int column; 
+extern char * yytext;
+
 %}
 
 %union {
@@ -23,11 +27,12 @@ extern "C" {
 %token <sValue> IDENTIFIER TSTRING
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
-%token AUTO IF ELSE WHILE FOR DELETE
+%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN 
 
 %type <iValue> TDOUBLE 
-%type <node> expr statement block expr_list bool_expr assign_expr arithmetic_expr parentheses_expr double_or_ps_expr args_expr_collection number_value_expr id_expr t_bool_expr double_expr uminus_expr string_expr self_assign_expr call_statement
-%type <node> bool_param_expr 
+%type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
+%type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr
+%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr add_arithmetic_stmt_value
 %type <sValue> TSTRING
 %type <params> param_list parameter
 %type <args> args_list args_expr
@@ -57,19 +62,20 @@ statement_list
 	;
 statement
 	: ';'      { $$ = opr(';' , 0 ); }
-	| expr ';' { $$ = $1; }
-	| DELETE IDENTIFIER { $$ = opr(DELETE, 1 ,$2 ); }
-	| IF '(' bool_expr ')' block %prec IFX { $$ = opr(IF ,2,$3,$5) ; }
-	| IF '(' bool_expr ')' block ELSE block { $$ = opr(IF ,3,$3,$5,$7) ; }
-	| WHILE '(' bool_expr ')' block { $$ = opr(WHILE , 2, $3, $5 ); }
-	| FOR '(' expr ';' bool_expr ';' expr ')' block { $$ = opr(FOR,4,$3,$5,$7,$9); }
-	| IDENTIFIER FUNC_OP param_list '{' expr_list '}' { $$ = func($1,$3,$5);}
-	| call_statement    { $$ = $1; }
+	| declar_stmt    { $$ = $1; }
+	| con_ctl_stmt   { $$ = $1; }
+	| simple_stmt ';'   { $$ = $1; }
 	;
 
-//  函数调用
-call_statement
-	: IDENTIFIER '(' args_list ')' ';' { /*$$ = call($1,$3 );*/  $$ = opr(FUNC_CALL,2, var($1), argsNode($3) ); }
+//  声明语句
+declar_stmt
+	: func_declar_stmt   { $$ = $1; }
+	| var_declar_stmt    { $$ = $1; }
+	;
+
+// 函数声明语句
+func_declar_stmt
+	: IDENTIFIER FUNC_OP param_list '{' expr_list '}' { $$ = func($1,$3,$5);}
 	;
 
 param_list
@@ -81,6 +87,53 @@ parameter
 	: IDENTIFIER { $$ = params(NULL, $1); }
 	| parameter ',' IDENTIFIER { params($1,$3); }
 	|        { $$ = NULL; }
+	;
+
+expr_list
+	: expr_list statement { $$ = opr(';',2,$1, $2); }
+	|   { $$ = NULL; }
+	;	
+
+// 变量声明语句   TODO 逗号分隔的 多声明语句
+var_declar_stmt
+	: id_expr ';'  { $$ = $1; }
+	;
+	
+//  条件控制语句
+con_ctl_stmt
+	: selection_stmt    { $$ = $1; }
+	| loop_stmt         { $$ = $1; }
+	;
+
+//  选择语句
+selection_stmt
+	: IF '(' logic_stmt ')' block %prec IFX { $$ = opr(IF ,2,$3,$5) ; }
+	| IF '(' logic_stmt ')' block ELSE block { $$ = opr(IF ,3,$3,$5,$7) ; }
+	;
+
+loop_stmt
+	: WHILE '(' logic_stmt ')' block { $$ = opr(WHILE , 2, $3, $5 ); }
+	| FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block { $$ = opr(FOR,4,$3,$5,$7,$9); }
+	;
+
+//  for 括号内的东西
+for_1_stmt
+	:     { $$ = NULL ; }
+	| assign_stmt  { $$ = $1; }
+	| var_declar_stmt { $$ = $1; }
+	| self_inc_dec_stmt { $$ = $1; }
+	;
+	
+//  简单语句
+simple_stmt
+	: assign_stmt   { $$ = $1; }
+	| call_statement { $$ = $1; }
+	| DELETE IDENTIFIER ';' { $$ = opr(DELETE, 1 ,$2 ); }
+	;
+
+//  函数调用
+call_statement
+	: IDENTIFIER '(' args_list ')' { /*$$ = call($1,$3 );*/  $$ = opr(FUNC_CALL,2, var($1), argsNode($3) ); }
 	;
 
 args_list
@@ -100,56 +153,38 @@ args_expr_collection
 	| string_expr   { $$ = $1; }
 	| uminus_expr   { $$ = $1; }
 	| call_statement { $$ = $1; }
-	| bool_expr     { $$ = $1; }
+	| arithmetic_stmt { $$ = $1;}
 	;
 
 block
 	: '{' expr_list '}'  { $$ = $2;}
 	| statement { $$ = $1; }
 	;
-
-expr_list
-	: expr_list statement { $$ = opr(';',2,$1, $2); }
-	|   { $$ = NULL; }
-	;
 	
-//  表达式， 单条语句 
-expr
-	: t_bool_expr   { $$ = $1; }
-	| double_expr   { $$ = $1; }
-	| id_expr { /*printf("IDENTIFIER $1= %s\n" , $1);*/ $$ = $1; }
-	| TSTRING  { printf("get a string: %s\n" , $1); $$ = string($1); }
-	| uminus_expr     { $$ = $1; }
-	| arithmetic_expr { $$ = $1; }
-	| expr ',' expr { $$ = opr(',',2,$1,$3);}
-	| parentheses_expr { $$ = $1; }
-	| assign_expr   { $$ = $1; }
-	;
 
 // 数字或者 小括号表达式
 double_or_ps_expr
 	: double_expr        { $$ = $1; }
-	| parentheses_expr   { $$ = $1; }
+	| parentheses_stmt   { $$ = $1; }
 	;
 
-parentheses_expr
-	: '(' expr ')'  { $$ = $2; }
+//  小括号表达式
+parentheses_stmt
+	: '(' assign_stmt_value_eq ')'  { $$ = $2; }
 	;
 
-//  运算表达式
-arithmetic_expr
-	: number_value_expr '+' number_value_expr { $$ = opr('+',2,$1,$3);}
-	| number_value_expr '-' number_value_expr { $$ = opr('-',2,$1,$3);}
-	| number_value_expr '*' number_value_expr { $$ = opr('*',2,$1,$3);}
-	| number_value_expr '/' number_value_expr { $$ = opr('/',2,$1,$3);}
+
+//  运算语句
+arithmetic_stmt
+	: add_arithmetic_stmt_value '+' add_arithmetic_stmt_value { $$ = opr('+',2,$1,$3);}
+	| assign_stmt_value_eq '-' assign_stmt_value_eq { $$ = opr('-',2,$1,$3);}
+	| assign_stmt_value_eq '*' assign_stmt_value_eq { $$ = opr('*',2,$1,$3);}
+	| assign_stmt_value_eq '/' assign_stmt_value_eq { $$ = opr('/',2,$1,$3);}
 	;
 
-// 数值， 可能产生 数值值得 表达式都算
-number_value_expr
-	: id_expr        { $$ = $1 ;}
-	| double_expr    { $$ = $1 ;}
-	| uminus_expr    { $$ = $1 ;}
-	| self_assign_expr { $$ = $1; }
+add_arithmetic_stmt_value
+	: assign_stmt_value_eq { $$ = $1 ; }
+	| string_expr          { $$ = $1 ; }
 	;
 
 id_expr
@@ -169,17 +204,17 @@ uminus_expr
 	;
 
 string_expr
-	: TSTRING  { printf("get a string: %s\n" , $1); $$ = string($1); }
+	: TSTRING  { $$ = string($1); }
 	;
 
 //  bool 比较的值
 bool_param_expr
-	: number_value_expr { $$ = $1; }
-	| call_statement    { $$ = $1; }
+	: assign_stmt_value_eq { $$ = $1; }
+	| arithmetic_stmt     { $$ = $1; }
 	;
 
-//  可以获得布尔结果的表达式
-bool_expr
+//  逻辑语句 
+logic_stmt
 	: bool_param_expr { $$ = $1; }
 	| bool_param_expr '>' bool_param_expr { $$ = opr('>',2,$1,$3);}
 	| bool_param_expr '<' bool_param_expr { $$ = opr('<',2,$1,$3);}
@@ -187,31 +222,57 @@ bool_expr
 	| bool_param_expr GE_OP bool_param_expr { $$ = opr( GE_OP,2,$1,$3);}
 	| bool_param_expr EQ_OP bool_param_expr { $$ = opr( EQ_OP,2,$1,$3);}
 	| bool_param_expr NE_OP bool_param_expr { $$ = opr( NE_OP,2,$1,$3);}
-	| bool_expr AND_OP bool_expr { $$ = opr(AND_OP,2,$1,$3);}
-	| bool_expr OR_OP bool_expr  { $$ = opr(OR_OP,2,$1,$3); }
+	| logic_stmt AND_OP logic_stmt { $$ = opr(AND_OP,2,$1,$3);}
+	| logic_stmt OR_OP logic_stmt  { $$ = opr(OR_OP,2,$1,$3); }
 	;
 
 //  自增 OR 自减
-self_assign_expr
+self_inc_dec_stmt
 	: INC_OP id_expr { $$ = opr(INC_OP,1, $2 ); }
 	| DEC_OP id_expr { $$ = opr(DEC_OP,1, $2 ); }
 	| id_expr INC_OP { $$ = opr(INC_OP,1, $1 ); }
 	| id_expr DEC_OP { $$ = opr(DEC_OP,1, $1 ); }
 	;
 
-assign_expr
-	: self_assign_expr { $$ = $1;}
-	| id_expr '=' args_expr_collection { $$ = opr('=',2, $1,$3 ); }
-	| id_expr ADD_EQ args_expr_collection { $$ = opr(ADD_EQ,2,$1,$3);}
-	| id_expr SUB_EQ args_expr_collection { $$ = opr(SUB_EQ,2,$1,$3);}
-	| id_expr MUL_EQ args_expr_collection { $$ = opr(MUL_EQ,2,$1,$3);}
-	| id_expr DIV_EQ args_expr_collection { $$ = opr(DIV_EQ,2,$1,$3);}
+//  赋值语句的值
+assign_stmt_value
+	: double_expr   { $$ = $1; }
+	| uminus_expr   { $$ = $1; }
+	| t_bool_expr   { $$ = $1; }
+	| arithmetic_stmt { $$ = $1; }
+	| call_statement  { $$ = $1; }
+	| id_expr       { $$ = $1; }
+	| string_expr   { $$ = $1; }
+	| self_inc_dec_stmt { $$ = $1; }
+	;
+
+//  += -= *= /=  的值
+assign_stmt_value_eq
+	: double_expr   { $$ = $1; }
+	| uminus_expr   { $$ = $1; }
+	| call_statement    { $$ = $1; }
+	| id_expr       { $$ = $1; }
+	| self_inc_dec_stmt { $$ = $1; }
+	;
+
+// 赋值
+single_assign_stmt
+	: id_expr '=' assign_stmt_value { $$ = opr('=',2, $1,$3 ); }
+	;
+
+//  赋值语句
+assign_stmt
+	: single_assign_stmt   { $$ = $1; }
+	| id_expr ADD_EQ assign_stmt_value_eq { $$ = opr(ADD_EQ,2,$1,$3);}
+	| id_expr SUB_EQ assign_stmt_value_eq { $$ = opr(SUB_EQ,2,$1,$3);}
+	| id_expr MUL_EQ assign_stmt_value_eq { $$ = opr(MUL_EQ,2,$1,$3);}
+	| id_expr DIV_EQ assign_stmt_value_eq { $$ = opr(DIV_EQ,2,$1,$3);}
 	;
 	
 %%
 
 void yyerror(char *s) {
- fprintf(stderr, "%s\n", s);
+ fprintf(stderr, "%s on line %d,column %d. near by '%s' \n", s ,yyget_lineno(),column , yytext  );
 }
 
 int main(int argc, char *argv[]){
