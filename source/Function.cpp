@@ -6,7 +6,7 @@
 
 namespace langX {
 
-
+	extern Allocator m_exec_alloc;
 
 	Function::Function()
 	{
@@ -70,8 +70,13 @@ namespace langX {
 			return NULL;
 		}
 
+		m_node_root->state = IN_FUNC;
 		__execNode(m_node_root);
-		return m_node_root->value;
+		Object * obj = m_node_root->value->clone();
+		m_exec_alloc.free(m_node_root->value);
+		m_node_root->value = NULL;
+
+		return obj;
 	}
 
 	bool Function::isTrue() const

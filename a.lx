@@ -1,3 +1,12 @@
-a=1;
-b = a++ + 1;
-b;
+funa => {
+	a = 1 ;
+	funb();
+	print("funa" + a);
+}
+
+funb => {
+  print("funb: " + a);
+  a = 101 ;
+}
+
+funa(); 

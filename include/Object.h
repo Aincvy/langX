@@ -73,6 +73,17 @@ namespace langX {
 		NODE_ARGS 
 	};
 
+	// 节点的状态， 比如： 正常，在循环内，在函数内
+	enum NodeState
+	{
+		// 正常语句
+		NORMAL,
+		// 在循环内的语句
+		IN_LOOP,
+		// 在函数内的语句
+		IN_FUNC
+	};
+
 	struct Constant
 	{
 		int iValue;
@@ -103,6 +114,10 @@ namespace langX {
 		Object *value;
 		// 万能指针 ， 主要用于放置参数什么的
 		void *ptr_u;
+		// 是否中断 ， 包括 中断循环和函数RETURN
+		bool isBreak;
+		// 节点状态
+		NodeState state;
 
 		Variable *var_obj;
 		Constant *con_obj;

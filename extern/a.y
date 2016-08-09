@@ -31,8 +31,8 @@ extern char * yytext;
 
 %type <iValue> TDOUBLE 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
-%type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr
-%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr add_arithmetic_stmt_value
+%type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt
+%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/
 %type <sValue> TSTRING
 %type <params> param_list parameter
 %type <args> args_list args_expr
@@ -45,7 +45,7 @@ extern char * yytext;
 %right '=' ADD_EQ SUB_EQ MUL_EQ DIV_EQ
 %left AND_OP OR_OP
 %left LE_OP GE_OP EQ_OP NE_OP '>' '<'
-%left '+' '-'
+%left '+' '-' 
 %left '*' '/'
 %nonassoc UMINUS
 
@@ -97,6 +97,7 @@ expr_list
 // 变量声明语句   TODO 逗号分隔的 多声明语句
 var_declar_stmt
 	: id_expr ';'  { $$ = $1; }
+	| id_expr ',' var_declar_stmt { $$ = opr(',' , 2, $1,$3);}
 	;
 	
 //  条件控制语句
@@ -129,6 +130,13 @@ simple_stmt
 	: assign_stmt   { $$ = $1; }
 	| call_statement { $$ = $1; }
 	| DELETE IDENTIFIER ';' { $$ = opr(DELETE, 1 ,$2 ); }
+	| interrupt_stmt { $$ = $1; }
+	;
+
+interrupt_stmt
+	: BREAK { $$ = opr(BREAK, 0); }
+	| RETURN { $$ = opr(RETURN , 0); }
+	| RETURN assign_stmt_value { $$ = opr(RETURN , 1 ,$2);} 
 	;
 
 //  函数调用
@@ -176,15 +184,18 @@ parentheses_stmt
 
 //  运算语句
 arithmetic_stmt
-	: add_arithmetic_stmt_value '+' add_arithmetic_stmt_value { $$ = opr('+',2,$1,$3);}
-	| assign_stmt_value_eq '-' assign_stmt_value_eq { $$ = opr('-',2,$1,$3);}
-	| assign_stmt_value_eq '*' assign_stmt_value_eq { $$ = opr('*',2,$1,$3);}
-	| assign_stmt_value_eq '/' assign_stmt_value_eq { $$ = opr('/',2,$1,$3);}
+	: arithmetic_stmt_factor '+' arithmetic_stmt_factor { $$ = opr('+',2,$1,$3);}
+	| arithmetic_stmt_factor '-' arithmetic_stmt_factor  { $$ = opr('-',2,$1,$3); }
+	| arithmetic_stmt_factor '*' arithmetic_stmt_factor { $$ = opr('*',2,$1,$3); }
+	| arithmetic_stmt_factor '/' arithmetic_stmt_factor  { $$ = opr('/',2,$1,$3); }
 	;
 
-add_arithmetic_stmt_value
-	: assign_stmt_value_eq { $$ = $1 ; }
-	| string_expr          { $$ = $1 ; }
+//  运算语句的分子
+arithmetic_stmt_factor
+	: assign_stmt_value_eq    { $$ = $1 ; }
+	| string_expr             { $$ = $1 ; }
+	| arithmetic_stmt         { $$ = $1 ; }
+	| '(' arithmetic_stmt ')' { $$ = $2 ; }
 	;
 
 id_expr
@@ -258,7 +269,15 @@ assign_stmt_value_eq
 // 赋值
 single_assign_stmt
 	: id_expr '=' assign_stmt_value { $$ = opr('=',2, $1,$3 ); }
+	| id_expr '=' single_assign_stmt { $$ = opr('=',2, $1, $3 ); }
 	;
+
+// 赋值语句的因子
+/*single_assign_stmt_factor
+	: id_expr               { $$ = $1 ;}
+	| single_assign_stmt    { $$ = $1 ;}
+	;
+*/
 
 //  赋值语句
 assign_stmt
