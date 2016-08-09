@@ -1,6 +1,13 @@
-a = "hello" + ",world";
-print(a);
+funa => {
+	// 找出第一个大于10 小于100 的数字
+	for ( i = 0 ; i < 100 ; i++) {
+	  if( i > 10 ){
+	    return i ;
+	  }
+	}
+	
+	return -1 ;
+}
 
-print(111);
-print("222");
-print(123 + "456");
+a = funa();
+print("a: " + a);

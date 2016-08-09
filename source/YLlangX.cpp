@@ -71,6 +71,10 @@ XNode * string(char *v)
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
 	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
 
+	node->freeOnExeced = true;
+	node->isBreak = false;
+	node->state = NORMAL;
+	node->value = NULL;
 	node->type = NODE_CONSTANT_STRING;
 	// v 是已经申请过的内存 ， 直接赋值就OK
 	node->con_obj->sValue = v;
@@ -83,7 +87,9 @@ XNode * number(double a)
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
 	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
 
+	node->isBreak = false;
 	node->type = NODE_CONSTANT_NUMBER;
+	node->state = NORMAL;
 	node->value = NULL;
 	node->freeOnExeced = true;
 	node->con_obj->dValue = a;
@@ -97,7 +103,9 @@ XNode * var(char *name)
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
 	node->var_obj = (langX::Variable*) malloc(sizeof(langX::Variable) * 1);
 
+	node->isBreak = false;
 	node->type = NODE_VARIABLE;
+	node->state = NORMAL;
 	node->freeOnExeced = true;
 	node->value = NULL;
 	node->var_obj->name = name;
@@ -115,7 +123,9 @@ XNode * opr(int opr, int npos, ...)
 	node->opr_obj = (langX::Operator*) malloc(sizeof(langX::Operator) * 1);
 	node->opr_obj->op = (XNode**)malloc(sizeof(XNode*) * npos);
 
+	node->isBreak = false;
 	node->value = NULL;
+	node->state = NORMAL;
 	node->type = NODE_OPERATOR;
 	node->freeOnExeced = true;
 	node->opr_obj->opr = opr;
@@ -179,6 +189,7 @@ XObject * call(char *name, XArgsList* args)
 	}
 
 	Environment * env = getState()->newEnv();
+	Object * ret = NULL;
 	if (args != NULL)
 	{
 		XParamsList *params = function->getParamsList();
@@ -197,15 +208,15 @@ XObject * call(char *name, XArgsList* args)
 			}
 		}
 
-		function->call();
+		ret = function->call();
 
 	}
 	else {
-		function->call();
+		ret = function->call();
 	}
 	getState()->backEnv();
 	
-	return nullptr;
+	return ret;
 }
 
 XNode * argsNode(XArgsList * args) {

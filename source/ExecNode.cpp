@@ -45,7 +45,30 @@ namespace langX {
 
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
-			__execNode(n->opr_obj->op[i]);
+			Node *run = n->opr_obj->op[i];
+			if (run == NULL)
+			{
+				continue;
+			}
+			run->state = n->state;   //状态继承
+			__execNode(run);
+			if (run->isBreak)
+			{
+				return;
+			}
+		}
+	}
+
+	// 状态继承， n 的所有子节点都会继承n的状态
+	void stateExtends(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		for (int i = 0; i < n->opr_obj->op_count; i++)
+		{
+			n->opr_obj->op[i]->state = n->state;
 		}
 	}
 
@@ -308,12 +331,58 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
+	void __execBREAK(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		if (n->state != IN_LOOP)
+		{
+			printf("无效的BREAK 语句 ");
+			return;
+		}
+
+		n->isBreak = true;
+	}
+
+	void __execRETURN(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		// 不在函数内 也能使用 return 语句？
+		// 回头再调整吧， 这个 无伤大雅
+
+		n->isBreak = true;
+		if (n->opr_obj->op_count <= 0)
+		{
+			n->value = NULL;
+		}
+		else {
+			// 存在返回值
+			Node * a = n->opr_obj->op[0];
+			if (a == NULL)
+			{
+				n->value = NULL;
+				return;
+			}
+
+			a->state = n->state;
+			__execNode(a);
+			n->value = a->value->clone();
+
+			freeSubNodes(n);
+		}
+	}
+
 	// 自增运算符 ++ 
 	void __execINC_OP(Node *n) {
 		doSubNodes(n);
 
 		Node *n1 = n->opr_obj->op[0];
-		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() + 1 );
+		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() + 1);
 		setValueToEnv(n1->var_obj->name, n->value);
 
 		freeSubNodes(n);
@@ -345,8 +414,28 @@ namespace langX {
 
 		for (size_t i = 0; i < n->opr_obj->op_count; i++)
 		{
-			__execNode(n->opr_obj->op[i]);
+			Node *run = n->opr_obj->op[i];
+			if (run == NULL)
+			{
+				continue;
+			}
+			run->state = n->state;   // state 传递
+			__execNode(run);
+			if (run->isBreak)
+			{
+				n->isBreak = true;
+				if (run->value == NULL)
+				{
+					n->value = NULL;
+				}
+				else {
+					n->value = run->value->clone();
+				}
+				break;
+			}
 		}
+
+		freeSubNodes(n);
 	}
 
 	// 逗号表达式
@@ -468,9 +557,10 @@ namespace langX {
 			return;
 		}
 
+		stateExtends(n);
 		if (__tryConvertToBool(n->opr_obj->op[0]))
 		{
-			n->value = __tryConvertToBool(n->opr_obj->op[1]) ? n->value = m_exec_alloc.allocateNumber(1): n->value = m_exec_alloc.allocateNumber(0);
+			n->value = __tryConvertToBool(n->opr_obj->op[1]) ? n->value = m_exec_alloc.allocateNumber(1) : n->value = m_exec_alloc.allocateNumber(0);
 		}
 		else {
 			n->value = m_exec_alloc.allocateNumber(0);
@@ -485,6 +575,7 @@ namespace langX {
 			return;
 		}
 
+		stateExtends(n);
 		if (__tryConvertToBool(n->opr_obj->op[0]))
 		{
 			n->value = m_exec_alloc.allocateNumber(1);
@@ -502,14 +593,42 @@ namespace langX {
 			return;
 		}
 
+		stateExtends(n);
 		if (__tryConvertToBool(n->opr_obj->op[0]))
 		{
-			__execNode(n->opr_obj->op[1]);
+			Node * a = n->opr_obj->op[1];
+			if (a != NULL)
+			{
+				__execNode(a);
+				n->isBreak = a->isBreak;
+
+				if (a->value == NULL)
+				{
+					n->value = NULL;
+				}
+				else {
+					n->value = a->value->clone();
+				}
+			}
+
 		}
 		else {
 			if (n->opr_obj->op_count >= 3)
 			{
-				__execNode(n->opr_obj->op[2]);
+				Node * a = n->opr_obj->op[2];
+				if (a != NULL)
+				{
+					__execNode(a);
+					n->isBreak = a->isBreak;
+					if (a->value == NULL)
+					{
+						n->value = NULL;
+					}
+					else {
+						n->value = a->value->clone();
+					}
+				}
+
 			}
 		}
 
@@ -525,6 +644,7 @@ namespace langX {
 
 		// 先执行条件 节点 ,然后判断条件 节点的值， 然后释放条件 节点的内存
 		// 循环执行结束 ， 释放掉  所有节点值 的内存
+		stateExtends(n);
 
 		Node *conNode = n->opr_obj->op[0];
 		while (__tryConvertToBool(conNode))
@@ -532,9 +652,25 @@ namespace langX {
 			m_exec_alloc.free(conNode->value);
 			conNode->value = NULL;
 
-			__execNode(n->opr_obj->op[1]);
+			Node *run = n->opr_obj->op[1];
+			if (run == NULL)
+			{
+				return;
+			}
+			__execNode(run);
+			if (run->isBreak)
+			{
+				if (run->value == NULL)
+				{
+					n->value = NULL;
+				}
+				else {
+					n->value = run->value->clone();
+				}
+				break;
+			}
 		}
-		
+
 		freeSubNodes(n);
 	}
 
@@ -543,6 +679,7 @@ namespace langX {
 		{
 			return;
 		}
+		stateExtends(n);
 
 		Node *conNode = n->opr_obj->op[1];
 		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode); __execNode(n->opr_obj->op[2]))
@@ -550,7 +687,24 @@ namespace langX {
 			m_exec_alloc.free(conNode->value);
 			conNode->value = NULL;
 
-			__execNode(n->opr_obj->op[3]);
+			Node *run = n->opr_obj->op[3];
+			if (run == NULL)
+			{
+				return;
+			}
+			run->state = IN_LOOP;
+			__execNode(run);
+			if (run->isBreak)
+			{
+				if (run->value == NULL)
+				{
+					n->value = NULL;
+				}
+				else {
+					n->value = run->value->clone();
+				}
+				break;
+			}
 		}
 
 		freeSubNodes(n);
@@ -575,22 +729,22 @@ namespace langX {
 			n->value = m_exec_alloc.allocateNumber();
 		}
 		else {
-			n->value = m_exec_alloc.allocateNumber( -((Number*)n1->value)->getDoubleValue());
+			n->value = m_exec_alloc.allocateNumber(-((Number*)n1->value)->getDoubleValue());
 		}
-		
+
 		freeSubNodes(n);
 		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// 执行一个函数
 	void __execFUNC_CALL(Node *n) {
-		if (n == NULL  )
+		if (n == NULL)
 		{
 			return;
 		}
 
 		char * name = n->opr_obj->op[0]->var_obj->name;
-		XArgsList *args = (XArgsList *) n->opr_obj->op[1]->ptr_u;
+		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
 		n->value = call(name, args);
 		//printf("func %s exec end\n" , name);
 	}
@@ -611,6 +765,12 @@ namespace langX {
 		//{
 		//	return;
 		//}
+
+		if (node->isBreak)
+		{
+			//  节点中断
+			return;
+		}
 
 		//printf("__execNode 01x\n");
 		//printf("node addr: %p\n",node);
@@ -667,7 +827,7 @@ namespace langX {
 
 		if (node->type != NODE_OPERATOR)
 		{
-			printf("undeal type: %d\n" , node->type);
+			printf("undeal type: %d\n", node->type);
 			return;
 		}
 
@@ -747,6 +907,12 @@ namespace langX {
 			break;
 		case FUNC_CALL:
 			__execFUNC_CALL(node);
+			break;
+		case BREAK:
+			__execBREAK(node);
+			break;
+		case RETURN:
+			__execRETURN(node);
 			break;
 		default:
 			break;
