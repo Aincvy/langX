@@ -681,6 +681,7 @@ namespace langX {
 			if (run->state.isReturn)
 			{
 				n->state.isReturn = true;
+
 				if (run->value == NULL)
 				{
 					n->value = NULL;
@@ -730,6 +731,7 @@ namespace langX {
 				else {
 					n->value = run->value->clone();
 				}
+				break;
 			}
 		}
 
