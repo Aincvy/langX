@@ -660,6 +660,7 @@ namespace langX {
 			__execNode(run);
 			if (run->isBreak)
 			{
+				n->isBreak = true;
 				if (run->value == NULL)
 				{
 					n->value = NULL;
@@ -696,6 +697,7 @@ namespace langX {
 			__execNode(run);
 			if (run->isBreak)
 			{
+				n->isBreak = true;
 				if (run->value == NULL)
 				{
 					n->value = NULL;
