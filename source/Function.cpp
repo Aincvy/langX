@@ -70,7 +70,7 @@ namespace langX {
 			return NULL;
 		}
 
-		m_node_root->state = IN_FUNC;
+		m_node_root->state.in_func = true;
 		__execNode(m_node_root);
 		Object * obj = m_node_root->value->clone();
 		m_exec_alloc.free(m_node_root->value);
