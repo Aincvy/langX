@@ -52,8 +52,10 @@ namespace langX {
 			}
 			run->state = n->state;   //状态继承
 			__execNode(run);
-			if (run->isBreak)
+			if (run->state.isBreak || run->state.isReturn)
 			{
+				n->state.isBreak = run->state.isBreak;
+				n->state.isReturn = run->state.isReturn;
 				return;
 			}
 		}
@@ -337,13 +339,13 @@ namespace langX {
 			return;
 		}
 
-		if (n->state != IN_LOOP)
+		if (!n->state.in_loop)
 		{
 			printf("无效的BREAK 语句 ");
 			return;
 		}
 
-		n->isBreak = true;
+		n->state.isBreak = true;
 	}
 
 	void __execRETURN(Node *n) {
@@ -354,8 +356,13 @@ namespace langX {
 
 		// 不在函数内 也能使用 return 语句？
 		// 回头再调整吧， 这个 无伤大雅
-
-		n->isBreak = true;
+		if (!n->state.in_func)
+		{
+			printf("无效的 return 语句");
+			return;
+		}
+		
+		n->state.isReturn = true;
 		if (n->opr_obj->op_count <= 0)
 		{
 			n->value = NULL;
@@ -369,7 +376,8 @@ namespace langX {
 				return;
 			}
 
-			a->state = n->state;
+			a->state.in_func = n->state.in_func;
+			a->state.in_loop = n->state.in_loop;
 			__execNode(a);
 			n->value = a->value->clone();
 
@@ -419,11 +427,17 @@ namespace langX {
 			{
 				continue;
 			}
-			run->state = n->state;   // state 传递
+			run->state.in_func = n->state.in_func;   // state 传递
+			run->state.in_loop = n->state.in_loop;
 			__execNode(run);
-			if (run->isBreak)
+			if (run->state.isBreak)
 			{
-				n->isBreak = true;
+				n->state.isBreak = true;
+				break;
+			}
+			if (run->state.isReturn)
+			{
+				n->state.isReturn = true;
 				if (run->value == NULL)
 				{
 					n->value = NULL;
@@ -600,7 +614,8 @@ namespace langX {
 			if (a != NULL)
 			{
 				__execNode(a);
-				n->isBreak = a->isBreak;
+				n->state.isBreak = a->state.isBreak;
+				n->state.isReturn = a->state.isReturn;
 
 				if (a->value == NULL)
 				{
@@ -619,7 +634,8 @@ namespace langX {
 				if (a != NULL)
 				{
 					__execNode(a);
-					n->isBreak = a->isBreak;
+					n->state.isBreak = a->state.isBreak;
+					n->state.isReturn = a->state.isReturn;
 					if (a->value == NULL)
 					{
 						n->value = NULL;
@@ -658,8 +674,13 @@ namespace langX {
 				return;
 			}
 			__execNode(run);
-			if (run->isBreak)
+			if (run->state.isBreak)
 			{
+				break;
+			}
+			if (run->state.isReturn)
+			{
+				n->state.isReturn = true;
 				if (run->value == NULL)
 				{
 					n->value = NULL;
@@ -667,6 +688,7 @@ namespace langX {
 				else {
 					n->value = run->value->clone();
 				}
+
 				break;
 			}
 		}
@@ -690,12 +712,17 @@ namespace langX {
 			Node *run = n->opr_obj->op[3];
 			if (run == NULL)
 			{
-				return;
+				continue;
 			}
-			run->state = IN_LOOP;
+			run->state.in_loop = true;
 			__execNode(run);
-			if (run->isBreak)
+			if (run->state.isBreak)
 			{
+				break;
+			}
+			if (run->state.isReturn)
+			{
+				n->state.isReturn = true;
 				if (run->value == NULL)
 				{
 					n->value = NULL;
@@ -703,7 +730,6 @@ namespace langX {
 				else {
 					n->value = run->value->clone();
 				}
-				break;
 			}
 		}
 
@@ -766,7 +792,7 @@ namespace langX {
 		//	return;
 		//}
 
-		if (node->isBreak)
+		if (node->state.isBreak || node->state.isReturn)
 		{
 			//  节点中断
 			return;

@@ -66,14 +66,20 @@ double getNumberValue(const char *n)
 	return 0;
 }
 
+void deal_state(NodeState * state) {
+	state->isBreak = false;
+	state->isReturn = false;
+	state->in_func = false;
+	state->in_loop = false;
+}
+
 XNode * string(char *v)
 {
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
 	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
 
 	node->freeOnExeced = true;
-	node->isBreak = false;
-	node->state = NORMAL;
+	deal_state(&node->state);
 	node->value = NULL;
 	node->type = NODE_CONSTANT_STRING;
 	// v 是已经申请过的内存 ， 直接赋值就OK
@@ -87,9 +93,8 @@ XNode * number(double a)
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
 	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
 
-	node->isBreak = false;
+	deal_state(&node->state);
 	node->type = NODE_CONSTANT_NUMBER;
-	node->state = NORMAL;
 	node->value = NULL;
 	node->freeOnExeced = true;
 	node->con_obj->dValue = a;
@@ -103,9 +108,8 @@ XNode * var(char *name)
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
 	node->var_obj = (langX::Variable*) malloc(sizeof(langX::Variable) * 1);
 
-	node->isBreak = false;
+	deal_state(&node->state);
 	node->type = NODE_VARIABLE;
-	node->state = NORMAL;
 	node->freeOnExeced = true;
 	node->value = NULL;
 	node->var_obj->name = name;
@@ -123,9 +127,8 @@ XNode * opr(int opr, int npos, ...)
 	node->opr_obj = (langX::Operator*) malloc(sizeof(langX::Operator) * 1);
 	node->opr_obj->op = (XNode**)malloc(sizeof(XNode*) * npos);
 
-	node->isBreak = false;
+	deal_state(&node->state);
 	node->value = NULL;
-	node->state = NORMAL;
 	node->type = NODE_OPERATOR;
 	node->freeOnExeced = true;
 	node->opr_obj->opr = opr;
