@@ -1,6 +1,8 @@
 #include <stdio.h>
-#include "../include/Allocator.h"
+#include "../include/Object.h"
+#include "../include/Number.h"
 #include "../include/String.h"
+#include "../include/Allocator.h"
 
 namespace langX {
 	Allocator::Allocator()

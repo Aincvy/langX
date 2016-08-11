@@ -1,5 +1,7 @@
 #include "../include/Environment.h"
+#include "../include/Object.h"
 #include "../include/Number.h"
+#include "../include/Function.h"
 
 namespace langX {
 

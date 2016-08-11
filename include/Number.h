@@ -1,7 +1,8 @@
 #pragma once
-#include "Object.h"
 
 namespace langX {
+	class Object;
+
 	class Number : public Object
 	{
 	public:

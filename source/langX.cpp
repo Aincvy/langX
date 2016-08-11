@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "../include/langX.h"
+#include "../include/Object.h"
 #include "../include/Number.h"
+#include "../include/Environment.h"
+#include "../include/Allocator.h"
 
 namespace langX {
 

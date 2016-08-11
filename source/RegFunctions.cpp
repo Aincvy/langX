@@ -3,6 +3,8 @@
 #include "../include/RegFunctions.h"
 #include "../include/Function.h"
 #include "../include/Object.h"
+#include "../include/String.h"
+#include "../include/Number.h"
 
 namespace langX {
 

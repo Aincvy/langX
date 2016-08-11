@@ -7,6 +7,8 @@
 #include "../include/Number.h"
 #include "../include/ExecNode.h"
 #include "../include/RegFunctions.h"
+#include "../include/Environment.h"
+#include "../include/Allocator.h"
 
 using namespace langX;
 
@@ -71,6 +73,8 @@ void deal_state(NodeState * state) {
 	state->isReturn = false;
 	state->in_func = false;
 	state->in_loop = false;
+	state->in_switch = false;
+	state->isCaseNeedCon = true;
 }
 
 XNode * string(char *v)
@@ -266,6 +270,19 @@ XArgsList * xArgs(XArgsList *args, XNode *node) {
 	list->index++;
 
 	return list;
+}
+
+void freeArgsList(XArgsList *alist) {
+	if (alist->args != NULL)
+	{
+		for (int i = 0; i < alist->index; i++)
+		{
+			freeNode(alist->args[i]);
+			alist->args[i] = NULL;
+		}
+	}
+
+	free(alist);
 }
 
 void freeNode(XNode * n) {

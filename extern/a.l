@@ -31,6 +31,9 @@ void count(void);
 "true" {count();  yylval.iValue = 1.0; return TBOOL;}
 "break" {count(); return BREAK;}
 "return" {count(); return RETURN; }
+"switch" { count(); return SWITCH;}
+"case"  { count(); return CASE;}
+"default" { count(); return DEFAULT; }
 "=>"   {count();  return FUNC_OP; }
 "++"   {count();  return INC_OP;}
 "--"   {count();  return DEC_OP;}

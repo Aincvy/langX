@@ -47,6 +47,9 @@ extern "C" {
 	// 创建一个实参列表 ， 或者追加一个实参到列表中
 	XArgsList * xArgs(XArgsList *, XNode *);
 
+	// 释放参数列表的 内存
+	void freeArgsList(XArgsList *);
+
 	// 运算这个节点
 	void execNode(XNode *);
 

@@ -2,11 +2,12 @@
 #include <map>
 #include <string>
 #include "Object.h"
-#include "Environment.h"
-#include "Allocator.h"
 #include "Function.h"
 
 namespace langX {
+	class Environment;
+	class Allocator;
+
 	class langXState
 	{
 	public:

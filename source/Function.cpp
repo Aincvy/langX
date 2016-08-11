@@ -1,8 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
-#include "../include/Function.h"
+#include "../include/Object.h"
 #include "../include/ExecNode.h"
 #include "../include/langX.h"
+#include "../include/Function.h"
+#include "../include/Allocator.h"
+#include "../include/YLlangX.h"
 
 namespace langX {
 
@@ -30,6 +33,12 @@ namespace langX {
 		{
 			free(this->m_name);
 			this->m_name = NULL;
+		}
+		if (this->m_node_root != NULL)
+		{
+			this->m_node_root->freeOnExeced = true;
+			freeNode(this->m_node_root);
+			this->m_node_root = NULL;
 		}
 	}
 

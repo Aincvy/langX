@@ -27,12 +27,12 @@ extern char * yytext;
 %token <sValue> IDENTIFIER TSTRING
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
-%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN 
+%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST
 
 %type <iValue> TDOUBLE 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt
-%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/
+%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt
 %type <sValue> TSTRING
 %type <params> param_list parameter
 %type <args> args_list args_expr
@@ -110,6 +110,18 @@ con_ctl_stmt
 selection_stmt
 	: IF '(' logic_stmt ')' block %prec IFX { $$ = opr(IF ,2,$3,$5) ; }
 	| IF '(' logic_stmt ')' block ELSE block { $$ = opr(IF ,3,$3,$5,$7) ; }
+	| SWITCH '(' id_expr ')' '{' case_stmt_list '}'  { $$ = opr(SWITCH, 2 , $3,$6); }
+	;
+
+case_stmt_list
+	: case_stmt            { $$ = opr(CASE_LIST , 1 ,$1 ); }
+	| case_stmt_list case_stmt { $$ = opr(CASE_LIST , 2 ,$1, $2 ); }
+	;
+
+case_stmt
+	: CASE double_expr ':' expr_list  { $$ = opr(CASE, 2 , $2, $4); }
+	| CASE double_expr ':' statement  { $$ = opr(CASE, 2 , $2, $4); }
+	| DEFAULT ':' expr_list               { $$ = opr(DEFAULT , 1, $3); }
 	;
 
 loop_stmt
