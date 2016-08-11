@@ -1,3 +1,4 @@
+#include "../include/Object.h"
 #include "../include/Number.h"
 #include <stdio.h>
 

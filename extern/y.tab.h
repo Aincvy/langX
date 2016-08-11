@@ -25,8 +25,12 @@
 #define DELETE 281
 #define BREAK 282
 #define RETURN 283
-#define IFX 284
-#define UMINUS 285
+#define SWITCH 284
+#define CASE 285
+#define DEFAULT 286
+#define CASE_LIST 287
+#define IFX 288
+#define UMINUS 289
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

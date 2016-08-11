@@ -8,6 +8,7 @@
 #include "../include/String.h"
 #include "../extern/y.tab.h"
 #include "../include/Allocator.h"
+#include "../include/Environment.h"
 
 namespace langX {
 	// 内存的 管理器
@@ -339,7 +340,7 @@ namespace langX {
 			return;
 		}
 
-		if (!n->state.in_loop)
+		if (!n->state.in_loop && !n->state.in_switch)
 		{
 			printf("无效的BREAK 语句 ");
 			return;
@@ -361,7 +362,7 @@ namespace langX {
 			printf("无效的 return 语句");
 			return;
 		}
-		
+
 		n->state.isReturn = true;
 		if (n->opr_obj->op_count <= 0)
 		{
@@ -738,6 +739,109 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
+	void __execSWITCH(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		Node * id_expr = n->opr_obj->op[0];
+		__execNode(id_expr);
+
+		n->state.in_switch = true;
+		Node * case_list = n->opr_obj->op[1];
+		for (int i = 0; i < case_list->opr_obj->op_count; i++)
+		{
+			Node * t = case_list->opr_obj->op[i];
+			t->state.in_switch = true;
+			t->ptr_u = id_expr->value;
+			__execNode(t);
+
+			if (t->state.isBreak)
+			{
+				break;
+			}
+			if (t->state.isReturn)
+			{
+				if (t->value == NULL)
+				{
+					n->value = NULL;
+				}
+				else {
+					n->value = t->value->clone();
+				}
+				break;
+			}
+		}
+
+	}
+
+	void __execCASE_LIST(Node *n) {
+
+		for (int i = 0; i < n->opr_obj->op_count; i++)
+		{
+			Node * t = n->opr_obj->op[i];
+			t->state.in_switch = true;
+			t->state.isCaseNeedCon = n->state.isCaseNeedCon;
+			t->ptr_u = n->value;
+			__execNode(t);
+			n->state.isCaseNeedCon = t->state.isCaseNeedCon;
+
+			if (t->state.isBreak)
+			{
+				break;
+			}
+			if (t->state.isReturn)
+			{
+				if (t->value == NULL)
+				{
+					n->value = NULL;
+				}
+				else {
+					n->value = t->value->clone();
+				}
+				break;
+			}
+		}
+
+		freeSubNodes(n);
+	}
+
+	void __execCASE(Node *n) {
+		if (n == NULL || n->ptr_u == NULL)
+		{
+			return;
+		}
+
+		double a = ((Number*)n->ptr_u)->getDoubleValue();
+
+		Node * con = n->opr_obj->op[0];
+		__execNode(con);
+
+		if (a == ((Number*)con)->getDoubleValue() || !n->state.isCaseNeedCon)
+		{
+			n->state.isCaseNeedCon = false;
+			Node * t = n->opr_obj->op[1];
+			t->state.in_switch = true;
+			__execNode(t);
+
+			n->state.isBreak = t->state.isBreak;
+			if (t->state.isReturn)
+			{
+				n->state.isReturn = true;
+				if (t->value == NULL)
+				{
+					n->value = NULL;
+				}
+				else {
+					n->value = t->value->clone();
+				}
+			}
+		}
+
+		freeSubNodes(n);
+	}
+
 	void __execUMINUS(Node *n) {
 		if (n == NULL)
 		{
@@ -775,6 +879,7 @@ namespace langX {
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
 		n->value = call(name, args);
 		//printf("func %s exec end\n" , name);
+		freeArgsList(args);
 	}
 
 
@@ -941,6 +1046,15 @@ namespace langX {
 			break;
 		case RETURN:
 			__execRETURN(node);
+			break;
+		case SWITCH:
+			__execSWITCH(node);
+			break;
+		case CASE_LIST:
+			__execCASE_LIST(node);
+			break;
+		case CASE:
+			__execCASE(node);
 			break;
 		default:
 			break;

@@ -1,10 +1,11 @@
 #pragma once
 #include <map>
 #include <string>
-#include "Object.h"
-#include "Function.h"
 
 namespace langX {
+
+	class Object;
+	class Function;
 
 	/*
 	 * ª∑æ≥¿‡  

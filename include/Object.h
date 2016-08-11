@@ -80,11 +80,15 @@ namespace langX {
 		bool in_loop;
 		// 在函数内的语句
 		bool in_func;
+		// 在switch 语句中
+		bool in_switch;
 
 		// 是否在 break 状态
 		bool isBreak;
 		// 是否在 return 状态
 		bool isReturn;
+		// 在case 的时候是否需要计算case 的条件
+		bool isCaseNeedCon;
 	};
 
 	struct Constant

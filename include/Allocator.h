@@ -1,9 +1,11 @@
 #pragma once
-#include "Object.h"
-#include "Number.h"
-#include  "String.h"
 
 namespace langX {
+	class Object;
+	enum ObjectType;
+	class Number;
+	class String;
+
 	class Allocator
 	{
 	public:

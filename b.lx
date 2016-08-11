@@ -1,13 +1,12 @@
-funa => {
-	// 找出第一个大于10 小于100 的数字
-	for ( i = 0 ; i < 100 ; i++) {
-	  if( i > 10 ){
-	    return i ;
-	  }
-	}
-	
-	return -1 ;
+a = 1 ;
+b = -1 ;
+switch (a){
+	case 1 :
+		b = 2 ;
+		break ;
+	case 2 :
+		b = 3 ;
+		break ;
 }
 
-a = funa();
-print("a: " + a);
+print("b: " + b);
