@@ -29,11 +29,9 @@ extern char * yytext;
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
 %token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST
 
-%type <iValue> TDOUBLE 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt
-%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt
-%type <sValue> TSTRING
+%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt case_stmt_block
 %type <params> param_list parameter
 %type <args> args_list args_expr
 
@@ -119,11 +117,14 @@ case_stmt_list
 	;
 
 case_stmt
-	: CASE double_expr ':' expr_list  { $$ = opr(CASE, 2 , $2, $4); }
-	| CASE double_expr ':' statement  { $$ = opr(CASE, 2 , $2, $4); }
-	| DEFAULT ':' expr_list               { $$ = opr(DEFAULT , 1, $3); }
+	: CASE double_expr ':' case_stmt_block  { $$ = opr(CASE, 2 , $2, $4); }
+	| DEFAULT ':' case_stmt_block           { $$ = opr(DEFAULT , 1, $3); }
 	;
 
+case_stmt_block
+	:  simple_stmt ';'     { $$ = $1 ; }
+	;
+	
 loop_stmt
 	: WHILE '(' logic_stmt ')' block { $$ = opr(WHILE , 2, $3, $5 ); }
 	| FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block { $$ = opr(FOR,4,$3,$5,$7,$9); }
