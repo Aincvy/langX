@@ -18,4 +18,16 @@ namespace langX {
 			this->finalize();
 		}
 	}
+	bool Object::isLocal() const
+	{
+		return this->m_is_local;
+	}
+	bool Object::isPrivate() const
+	{
+		return this->m_is_private;
+	}
+	bool Object::isPublic() const
+	{
+		return this->m_is_public;
+	}
 }

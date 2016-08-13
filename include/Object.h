@@ -20,7 +20,6 @@ namespace langX {
 		UNKNOWN=100, NUMBER , STRING, FUNCTION
 	};
 
-
 	class Object
 	{
 	public:
@@ -31,6 +30,13 @@ namespace langX {
 		void incRefCount();
 		/* 自减当前对象的引用次数， 如果当前对象的引用次数小于等于0  ， 则销毁当前对象   */
 		void decRefCount();
+
+		// 当前变量是否是一个 local 变量
+		bool isLocal() const;
+		// 当前变量是否是一个 private 变量
+		bool isPrivate() const;
+		// 当前变量是否是一个 public 变量
+		bool isPublic() const;
 
 		/* 当前值可以表示为真么？  null,0,false 都不会表示为真  */
 		virtual bool isTrue() const = 0;
@@ -48,6 +54,10 @@ namespace langX {
 		/* 命名借用了java 里面的命名， 好像意思是定案，
 		在当前语境下， 这个函数应该完成的功能为： 干掉自己   */
 		virtual void finalize() = 0;
+
+		bool m_is_local = false;
+		bool m_is_private = false;
+		bool m_is_public = false;
 	};
 
 	struct Variable
