@@ -430,6 +430,7 @@ namespace langX {
 			}
 			run->state.in_func = n->state.in_func;   // state 传递
 			run->state.in_loop = n->state.in_loop;
+			run->state.in_switch = n->state.in_switch;
 			__execNode(run);
 			if (run->state.isBreak)
 			{
@@ -747,12 +748,19 @@ namespace langX {
 
 		Node * id_expr = n->opr_obj->op[0];
 		__execNode(id_expr);
+		//printf("switch id_expr value: %f\n" , ((Number*)id_expr->value)->getDoubleValue());
 
 		n->state.in_switch = true;
 		Node * case_list = n->opr_obj->op[1];
+		//printf("case_list op_count: %d\n", case_list->opr_obj->op_count);
 		for (int i = 0; i < case_list->opr_obj->op_count; i++)
 		{
 			Node * t = case_list->opr_obj->op[i];
+			if (t == NULL)
+			{
+				continue;
+			}
+
 			t->state.in_switch = true;
 			t->ptr_u = id_expr->value;
 			__execNode(t);
@@ -774,6 +782,7 @@ namespace langX {
 			}
 		}
 
+		freeSubNodes(n);
 	}
 
 	void __execCASE_LIST(Node *n) {
@@ -781,14 +790,21 @@ namespace langX {
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
 			Node * t = n->opr_obj->op[i];
+			if (t == NULL)
+			{
+				continue;
+			}
+
 			t->state.in_switch = true;
 			t->state.isCaseNeedCon = n->state.isCaseNeedCon;
-			t->ptr_u = n->value;
+			// case 语句中  ptr_u 属性保存的是 指向 switch(a)  a 的值
+			t->ptr_u = n->ptr_u;
 			__execNode(t);
 			n->state.isCaseNeedCon = t->state.isCaseNeedCon;
 
 			if (t->state.isBreak)
 			{
+				n->state.isBreak = true;
 				break;
 			}
 			if (t->state.isReturn)
@@ -818,28 +834,36 @@ namespace langX {
 		Node * con = n->opr_obj->op[0];
 		__execNode(con);
 
-		if (a == ((Number*)con)->getDoubleValue() || !n->state.isCaseNeedCon)
+		if (a == ((Number*)con->value)->getDoubleValue() || !n->state.isCaseNeedCon)
 		{
 			n->state.isCaseNeedCon = false;
 			Node * t = n->opr_obj->op[1];
-			t->state.in_switch = true;
-			__execNode(t);
-
-			n->state.isBreak = t->state.isBreak;
-			if (t->state.isReturn)
+			if (t != NULL)
 			{
-				n->state.isReturn = true;
-				if (t->value == NULL)
+				t->state.in_switch = true;
+				__execNode(t);
+
+				n->state.isBreak = t->state.isBreak;
+				if (t->state.isReturn)
 				{
-					n->value = NULL;
-				}
-				else {
-					n->value = t->value->clone();
+					n->state.isReturn = true;
+					if (t->value == NULL)
+					{
+						n->value = NULL;
+					}
+					else {
+						n->value = t->value->clone();
+					}
 				}
 			}
+			
 		}
 
 		freeSubNodes(n);
+	}
+
+	void __execDeafult(Node *n) {
+		__execCASE(n);
 	}
 
 	void __execUMINUS(Node *n) {
@@ -1055,6 +1079,9 @@ namespace langX {
 			break;
 		case CASE:
 			__execCASE(node);
+			break;
+		case DEFAULT:
+			__execDeafult(node);
 			break;
 		default:
 			break;

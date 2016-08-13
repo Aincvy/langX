@@ -54,6 +54,7 @@ void count(void);
 "<" {count(); return '<'; }
 "{" {count(); return '{'; }
 "}" {count(); return '}'; }
+":" {count(); return ':'; }
 ";" {count(); return ';'; }
 "=" {count(); return '='; }
 "," {count(); return ','; }
