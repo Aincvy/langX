@@ -25,13 +25,13 @@ namespace langX {
 		}
 		if (obj->getType() == STRING)
 		{
-			printf(((String*)obj)->getValue());
-			printf("\n");
+			String * str = (String*)obj;
+			str->simpleEscape();
+			printf(str->getValue() );
 		}
 		else if (obj->getType() == NUMBER)
 		{
 			printf("%f", ((Number*)obj)->getDoubleValue());
-			printf("\n");
 		}
 
 		return NULL;

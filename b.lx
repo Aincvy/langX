@@ -1,15 +1,2 @@
-a = 1 ;
-b = -1 ;
-switch (a){
-	case 1 : 
-		b = 2 ;
-	case 2 :
-		b = 3 ;
-	case 3 :
-		b = 4 ;
-	default :
-		b = 5 ;
-		break ;
-}
-
-print("b: " + b);
+print("hello,world!\n");
+print(123);
