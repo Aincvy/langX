@@ -51,7 +51,12 @@ namespace langX {
 			{
 				continue;
 			}
+
+			// 不继承 suffix 状态
+			bool flag = run->state.isSuffix;
 			run->state = n->state;   //状态继承
+			run->state.isSuffix = flag;
+
 			__execNode(run);
 			if (run->state.isBreak || run->state.isReturn)
 			{
@@ -59,6 +64,28 @@ namespace langX {
 				n->state.isReturn = run->state.isReturn;
 				return;
 			}
+		}
+	}
+
+	// 做后缀操作符的 工作
+	void doSuffixOperation(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		if (n->type == NODE_OPERATOR)
+		{
+			for (int i = 0; i < n->opr_obj->op_count; i++)
+			{
+				doSuffixOperation(n->opr_obj->op[i]);
+			}
+		}
+		else if (n->type == NODE_VARIABLE && n->postposition != NULL)
+		{
+			setValueToEnv(n->var_obj->name, n->postposition);
+			m_exec_alloc.free(n->postposition);
+			n->postposition = NULL;
 		}
 	}
 
@@ -291,7 +318,9 @@ namespace langX {
 			setValueToEnv(left->var_obj->name, n->value);
 		}
 
-		//assignment(left->var_obj->name, n->value);
+		doSuffixOperation(n);
+
+		//freeSubNodes(n);
 	}
 
 	void __execADD_EQ(Node *n) {
@@ -391,8 +420,17 @@ namespace langX {
 		doSubNodes(n);
 
 		Node *n1 = n->opr_obj->op[0];
-		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() + 1);
-		setValueToEnv(n1->var_obj->name, n->value);
+		if (!n->state.isSuffix)
+		{
+			// 前缀自增
+			n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() + 1);
+			n1->postposition = n->value->clone();
+		}
+		else {
+			//  后缀自增
+			n->value = n1->value->clone();
+			n1->postposition = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() + 1);
+		}
 
 		freeSubNodes(n);
 	}
@@ -401,9 +439,22 @@ namespace langX {
 	void __execDEC_OP(Node *n) {
 		doSubNodes(n);
 
+		/*
+		 * 后置值 被加到 变量身上， 而非 ++/-- 操作符身上了。
+		 */
+
 		Node *n1 = n->opr_obj->op[0];
-		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() - 1);
-		setValueToEnv(n1->var_obj->name, n->value);
+		if (!n->state.isSuffix)
+		{
+			// 前缀自减
+			n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() - 1);
+			n1->postposition = n->value->clone();
+		}
+		else {
+			//  后缀自减
+			n->value = n1->value->clone();
+			n1->postposition = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() - 1);
+		}
 
 		freeSubNodes(n);
 	}
@@ -450,6 +501,9 @@ namespace langX {
 				break;
 			}
 		}
+
+		// 遍历节点
+		doSuffixOperation(n);
 
 		freeSubNodes(n);
 	}

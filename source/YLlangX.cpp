@@ -75,6 +75,7 @@ void deal_state(NodeState * state) {
 	state->in_loop = false;
 	state->in_switch = false;
 	state->isCaseNeedCon = true;
+	state->isSuffix = false;
 }
 
 XNode * string(char *v)
@@ -85,6 +86,7 @@ XNode * string(char *v)
 	node->freeOnExeced = true;
 	deal_state(&node->state);
 	node->value = NULL;
+	node->postposition = NULL;
 	node->type = NODE_CONSTANT_STRING;
 	// v 是已经申请过的内存 ， 直接赋值就OK
 	node->con_obj->sValue = v;
@@ -100,6 +102,7 @@ XNode * number(double a)
 	deal_state(&node->state);
 	node->type = NODE_CONSTANT_NUMBER;
 	node->value = NULL;
+	node->postposition = NULL;
 	node->freeOnExeced = true;
 	node->con_obj->dValue = a;
 	node->con_obj->sValue = NULL;
@@ -116,6 +119,7 @@ XNode * var(char *name)
 	node->type = NODE_VARIABLE;
 	node->freeOnExeced = true;
 	node->value = NULL;
+	node->postposition = NULL;
 	node->var_obj->name = name;
 
 	//printf("createVarNode: %s\n", name);
@@ -133,6 +137,39 @@ XNode * opr(int opr, int npos, ...)
 
 	deal_state(&node->state);
 	node->value = NULL;
+	node->postposition = NULL;
+	node->type = NODE_OPERATOR;
+	node->freeOnExeced = true;
+	node->opr_obj->opr = opr;
+	node->opr_obj->op_count = npos;
+
+	va_start(ap, npos);
+	for (size_t i = 0; i < npos; i++)
+	{
+		node->opr_obj->op[i] = va_arg(ap, XNode*);
+	}
+	va_end(ap);
+
+	//printf("new opr node, opr is: %d\n" , opr);
+	//printf("opr npos: %d\n", npos);
+	//printf("node npos: %d\n", node->opr_obj->op_count);
+	//printf("createOperatorNode: %p\n",node);
+	return node;
+}
+
+XNode * sopr(int opr, int npos, ...)
+{
+	//printf("sopr: %d\n" ,opr);
+	va_list ap;
+
+	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
+	node->opr_obj = (langX::Operator*) malloc(sizeof(langX::Operator) * 1);
+	node->opr_obj->op = (XNode**)malloc(sizeof(XNode*) * npos);
+
+	deal_state(&node->state);
+	node->state.isSuffix = true;
+	node->value = NULL;
+	node->postposition = NULL;
 	node->type = NODE_OPERATOR;
 	node->freeOnExeced = true;
 	node->opr_obj->opr = opr;
@@ -230,7 +267,9 @@ XNode * argsNode(XArgsList * args) {
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
 	node->type = NODE_ARGS;
 	node->value = NULL;
+	node->postposition = NULL;
 	node->ptr_u = args;
+	deal_state(&node->state);
 
 	return node;
 }

@@ -250,8 +250,8 @@ logic_stmt
 self_inc_dec_stmt
 	: INC_OP id_expr { $$ = opr(INC_OP,1, $2 ); }
 	| DEC_OP id_expr { $$ = opr(DEC_OP,1, $2 ); }
-	| id_expr INC_OP { $$ = opr(INC_OP,1, $1 ); }
-	| id_expr DEC_OP { $$ = opr(DEC_OP,1, $1 ); }
+	| id_expr INC_OP { $$ = sopr(INC_OP,1, $1 ); }
+	| id_expr DEC_OP { $$ = sopr(DEC_OP,1, $1 ); }
 	;
 
 //  赋值语句的值

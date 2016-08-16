@@ -1064,11 +1064,11 @@ case 84:
 break;
 case 85:
 #line 253 "a.y"
-	{ yyval.node = opr(INC_OP,1, yystack.l_mark[-1].node ); }
+	{ yyval.node = sopr(INC_OP,1, yystack.l_mark[-1].node ); }
 break;
 case 86:
 #line 254 "a.y"
-	{ yyval.node = opr(DEC_OP,1, yystack.l_mark[-1].node ); }
+	{ yyval.node = sopr(DEC_OP,1, yystack.l_mark[-1].node ); }
 break;
 case 87:
 #line 259 "a.y"
