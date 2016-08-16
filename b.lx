@@ -1,4 +1,17 @@
-a = 1 ;
-b = a++ + 1;
-print("a: " + a + "\n");
-print("b: " + b + "\n");
+a = 2;
+switch (a){
+  case 1 :
+    print("1\n");
+    break ;
+  case 2 :
+    print("2\n");
+    break ;
+  case 3 :
+    print("3\n");
+    break ;
+  default :
+    print("default\n");
+	break ;
+}
+
+print("end\n");

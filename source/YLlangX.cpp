@@ -78,6 +78,13 @@ void deal_state(NodeState * state) {
 	state->isSuffix = false;
 }
 
+void deal_switch_info(SwitchInfo *si) {
+	si->defaultNode = NULL;
+	si->isDefault = false;
+	si->isInCase = false;
+	si->doDefault = false;
+}
+
 XNode * string(char *v)
 {
 	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
@@ -85,6 +92,7 @@ XNode * string(char *v)
 
 	node->freeOnExeced = true;
 	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
 	node->value = NULL;
 	node->postposition = NULL;
 	node->type = NODE_CONSTANT_STRING;
@@ -100,6 +108,7 @@ XNode * number(double a)
 	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
 
 	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
 	node->type = NODE_CONSTANT_NUMBER;
 	node->value = NULL;
 	node->postposition = NULL;
@@ -116,6 +125,7 @@ XNode * var(char *name)
 	node->var_obj = (langX::Variable*) malloc(sizeof(langX::Variable) * 1);
 
 	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
 	node->type = NODE_VARIABLE;
 	node->freeOnExeced = true;
 	node->value = NULL;
@@ -136,6 +146,7 @@ XNode * opr(int opr, int npos, ...)
 	node->opr_obj->op = (XNode**)malloc(sizeof(XNode*) * npos);
 
 	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
 	node->value = NULL;
 	node->postposition = NULL;
 	node->type = NODE_OPERATOR;
@@ -167,6 +178,7 @@ XNode * sopr(int opr, int npos, ...)
 	node->opr_obj->op = (XNode**)malloc(sizeof(XNode*) * npos);
 
 	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
 	node->state.isSuffix = true;
 	node->value = NULL;
 	node->postposition = NULL;
@@ -270,6 +282,7 @@ XNode * argsNode(XArgsList * args) {
 	node->postposition = NULL;
 	node->ptr_u = args;
 	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
 
 	return node;
 }

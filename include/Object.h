@@ -103,6 +103,21 @@ namespace langX {
 		bool isSuffix;
 	};
 
+	struct Node;
+	// 有关switch 相关的内容
+	struct SwitchInfo
+	{
+		// default 语句的节点所在位置
+		Node *defaultNode;
+
+		// 当前结点是否是 default 语句
+		bool isDefault;
+		// case 语句是否进入内容
+		bool isInCase;
+		// 如果当前节点是 default ,是否执行
+		bool doDefault;
+	};
+
 	struct Constant
 	{
 		int iValue;
@@ -133,6 +148,8 @@ namespace langX {
 		Object *value;
 		// 万能指针 ， 主要用于放置参数什么的
 		void *ptr_u;
+		// switch 相关的内容
+		SwitchInfo switch_info;
 		// 节点状态
 		NodeState state;
 		// 后置值 ， 如果当前节点为一个 变量节点， 当前属性则为有用

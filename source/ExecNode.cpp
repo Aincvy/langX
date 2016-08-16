@@ -89,6 +89,18 @@ namespace langX {
 		}
 	}
 
+	void doSuffixOperationArgs(XArgsList *args) {
+		if (args == NULL)
+		{
+			return;
+		}
+
+		for (int i = 0; i < args->index; i++)
+		{
+			doSuffixOperation(args->args[i]);
+		}
+	}
+
 	// 状态继承， n 的所有子节点都会继承n的状态
 	void stateExtends(Node *n) {
 		if (n == NULL)
@@ -529,6 +541,7 @@ namespace langX {
 			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
+		doSuffixOperation(n);
 		freeSubNodes(n);
 	}
 
@@ -547,6 +560,7 @@ namespace langX {
 			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
+		doSuffixOperation(n);
 		freeSubNodes(n);
 	}
 
@@ -565,6 +579,7 @@ namespace langX {
 			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
+		doSuffixOperation(n);
 		freeSubNodes(n);
 	}
 
@@ -583,6 +598,7 @@ namespace langX {
 			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
+		doSuffixOperation(n);
 		freeSubNodes(n);
 	}
 
@@ -601,6 +617,7 @@ namespace langX {
 			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
+		doSuffixOperation(n);
 		freeSubNodes(n);
 	}
 
@@ -618,6 +635,8 @@ namespace langX {
 		else {
 			n->value = m_exec_alloc.allocateNumber(0);
 		}
+
+		doSuffixOperation(n);
 		freeSubNodes(n);
 	}
 
@@ -704,6 +723,7 @@ namespace langX {
 			}
 		}
 
+		doSuffixOperation(n);
 		// 清理掉 所有复制  值 占用的内存
 		freeSubNodes(n);
 	}
@@ -750,6 +770,7 @@ namespace langX {
 			}
 		}
 
+		doSuffixOperation(n);
 		freeSubNodes(n);
 	}
 
@@ -800,6 +821,7 @@ namespace langX {
 			return;
 		}
 
+		bool flag = true;
 		Node * id_expr = n->opr_obj->op[0];
 		__execNode(id_expr);
 		//printf("switch id_expr value: %f\n" , ((Number*)id_expr->value)->getDoubleValue());
@@ -815,9 +837,27 @@ namespace langX {
 				continue;
 			}
 
+			t->state.isCaseNeedCon = n->state.isCaseNeedCon;
 			t->state.in_switch = true;
 			t->ptr_u = id_expr->value;
+			t->switch_info.doDefault = false;
 			__execNode(t);
+
+			// 设置default 节点
+			if (t->switch_info.isDefault)
+			{
+				n->switch_info.defaultNode = t;
+			}
+			else if (t->switch_info.defaultNode != NULL)
+			{
+				n->switch_info.defaultNode = t->switch_info.defaultNode;
+			}
+
+			if (t->switch_info.isInCase)
+			{
+				flag = false;
+			}
+			n->state.isCaseNeedCon = t->state.isCaseNeedCon;
 
 			if (t->state.isBreak)
 			{
@@ -836,11 +876,18 @@ namespace langX {
 			}
 		}
 
+		if (flag && n->switch_info.defaultNode != NULL)
+		{
+			n->switch_info.defaultNode->switch_info.doDefault = true;
+			__execNode(n->switch_info.defaultNode);
+		}
+
 		freeSubNodes(n);
 	}
 
 	void __execCASE_LIST(Node *n) {
 
+		bool flag = true;
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
 			Node * t = n->opr_obj->op[i];
@@ -853,7 +900,23 @@ namespace langX {
 			t->state.isCaseNeedCon = n->state.isCaseNeedCon;
 			// case 语句中  ptr_u 属性保存的是 指向 switch(a)  a 的值
 			t->ptr_u = n->ptr_u;
+			t->switch_info.doDefault = false;
 			__execNode(t);
+			
+			// 设置default 节点
+			if (t->switch_info.isDefault)
+			{
+				n->switch_info.defaultNode = t;
+			}
+			else if (t->switch_info.defaultNode != NULL)
+			{
+				n->switch_info.defaultNode = t->switch_info.defaultNode;
+			}
+
+			if (t->switch_info.isInCase)
+			{
+				flag = false;
+			}
 			n->state.isCaseNeedCon = t->state.isCaseNeedCon;
 
 			if (t->state.isBreak)
@@ -874,6 +937,14 @@ namespace langX {
 			}
 		}
 
+		Node *defaultNode = n->switch_info.defaultNode;
+		if (flag && defaultNode != NULL)
+		{
+			defaultNode->state.in_switch = true;
+			defaultNode->switch_info.doDefault = true;
+			__execNode(n->switch_info.defaultNode);
+		}
+
 		freeSubNodes(n);
 	}
 
@@ -891,6 +962,7 @@ namespace langX {
 		if (a == ((Number*)con->value)->getDoubleValue() || !n->state.isCaseNeedCon)
 		{
 			n->state.isCaseNeedCon = false;
+			n->switch_info.isInCase = true;
 			Node * t = n->opr_obj->op[1];
 			if (t != NULL)
 			{
@@ -917,7 +989,18 @@ namespace langX {
 	}
 
 	void __execDeafult(Node *n) {
-		__execCASE(n);
+		//printf("\ngoin default\n");
+
+		if (!n->switch_info.doDefault)
+		{
+			n->switch_info.isDefault = true;
+			return;
+		}
+
+		stateExtends(n);
+		__execNode(n->opr_obj->op[0]);
+
+		freeSubNodes(n);
 	}
 
 	void __execUMINUS(Node *n) {
@@ -957,6 +1040,7 @@ namespace langX {
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
 		n->value = call(name, args);
 		//printf("func %s exec end\n" , name);
+		doSuffixOperationArgs(args);
 		freeArgsList(args);
 	}
 
