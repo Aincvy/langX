@@ -35,6 +35,8 @@ extern "C" {
 	XNode * var(char *);
 	// 创建一个 操作符节点 
 	XNode * opr(int opr, int npos, ...);
+	// 创建一个后缀节点
+	XNode * sopr(int opr, int npos, ...);
 	// 创建一个函数节点
 	XNode * func(char *, XParamsList *,XNode *);
 	// 使用一个函数

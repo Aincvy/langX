@@ -99,6 +99,8 @@ namespace langX {
 		bool isReturn;
 		// 在case 的时候是否需要计算case 的条件
 		bool isCaseNeedCon;
+		// 是否是后缀
+		bool isSuffix;
 	};
 
 	struct Constant
@@ -133,6 +135,8 @@ namespace langX {
 		void *ptr_u;
 		// 节点状态
 		NodeState state;
+		// 后置值 ， 如果当前节点为一个 变量节点， 当前属性则为有用
+		Object *postposition;
 
 		Variable *var_obj;
 		Constant *con_obj;

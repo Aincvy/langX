@@ -1,2 +1,4 @@
-print("hello,world!\n");
-print(123);
+a = 1 ;
+b = a++ + 1;
+print("a: " + a + "\n");
+print("b: " + b + "\n");
