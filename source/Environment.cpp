@@ -73,7 +73,7 @@ namespace langX {
 
 		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
-			if (this->m_parent != NULL)
+			if (this->m_parent != NULL && !m_restrict)
 			{
 				return this->m_parent->getObject(name);
 			}
@@ -108,7 +108,7 @@ namespace langX {
 	{
 		if (this->m_functions_map.find(name) == this->m_functions_map.end())
 		{
-			if (this->m_parent != NULL)
+			if (this->m_parent != NULL && !m_restrict)
 			{
 				return this->m_parent->getFunction(name);
 			}
@@ -125,6 +125,16 @@ namespace langX {
 	void Environment::setParent(Environment *env)
 	{
 		this->m_parent = env;
+	}
+
+	void Environment::setRestrict(bool flag)
+	{
+		this->m_restrict = flag;
+	}
+
+	bool Environment::isRestrict() const
+	{
+		return this->m_restrict;
 	}
 
 }

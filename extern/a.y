@@ -31,7 +31,7 @@ extern char * yytext;
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt
-%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt
+%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt
 %type <params> param_list parameter
 %type <args> args_list args_expr
 
@@ -69,6 +69,18 @@ statement
 declar_stmt
 	: func_declar_stmt   { $$ = $1; }
 	| var_declar_stmt    { $$ = $1; }
+	| class_declar_stmt  { $$ = $1; }
+	;
+
+//  类声明语句
+class_declar_stmt
+	: IDENTIFIER '{' class_body '}'  {}
+	;
+
+//  类主体
+class_body
+	: var_declar_stmt
+	| func_declar_stmt
 	;
 
 // 函数声明语句
