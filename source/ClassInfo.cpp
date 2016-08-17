@@ -4,8 +4,9 @@
 
 namespace langX {
 
-	langX::ClassInfo::ClassInfo()
+	langX::ClassInfo::ClassInfo(const char*name)
 	{
+		this->m_name = std::string(name);
 	}
 
 	langX::ClassInfo::~ClassInfo()
@@ -56,6 +57,11 @@ namespace langX {
 			return NULL;
 		}
 		return this->m_functions.at(name);
+	}
+
+	const char * ClassInfo::getName() const
+	{
+		return this->m_name.c_str();
 	}
 
 
