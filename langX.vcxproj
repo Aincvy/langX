@@ -29,7 +29,7 @@
   <ItemGroup>
     <ClInclude Include="extern\y.tab.h" />
     <ClInclude Include="include\Allocator.h" />
-    <ClInclude Include="include\Class.h" />
+    <ClInclude Include="include\ClassInfo.h" />
     <ClInclude Include="include\Environment.h" />
     <ClInclude Include="include\ExecNode.h" />
     <ClInclude Include="include\Execption.h" />
@@ -46,6 +46,7 @@
     <ClCompile Include="extern\lex.yy.c" />
     <ClCompile Include="extern\y.tab.c" />
     <ClCompile Include="source\Allocator.cpp" />
+    <ClCompile Include="source\ClassInfo.cpp" />
     <ClCompile Include="source\Environment.cpp" />
     <ClCompile Include="source\ExecNode.cpp" />
     <ClCompile Include="source\Execption.cpp" />

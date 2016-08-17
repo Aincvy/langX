@@ -33,9 +33,6 @@
     <ClInclude Include="include\Function.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\Class.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\langX.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -52,6 +49,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\RegFunctions.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ClassInfo.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -96,6 +96,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\RegFunctions.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ClassInfo.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

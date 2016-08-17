@@ -30,12 +30,20 @@ namespace langX {
 		Environment *getParent() const;
 		void setParent(Environment *);
 
+		// 设置限定
+		void setRestrict(bool);
+		// 是否限定
+		bool isRestrict() const;
+
 	private:
 		std::map<std::string, Object*> m_objects_map;
 		std::map<std::string, Function*> m_functions_map;
 		std::map<std::string, Object*> m_classes_map;
 
 		Environment *m_parent = nullptr;
+
+		//  是否限定， 如果限定， 则寻找变量的时候不会去寻找父级环境
+		bool m_restrict = false;
 	};
 
 }
