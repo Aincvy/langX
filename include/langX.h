@@ -19,7 +19,9 @@ namespace langX {
 		Object * getObject(const std::string &);
 
 		/* 生成一个新的环境，并将当前环境设置为该环境的父级环境， 然后将该环境设置为当前环境 */
-		Environment *newEnv();
+		Environment* newEnv();
+		// 将参数作为 当前环境， 并将原当前环境至为 参数的 父级环境
+		Environment* newEnv(Environment *);
 		/* 将环境退回一级，如果当前只有一级环境，则什么也不做 
 		  如果退回上级环境， 当前环境内的所有变量的内存都将会被释放 */
 		void backEnv();

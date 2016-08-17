@@ -6,6 +6,7 @@ namespace langX {
 
 	class Object;
 	class Function;
+	class ClassInfo;
 
 	/*
 	 * 环境类  
@@ -44,6 +45,27 @@ namespace langX {
 
 		//  是否限定， 如果限定， 则寻找变量的时候不会去寻找父级环境
 		bool m_restrict = false;
+	};
+
+
+	// 类的桥接环境  
+	class ClassBridgeEnv : public Environment
+	{
+	public:
+		ClassBridgeEnv(ClassInfo *);
+		~ClassBridgeEnv();
+
+		void putObject(const char*, Object*);
+		void putObject(const std::string &, Object*);
+		Object* getObject(const std::string &);
+
+		void putFunction(const char*, Function*);
+		void putFunction(const std::string &, Function*);
+		Function* getFunction(const std::string &);
+
+	private:
+
+		ClassInfo* m_class = NULL;
 	};
 
 }

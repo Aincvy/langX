@@ -27,13 +27,17 @@ extern char * yytext;
 %token <sValue> IDENTIFIER TSTRING
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
-%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST
+%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
-%type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt
-%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt
+%type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr
+%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt 
 %type <params> param_list parameter
 %type <args> args_list args_expr
+
+/* 优先级是从低到高 */
+
+%nonassoc NONASSOC
 
 %nonassoc IFX
 %nonassoc ELSE
@@ -74,13 +78,19 @@ declar_stmt
 
 //  类声明语句
 class_declar_stmt
-	: IDENTIFIER '{' class_body '}'  {}
+	: IDENTIFIER '{' '}'            { $$ = claxx($1 , NULL); }
+	| IDENTIFIER '{' class_body '}' { $$ = claxx($1 , $3); }
 	;
 
 //  类主体
 class_body
-	: var_declar_stmt
-	| func_declar_stmt
+	: class_body_stmt            { $$ = opr(CLAXX_BODY, 1, $1); }
+	| class_body class_body_stmt { $$ = opr(CLAXX_BODY, 2, $1, $2); }
+	;
+
+class_body_stmt
+	: var_declar_stmt        { $$ = $1; }
+	| func_declar_stmt       { $$ = $1; }
 	;
 
 // 函数声明语句
@@ -104,7 +114,7 @@ expr_list
 	|   { $$ = NULL; }
 	;	
 
-// 变量声明语句   TODO 逗号分隔的 多声明语句
+// 变量声明语句  
 var_declar_stmt
 	: id_expr ';'  { $$ = $1; }
 	| id_expr ',' var_declar_stmt { $$ = opr(',' , 2, $1,$3);}
@@ -152,6 +162,7 @@ simple_stmt
 	| call_statement { $$ = $1; }
 	| DELETE IDENTIFIER ';' { $$ = opr(DELETE, 1 ,$2 ); }
 	| interrupt_stmt { $$ = $1; }
+	| new_expr       { $$ = $1; }
 	;
 
 interrupt_stmt
@@ -219,8 +230,13 @@ arithmetic_stmt_factor
 	| '(' arithmetic_stmt ')' { $$ = $2 ; }
 	;
 
+//   new 表达式
+new_expr
+	: NEW id_expr '(' args_list ')' { $$ = opr(NEW ,2, $2 , argsNode($4) ); }
+	;
+
 id_expr
-	: IDENTIFIER     { $$ = var($1); }
+	: IDENTIFIER    { $$ = var($1); }
 	;
 
 t_bool_expr
@@ -276,6 +292,7 @@ assign_stmt_value
 	| id_expr       { $$ = $1; }
 	| string_expr   { $$ = $1; }
 	| self_inc_dec_stmt { $$ = $1; }
+	| new_expr       { $$ = $1; }
 	;
 
 //  += -= *= /=  的值
@@ -292,13 +309,6 @@ single_assign_stmt
 	: id_expr '=' assign_stmt_value { $$ = opr('=',2, $1,$3 ); }
 	| id_expr '=' single_assign_stmt { $$ = opr('=',2, $1, $3 ); }
 	;
-
-// 赋值语句的因子
-/*single_assign_stmt_factor
-	: id_expr               { $$ = $1 ;}
-	| single_assign_stmt    { $$ = $1 ;}
-	;
-*/
 
 //  赋值语句
 assign_stmt

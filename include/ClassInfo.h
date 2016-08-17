@@ -14,10 +14,10 @@ namespace langX {
 	class Object;
 	class Function;
 
-	class ClassInfo : public Object
+	class ClassInfo 
 	{
 	public:
-		ClassInfo();
+		ClassInfo(const char*);
 		~ClassInfo();
 
 		void addMember(const char*, Object *);
@@ -29,12 +29,16 @@ namespace langX {
 		bool hasFunction(const char*) const;
 		Function * getFunction(const char *) const;
 
+		const char * getName() const;
+
 	private:
 		//  当前类的 字段map ...
 		//  key:  属性名,  value:  对象指针
 		std::map<std::string, Object*> m_members;
 		std::map<std::string, Function*> m_functions;
 
+		// 当前类叫什么名字
+		std::string m_name;
 	};
 
 }

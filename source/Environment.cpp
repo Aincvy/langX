@@ -1,5 +1,6 @@
 #include "../include/Environment.h"
 #include "../include/Object.h"
+#include "../include/ClassInfo.h"
 #include "../include/Number.h"
 #include "../include/Function.h"
 
@@ -135,6 +136,77 @@ namespace langX {
 	bool Environment::isRestrict() const
 	{
 		return this->m_restrict;
+	}
+
+
+
+
+
+	ClassBridgeEnv::ClassBridgeEnv(ClassInfo *claxx)
+	{
+		this->m_class = claxx;
+	}
+
+	ClassBridgeEnv::~ClassBridgeEnv()
+	{
+	}
+
+	void ClassBridgeEnv::putObject(const char *name, Object *obj)
+	{
+		if (this->m_class == NULL)
+		{
+			Environment::putObject(name,obj);
+			return;
+		}
+		this->m_class->addMember(name, obj);
+	}
+
+	void ClassBridgeEnv::putObject(const std::string &name, Object *obj)
+	{
+		if (this->m_class == NULL)
+		{
+			Environment::putObject(name, obj);
+			return;
+		}
+		this->m_class->addMember(name.c_str(), obj);
+	}
+
+	Object * ClassBridgeEnv::getObject(const std::string &name)
+	{
+		if (this->m_class == NULL)
+		{
+			return Environment::getObject(name);
+		}
+		return this->m_class->getMember(name.c_str());
+	}
+
+	void ClassBridgeEnv::putFunction(const char *name, Function *func)
+	{
+		if (this->m_class == NULL)
+		{
+			Environment::putFunction(name, func);
+			return;
+		}
+		this->m_class->addFunction(name, func);
+	}
+
+	void ClassBridgeEnv::putFunction(const std::string &name, Function *func)
+	{
+		if (this->m_class == NULL)
+		{
+			Environment::putFunction(name, func);
+			return;
+		}
+		this->m_class->addMember(name.c_str(), func);
+	}
+
+	Function * ClassBridgeEnv::getFunction(const std::string &name)
+	{
+		if (this->m_class == NULL)
+		{
+			return Environment::getFunction(name);
+		}
+		return this->m_class->getFunction(name.c_str());
 	}
 
 }

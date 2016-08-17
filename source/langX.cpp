@@ -43,6 +43,18 @@ namespace langX {
 		return env;
 	}
 
+	Environment * langXState::newEnv(Environment *env)
+	{
+		if (env == NULL)
+		{
+			return NULL;
+		}
+
+		env->setParent(this->m_current_env);
+		this->m_current_env = env;
+		return env;
+	}
+
 	void langXState::backEnv()
 	{
 		Environment *env = this->m_current_env->getParent();

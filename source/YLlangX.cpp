@@ -9,6 +9,7 @@
 #include "../include/RegFunctions.h"
 #include "../include/Environment.h"
 #include "../include/Allocator.h"
+#include "../include/ClassInfo.h"
 
 using namespace langX;
 
@@ -213,7 +214,34 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	func->setParamsList(params);
 	getState()->getCurrentEnv()->putFunction(name, func);
 	free(name);
-	return nullptr;
+	XNode * nodeF = (XNode*)calloc(1,sizeof(XNode) * 1);
+	nodeF->type = NODE_FUNCTION;
+	deal_state(&nodeF->state);
+	deal_switch_info(&nodeF->switch_info);
+	nodeF->value = func;
+	return nodeF;
+}
+
+XNode * claxx(char *name , XNode * node) {
+
+	ClassInfo *claxxInfo = new ClassInfo(name);
+	free(name);
+	
+	if (node != NULL)
+	{
+		ClassBridgeEnv env(claxxInfo);
+		state->newEnv(&env);
+		__execNode(node);
+		state->backEnv();
+	}
+	
+	XNode * nodeC = (XNode*)calloc(1, sizeof(XNode) * 1);
+	nodeC->type = NODE_CLASS;
+	deal_state(&nodeC->state);
+	deal_switch_info(&nodeC->switch_info);
+	nodeC->ptr_u = claxxInfo;
+
+	return nodeC;
 }
 
 XObject * call(char *name, XArgsList* args)
@@ -344,6 +372,12 @@ void freeNode(XNode * n) {
 	}
 	if (!n->freeOnExeced)
 	{
+		return;
+	}
+	// 如果是一个函数节点， 直接FREE节点内存就好了
+	if (n->type == NODE_FUNCTION)
+	{
+		free(n);
 		return;
 	}
 

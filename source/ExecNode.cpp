@@ -1044,6 +1044,10 @@ namespace langX {
 		freeArgsList(args);
 	}
 
+	void __execNEW(Node *n) {
+		// new 一个对象
+	}
+
 
 	/*
 	 * 执行节点，  节点的结果 将 放在  Node.value 上
@@ -1117,6 +1121,16 @@ namespace langX {
 			node->value = m_exec_alloc.allocateString(tmp);
 			free(tmp);
 
+			return;
+		}
+		else if (node->type == NODE_CLASS)
+		{
+			// 类
+			return;
+		}
+		else if (node->type == NODE_FUNCTION)
+		{
+			// 函数
 			return;
 		}
 
@@ -1220,6 +1234,9 @@ namespace langX {
 			break;
 		case DEFAULT:
 			__execDeafult(node);
+			break;
+		case NEW:
+			__execNEW(node);
 			break;
 		default:
 			break;
