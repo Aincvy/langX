@@ -3,12 +3,12 @@
 #include "langX.h"
 
 /*
-*   ����ʱ�䣺  2016-07-07
-*   ���ߣ� The World(world@aincvy.com)
+*   创建时间：  2016-07-07
+*   作者： The World(world@aincvy.com)
 *
-*   �ļ�������
-*   ������     yacc/lex langX interface �ļ�
-*              ��Ҫ�ṩ���� yacc/lex ��һЩ���� API
+*   文件描述：
+*   描述：     yacc/lex langX interface 文件
+*              主要提供面向 yacc/lex 的一些互串 API
 */
 
 typedef langX::Variable XVariable;
@@ -18,7 +18,7 @@ typedef langX::ArgsList XArgsList;
 typedef langX::Object XObject;
 
 
-//  lex/yacc ��C���Ե�
+//  lex/yacc 是C语言的
 extern "C" {
 
 	void initLangX();
@@ -27,40 +27,40 @@ extern "C" {
 
 	double getNumberValue(const char*);
 
-	// ����һ���ַ���ֵ�ýڵ�
+	// 创建一个字符串值得节点
 	XNode * string(char *);
-	// ����һ����������ֵ�� �ڵ�
+	// 创建一个含有数字值得 节点
 	XNode * number(double );
-	// ����һ�������ڵ㣬 ע�⣬ �����ڵ������ ��ʹ�� malloc�Ⱥ��������ڴ�
+	// 创建一个变量节点， 注意， 变量节点的名字 请使用 malloc等函数分配内存
 	XNode * var(char *);
-	// ����һ�� �������ڵ� 
+	// 创建一个 操作符节点 
 	XNode * opr(int opr, int npos, ...);
-	// ����һ����׺�ڵ�
+	// 创建一个后缀节点
 	XNode * sopr(int opr, int npos, ...);
-	// ����һ����ڵ�
+	// 创建一个类节点
 	XNode * claxx(char *name, XNode * node);
-	// ����һ�������ڵ�
+	// 创建一个函数节点
 	XNode * func(char *, XParamsList *,XNode *);
-	// ʹ��һ������
+	// 使用一个函数
 	XObject * call(char *, XArgsList *);
-	// ����һ���ڵ㣬 �ڵ�����Ϊʵ���б�
+	// 创建一个节点， 节点内容为实参列表
 	XNode * argsNode(XArgsList *);
 
-	// ����һ���β��б��� ���� ׷��һ�������� �б���
+	// 创建一个形参列表， 或者 追加一个参数到 列表中
 	XParamsList * params(XParamsList *, char *);
-	// ����һ��ʵ���б� �� ����׷��һ��ʵ�ε��б���
+	// 创建一个实参列表 ， 或者追加一个实参到列表中
 	XArgsList * xArgs(XArgsList *, XNode *);
 
-	// �ͷŲ����б��� �ڴ�
+	// 释放参数列表的 内存
 	void freeArgsList(XArgsList *);
 
-	// ��������ڵ�
+	// 运算这个节点
 	void execNode(XNode *);
 
-	// �����㣬Ȼ���ͷ�����ڵ�ռ�õ��ڴ�
+	// 先运算，然后释放这个节点占用的内存
 	void execAndFreeNode(XNode *);
 
-	// �ͷ�һ���ڵ���ڴ�
+	// 释放一个节点的内存
 	void freeNode(XNode *);
 }
 

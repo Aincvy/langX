@@ -2,6 +2,6 @@
 #include "Object.h"
 
 namespace langX {
-	// 运算这个节点
+	// 杩愮畻杩欎釜鑺傜偣
 	void __execNode(Node *);
 }

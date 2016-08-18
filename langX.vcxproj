@@ -35,6 +35,9 @@
     <ClInclude Include="include\Execption.h" />
     <ClInclude Include="include\Function.h" />
     <ClInclude Include="include\langX.h" />
+    <ClInclude Include="include\langXObject.h" />
+    <ClInclude Include="include\langXObjectRef.h" />
+    <ClInclude Include="include\NullObject.h" />
     <ClInclude Include="include\Number.h" />
     <ClInclude Include="include\Object.h" />
     <ClInclude Include="include\RegFunctions.h" />
@@ -52,6 +55,9 @@
     <ClCompile Include="source\Execption.cpp" />
     <ClCompile Include="source\Function.cpp" />
     <ClCompile Include="source\langX.cpp" />
+    <ClCompile Include="source\langXObject.cpp" />
+    <ClCompile Include="source\langXObjectRef.cpp" />
+    <ClCompile Include="source\NullObject.cpp" />
     <ClCompile Include="source\Number.cpp" />
     <ClCompile Include="source\Object.cpp" />
     <ClCompile Include="source\RegFunctions.cpp" />

@@ -27,10 +27,10 @@ namespace langX {
 	}
 	void String::simpleEscape()
 	{
-		// TODO  \\n  ±ä³É \n  Á½¸ö×Ö·û
+		// TODO  \\n  å˜æˆ \n  ä¸¤ä¸ªå­—ç¬¦
 		while (m_value.find("\\n") != std::string::npos)
 		{
-			// ´æÔÚ»»ĞĞ·û
+			// å­˜åœ¨æ¢è¡Œç¬¦
 			m_value.replace(m_value.find("\\n") , 2, "\n");
 		}
 	}

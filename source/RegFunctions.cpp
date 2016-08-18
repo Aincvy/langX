@@ -8,7 +8,7 @@
 
 namespace langX {
 
-	// c printf º¯Êý µÄÇÅ½Ó
+	// c printf å‡½æ•° çš„æ¡¥æŽ¥
 	Object * langX_print(X3rdFunction *func,const X3rdArgs & args) {
 		if (args.index <= 0)
 		{
@@ -16,7 +16,7 @@ namespace langX {
 			return NULL;
 		}
 
-		// ÏÈÊÔÊÔµ¥²ÎÊý
+		// å…ˆè¯•è¯•å•å‚æ•°
 		Object *obj = args.args[0];
 		if (obj == NULL)
 		{

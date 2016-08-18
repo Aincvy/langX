@@ -6,12 +6,14 @@ namespace langX {
 	class langXObject;
 
 	/*
-	 * langX ��������� 
+	 * langX 对象的引用 
 	*/
 	class langXObjectRef : public Object
 	{
 	public:
+	    // 构造的时候并不增加 对象的引用次数。  但是析构的时候会减少对象的引用次数
 		langXObjectRef(langXObject *);
+		// 构造的时候并不增加 对象的引用次数。  但是析构的时候会减少对象的引用次数
 		~langXObjectRef();
 
 		bool isTrue() const;
@@ -22,7 +24,7 @@ namespace langX {
 	private:
 		void finalize();
 
-		// ���õ��ĸ�object
+		// 引用的哪个object
 		langXObject *m_object_ref = nullptr;
 	};
 

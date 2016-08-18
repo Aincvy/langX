@@ -2,7 +2,7 @@
 #include "langX.h"
 
 /*
-  ×¢²áÒ»Ð© º¯Êý  
+  æ³¨å†Œä¸€äº› å‡½æ•°  
 */
 
 namespace langX {

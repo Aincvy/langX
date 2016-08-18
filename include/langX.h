@@ -18,26 +18,26 @@ namespace langX {
 		void putObject(const std::string &, Object*);
 		Object * getObject(const std::string &);
 
-		/* Éú³ÉÒ»¸öĞÂµÄ»·¾³£¬²¢½«µ±Ç°»·¾³ÉèÖÃÎª¸Ã»·¾³µÄ¸¸¼¶»·¾³£¬ È»ºó½«¸Ã»·¾³ÉèÖÃÎªµ±Ç°»·¾³ */
+		/* ç”Ÿæˆä¸€ä¸ªæ–°çš„ç¯å¢ƒï¼Œå¹¶å°†å½“å‰ç¯å¢ƒè®¾ç½®ä¸ºè¯¥ç¯å¢ƒçš„çˆ¶çº§ç¯å¢ƒï¼Œ ç„¶åå°†è¯¥ç¯å¢ƒè®¾ç½®ä¸ºå½“å‰ç¯å¢ƒ */
 		Environment* newEnv();
-		// ½«²ÎÊı×÷Îª µ±Ç°»·¾³£¬ ²¢½«Ô­µ±Ç°»·¾³ÖÁÎª ²ÎÊıµÄ ¸¸¼¶»·¾³
+		// å°†å‚æ•°ä½œä¸º å½“å‰ç¯å¢ƒï¼Œ å¹¶å°†åŸå½“å‰ç¯å¢ƒè‡³ä¸º å‚æ•°çš„ çˆ¶çº§ç¯å¢ƒ
 		Environment* newEnv(Environment *);
-		/* ½«»·¾³ÍË»ØÒ»¼¶£¬Èç¹ûµ±Ç°Ö»ÓĞÒ»¼¶»·¾³£¬ÔòÊ²Ã´Ò²²»×ö 
-		  Èç¹ûÍË»ØÉÏ¼¶»·¾³£¬ µ±Ç°»·¾³ÄÚµÄËùÓĞ±äÁ¿µÄÄÚ´æ¶¼½«»á±»ÊÍ·Å */
+		/* å°†ç¯å¢ƒé€€å›ä¸€çº§ï¼Œå¦‚æœå½“å‰åªæœ‰ä¸€çº§ç¯å¢ƒï¼Œåˆ™ä»€ä¹ˆä¹Ÿä¸åš 
+		  å¦‚æœé€€å›ä¸Šçº§ç¯å¢ƒï¼Œ å½“å‰ç¯å¢ƒå†…çš„æ‰€æœ‰å˜é‡çš„å†…å­˜éƒ½å°†ä¼šè¢«é‡Šæ”¾ */
 		void backEnv();
 
 		Environment *getCurrentEnv() const;
 		Environment *getGlobalEnv() const;
 
-		// ×¢²áÒ»¸öµÚÈı·½º¯Êı
+		// æ³¨å†Œä¸€ä¸ªç¬¬ä¸‰æ–¹å‡½æ•°
 		void reg3rd(const char *, X3rdFuncWorker worker);
-		// ½â³ıº¯ÊıµÄ×¢²á
+		// è§£é™¤å‡½æ•°çš„æ³¨å†Œ
 		void unreg3rd(const char *);
 
 		Allocator &getAllocator() const;
 
 	private:
-		// È«¾Ö»·¾³
+		// å…¨å±€ç¯å¢ƒ
 		Environment *m_global_env = nullptr;
 		Environment *m_current_env = nullptr;
 		Allocator  *m_allocator = nullptr;

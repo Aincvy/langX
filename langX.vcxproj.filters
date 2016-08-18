@@ -54,6 +54,15 @@
     <ClInclude Include="include\ClassInfo.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\langXObject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\langXObjectRef.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\NullObject.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Token.cpp">
@@ -99,6 +108,15 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\ClassInfo.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\langXObject.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\langXObjectRef.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\NullObject.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

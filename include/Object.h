@@ -1,23 +1,23 @@
 #pragma once
 
 /*
-*   ´´½¨Ê±¼ä£º  2016-07-07
-*   ×÷Õß£º The World(world@aincvy.com)
+*   åˆ›å»ºæ—¶é—´ï¼š  2016-07-07
+*   ä½œè€…ï¼š The World(world@aincvy.com)
 *
-*   ÎÄ¼þÃèÊö£º
-*   ÃèÊö£º     ±íÊ¾Ò»¸ö langX ¶ÔÏó 
+*   æ–‡ä»¶æè¿°ï¼š
+*   æè¿°ï¼š     è¡¨ç¤ºä¸€ä¸ª langX å¯¹è±¡ 
 */
 
 namespace langX {
 
-//  ²ÎÊýµÄ¸öÊý
+//  å‚æ•°çš„ä¸ªæ•°
 #define PARAM_COUNT 30
 
 
-	// ¶ÔÏóÀàÐÍ
+	// å¯¹è±¡ç±»åž‹
 	enum ObjectType
 	{
-		UNKNOWN=100, NUMBER , STRING, FUNCTION, OBJECT
+		UNKNOWN=100, NUMBER , STRING, FUNCTION, OBJECT , NULLOBJECT
 	};
 
 	class Object
@@ -26,33 +26,34 @@ namespace langX {
 		Object();
 		~Object();
 
-		/* ×ÔÔöµ±Ç°¶ÔÏóµÄÒýÓÃ´ÎÊý */
+		/* è‡ªå¢žå½“å‰å¯¹è±¡çš„å¼•ç”¨æ¬¡æ•° */
 		void incRefCount();
-		/* ×Ô¼õµ±Ç°¶ÔÏóµÄÒýÓÃ´ÎÊý£¬ Èç¹ûµ±Ç°¶ÔÏóµÄÒýÓÃ´ÎÊýÐ¡ÓÚµÈÓÚ0  £¬ ÔòÏú»Ùµ±Ç°¶ÔÏó   */
+		/* è‡ªå‡å½“å‰å¯¹è±¡çš„å¼•ç”¨æ¬¡æ•°ï¼Œ å¦‚æžœå½“å‰å¯¹è±¡çš„å¼•ç”¨æ¬¡æ•°å°äºŽç­‰äºŽ0  ï¼Œ åˆ™é”€æ¯å½“å‰å¯¹è±¡   */
 		void decRefCount();
 
-		// µ±Ç°±äÁ¿ÊÇ·ñÊÇÒ»¸ö local ±äÁ¿
+		// å½“å‰å˜é‡æ˜¯å¦æ˜¯ä¸€ä¸ª local å˜é‡
 		bool isLocal() const;
-		// µ±Ç°±äÁ¿ÊÇ·ñÊÇÒ»¸ö private ±äÁ¿
+		// å½“å‰å˜é‡æ˜¯å¦æ˜¯ä¸€ä¸ª private å˜é‡
 		bool isPrivate() const;
-		// µ±Ç°±äÁ¿ÊÇ·ñÊÇÒ»¸ö public ±äÁ¿
+		// å½“å‰å˜é‡æ˜¯å¦æ˜¯ä¸€ä¸ª public å˜é‡
 		bool isPublic() const;
 
-		/* µ±Ç°Öµ¿ÉÒÔ±íÊ¾ÎªÕæÃ´£¿  null,0,false ¶¼²»»á±íÊ¾ÎªÕæ  */
+		/* å½“å‰å€¼å¯ä»¥è¡¨ç¤ºä¸ºçœŸä¹ˆï¼Ÿ  null,0,false éƒ½ä¸ä¼šè¡¨ç¤ºä¸ºçœŸ  */
 		virtual bool isTrue() const = 0;
-		/* »ñµÃµ±Ç°¶ÔÏóµÄÀàÐÍ  */
+		/* èŽ·å¾—å½“å‰å¯¹è±¡çš„ç±»åž‹  */
 		virtual ObjectType getType() const = 0;
-		/* ¿ËÂ¡µ±Ç°¶ÔÏó£¬ ·µ»Ø³öÒ»¸öÐÂµÄ¶ÔÏó */
+		/* å…‹éš†å½“å‰å¯¹è±¡ï¼Œ è¿”å›žå‡ºä¸€ä¸ªæ–°çš„å¯¹è±¡ */
 		virtual Object* clone() const = 0;
 
-		/* °Ñ×Ô¼ºUpdate ³ÉÄ¿±êµÄÖµ */
+		/* æŠŠè‡ªå·±Update æˆç›®æ ‡çš„å€¼ */
 		virtual void update(Object *) = 0;
 
 	private:
 		int m_ref_count;
 
-		/* ÃüÃû½èÓÃÁËjava ÀïÃæµÄÃüÃû£¬ ºÃÏñÒâË¼ÊÇ¶¨°¸£¬
-		ÔÚµ±Ç°Óï¾³ÏÂ£¬ Õâ¸öº¯ÊýÓ¦¸ÃÍê³ÉµÄ¹¦ÄÜÎª£º ¸Éµô×Ô¼º   */
+		/* å‘½åå€Ÿç”¨äº†java é‡Œé¢çš„å‘½åï¼Œ å¥½åƒæ„æ€æ˜¯å®šæ¡ˆï¼Œ
+		åœ¨å½“å‰è¯­å¢ƒä¸‹ï¼Œ è¿™ä¸ªå‡½æ•°åº”è¯¥å®Œæˆçš„åŠŸèƒ½ä¸ºï¼š å¹²æŽ‰è‡ªå·±   
+		2016-08-18:  æˆ‘å¾ˆæƒ³çŸ¥é“è¿™ä¸ªå‡½æ•°æœ‰ä¸ªé¸Ÿç”¨ã€‚ã€‚   */
 		virtual void finalize() = 0;
 
 		bool m_is_local = false;
@@ -64,61 +65,61 @@ namespace langX {
 	{
 		char * name;
 		
-		// 07-23 ×¢ÊÍ  Í³Ò»½«½ÚµãµÄÔËËã½á¹û·ÅÔÚ Node.value ÖÐ
-		// Õâ¸ö±äÁ¿µÄÖµ£¬   Õâ¸ö¶ÔÏó ÔÚFreeNode º¯ÊýÖÐ²¢²»»áÊÍ·Å
+		// 07-23 æ³¨é‡Š  ç»Ÿä¸€å°†èŠ‚ç‚¹çš„è¿ç®—ç»“æžœæ”¾åœ¨ Node.value ä¸­
+		// è¿™ä¸ªå˜é‡çš„å€¼ï¼Œ   è¿™ä¸ªå¯¹è±¡ åœ¨FreeNode å‡½æ•°ä¸­å¹¶ä¸ä¼šé‡Šæ”¾
 		//Object *obj;
 	};
 
 	enum NodeType
 	{
-		// Êý×Ö³£Á¿½Úµã
+		// æ•°å­—å¸¸é‡èŠ‚ç‚¹
 		NODE_CONSTANT_NUMBER = 50,
-		// ×Ö·û´®³£Á¿½Úµã
+		// å­—ç¬¦ä¸²å¸¸é‡èŠ‚ç‚¹
 		NODE_CONSTANT_STRING,
-		// ±äÁ¿½Úµã
+		// å˜é‡èŠ‚ç‚¹
 		NODE_VARIABLE ,
-		// ²Ù×÷·û½Úµã
+		// æ“ä½œç¬¦èŠ‚ç‚¹
 		NODE_OPERATOR ,
-		// Êµ²Î½Úµã   
+		// å®žå‚èŠ‚ç‚¹   
 		NODE_ARGS  ,
-		// º¯Êý½Úµã £¨º¯ÊýÉùÃ÷£©  µ±½ÚµãÀàÐÍÊÇº¯ÊýµÄÊ±ºò£¬ º¯ÊýÒýÓÃÔÚnode->value ÉÏ
+		// å‡½æ•°èŠ‚ç‚¹ ï¼ˆå‡½æ•°å£°æ˜Žï¼‰  å½“èŠ‚ç‚¹ç±»åž‹æ˜¯å‡½æ•°çš„æ—¶å€™ï¼Œ å‡½æ•°å¼•ç”¨åœ¨node->value ä¸Š
 		NODE_FUNCTION,
-		// Àà½Úµã £¨ÀàÉùÃ÷£© µ±½ÚµãÀàÐÍÎª ÀàµÄÊ±ºò£¬ ÀàÒýÓÃÔÚ node->ptr_u  ÉÏÃæ
+		// ç±»èŠ‚ç‚¹ ï¼ˆç±»å£°æ˜Žï¼‰ å½“èŠ‚ç‚¹ç±»åž‹ä¸º ç±»çš„æ—¶å€™ï¼Œ ç±»å¼•ç”¨åœ¨ node->ptr_u  ä¸Šé¢
 		NODE_CLASS
 	};
 
-	// ½ÚµãµÄ×´Ì¬£¬ ±ÈÈç£º Õý³££¬ÔÚÑ­»·ÄÚ£¬ÔÚº¯ÊýÄÚ
+	// èŠ‚ç‚¹çš„çŠ¶æ€ï¼Œ æ¯”å¦‚ï¼š æ­£å¸¸ï¼Œåœ¨å¾ªçŽ¯å†…ï¼Œåœ¨å‡½æ•°å†…
 	struct NodeState
 	{
-		// ÔÚÑ­»·ÄÚµÄÓï¾ä
+		// åœ¨å¾ªçŽ¯å†…çš„è¯­å¥
 		bool in_loop;
-		// ÔÚº¯ÊýÄÚµÄÓï¾ä
+		// åœ¨å‡½æ•°å†…çš„è¯­å¥
 		bool in_func;
-		// ÔÚswitch Óï¾äÖÐ
+		// åœ¨switch è¯­å¥ä¸­
 		bool in_switch;
 
-		// ÊÇ·ñÔÚ break ×´Ì¬
+		// æ˜¯å¦åœ¨ break çŠ¶æ€
 		bool isBreak;
-		// ÊÇ·ñÔÚ return ×´Ì¬
+		// æ˜¯å¦åœ¨ return çŠ¶æ€
 		bool isReturn;
-		// ÔÚcase µÄÊ±ºòÊÇ·ñÐèÒª¼ÆËãcase µÄÌõ¼þ
+		// åœ¨case çš„æ—¶å€™æ˜¯å¦éœ€è¦è®¡ç®—case çš„æ¡ä»¶
 		bool isCaseNeedCon;
-		// ÊÇ·ñÊÇºó×º
+		// æ˜¯å¦æ˜¯åŽç¼€
 		bool isSuffix;
 	};
 
 	struct Node;
-	// ÓÐ¹Øswitch Ïà¹ØµÄÄÚÈÝ
+	// æœ‰å…³switch ç›¸å…³çš„å†…å®¹
 	struct SwitchInfo
 	{
-		// default Óï¾äµÄ½ÚµãËùÔÚÎ»ÖÃ
+		// default è¯­å¥çš„èŠ‚ç‚¹æ‰€åœ¨ä½ç½®
 		Node *defaultNode;
 
-		// µ±Ç°½áµãÊÇ·ñÊÇ default Óï¾ä
+		// å½“å‰ç»“ç‚¹æ˜¯å¦æ˜¯ default è¯­å¥
 		bool isDefault;
-		// case Óï¾äÊÇ·ñ½øÈëÄÚÈÝ
+		// case è¯­å¥æ˜¯å¦è¿›å…¥å†…å®¹
 		bool isInCase;
-		// Èç¹ûµ±Ç°½ÚµãÊÇ default ,ÊÇ·ñÖ´ÐÐ
+		// å¦‚æžœå½“å‰èŠ‚ç‚¹æ˜¯ default ,æ˜¯å¦æ‰§è¡Œ
 		bool doDefault;
 	};
 
@@ -132,31 +133,31 @@ namespace langX {
 
 	struct Operator
 	{
-		// ÎÒÒ²²»ÖªµÀÕâÉ¶
+		// æˆ‘ä¹Ÿä¸çŸ¥é“è¿™å•¥
 		struct Node** op;
 		int op_count;
-		// ²Ù×÷·ûÊÇÊ²Ã´
+		// æ“ä½œç¬¦æ˜¯ä»€ä¹ˆ
 		int opr;
 
-		// 07-23 ×¢ÊÍ£¬ ½á¹û·ÅÔÚ Node.value ÖÐ
-		// µ±Ç°²Ù×÷²úÉúµÄ½á¹û, Õâ¸ö¶ÔÏó ÔÚFreeNode º¯ÊýÖÐ²¢²»»áÊÍ·Å
+		// 07-23 æ³¨é‡Šï¼Œ ç»“æžœæ”¾åœ¨ Node.value ä¸­
+		// å½“å‰æ“ä½œäº§ç”Ÿçš„ç»“æžœ, è¿™ä¸ªå¯¹è±¡ åœ¨FreeNode å‡½æ•°ä¸­å¹¶ä¸ä¼šé‡Šæ”¾
 		//Object *obj;
 	};
 
 	struct Node
 	{
 		NodeType type;
-		// ÔÚÖ´ÐÐ½áÊøÖ®ºóÊÇ·ñ½øÐÐ free ²Ù×÷
+		// åœ¨æ‰§è¡Œç»“æŸä¹‹åŽæ˜¯å¦è¿›è¡Œ free æ“ä½œ
 		bool freeOnExeced;
-		// µ±Ç°½ÚµãµÄÖµ .  Èç¹ûµ±Ç°½áµãÊÇÒ»¸ö³£Á¿Êý×Ö£¬ Ôòfree µÄÊ±ºò»áÊ©·ÅÕâ¸öÖµµÃÄÚ´æ
+		// å½“å‰èŠ‚ç‚¹çš„å€¼ .  å¦‚æžœå½“å‰ç»“ç‚¹æ˜¯ä¸€ä¸ªå¸¸é‡æ•°å­—ï¼Œ åˆ™free çš„æ—¶å€™ä¼šæ–½æ”¾è¿™ä¸ªå€¼å¾—å†…å­˜
 		Object *value;
-		// ÍòÄÜÖ¸Õë £¬ Ö÷ÒªÓÃÓÚ·ÅÖÃ²ÎÊýÊ²Ã´µÄ
+		// ä¸‡èƒ½æŒ‡é’ˆ ï¼Œ ä¸»è¦ç”¨äºŽæ”¾ç½®å‚æ•°ä»€ä¹ˆçš„
 		void *ptr_u;
-		// switch Ïà¹ØµÄÄÚÈÝ
+		// switch ç›¸å…³çš„å†…å®¹
 		SwitchInfo switch_info;
-		// ½Úµã×´Ì¬
+		// èŠ‚ç‚¹çŠ¶æ€
 		NodeState state;
-		// ºóÖÃÖµ £¬ Èç¹ûµ±Ç°½ÚµãÎªÒ»¸ö ±äÁ¿½Úµã£¬ µ±Ç°ÊôÐÔÔòÎªÓÐÓÃ
+		// åŽç½®å€¼ ï¼Œ å¦‚æžœå½“å‰èŠ‚ç‚¹ä¸ºä¸€ä¸ª å˜é‡èŠ‚ç‚¹ï¼Œ å½“å‰å±žæ€§åˆ™ä¸ºæœ‰ç”¨
 		Object *postposition;
 
 		Variable *var_obj;
@@ -164,26 +165,26 @@ namespace langX {
 		Operator *opr_obj;
 	};
 
-	// ²ÎÊýÁÐ±í ,×î´ó²»³¬¹ý30¸ö²ÎÊý
+	// å‚æ•°åˆ—è¡¨ ,æœ€å¤§ä¸è¶…è¿‡30ä¸ªå‚æ•°
 	struct ParamsList
 	{
 		char* args[PARAM_COUNT];
-		// ²ÎÊýË÷Òý
+		// å‚æ•°ç´¢å¼•
 		int index;
 	};
 
-	// ÕâÊÇÊµ²Î
+	// è¿™æ˜¯å®žå‚
 	struct ArgsList
 	{
 		Node *args[PARAM_COUNT];
-		// Êµ²ÎË÷Òý
+		// å®žå‚ç´¢å¼•
 		int index;
 	};
 
 	struct X3rdArgs
 	{
 		Object *args[PARAM_COUNT];
-		// Êµ²ÎË÷Òý, Ò»°ã±íÊ¾ ÊýÁ¿ÁË
+		// å®žå‚ç´¢å¼•, ä¸€èˆ¬è¡¨ç¤º æ•°é‡äº†
 		int index;
 	};
 }

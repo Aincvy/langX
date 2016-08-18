@@ -9,7 +9,7 @@ namespace langX {
 	class langXObjectRef;
 
 	/*
-	 * langXObject  Óëobject ¶ÀÁ¢·Ö¿ª
+	 * langXObject  ä¸object ç‹¬ç«‹åˆ†å¼€
 	 */
 	class langXObject 
 	{
@@ -20,15 +20,15 @@ namespace langX {
 		void setMember(const char*, Object *);
 		Object * getMember(const char *) const;
 		Function *getFunction(const char *) const;
-		// »ñµÃÀàĞÅÏ¢
+		// è·å¾—ç±»ä¿¡æ¯
 		const ClassInfo * getClassInfo() const;
 
 
-		// Éú³ÉÒ»¸öÒıÓÃ£¬ ÒıÓÃµ½Õâ¸ö¶ÔÏóÉíÉÏ
+		// ç”Ÿæˆä¸€ä¸ªå¼•ç”¨ï¼Œ å¼•ç”¨åˆ°è¿™ä¸ªå¯¹è±¡èº«ä¸Š
 		langXObjectRef * addRef();
-		//  ¼õÉÙÒ»¸öÒıÓÃ
+		//  å‡å°‘ä¸€ä¸ªå¼•ç”¨
 		void subRef();
-		//  »ñµÃµ±Ç°¶ÔÏóµÄÒıÓÃ´ÎÊı
+		//  è·å¾—å½“å‰å¯¹è±¡çš„å¼•ç”¨æ¬¡æ•°
 		int getRefCount() const;
 
 	private:
