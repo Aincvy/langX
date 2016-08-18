@@ -301,6 +301,7 @@ assign_stmt_value
 	| string_expr   { $$ = $1; }
 	| self_inc_dec_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
+	| class_member_stmt { $$ = $1; }
 	;
 
 //  += -= *= /=  的值
