@@ -3,15 +3,15 @@
 #include <vector>
 
 /*
-*   ´´½¨Ê±¼ä£º  2016-07-04
-*   ×÷Õß£º The World(world@aincvy.com)
+*   åˆ›å»ºæ—¶é—´ï¼š  2016-07-04
+*   ä½œè€…ï¼š The World(world@aincvy.com)
 *
-*   ÎÄ¼þÃèÊö£º
-*   ÃèÊö£º     ³éÏóÓï·¨Ê÷µÄ¸ù½ÚµãÀà
+*   æ–‡ä»¶æè¿°ï¼š
+*   æè¿°ï¼š     æŠ½è±¡è¯­æ³•æ ‘çš„æ ¹èŠ‚ç‚¹ç±»
 */
 
 namespace langX {
-	/* ³éÏóÓï·¨Ê÷µÄ¸ù½ÚµãÀà */
+	/* æŠ½è±¡è¯­æ³•æ ‘çš„æ ¹èŠ‚ç‚¹ç±» */
 	class ASTRoot: ASTNode
 	{
 	public:

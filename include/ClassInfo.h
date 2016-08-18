@@ -7,7 +7,7 @@
  *  author: hideDragon
  *  file: ClassInfo.h 
  *
- *  desc: ÀàĞÅÏ¢
+ *  desc: ç±»ä¿¡æ¯
  */
 
 namespace langX {
@@ -22,7 +22,7 @@ namespace langX {
 		~ClassInfo();
 
 		void addMember(const char*, Object *);
-		// ÊÇ·ñ°üº¬ÄÇ¸ö ³ÉÔ±
+		// æ˜¯å¦åŒ…å«é‚£ä¸ª æˆå‘˜
 		bool hasMember(const char*) const;
 		Object * getMember(const char *) const;
 
@@ -38,12 +38,12 @@ namespace langX {
 		std::map<std::string, Function*> & getFunctions();
 
 	private:
-		//  µ±Ç°ÀàµÄ ×Ö¶Îmap ...
-		//  key:  ÊôĞÔÃû,  value:  ¶ÔÏóÖ¸Õë
+		//  å½“å‰ç±»çš„ å­—æ®µmap ...
+		//  key:  å±æ€§å,  value:  å¯¹è±¡æŒ‡é’ˆ
 		std::map<std::string, Object*> m_members;
 		std::map<std::string, Function*> m_functions;
 
-		// µ±Ç°Àà½ĞÊ²Ã´Ãû×Ö
+		// å½“å‰ç±»å«ä»€ä¹ˆåå­—
 		std::string m_name;
 	};
 

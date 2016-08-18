@@ -9,15 +9,15 @@ namespace langX {
 	class ClassInfo;
 
 	/*
-	 * »·¾³Àà  
-	 * [¹ûÈ»ÕâÊ²Ã´µÄ ÕæÊÇÄÑĞ´ - - ]
-	 * Õâ¸öÀà±íÊ¾ÁË Ò»¸ö»·¾³ £¬ °üº¬ÁËÒ»Ğ©±äÁ¿£¬ º¯Êı
+	 * ç¯å¢ƒç±»  
+	 * [æœç„¶è¿™ä»€ä¹ˆçš„ çœŸæ˜¯éš¾å†™ - - ]
+	 * è¿™ä¸ªç±»è¡¨ç¤ºäº† ä¸€ä¸ªç¯å¢ƒ ï¼Œ åŒ…å«äº†ä¸€äº›å˜é‡ï¼Œ å‡½æ•°
 	 */
 	class Environment
 	{
 	public:
 		Environment();
-		/* ÔÚÊÍ·ÅÕâ¸ö¶ÔÏóµÄÊ±ºò²¢²»»áÊ©·ÅËûµÄ¸¸¼¶»·¾³¶ÔÏó */
+		/* åœ¨é‡Šæ”¾è¿™ä¸ªå¯¹è±¡çš„æ—¶å€™å¹¶ä¸ä¼šæ–½æ”¾ä»–çš„çˆ¶çº§ç¯å¢ƒå¯¹è±¡ */
 		~Environment();
 
 		void putObject(const char*, Object*);
@@ -31,9 +31,9 @@ namespace langX {
 		Environment *getParent() const;
 		void setParent(Environment *);
 
-		// ÉèÖÃÏŞ¶¨
+		// è®¾ç½®é™å®š
 		void setRestrict(bool);
-		// ÊÇ·ñÏŞ¶¨
+		// æ˜¯å¦é™å®š
 		bool isRestrict() const;
 
 	private:
@@ -43,12 +43,12 @@ namespace langX {
 
 		Environment *m_parent = nullptr;
 
-		//  ÊÇ·ñÏŞ¶¨£¬ Èç¹ûÏŞ¶¨£¬ ÔòÑ°ÕÒ±äÁ¿µÄÊ±ºò²»»áÈ¥Ñ°ÕÒ¸¸¼¶»·¾³
+		//  æ˜¯å¦é™å®šï¼Œ å¦‚æœé™å®šï¼Œ åˆ™å¯»æ‰¾å˜é‡çš„æ—¶å€™ä¸ä¼šå»å¯»æ‰¾çˆ¶çº§ç¯å¢ƒ
 		bool m_restrict = false;
 	};
 
 
-	// ÀàµÄÇÅ½Ó»·¾³  
+	// ç±»çš„æ¡¥æ¥ç¯å¢ƒ  
 	class ClassBridgeEnv : public Environment
 	{
 	public:

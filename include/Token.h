@@ -2,15 +2,15 @@
 #include <string>
 
 /*
-*   ´´½¨Ê±¼ä£º  2016-07-04
-*   ×÷Õß£º The World(world@aincvy.com)
+*   åˆ›å»ºæ—¶é—´ï¼š  2016-07-04
+*   ä½œè€…ï¼š The World(world@aincvy.com)
 *
-*   ÎÄ¼şÃèÊö£º
-*   ÃèÊö£º     ±£´æÄ³¸öµ¥´ÊµÄ¾ßÌåĞÅÏ¢
+*   æ–‡ä»¶æè¿°ï¼š
+*   æè¿°ï¼š     ä¿å­˜æŸä¸ªå•è¯çš„å…·ä½“ä¿¡æ¯
 */
 
 namespace langX {
-	/* ±£´æÄ³¸öµ¥´ÊµÄ¾ßÌåĞÅÏ¢ */
+	/* ä¿å­˜æŸä¸ªå•è¯çš„å…·ä½“ä¿¡æ¯ */
 	class Token
 	{
 	public:
@@ -25,7 +25,7 @@ namespace langX {
 		std::string getText() const;
 
 	private:
-		// 2016-07-04  ÎÄ¼şÃûÏà¹ØĞÅÏ¢ Ôİ²»ÆôÓÃ
+		// 2016-07-04  æ–‡ä»¶åç›¸å…³ä¿¡æ¯ æš‚ä¸å¯ç”¨
 		std::string m_filename;
 		int m_line_number;
 		std::string m_text;

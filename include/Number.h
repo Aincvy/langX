@@ -11,7 +11,7 @@ namespace langX {
 		Number(double);
 		~Number();
 
-		// ¸üĞÂµ±Ç°¶ÔÏóµÄÖµÎª²ÎÊıµÄÖµ 
+		// æ›´æ–°å½“å‰å¯¹è±¡çš„å€¼ä¸ºå‚æ•°çš„å€¼ 
 		void update(double);
 
 		int getIntValue() const;

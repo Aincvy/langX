@@ -17,22 +17,22 @@ namespace langX {
 		void setParamsList(ParamsList *);
 		ParamsList *getParamsList();
 
-		// »ñÈ¡²ÎÊı¸öÊı
+		// è·å–å‚æ•°ä¸ªæ•°
 		int getArgsCount() const;
 		
 		Object *call() const;
 
 		bool isTrue() const;
 		ObjectType getType() const;
-		/* º¯Êı·µ»ØÒ»¸ö×Ô¼ºµÄÖ¸Õë */
+		/* å‡½æ•°è¿”å›ä¸€ä¸ªè‡ªå·±çš„æŒ‡é’ˆ */
 		Object* clone() const;
 		void update(Object *);
 
-		// ÊÇ·ñÊÇµÚÈı·½º¯Êı
+		// æ˜¯å¦æ˜¯ç¬¬ä¸‰æ–¹å‡½æ•°
 		virtual bool is3rd() const;
 
 	private:
-		// ÄÚ²¿º¯ÊıÖ´ĞĞµÄ¸ù½Úµã
+		// å†…éƒ¨å‡½æ•°æ‰§è¡Œçš„æ ¹èŠ‚ç‚¹
 		Node * m_node_root = nullptr;
 		char * m_name;
 		ParamsList * m_params_list = nullptr;
@@ -44,10 +44,10 @@ namespace langX {
 	class X3rdFunction;
 	class langXState;
 
-	//  µÚÈı·½º¯ÊıµÄ º¯ÊıÖ¸Õë
+	//  ç¬¬ä¸‰æ–¹å‡½æ•°çš„ å‡½æ•°æŒ‡é’ˆ
 	typedef Object *(*X3rdFuncWorker)(X3rdFunction * , const X3rdArgs &);
 
-	// µÚÈı·½º¯Êı £¬Íâ²¿×¢²á½øÀ´µÄº¯Êı 
+	// ç¬¬ä¸‰æ–¹å‡½æ•° ï¼Œå¤–éƒ¨æ³¨å†Œè¿›æ¥çš„å‡½æ•° 
 	class X3rdFunction : public Function
 	{
 	public:
@@ -57,9 +57,9 @@ namespace langX {
 		void setLangX(langXState *);
 		langXState * getLangX() const  ;
 
-		// ÉèÖÃµÚÈı·½º¯ÊıµÄÊµÖÊÖ´ĞĞÌå
+		// è®¾ç½®ç¬¬ä¸‰æ–¹å‡½æ•°çš„å®è´¨æ‰§è¡Œä½“
 		void setWorker(X3rdFuncWorker worker);
-		// »ñÈ¡
+		// è·å–
 		X3rdFuncWorker getWorker() const; 
 
 		bool is3rd() const;
