@@ -1,5 +1,6 @@
 #include "../include/Object.h"
 #include "../include/Function.h"
+#include "../include/langXObject.h"
 #include "../include/ClassInfo.h"
 
 namespace langX {
@@ -62,6 +63,21 @@ namespace langX {
 	const char * ClassInfo::getName() const
 	{
 		return this->m_name.c_str();
+	}
+
+	langXObject * ClassInfo::newObject()
+	{
+		return new langXObject(this);
+	}
+
+	std::map<std::string, Object*>& ClassInfo::getMembers()
+	{
+		return this->m_members;
+	}
+
+	std::map<std::string, Function*>& ClassInfo::getFunctions()
+	{
+		return this->m_functions;
 	}
 
 
