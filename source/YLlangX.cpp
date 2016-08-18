@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <string>
 #include "../include/YLlangX.h"
 #include "../include/langX.h"
 #include "../include/Object.h"
@@ -232,7 +233,7 @@ XNode * claxx(char *name , XNode * node) {
 		ClassBridgeEnv env(claxxInfo);
 		state->newEnv(&env);
 		__execNode(node);
-		state->backEnv();
+		state->backEnv(false);
 	}
 	
 	XNode * nodeC = (XNode*)calloc(1, sizeof(XNode) * 1);

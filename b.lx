@@ -1,9 +1,12 @@
 Student { 
-  name,age;
+  name;
+  age = 20 ;
+  
   a => { print("hello,a!\n");}
   
   printInfo => { print("xxx"); }
 }
 
-// 空的类
-Student2{ }
+s1 = new Student();
+b = s1.age;
+print("b: " + b);

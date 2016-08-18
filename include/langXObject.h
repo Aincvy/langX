@@ -23,7 +23,8 @@ namespace langX {
 		// 获得类信息
 		const ClassInfo * getClassInfo() const;
 
-
+		// 只是自增一个自己的引用次数
+		void justAddRef();
 		// 生成一个引用， 引用到这个对象身上
 		langXObjectRef * addRef();
 		//  减少一个引用

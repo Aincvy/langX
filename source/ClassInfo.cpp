@@ -1,3 +1,4 @@
+#include <string>
 #include "../include/Object.h"
 #include "../include/Function.h"
 #include "../include/langXObject.h"

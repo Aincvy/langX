@@ -1,3 +1,4 @@
+#include <string>
 #include "../include/String.h"
 
 namespace langX {

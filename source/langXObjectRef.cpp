@@ -1,4 +1,7 @@
+#include <string>
+
 #include "../include/Object.h"
+#include "../include/Function.h"
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 
@@ -13,6 +16,26 @@ namespace langX {
 		{
 			this->m_object_ref->subRef();
 		}
+	}
+	langXObject * langXObjectRef::getRefObject()
+	{
+		return this->m_object_ref;
+	}
+	void langXObjectRef::setMember(const char *name, Object *obj)
+	{
+		this->m_object_ref->setMember(name, obj);
+	}
+	Object * langXObjectRef::getMember(const char *name) const
+	{
+		return this->m_object_ref->getMember(name);
+	}
+	Function * langXObjectRef::getFunction(const char *name) const
+	{
+		return this->m_object_ref->getFunction(name);
+	}
+	const ClassInfo * langXObjectRef::getClassInfo() const
+	{
+		return this->m_object_ref->getClassInfo();
 	}
 	bool langXObjectRef::isTrue() const
 	{
@@ -37,7 +60,26 @@ namespace langX {
 
 	void langXObjectRef::update(Object *obj)
 	{
+		if (obj == NULL)
+		{
+			return;
+		}
 
+		if (this->m_object_ref != NULL)
+		{
+			this->m_object_ref->subRef();
+			this->m_object_ref = NULL;
+		}
+
+		if (obj->getType() == OBJECT)
+		{
+			this->m_object_ref = ((langXObjectRef*)obj)->getRefObject();
+			this->m_object_ref->justAddRef();
+		}else{
+			this->m_object_ref->setMember(this->getName(), obj);
+			delete this;
+		}
+		
 	}
 
 	void langXObjectRef::finalize()

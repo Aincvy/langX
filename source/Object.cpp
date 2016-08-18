@@ -1,3 +1,4 @@
+#include <string>
 #include "../include/Object.h"
 
 namespace langX {
@@ -29,5 +30,14 @@ namespace langX {
 	bool Object::isPublic() const
 	{
 		return this->m_is_public;
+	}
+
+	void Object::setName(const char *x)
+	{
+		this->m_name = std::string(x);
+	}
+	const char * Object::getName() const
+	{
+		return this->m_name.c_str();
 	}
 }

@@ -1,3 +1,5 @@
+#include <string>
+
 #include "../include/Object.h"
 #include "../include/NullObject.h"
 

@@ -57,12 +57,20 @@ namespace langX {
 
 	void langXState::backEnv()
 	{
+		backEnv(true);
+	}
+
+	void langXState::backEnv(bool flag)
+	{
 		Environment *env = this->m_current_env->getParent();
 		if (env == NULL)
 		{
 			return;
 		}
-		delete this->m_current_env;
+		if (flag)
+		{
+			delete this->m_current_env;
+		}
 		this->m_current_env = env;
 	}
 
