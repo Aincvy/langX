@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include <string>
 #include "../include/YLlangX.h"
 
 #define YYDEBUG 1
@@ -27,11 +28,12 @@ extern char * yytext;
 %token <sValue> IDENTIFIER TSTRING
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
-%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW
+%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt 
+%type <node> class_member_stmt class_member_assign_stmt
 %type <params> param_list parameter
 %type <args> args_list args_expr
 
@@ -88,8 +90,14 @@ class_body
 	| class_body class_body_stmt { $$ = opr(CLAXX_BODY, 2, $1, $2); }
 	;
 
+//  类成员。  比如 a.x  a.y  这样 a.y.x
+class_member_stmt
+	: id_expr '.' id_expr   { $$ = opr(CLAXX_MEMBER,2, $1,$3 ); }
+	;
+
 class_body_stmt
 	: var_declar_stmt        { $$ = $1; }
+	| single_assign_stmt ';' { $$ = $1; }
 	| func_declar_stmt       { $$ = $1; }
 	;
 
@@ -310,9 +318,14 @@ single_assign_stmt
 	| id_expr '=' single_assign_stmt { $$ = opr('=',2, $1, $3 ); }
 	;
 
+class_member_assign_stmt
+	: class_member_stmt '=' assign_stmt_value  { $$ = opr('=',2, $1,$3 ); }
+	;
+
 //  赋值语句
 assign_stmt
 	: single_assign_stmt   { $$ = $1; }
+	| class_member_assign_stmt { $$ = $1 ;}
 	| id_expr ADD_EQ assign_stmt_value_eq { $$ = opr(ADD_EQ,2,$1,$3);}
 	| id_expr SUB_EQ assign_stmt_value_eq { $$ = opr(SUB_EQ,2,$1,$3);}
 	| id_expr MUL_EQ assign_stmt_value_eq { $$ = opr(MUL_EQ,2,$1,$3);}

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include "../include/Object.h"
 #include "../include/ExecNode.h"
 #include "../include/langX.h"

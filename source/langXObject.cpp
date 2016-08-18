@@ -1,5 +1,7 @@
+#include <string>
 #include "../include/Object.h"
 #include "../include/ClassInfo.h"
+#include "../include/Function.h"
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 
@@ -12,7 +14,9 @@ namespace langX {
 		std::map<std::string, Object*> & map = claxxInfo->getMembers();
 		for (auto i = map.begin(); i != map.end(); i++)
 		{
-			this->m_members[i->first] = i->second->clone();
+			Object *obj = i->second->clone();
+			obj->setName(i->first.c_str());
+			this->m_members[i->first] = obj;
 		}
 	}
 
@@ -22,7 +26,9 @@ namespace langX {
 
 	void langXObject::setMember(const char *name, Object *obj)
 	{
-		this->m_members[name] = obj->clone();
+		Object * a = obj->clone();
+		a->setName(name);
+		this->m_members[name] = a;
 	}
 
 	Object * langXObject::getMember(const char *name) const
@@ -43,6 +49,11 @@ namespace langX {
 	const ClassInfo * langXObject::getClassInfo() const
 	{
 		return this->m_class_info;
+	}
+
+	void langXObject::justAddRef()
+	{
+		this->m_ref_count++;
 	}
 
 	langXObjectRef * langXObject::addRef()

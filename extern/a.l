@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include "../include/YLlangX.h"
 #include "y.tab.h"
 
@@ -59,7 +60,7 @@ void count(void);
 ";" {count(); return ';'; }
 "=" {count(); return '='; }
 "," {count(); return ','; }
-"." {count(); return "."; }
+"." {count(); return '.'; }
 [+-/*()] {count(); return *yytext;}
 "&&" {count(); return AND_OP;}
 "||" {count(); return OR_OP;}

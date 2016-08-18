@@ -20,13 +20,16 @@ namespace langX {
 		/* 在释放这个对象的时候并不会施放他的父级环境对象 */
 		~Environment();
 
-		void putObject(const char*, Object*);
-		void putObject(const std::string &, Object*);
-		Object* getObject(const std::string &);
+		virtual void putObject(const char*, Object*);
+		virtual void putObject(const std::string &, Object*);
+		virtual Object* getObject(const std::string &);
 
-		void putFunction(const char*, Function*);
-		void putFunction(const std::string &, Function*);
-		Function* getFunction(const std::string &);
+		virtual void putFunction(const char*, Function*);
+		virtual void putFunction(const std::string &, Function*);
+		virtual Function* getFunction(const std::string &);
+
+		void putClass(const char *, ClassInfo *);
+		ClassInfo *getClass(const char *);
 
 		Environment *getParent() const;
 		void setParent(Environment *);
@@ -39,7 +42,7 @@ namespace langX {
 	private:
 		std::map<std::string, Object*> m_objects_map;
 		std::map<std::string, Function*> m_functions_map;
-		std::map<std::string, Object*> m_classes_map;
+		std::map<std::string, ClassInfo*> m_classes_map;
 
 		Environment *m_parent = nullptr;
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 /*
 *   创建时间：  2016-07-07
@@ -38,12 +39,16 @@ namespace langX {
 		// 当前变量是否是一个 public 变量
 		bool isPublic() const;
 
+		void setName(const char*);
+		const char * getName() const;
+
 		/* 当前值可以表示为真么？  null,0,false 都不会表示为真  */
 		virtual bool isTrue() const = 0;
 		/* 获得当前对象的类型  */
 		virtual ObjectType getType() const = 0;
 		/* 克隆当前对象， 返回出一个新的对象 */
 		virtual Object* clone() const = 0;
+
 
 		/* 把自己Update 成目标的值 */
 		virtual void update(Object *) = 0;
@@ -55,6 +60,9 @@ namespace langX {
 		在当前语境下， 这个函数应该完成的功能为： 干掉自己   
 		2016-08-18:  我很想知道这个函数有个鸟用。。   */
 		virtual void finalize() = 0;
+
+		// 这个对象的名字， 在环境内的key 
+		std::string m_name;
 
 		bool m_is_local = false;
 		bool m_is_private = false;

@@ -31,9 +31,10 @@
 #define CASE_LIST 287
 #define CLAXX_BODY 288
 #define NEW 289
-#define NONASSOC 290
-#define IFX 291
-#define UMINUS 292
+#define CLAXX_MEMBER 290
+#define NONASSOC 291
+#define IFX 292
+#define UMINUS 293
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

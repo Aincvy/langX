@@ -9,6 +9,9 @@
 #include "../extern/y.tab.h"
 #include "../include/Allocator.h"
 #include "../include/Environment.h"
+#include "../include/ClassInfo.h"
+#include "../include/langXObject.h"
+#include "../include/langXObjectRef.h"
 
 namespace langX {
 	// 内存的 管理器
@@ -1046,6 +1049,40 @@ namespace langX {
 
 	void __execNEW(Node *n) {
 		// new 一个对象
+		char *name = n->opr_obj->op[0]->var_obj->name;
+		ClassInfo* classinfo = getState()->getGlobalEnv()->getClass(name);
+		if (classinfo == NULL)
+		{
+			printf("没有找到类: %s\n" ,name );
+			return;
+		}
+		// 构造函数什么的 等会再加
+
+		n->value = classinfo->newObject()->addRef();
+	}
+
+	void __execCLAXX_BODY(Node *n) {
+
+		doSubNodes(n);
+
+		freeSubNodes(n);
+	}
+
+	void __execCLAXX_MEMBER(Node *n) {
+		//  执行节点1， 获得 类对象
+		Node *n1 = n->opr_obj->op[0];
+		__execNode(n1);
+		if (n1->value == NULL || n1->value->getType() != OBJECT)
+		{
+			printf("left value %s is not class object !\n" , n1->var_obj->name);
+			return;
+		}
+
+		langXObjectRef* objectRef = (langXObjectRef*)n1->value;
+		char *memberName = n->opr_obj->op[1]->var_obj->name;
+		n->value = objectRef->getMember(memberName)->clone();
+
+		freeSubNodes(n);
 	}
 
 
@@ -1126,6 +1163,12 @@ namespace langX {
 		else if (node->type == NODE_CLASS)
 		{
 			// 类
+			if (node->ptr_u == NULL)
+			{
+				return;
+			}
+			ClassInfo *cinfo = (ClassInfo*)node->ptr_u;
+			getState()->getGlobalEnv()->putClass(cinfo->getName(), cinfo);
 			return;
 		}
 		else if (node->type == NODE_FUNCTION)
@@ -1237,6 +1280,12 @@ namespace langX {
 			break;
 		case NEW:
 			__execNEW(node);
+			break;
+		case CLAXX_BODY:
+			__execCLAXX_BODY(node);
+			break;
+		case CLAXX_MEMBER:
+			__execCLAXX_MEMBER(node);
 			break;
 		default:
 			break;

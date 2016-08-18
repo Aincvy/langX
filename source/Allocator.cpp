@@ -1,8 +1,14 @@
 #include <stdio.h>
+#include <string>
 #include "../include/Object.h"
 #include "../include/Number.h"
 #include "../include/String.h"
+#include "../include/NullObject.h"
 #include "../include/Allocator.h"
+#include "../include/NullObject.h"
+#include "../include/Function.h"
+#include "../include/ClassInfo.h"
+#include "../include/langXObjectRef.h"
 
 namespace langX {
 	Allocator::Allocator()
@@ -42,6 +48,14 @@ namespace langX {
 		{
 			return new String("");
 		}
+		else if (t == ObjectType::NULLOBJECT )
+		{
+			return new NullObject();
+		}
+		else if (t == ObjectType::OBJECT)
+		{
+			return new langXObjectRef(NULL);
+		}
 
 		return NULL;
 	}
@@ -59,6 +73,12 @@ namespace langX {
 		else if (obj->getType() == STRING)
 		{
 			delete (String*)obj;
+		}else if(obj->getType() == OBJECT){
+			delete (langXObjectRef*)obj;
+		}
+		else if (obj->getType() == NULLOBJECT)
+		{
+			delete (NullObject*)obj;
 		}
 	}
 	

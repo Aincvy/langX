@@ -37,7 +37,7 @@ namespace langX {
 
 	void Environment::putObject(const std::string &name, Object *obj)
 	{
-
+		obj->setName(name.c_str());
 		this->m_objects_map[name] = obj;
 		//auto a = this->m_objects_map.find(name);
 		//if (a != this->m_objects_map.end()) {
@@ -116,6 +116,24 @@ namespace langX {
 			return NULL;
 		}
 		return this->m_functions_map[name];
+	}
+
+	void Environment::putClass(const char *name, ClassInfo *claxx)
+	{
+		if (claxx == NULL)
+		{
+			return;
+		}
+		this->m_classes_map[name] = claxx;
+	}
+
+	ClassInfo * Environment::getClass(const char *name)
+	{
+		if (this->m_classes_map.find(name) == this->m_classes_map.end())
+		{
+			return NULL;
+		}
+		return this->m_classes_map.at(name);
 	}
 
 	Environment * Environment::getParent() const
