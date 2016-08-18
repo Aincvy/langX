@@ -13,6 +13,7 @@
 namespace langX {
 	class Object;
 	class Function;
+	class langXObject;
 
 	class ClassInfo 
 	{
@@ -30,6 +31,11 @@ namespace langX {
 		Function * getFunction(const char *) const;
 
 		const char * getName() const;
+
+		langXObject* newObject();
+
+		std::map<std::string, Object*> & getMembers();
+		std::map<std::string, Function*> & getFunctions();
 
 	private:
 		//  当前类的 字段map ...

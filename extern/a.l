@@ -59,6 +59,7 @@ void count(void);
 ";" {count(); return ';'; }
 "=" {count(); return '='; }
 "," {count(); return ','; }
+"." {count(); return "."; }
 [+-/*()] {count(); return *yytext;}
 "&&" {count(); return AND_OP;}
 "||" {count(); return OR_OP;}

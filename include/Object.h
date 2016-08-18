@@ -17,7 +17,7 @@ namespace langX {
 	// 对象类型
 	enum ObjectType
 	{
-		UNKNOWN=100, NUMBER , STRING, FUNCTION
+		UNKNOWN=100, NUMBER , STRING, FUNCTION, OBJECT
 	};
 
 	class Object
