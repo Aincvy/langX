@@ -53,7 +53,7 @@ namespace langX {
 	{
 		if (m_object_ref == nullptr)
 		{
-			return nullptr;
+			return new langXObjectRef(NULL);
 		}
 		return this->m_object_ref->addRef();
 	}
