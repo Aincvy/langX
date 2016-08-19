@@ -28,12 +28,12 @@ extern char * yytext;
 %token <sValue> IDENTIFIER TSTRING
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
-%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER
+%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt 
-%type <node> class_member_stmt class_member_assign_stmt
+%type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt
 %type <params> param_list parameter
 %type <args> args_list args_expr
 
@@ -93,6 +93,23 @@ class_body
 //  类成员。  比如 a.x  a.y  这样 a.y.x
 class_member_stmt
 	: id_expr '.' id_expr   { $$ = opr(CLAXX_MEMBER,2, $1,$3 ); }
+	| class_member_func_stmt '.' id_expr %prec UMINUS { $$ = NULL;  }
+	| IDENTIFIER '(' args_list ')' '.' id_expr { $$ = opr( CLAXX_MEMBER ,2, opr(FUNC_CALL,2, var($1), argsNode($3) ) , $6); }
+	| class_member_stmt '.' id_expr  { $$ = opr(CLAXX_MEMBER,2, $1,$3 ); }
+	;
+
+class_member_func_stmt
+	: id_expr '.' id_expr '(' args_list ')'  { $$ = opr(CLAXX_FUNC_CALL , 3, $1, $3, argsNode($5));}
+	| IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list ')' { $$ = NULL; }
+	| class_member_stmt '.' id_expr '(' args_list ')'         { $$ = NULL; }
+	| class_member_func_stmt '.' id_expr '(' args_list ')'    { $$ = NULL; }
+	;
+
+// 函数连续调用语句
+class_func_serial_stmt
+	: IDENTIFIER '(' args_list ')' IDENTIFIER '(' args_list ')' {  $$ = NULL; }
+	| id_expr '.' id_expr '(' args_list ')' IDENTIFIER '(' args_list ')'  { $$ = NULL; }
+	| class_func_serial_stmt IDENTIFIER '(' args_list ')' { $$ = NULL; };
 	;
 
 class_body_stmt
@@ -171,6 +188,7 @@ simple_stmt
 	| DELETE IDENTIFIER ';' { $$ = opr(DELETE, 1 ,$2 ); }
 	| interrupt_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
+	| class_func_serial_stmt { $$ = $1; }
 	;
 
 interrupt_stmt
@@ -182,6 +200,7 @@ interrupt_stmt
 //  函数调用
 call_statement
 	: IDENTIFIER '(' args_list ')' { /*$$ = call($1,$3 );*/  $$ = opr(FUNC_CALL,2, var($1), argsNode($3) ); }
+	| class_member_func_stmt  { $$ = $1; }
 	;
 
 args_list
