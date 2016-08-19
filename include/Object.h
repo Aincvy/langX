@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 
 /*
 *   创建时间：  2016-07-07
@@ -38,9 +37,6 @@ namespace langX {
 		bool isPrivate() const;
 		// 当前变量是否是一个 public 变量
 		bool isPublic() const;
-
-		void setName(const char*);
-		const char * getName() const;
 
 		/* 当前值可以表示为真么？  null,0,false 都不会表示为真  */
 		virtual bool isTrue() const = 0;
@@ -93,7 +89,9 @@ namespace langX {
 		// 函数节点 （函数声明）  当节点类型是函数的时候， 函数引用在node->value 上
 		NODE_FUNCTION,
 		// 类节点 （类声明） 当节点类型为 类的时候， 类引用在 node->ptr_u  上面
-		NODE_CLASS
+		NODE_CLASS ,
+		// 空引用节点
+		NODE_NULL  
 	};
 
 	// 节点的状态， 比如： 正常，在循环内，在函数内

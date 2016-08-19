@@ -223,6 +223,20 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	return nodeF;
 }
 
+XNode * xnull()
+{
+	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
+
+	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
+	node->type = NODE_NULL;
+	node->freeOnExeced = true;
+	node->value = NULL;
+	node->postposition = NULL;
+
+	return node;
+}
+
 XNode * claxx(char *name , XNode * node) {
 
 	ClassInfo *claxxInfo = new ClassInfo(name);

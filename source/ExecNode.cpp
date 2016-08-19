@@ -1176,12 +1176,19 @@ namespace langX {
 			// 函数
 			return;
 		}
+		else if (node->type == NODE_NULL)
+		{
+			node->value = m_exec_alloc.allocate(NULLOBJECT);
+			return;
+		}
+		
 
 		if (node->type != NODE_OPERATOR)
 		{
 			printf("undeal type: %d\n", node->type);
 			return;
 		}
+		
 
 		//printf("exec operator node. opr is: %d\n", node->opr_obj->opr);
 		switch (node->opr_obj->opr)
