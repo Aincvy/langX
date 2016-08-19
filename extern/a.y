@@ -28,7 +28,7 @@ extern char * yytext;
 %token <sValue> IDENTIFIER TSTRING
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
-%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL
+%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr
@@ -282,6 +282,10 @@ string_expr
 	: TSTRING  { $$ = string($1); }
 	;
 
+null_expr
+	: XNULL   { $$ = xnull();}
+	;
+
 //  bool 比较的值
 bool_param_expr
 	: assign_stmt_value_eq { $$ = $1; }
@@ -321,6 +325,7 @@ assign_stmt_value
 	| self_inc_dec_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
 	| class_member_stmt { $$ = $1; }
+	| null_expr      { $$ = $1; }
 	;
 
 //  += -= *= /=  的值

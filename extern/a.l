@@ -36,6 +36,7 @@ void count(void);
 "case"  { count(); return CASE;}
 "default" { count(); return DEFAULT; }
 "new"  { count();  return NEW; }
+"null" { count(); return XNULL; }
 "=>"   {count();  return FUNC_OP; }
 "++"   {count();  return INC_OP;}
 "--"   {count();  return DEC_OP;}
