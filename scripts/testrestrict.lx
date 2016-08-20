@@ -1,0 +1,16 @@
+funa => {
+  print("in funa\n");
+  a=b=c=1;
+  funb();
+}
+
+funb => {
+  // 当限定之后， 在funb 就看不到 funa 里面的变量了
+  restrict ;
+  print("in funb\n");
+  d1 = a ;
+  print("d1: " + d1 + "\n");
+}
+
+print("will start funa\n");
+funa();

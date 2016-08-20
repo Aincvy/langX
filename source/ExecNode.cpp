@@ -17,25 +17,34 @@ namespace langX {
 	// 内存的 管理器
 	Allocator m_exec_alloc;
 
-	/*
-	  将节点的值更新到当前环境中
-	*/
-	void setValueToEnv(const char*name, Object *val) {
-		if (val == NULL || name == NULL)
+	// 将节点的值更新到环境中
+	void setValueToEnv2(const char*name, Object *val, Environment *env) {
+		if (val == NULL || name == NULL || env == NULL)
 		{
 			printf("setValueToEnv Node Args Error. \n");
 			return;
 		}
 
-		Environment * env = getState()->getCurrentEnv();
 		Object *obj = env->getObject(name);
 		if (obj == NULL)
 		{
 			env->putObject(name, val->clone());
 		}
 		else {
+			if (obj->getType() != val->getType())
+			{
+				printf("setValueToEnv left type not equal right.\n");
+				return;
+			}
 			obj->update(val);
 		}
+	}
+
+	/*
+	将节点的值更新到当前环境中
+	*/
+	void setValueToEnv(const char*name, Object *val) {
+		setValueToEnv2(name, val, getState()->getCurrentEnv());
 	}
 
 	/*
@@ -144,6 +153,7 @@ namespace langX {
 	   调用这个函数之后 会强制改写 left->value 的值
 
 	   0730 赋值给左值的值为 放入 Environment 里面的值的克隆
+	   0820 这个函数只会保证 左节点存在值， 并且值得类型和 右类型一样  这个函数在左值的产生环境中进行操作
 	*/
 	void checkVarValue(Node *left, ObjectType rightType) {
 		if (left == NULL)
@@ -158,11 +168,31 @@ namespace langX {
 		}
 
 		Object *obj = getState()->getObject(left->var_obj->name);
-		if (obj == NULL || obj->getType() != rightType)
+		if (obj == NULL)
 		{
+			// 左值没声明过, 那么左值的产生环境就为 当前环境
 			obj = m_exec_alloc.allocate(rightType);
+			obj->setEmergeEnv(getState()->getCurrentEnv());
 			getState()->putObject(left->var_obj->name, obj);
 		}
+		else {
+			//  左值声明过
+			if (obj->getType() != rightType)
+			{
+				Object *t = m_exec_alloc.allocate(rightType);
+				// 变量的产生环境不变
+				t->setEmergeEnv(obj->getEmergeEnv());
+				obj->getEmergeEnv()->putObject(left->var_obj->name, t);
+
+				// 释放掉原值   0820  上面那条 putObject 语句执行结束之后， 好像就访问不到 obj 了 以后需要查看是为什么 TODO 
+				// 上述语句会调用 langXObject::setMember  ，这个函数会检查类型， 如果类型不一致， 会释放掉原有内存
+				//m_exec_alloc.free(obj);
+
+				// 赋值到新值
+				obj = t;
+			}
+		}
+
 		left->value = obj->clone();
 	}
 
@@ -230,37 +260,63 @@ namespace langX {
 		{
 			n->value = m_exec_alloc.allocateNumber(((Number*)left)->getDoubleValue() + ((Number*)right)->getDoubleValue());
 		}
-		else if (left->getType() == STRING || right->getType() == STRING)
+		else if ((left != NULL && left->getType() == STRING) || (right != NULL  && right->getType() == STRING))
 		{
 			// 字符串拼接 
 			std::stringstream ss;
-			if (left->getType() == STRING)
+			if (left == NULL)
 			{
-				ss << ((String*)left)->getValue();
+				ss << "null";
 			}
-			else if (left->getType() == NUMBER)
-			{
-				ss << ((Number*)left)->getDoubleValue();
-			}
-			else {
-				printf("error type in do add opr! \n");
-				return;
-			}
+			else
+				if (left->getType() == STRING)
+				{
+					ss << ((String*)left)->getValue();
+				}
+				else if (left->getType() == NUMBER)
+				{
+					ss << ((Number*)left)->getDoubleValue();
+				}
+				else if (left->getType() == NULLOBJECT)
+				{
+					ss << "null";
+				}
+				else if (left->getType() == OBJECT)
+				{
+					ss << "object";
+				}
+				else {
+					printf("error type in do add opr! \n");
+					return;
+				}
 
-			if (right->getType() == STRING)
-			{
-				ss << ((String*)right)->getValue();
-			}
-			else if (right->getType() == NUMBER)
-			{
-				ss << ((Number*)right)->getDoubleValue();
-			}
-			else {
-				printf("error type in do add opr! \n");
-				return;
-			}
+				if (right == NULL)
+				{
+					ss << "null";
+				}
+				else
+					if (right->getType() == STRING)
+					{
+						ss << ((String*)right)->getValue();
+					}
+					else if (right->getType() == NUMBER)
+					{
+						ss << ((Number*)right)->getDoubleValue();
+					}
+					else if (right->getType() == NULLOBJECT)
+					{
+						ss << "null";
+					}
+					else if (right->getType() == OBJECT)
+					{
+						ss << "object";
+					}
+					else {
+						printf("error type in do add opr! \n");
+						return;
+					}
 
-			n->value = m_exec_alloc.allocateString(ss.str().c_str());
+					n->value = m_exec_alloc.allocateString(ss.str().c_str());
 		}
 
 		freeSubNodes(n);
@@ -300,11 +356,27 @@ namespace langX {
 	void __exec61(Node *n) {
 		//printf("__exec61 start\n");
 		Node *left = n->opr_obj->op[0];
-		if (left->type != NODE_VARIABLE)
+
+
+		langXObjectRef *objectRef = NULL;
+		if (left->type == NODE_OPERATOR)
 		{
-			printf("left not the NODE_VARIABLE\n");
-			return;
+			if (left->opr_obj->opr == CLAXX_MEMBER)
+			{
+				__execNode(left);
+				objectRef = (langXObjectRef *)left->ptr_u;
+			}
+			else {
+				printf("left not the CLAXX_MEMBER! \n");
+				return;
+			}
 		}
+		else
+			if (left->type != NODE_VARIABLE)
+			{
+				printf("left not the NODE_VARIABLE\n");
+				return;
+			}
 
 		//printf("__exec61 left name: %s\n", left->var_obj->name);
 		Node *right = n->opr_obj->op[1];
@@ -313,10 +385,11 @@ namespace langX {
 		// 赋值操作的结果 为 右值的结果
 		if (right->value == NULL)
 		{
-			n->value = NULL;
-			printf("right Value is NULL, DO NOT SET.\n");
+			right->value = m_exec_alloc.allocate(NULLOBJECT);
 		}
-		else {
+
+		if (objectRef == NULL)
+		{
 			checkVarValue(left, right->value->getType());
 			left->value->update(right->value);
 
@@ -324,18 +397,21 @@ namespace langX {
 			m_exec_alloc.free(right->value);
 			right->value = NULL;
 
+			// 更新值到 Environment 
+			setValueToEnv2(left->var_obj->name, left->value, left->value->getEmergeEnv());
+
 			n->value = m_exec_alloc.copy(left->value);
 			// 左值是指向 Environment 内的内存的复制， 需要释放
 			m_exec_alloc.free(left->value);
 			left->value = NULL;
-
-			// 更新值到 Environment 
-			setValueToEnv(left->var_obj->name, n->value);
+		}
+		else {
+			// 这里的Left 已经被执行过了   
+			char * name = left->opr_obj->op[1]->var_obj->name;
+			objectRef->setMember(name, right->value->clone());
 		}
 
 		doSuffixOperation(n);
-
-		//freeSubNodes(n);
 	}
 
 	void __execADD_EQ(Node *n) {
@@ -905,7 +981,7 @@ namespace langX {
 			t->ptr_u = n->ptr_u;
 			t->switch_info.doDefault = false;
 			__execNode(t);
-			
+
 			// 设置default 节点
 			if (t->switch_info.isDefault)
 			{
@@ -985,7 +1061,7 @@ namespace langX {
 					}
 				}
 			}
-			
+
 		}
 
 		freeSubNodes(n);
@@ -1053,12 +1129,32 @@ namespace langX {
 		ClassInfo* classinfo = getState()->getGlobalEnv()->getClass(name);
 		if (classinfo == NULL)
 		{
-			printf("没有找到类: %s\n" ,name );
+			printf("没有找到类: %s\n", name);
 			return;
 		}
 		// 构造函数什么的 等会再加
+		langXObjectRef * objectRef = classinfo->newObject()->addRef();
+		objectRef->setEmergeEnv(getState()->getCurrentEnv());
+		ObjectBridgeEnv *env = new ObjectBridgeEnv(objectRef);
+		objectRef->setMembersEmergeEnv(env);
+		getState()->addEnvToList(env);
 
-		n->value = classinfo->newObject()->addRef();
+		Node *argNode = n->opr_obj->op[1];
+		if (argNode != NULL)
+		{
+			Function *func = objectRef->getConstructor();
+			if (func != NULL)
+			{
+				XArgsList *args = (XArgsList *)argNode->ptr_u;
+
+				getState()->newEnv(env);
+				callFunc(func, args);
+				getState()->backEnv(false);
+
+			}
+		}
+
+		n->value = objectRef;
 	}
 
 	void __execCLAXX_BODY(Node *n) {
@@ -1068,21 +1164,81 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
+	// 变量声明
+	void __execVAR_DECLAR(Node *n) {
+
+		// 都初始为 null
+		Object *obj = m_exec_alloc.allocate(NULLOBJECT);
+		obj->setEmergeEnv(getState()->getCurrentEnv());
+		for (int i = 0; i < n->opr_obj->op_count; i++)
+		{
+			Node *t = n->opr_obj->op[i];
+			if (t == NULL || t->type != NODE_VARIABLE)
+			{
+				continue;
+			}
+
+			char *name = t->var_obj->name;
+			setValueToEnv(name, obj);
+		}
+
+		m_exec_alloc.free(obj);
+	}
+
 	void __execCLAXX_MEMBER(Node *n) {
 		//  执行节点1， 获得 类对象
 		Node *n1 = n->opr_obj->op[0];
 		__execNode(n1);
 		if (n1->value == NULL || n1->value->getType() != OBJECT)
 		{
-			printf("left value %s is not class object !\n" , n1->var_obj->name);
+			printf("left value %s is not class object !\n", n1->var_obj->name);
 			return;
 		}
 
 		langXObjectRef* objectRef = (langXObjectRef*)n1->value;
 		char *memberName = n->opr_obj->op[1]->var_obj->name;
 		n->value = objectRef->getMember(memberName)->clone();
+		n->ptr_u = objectRef->clone();
 
 		freeSubNodes(n);
+	}
+
+	void __execCLAXX_FUNC_CALL(Node *n) {
+		Node *n1 = n->opr_obj->op[0];
+		__execNode(n1);
+
+		if (n1->value == NULL || n1->value->getType() != OBJECT)
+		{
+			printf("left value %s is not class object !\n", n1->var_obj->name);
+			return;
+		}
+
+		langXObjectRef* objectRef = (langXObjectRef*)n1->value;
+		ObjectBridgeEnv env(objectRef);
+		getState()->newEnv(&env);
+
+		// 根据语法解析文件可知， 第二个节点为一个函数调用节点
+		Node *n2 = n->opr_obj->op[1];
+		__execNode(n2);
+
+		getState()->backEnv(false);
+
+		freeSubNodes(n);
+	}
+
+	void __execRESTRICT(Node *n) {
+		// 对当前环境进行限定， 限定后，不去搜索父级环境内容
+
+		if (n->opr_obj->op_count <= 0)
+		{
+			getState()->getCurrentEnv()->setRestrict(true);
+		}
+		else {
+
+			getState()->getCurrentEnv()->setRestrict(__tryConvertToBool(n->opr_obj->op[0]));
+
+			freeSubNodes(n);
+		}
 	}
 
 
@@ -1174,6 +1330,12 @@ namespace langX {
 		else if (node->type == NODE_FUNCTION)
 		{
 			// 函数
+			if (node->value == NULL)
+			{
+				return;
+			}
+			Function *func = (Function*)node->value;
+			getState()->getCurrentEnv()->putFunction(func->getName(), func);
 			return;
 		}
 		else if (node->type == NODE_NULL)
@@ -1181,14 +1343,14 @@ namespace langX {
 			node->value = m_exec_alloc.allocate(NULLOBJECT);
 			return;
 		}
-		
+
 
 		if (node->type != NODE_OPERATOR)
 		{
 			printf("undeal type: %d\n", node->type);
 			return;
 		}
-		
+
 
 		//printf("exec operator node. opr is: %d\n", node->opr_obj->opr);
 		switch (node->opr_obj->opr)
@@ -1293,6 +1455,15 @@ namespace langX {
 			break;
 		case CLAXX_MEMBER:
 			__execCLAXX_MEMBER(node);
+			break;
+		case CLAXX_FUNC_CALL:
+			__execCLAXX_FUNC_CALL(node);
+			break;
+		case VAR_DECLAR:
+			__execVAR_DECLAR(node);
+			break;
+		case RESTRICT:
+			__execRESTRICT(node);
 			break;
 		default:
 			break;

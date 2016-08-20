@@ -7,6 +7,7 @@ namespace langX {
 	class Object;
 	class Function;
 	class ClassInfo;
+	class langXObjectRef;
 
 	/*
 	 * 环境类  
@@ -39,6 +40,11 @@ namespace langX {
 		// 是否限定
 		bool isRestrict() const;
 
+		// 是否是类的桥接环境
+		virtual bool isClassEnvironment() const;
+		// 是否是对象的桥接环境
+		virtual bool isObjectEnvironment() const;
+
 	private:
 		std::map<std::string, Object*> m_objects_map;
 		std::map<std::string, Function*> m_functions_map;
@@ -47,6 +53,7 @@ namespace langX {
 		Environment *m_parent = nullptr;
 
 		//  是否限定， 如果限定， 则寻找变量的时候不会去寻找父级环境
+		//  限定只会针对  变量， 不会针对 函数
 		bool m_restrict = false;
 	};
 
@@ -66,9 +73,31 @@ namespace langX {
 		void putFunction(const std::string &, Function*);
 		Function* getFunction(const std::string &);
 
+		bool isClassEnvironment() const;
+
 	private:
 
 		ClassInfo* m_class = NULL;
+	};
+
+	//  对象的桥接环境
+	class ObjectBridgeEnv : public Environment
+	{
+	public:
+		ObjectBridgeEnv(langXObjectRef *);
+		~ObjectBridgeEnv();
+
+		void putObject(const char*, Object*);
+		void putObject(const std::string &, Object*);
+		Object* getObject(const std::string &);
+
+		Function* getFunction(const std::string &);
+
+		bool isObjectEnvironment() const;
+
+	private:
+
+		langXObjectRef* m_object = NULL;
 	};
 
 }

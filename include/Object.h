@@ -13,6 +13,7 @@ namespace langX {
 //  参数的个数
 #define PARAM_COUNT 30
 
+	class Environment;
 
 	// 对象类型
 	enum ObjectType
@@ -38,6 +39,11 @@ namespace langX {
 		// 当前变量是否是一个 public 变量
 		bool isPublic() const;
 
+		// 获得这个object 产生的环境
+		Environment *getEmergeEnv() const;
+		// 设置
+		void setEmergeEnv(Environment *);
+
 		/* 当前值可以表示为真么？  null,0,false 都不会表示为真  */
 		virtual bool isTrue() const = 0;
 		/* 获得当前对象的类型  */
@@ -46,7 +52,8 @@ namespace langX {
 		virtual Object* clone() const = 0;
 
 
-		/* 把自己Update 成目标的值 */
+		/* 把自己Update 成目标的值
+		   这个函数不应该， 也不会update 所在的环境   */
 		virtual void update(Object *) = 0;
 
 	private:
@@ -57,8 +64,8 @@ namespace langX {
 		2016-08-18:  我很想知道这个函数有个鸟用。。   */
 		virtual void finalize() = 0;
 
-		// 这个对象的名字， 在环境内的key 
-		std::string m_name;
+		// 这个object 出现的环境 ， 根的位置
+		Environment *m_emerge_env = nullptr;
 
 		bool m_is_local = false;
 		bool m_is_private = false;

@@ -37,6 +37,8 @@ void count(void);
 "default" { count(); return DEFAULT; }
 "new"  { count();  return NEW; }
 "null" { count(); return XNULL; }
+"restrict" { count(); return RESTRICT;}
+"this" {count();  return THIS; }
 "=>"   {count();  return FUNC_OP; }
 "++"   {count();  return INC_OP;}
 "--"   {count();  return DEC_OP;}
@@ -58,6 +60,7 @@ void count(void);
 "{" {count(); return '{'; }
 "}" {count(); return '}'; }
 ":" {count(); return ':'; }
+"@" {count(); return '@'; }
 ";" {count(); return ';'; }
 "=" {count(); return '='; }
 "," {count(); return ','; }

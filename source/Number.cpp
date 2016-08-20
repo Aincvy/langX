@@ -52,7 +52,9 @@ namespace langX {
 	}
 	Object * Number::clone() const
 	{
-		return new Number(this->m_value);
+		Number *obj = new Number(this->m_value);
+		obj->setEmergeEnv(getEmergeEnv());
+		return obj;
 	}
 	void Number::update(Object *right)
 	{

@@ -213,7 +213,8 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 
 	Function *func = new Function(name, node);
 	func->setParamsList(params);
-	getState()->getCurrentEnv()->putFunction(name, func);
+	//  在执行他的时候再把它放入环境中
+	//getState()->getCurrentEnv()->putFunction(name, func);
 	free(name);
 	XNode * nodeF = (XNode*)calloc(1,sizeof(XNode) * 1);
 	nodeF->type = NODE_FUNCTION;
@@ -244,10 +245,12 @@ XNode * claxx(char *name , XNode * node) {
 	
 	if (node != NULL)
 	{
-		ClassBridgeEnv env(claxxInfo);
-		state->newEnv(&env);
+		ClassBridgeEnv *env = new ClassBridgeEnv(claxxInfo);
+		state->newEnv(env);
 		__execNode(node);
 		state->backEnv(false);
+		// 把环境添加到List ，等langXState 析构的时候会析构这个变量
+		state->addEnvToList(env);
 	}
 	
 	XNode * nodeC = (XNode*)calloc(1, sizeof(XNode) * 1);
@@ -268,6 +271,10 @@ XObject * call(char *name, XArgsList* args)
 		return NULL;
 	}
 
+	return callFunc(function, args);
+}
+
+XObject * callFunc(XFunction* function, XArgsList *args) {
 	if (function->is3rd())
 	{
 		// 第三方函数 
@@ -283,7 +290,7 @@ XObject * call(char *name, XArgsList* args)
 			execNode(args->args[i]);
 			_3rdArgs.args[i] = args->args[i]->value;
 		}
-		_3rdArgs.index = args->index; 
+		_3rdArgs.index = args->index;
 		return x3rdfunc->call(_3rdArgs);
 	}
 
@@ -292,7 +299,7 @@ XObject * call(char *name, XArgsList* args)
 	if (args != NULL)
 	{
 		XParamsList *params = function->getParamsList();
-		for (int i = 0; i < args->index ; i++)
+		for (int i = 0; i < args->index; i++)
 		{
 			if (i >= params->index)
 			{
@@ -302,7 +309,7 @@ XObject * call(char *name, XArgsList* args)
 			if (args->args[i] != NULL)
 			{
 				execNode(args->args[i]);
-				env->putObject(params->args[i], args->args[i]->value);
+				env->putObject(params->args[i], args->args[i]->value->clone());
 				//printf("put object: %s\n", params->args[i]);
 			}
 		}
@@ -314,7 +321,7 @@ XObject * call(char *name, XArgsList* args)
 		ret = function->call();
 	}
 	getState()->backEnv();
-	
+
 	return ret;
 }
 
@@ -372,8 +379,11 @@ void freeArgsList(XArgsList *alist) {
 	{
 		for (int i = 0; i < alist->index; i++)
 		{
-			freeNode(alist->args[i]);
-			alist->args[i] = NULL;
+			if (alist->args[i] != NULL)
+			{
+				freeNode(alist->args[i]);
+				alist->args[i] = NULL;
+			}
 		}
 	}
 

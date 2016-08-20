@@ -45,7 +45,9 @@ namespace langX {
 	}
 	Object * String::clone() const
 	{
-		return new String(this->m_value.c_str());
+		String *str = new String(this->m_value.c_str());
+		str->setEmergeEnv(getEmergeEnv());
+		return str;
 	}
 	void String::update(Object *right)
 	{

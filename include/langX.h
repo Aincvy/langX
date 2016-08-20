@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <string>
+#include <list>
 #include "Object.h"
 #include "Function.h"
 
@@ -31,6 +32,8 @@ namespace langX {
 		Environment *getCurrentEnv() const;
 		Environment *getGlobalEnv() const;
 
+		void addEnvToList(Environment *);
+
 		// 注册一个第三方函数
 		void reg3rd(const char *, X3rdFuncWorker worker);
 		// 解除函数的注册
@@ -44,5 +47,7 @@ namespace langX {
 		Environment *m_current_env = nullptr;
 		Allocator  *m_allocator = nullptr;
 
+		// 环境列表
+		std::list<Environment*> m_env_list;
 	};
 }

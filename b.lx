@@ -4,9 +4,18 @@ Student {
   
   a => { print("hello,a!\n");}
   
-  printInfo => { print("xxx"); }
+  printInfo => (a3){ print("name: " + name + "\n");  print("age: " + age + "\n" ); print("a3: " + a3 + "\n");}
+  
 }
 
-s1 = new Student();
-b = s1.age;
-print("b: " + b);
+s2 = new Student();
+s1 = s2;
+s1.age = 10 ;
+s1.name = "Mr.Ming";
+b = s2.age;
+c = s2.name;
+/*print("b: " + b + "\n"); 
+//print("c: " + c + "\n");  */
+
+s1.a();
+s1.printInfo("ahahahah~");

@@ -13,11 +13,26 @@ namespace langX {
 		this->m_global_env->setParent(NULL);
 		this->m_current_env = this->m_global_env;
 		this->m_allocator = new Allocator();
+
+		this->m_env_list.push_front(this->m_current_env);
 	}
 	langXState::~langXState()
 	{
 		//delete this->m_current_env;
+		
 		delete this->m_allocator;
+
+		if (!this->m_env_list.empty())
+		{
+			for (auto i = m_env_list.begin(); i != m_env_list.end(); i++)
+			{
+				Environment *env = (*i);
+				delete env;
+			}
+
+			this->m_env_list.clear();
+		}
+
 	}
 	void langXState::putObject(const char * name, Object *obj)
 	{
@@ -82,6 +97,16 @@ namespace langX {
 	Environment * langXState::getGlobalEnv() const
 	{
 		return this->m_global_env;
+	}
+
+	void langXState::addEnvToList(Environment *env)
+	{
+		if (env == NULL)
+		{
+			return;
+		}
+
+		this->m_env_list.push_front(env);
 	}
 
 	void langXState::reg3rd(const char *name, X3rdFuncWorker worker)

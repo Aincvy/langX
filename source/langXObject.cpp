@@ -2,10 +2,14 @@
 #include "../include/Object.h"
 #include "../include/ClassInfo.h"
 #include "../include/Function.h"
+#include "../include/YLlangX.h"
+#include "../include/Allocator.h"
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 
 namespace langX {
+
+
 
 	langXObject::langXObject(ClassInfo *claxxInfo)
 	{
@@ -15,7 +19,6 @@ namespace langX {
 		for (auto i = map.begin(); i != map.end(); i++)
 		{
 			Object *obj = i->second->clone();
-			obj->setName(i->first.c_str());
 			this->m_members[i->first] = obj;
 		}
 	}
@@ -26,9 +29,22 @@ namespace langX {
 
 	void langXObject::setMember(const char *name, Object *obj)
 	{
-		Object * a = obj->clone();
-		a->setName(name);
-		this->m_members[name] = a;
+		if (this->m_members.find(name) == this->m_members.end())
+		{
+			printf("cannot find member %s!\n" ,name);
+			return;
+		}
+
+		Object *a = this->m_members[name];
+		if (a->getType() == obj->getType())
+		{
+			a->update(obj);
+		}
+		else {
+			getState()->getAllocator().free(a);
+			a = NULL;
+			this->m_members.find(name)->second = obj->clone();
+		}
 	}
 
 	Object * langXObject::getMember(const char *name) const
@@ -70,6 +86,19 @@ namespace langX {
 	int langXObject::getRefCount() const
 	{
 		return this->m_ref_count;
+	}
+
+	Function * langXObject::getConstructor() const
+	{
+		return getFunction(this->m_class_info->getName());
+	}
+
+	void langXObject::setMembersEmergeEnv(Environment *env)
+	{
+		for (auto i = this->m_members.begin(); i != this->m_members.end(); i++)
+		{
+			i->second->setEmergeEnv(env);
+		}
 	}
 
 

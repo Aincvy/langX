@@ -25,6 +25,12 @@ namespace langX {
 		// 获得类信息
 		const ClassInfo * getClassInfo() const;
 
+		// 获得构造函数
+		Function * getConstructor() const;
+		
+		// 设置这个对象的成员的产生环境
+		void setMembersEmergeEnv(Environment *);
+
 		bool isTrue() const;
 		ObjectType getType() const;
 		Object* clone() const;
