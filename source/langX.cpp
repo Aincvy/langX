@@ -89,6 +89,11 @@ namespace langX {
 		this->m_current_env = env;
 	}
 
+	void langXState::setCurrentEnv(Environment *env)
+	{
+		this->m_current_env = env;
+	}
+
 	Environment * langXState::getCurrentEnv() const
 	{
 		return this->m_current_env;
@@ -97,6 +102,23 @@ namespace langX {
 	Environment * langXState::getGlobalEnv() const
 	{
 		return this->m_global_env;
+	}
+
+	Environment * langXState::getNearestObjectEnv() const
+	{
+		Environment *env = this->m_current_env;
+
+		while (env != NULL)
+		{
+			if (env->isObjectEnvironment())
+			{
+				return env;
+			}
+
+			env = env->getParent();
+		}
+
+		return nullptr;
 	}
 
 	void langXState::addEnvToList(Environment *env)

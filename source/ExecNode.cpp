@@ -161,9 +161,25 @@ namespace langX {
 			return;
 		}
 
-		// 不是变量 ， 不做任何处理
-		if (left->type != NODE_VARIABLE)
+		// 不是变量，也不是this 操作  就不做任何处理
+		if (left->type != NODE_VARIABLE && !(left->type == NODE_OPERATOR && left->opr_obj->opr == THIS))
 		{
+			return;
+		}
+		if (left->value != NULL)
+		{
+			// left 的value 是有值的
+			if (left->value->getType() != rightType)
+			{
+				// 类型不一样
+				// 先不管 left 原来指向的值
+				Object *obj = left->value;
+				Object *t = m_exec_alloc.allocate(rightType);
+				t->setEmergeEnv(obj->getEmergeEnv());
+				obj->getEmergeEnv()->putObject(left->var_obj->name, t);
+				left->value = t->clone();
+			}
+
 			return;
 		}
 
@@ -357,7 +373,6 @@ namespace langX {
 		//printf("__exec61 start\n");
 		Node *left = n->opr_obj->op[0];
 
-
 		langXObjectRef *objectRef = NULL;
 		if (left->type == NODE_OPERATOR)
 		{
@@ -365,6 +380,10 @@ namespace langX {
 			{
 				__execNode(left);
 				objectRef = (langXObjectRef *)left->ptr_u;
+			}
+			else if (left->opr_obj->opr == THIS)
+			{
+				__execNode(left);
 			}
 			else {
 				printf("left not the CLAXX_MEMBER! \n");
@@ -409,6 +428,11 @@ namespace langX {
 			// 这里的Left 已经被执行过了   
 			char * name = left->opr_obj->op[1]->var_obj->name;
 			objectRef->setMember(name, right->value->clone());
+		}
+
+		if (left->type == NODE_OPERATOR && left->opr_obj->opr == THIS) {
+			free(left->var_obj);
+			left->var_obj = NULL;
 		}
 
 		doSuffixOperation(n);
@@ -1241,6 +1265,43 @@ namespace langX {
 		}
 	}
 
+	// 执行 this.xxx
+	void __execTHIS(Node *n) {
+
+		Environment * env = getState()->getNearestObjectEnv();
+		if (!env)
+		{
+			printf("cannot find the object on use this!\n");
+			return;
+		}
+		bool flag = env->isRestrict();
+		Environment *currEnv = getState()->getCurrentEnv();
+
+		// 限定好像没什么卵用。。 
+		env->setRestrict(true);
+		getState()->setCurrentEnv(env);
+
+		Node *n1 = n->opr_obj->op[0];
+		//  产生变量的名字
+		n->var_obj = (Variable*)calloc(1, sizeof(Variable));
+		if (n1->type == NODE_VARIABLE)
+		{
+			n->var_obj->name = n1->var_obj->name;
+		}
+		else if (n1->type == NODE_OPERATOR)
+		{
+			n->var_obj->name = n1->opr_obj->op[1]->var_obj->name;
+		}
+
+		__execNode(n1);
+		n->value = n1->value->clone();
+
+		getState()->backEnv(false);
+		env->setRestrict(flag);
+		getState()->setCurrentEnv(currEnv);
+		freeSubNodes(n);
+	}
+
 
 	/*
 	 * 执行节点，  节点的结果 将 放在  Node.value 上
@@ -1343,7 +1404,6 @@ namespace langX {
 			node->value = m_exec_alloc.allocate(NULLOBJECT);
 			return;
 		}
-
 
 		if (node->type != NODE_OPERATOR)
 		{
@@ -1464,6 +1524,9 @@ namespace langX {
 			break;
 		case RESTRICT:
 			__execRESTRICT(node);
+			break;
+		case THIS:
+			__execTHIS(node);
 			break;
 		default:
 			break;
