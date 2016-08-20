@@ -2,9 +2,9 @@ Student {
   name;
   age = 10 ;
   
-  Student => (pname,page){
-    name = pname;
-	age = page;
+  Student => (name,age){
+    this.name = name;
+	this.age = age;
   }
   
   a => { print("hello,a!\n");}

@@ -33,7 +33,7 @@ extern char * yytext;
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt 
-%type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt null_expr restrict_stmt
+%type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt null_expr restrict_stmt this_stmt this_member_stmt this_func_stmt
 %type <params> param_list parameter
 %type <args> args_list args_expr
 
@@ -96,10 +96,25 @@ class_body_stmt
 	| func_declar_stmt       { $$ = $1; }
 	;
 
+this_stmt
+	: this_member_stmt %prec UMINUS  { $$ = $1; }
+	| this_func_stmt    { $$ = $1; }
+	;
+
+this_member_stmt
+	: THIS '.' id_expr    {  $$ = opr(THIS,1,$3); }
+	| THIS '.' class_member_stmt  {  $$ = opr(THIS, 1, $3 ); }
+	;
+
+this_func_stmt
+	: THIS '.' id_expr '(' args_list ')'  {}
+	| THIS '.' class_member_func_stmt   {}
+	;
+
 //  类成员。  比如 a.x  a.y  这样 a.y.x
 class_member_stmt
 	: id_expr '.' id_expr   { $$ = opr(CLAXX_MEMBER,2, $1,$3 ); }
-	| class_member_func_stmt '.' id_expr %prec UMINUS { $$ = NULL;  }
+	| class_member_func_stmt '.' id_expr %prec UMINUS { $$ =  opr(CLAXX_MEMBER,2, $1,$3 );  }
 	| IDENTIFIER '(' args_list ')' '.' id_expr { $$ = opr( CLAXX_MEMBER ,2, opr(FUNC_CALL,2, var($1), argsNode($3) ) , $6); }
 	| class_member_stmt '.' id_expr  { $$ = opr(CLAXX_MEMBER,2, $1,$3 ); }
 	;
@@ -333,6 +348,7 @@ assign_stmt_value
 	| new_expr       { $$ = $1; }
 	| class_member_stmt { $$ = $1; }
 	| null_expr      { $$ = $1; }
+//	| this_stmt      { $$ = $1; }
 	;
 
 //  += -= *= /=  的值
@@ -352,6 +368,7 @@ single_assign_stmt
 
 class_member_assign_stmt
 	: class_member_stmt '=' assign_stmt_value  { $$ = opr('=',2, $1,$3 ); }
+	| this_member_stmt '=' assign_stmt_value   { $$ = opr('=',2, $1,$3 ); }
 	;
 
 //  赋值语句

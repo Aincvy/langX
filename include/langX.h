@@ -29,8 +29,15 @@ namespace langX {
 		//  是否对当前环境的指针进行 delete 操作
 		void backEnv(bool);
 
+		// 设置当前环境， 只直接设置
+		void setCurrentEnv(Environment *);
+
+
 		Environment *getCurrentEnv() const;
 		Environment *getGlobalEnv() const;
+
+		// 获得最近的一个对象环境
+		Environment *getNearestObjectEnv() const;
 
 		void addEnvToList(Environment *);
 
