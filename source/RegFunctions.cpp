@@ -33,6 +33,14 @@ namespace langX {
 		{
 			printf("%f", ((Number*)obj)->getDoubleValue());
 		}
+		else if (obj->getType() == NULLOBJECT)
+		{
+			printf("null");
+		}
+		else if (obj->getType() == OBJECT)
+		{
+			printf("object");
+		}
 
 		return NULL;
 	}

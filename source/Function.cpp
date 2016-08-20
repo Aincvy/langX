@@ -82,11 +82,15 @@ namespace langX {
 
 		m_node_root->state.in_func = true;
 		__execNode(m_node_root);
-		Object * obj = m_node_root->value->clone();
-		m_exec_alloc.free(m_node_root->value);
-		m_node_root->value = NULL;
 
-		return obj;
+		if (m_node_root->value != NULL)
+		{
+			Object * obj = m_node_root->value->clone();
+			m_exec_alloc.free(m_node_root->value);
+			m_node_root->value = NULL;
+			return obj;
+		}
+		return nullptr;
 	}
 
 	bool Function::isTrue() const
@@ -106,6 +110,7 @@ namespace langX {
 
 	void Function::update(Object *)
 	{
+		// do nothing
 	}
 
 	bool Function::is3rd() const

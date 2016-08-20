@@ -32,4 +32,14 @@ namespace langX {
 		return this->m_is_public;
 	}
 
+	Environment * Object::getEmergeEnv() const
+	{
+		return this->m_emerge_env;
+	}
+
+	void Object::setEmergeEnv(Environment *env)
+	{
+		this->m_emerge_env = env;
+	}
+
 }

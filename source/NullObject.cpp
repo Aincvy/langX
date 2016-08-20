@@ -21,7 +21,9 @@ namespace langX {
 	}
 	Object * NullObject::clone() const
 	{
-		return new NullObject();
+		NullObject *obj = new NullObject();
+		obj->setEmergeEnv(getEmergeEnv());
+		return obj;
 	}
 	void NullObject::update(Object *)
 	{

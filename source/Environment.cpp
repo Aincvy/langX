@@ -3,6 +3,7 @@
 #include "../include/ClassInfo.h"
 #include "../include/Number.h"
 #include "../include/Function.h"
+#include "../include/langXObjectRef.h"
 
 namespace langX {
 
@@ -37,40 +38,11 @@ namespace langX {
 
 	void Environment::putObject(const std::string &name, Object *obj)
 	{
-		obj->setName(name.c_str());
 		this->m_objects_map[name] = obj;
-		//auto a = this->m_objects_map.find(name);
-		//if (a != this->m_objects_map.end()) {
-		//	Object * old_obj = a->second;
-		//	if (old_obj->getType() == NUMBER && obj->getType() == NUMBER)
-		//	{
-		//		Number *n = (Number*)old_obj;
-		//		n->update(((Number*)obj)->getDoubleValue());
-		//		return;
-		//	}
-
-		//	delete a->second;
-		//}
-
-		//obj->incRefCount();
-		//this->m_objects_map[name] = obj;
-		//if (obj->getType() == NUMBER)
-		//{
-		//	//printf("putObject.. is Number,addr is: %p\n" , obj);
-		//	Number * number = (Number*)obj;
-		//	printf("putObject.. number %s value is: %.2f\n", name.c_str() , number->getDoubleValue());
-		//}
 	}
 
 	Object * Environment::getObject(const std::string &name)
 	{
-		//printf("objects: %d\n" , m_objects_map.size());
-		//for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++)
-		//{
-		//	printf("name: %s\n",a->first.c_str());
-		//}
-		
-		//printf("want to get value: %s\n", name.c_str());
 
 		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
@@ -109,7 +81,7 @@ namespace langX {
 	{
 		if (this->m_functions_map.find(name) == this->m_functions_map.end())
 		{
-			if (this->m_parent != NULL && !m_restrict)
+			if (this->m_parent != NULL )
 			{
 				return this->m_parent->getFunction(name);
 			}
@@ -154,6 +126,16 @@ namespace langX {
 	bool Environment::isRestrict() const
 	{
 		return this->m_restrict;
+	}
+
+	bool Environment::isClassEnvironment() const
+	{
+		return false;
+	}
+
+	bool Environment::isObjectEnvironment() const
+	{
+		return false;
 	}
 
 
@@ -215,7 +197,7 @@ namespace langX {
 			Environment::putFunction(name, func);
 			return;
 		}
-		this->m_class->addMember(name.c_str(), func);
+		this->m_class->addFunction(name.c_str(), func);
 	}
 
 	Function * ClassBridgeEnv::getFunction(const std::string &name)
@@ -225,6 +207,70 @@ namespace langX {
 			return Environment::getFunction(name);
 		}
 		return this->m_class->getFunction(name.c_str());
+	}
+
+	bool ClassBridgeEnv::isClassEnvironment() const
+	{
+		return true;
+	}
+
+
+
+	ObjectBridgeEnv::ObjectBridgeEnv(langXObjectRef *obj)
+	{
+		this->m_object = obj;
+	}
+
+	ObjectBridgeEnv::~ObjectBridgeEnv()
+	{
+	}
+
+	void ObjectBridgeEnv::putObject(const char *name, Object *obj)
+	{
+		if (this->m_object == NULL)
+		{
+			Environment::putObject(name, obj);
+			return;
+		}
+		this->m_object->setMember(name, obj);
+	}
+
+	void ObjectBridgeEnv::putObject(const std::string &name, Object *obj)
+	{
+		if (this->m_object == NULL)
+		{
+			Environment::putObject(name, obj);
+			return;
+		}
+		this->m_object->setMember(name.c_str(), obj);
+	}
+
+	Object * ObjectBridgeEnv::getObject(const std::string &name)
+	{
+		if (this->m_object == NULL)
+		{
+			return Environment::getObject(name);
+		}
+		return this->m_object->getMember(name.c_str());
+	}
+
+	Function * ObjectBridgeEnv::getFunction(const std::string &name)
+	{
+		if (this->m_object == NULL)
+		{
+			return Environment::getFunction(name);
+		}
+		Function * func = this->m_object->getFunction(name.c_str());
+		if (func == NULL)
+		{
+			return Environment::getFunction(name);
+		}
+		return func;
+	}
+
+	bool ObjectBridgeEnv::isObjectEnvironment() const
+	{
+		return true;
 	}
 
 }

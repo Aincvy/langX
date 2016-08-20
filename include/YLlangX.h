@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "langX.h"
+#include "Function.h"
 
 /*
 *   创建时间：  2016-07-07
@@ -16,6 +17,7 @@ typedef langX::Node XNode;
 typedef langX::ParamsList XParamsList;
 typedef langX::ArgsList XArgsList;
 typedef langX::Object XObject;
+typedef langX::Function XFunction;
 
 
 //  lex/yacc 是C语言的
@@ -45,6 +47,8 @@ extern "C" {
 	XNode * xnull();
 	// 使用一个函数
 	XObject * call(char *, XArgsList *);
+	// 调用一个函数
+	XObject * callFunc(XFunction*, XArgsList *);
 	// 创建一个节点， 节点内容为实参列表
 	XNode * argsNode(XArgsList *);
 

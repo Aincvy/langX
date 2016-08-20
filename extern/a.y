@@ -26,14 +26,14 @@ extern char * yytext;
 
 %token <iValue> TDOUBLE TBOOL
 %token <sValue> IDENTIFIER TSTRING
-%token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL
+%token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
 %token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt 
-%type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt
+%type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt null_expr restrict_stmt
 %type <params> param_list parameter
 %type <args> args_list args_expr
 
@@ -90,6 +90,12 @@ class_body
 	| class_body class_body_stmt { $$ = opr(CLAXX_BODY, 2, $1, $2); }
 	;
 
+class_body_stmt
+	: var_declar_stmt        { $$ = $1; }
+	| single_assign_stmt ';' { $$ = $1; }
+	| func_declar_stmt       { $$ = $1; }
+	;
+
 //  类成员。  比如 a.x  a.y  这样 a.y.x
 class_member_stmt
 	: id_expr '.' id_expr   { $$ = opr(CLAXX_MEMBER,2, $1,$3 ); }
@@ -99,10 +105,10 @@ class_member_stmt
 	;
 
 class_member_func_stmt
-	: id_expr '.' id_expr '(' args_list ')'  { $$ = opr(CLAXX_FUNC_CALL , 3, $1, $3, argsNode($5));}
-	| IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list ')' { $$ = NULL; }
-	| class_member_stmt '.' id_expr '(' args_list ')'         { $$ = NULL; }
-	| class_member_func_stmt '.' id_expr '(' args_list ')'    { $$ = NULL; }
+	: id_expr '.' id_expr '(' args_list ')'  { $$ = opr(CLAXX_FUNC_CALL , 2, $1, opr(FUNC_CALL,2, $3, argsNode($5) ) );}
+	| IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list ')' { $$ = opr(CLAXX_FUNC_CALL ,2, opr(FUNC_CALL,2, var($1), argsNode($3) ) , opr(FUNC_CALL,2, $6, argsNode($8) )); }
+	| class_member_stmt '.' id_expr '(' args_list ')'         { $$ = opr(CLAXX_FUNC_CALL,2,$1,opr(FUNC_CALL,2, $3, argsNode($5) ) ); }
+	| class_member_func_stmt '.' id_expr '(' args_list ')'    { $$ = opr(CLAXX_FUNC_CALL,2,$1,opr(FUNC_CALL,2, $3, argsNode($5) ) ); }
 	;
 
 // 函数连续调用语句
@@ -110,12 +116,6 @@ class_func_serial_stmt
 	: IDENTIFIER '(' args_list ')' IDENTIFIER '(' args_list ')' {  $$ = NULL; }
 	| id_expr '.' id_expr '(' args_list ')' IDENTIFIER '(' args_list ')'  { $$ = NULL; }
 	| class_func_serial_stmt IDENTIFIER '(' args_list ')' { $$ = NULL; };
-	;
-
-class_body_stmt
-	: var_declar_stmt        { $$ = $1; }
-	| single_assign_stmt ';' { $$ = $1; }
-	| func_declar_stmt       { $$ = $1; }
 	;
 
 // 函数声明语句
@@ -141,8 +141,8 @@ expr_list
 
 // 变量声明语句  
 var_declar_stmt
-	: id_expr ';'  { $$ = $1; }
-	| id_expr ',' var_declar_stmt { $$ = opr(',' , 2, $1,$3);}
+	: id_expr ';'  { $$ = opr(VAR_DECLAR , 1, $1 ); }
+	| id_expr ',' var_declar_stmt { $$ = opr(VAR_DECLAR , 2, $1,$3);}
 	;
 	
 //  条件控制语句
@@ -189,8 +189,15 @@ simple_stmt
 	| interrupt_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
 	| class_func_serial_stmt { $$ = $1; }
+	| restrict_stmt  { $$ = $1; }
 	;
 
+//  限定语句， 限定环境
+restrict_stmt
+	: RESTRICT       { $$ = opr(RESTRICT,0);}
+	| RESTRICT t_bool_expr  { $$ = opr(RESTRICT,1,$2); }
+	;
+	
 interrupt_stmt
 	: BREAK { $$ = opr(BREAK, 0); }
 	| RETURN { $$ = opr(RETURN , 0); }

@@ -37,6 +37,22 @@ namespace langX {
 	{
 		return this->m_object_ref->getClassInfo();
 	}
+	Function * langXObjectRef::getConstructor() const
+	{
+		if (m_object_ref == nullptr)
+		{
+			return NULL;
+		}
+		return this->m_object_ref->getConstructor();
+	}
+	void langXObjectRef::setMembersEmergeEnv(Environment *env)
+	{
+		if (this->m_object_ref == nullptr)
+		{
+			return;
+		}
+		this->m_object_ref->setMembersEmergeEnv(env);
+	}
 	bool langXObjectRef::isTrue() const
 	{
 		if (this->m_object_ref == nullptr)
@@ -51,11 +67,17 @@ namespace langX {
 	}
 	Object * langXObjectRef::clone() const
 	{
+		langXObjectRef * obj = NULL;
 		if (m_object_ref == nullptr)
 		{
-			return new langXObjectRef(NULL);
+			obj = new langXObjectRef(NULL);
 		}
-		return this->m_object_ref->addRef();
+		else {
+			obj = this->m_object_ref->addRef();
+		}
+
+		obj->setEmergeEnv(getEmergeEnv());
+		return obj;
 	}
 
 	void langXObjectRef::update(Object *obj)
@@ -75,11 +97,8 @@ namespace langX {
 		{
 			this->m_object_ref = ((langXObjectRef*)obj)->getRefObject();
 			this->m_object_ref->justAddRef();
-		}else{
-			this->m_object_ref->setMember(this->getName(), obj);
-			delete this;
 		}
-		
+
 	}
 
 	void langXObjectRef::finalize()
