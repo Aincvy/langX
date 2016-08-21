@@ -1,0 +1,11 @@
+print("script start!\n");
+
+print("input a string: \n" );
+str = scanString();
+print("get str: " + str + "\n");
+
+print("input a number: \n" );
+num = scanNumber();
+print("get num: " + num + "\n");
+
+print("script end!\n");

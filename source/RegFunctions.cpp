@@ -45,10 +45,29 @@ namespace langX {
 		return NULL;
 	}
 
+	// 读取出一个字符串
+	Object * langX_scan_string(X3rdFunction *func, const X3rdArgs & args) {
+
+		char t[100] = { 0 };
+		scanf("%s", t);
+
+		return new String(t);
+	}
+
+	// 读取一个数字
+	Object * langX_scan_number(X3rdFunction *func, const X3rdArgs & args) {
+
+		double a;
+		scanf("%lf",&a);
+
+		return new Number(a);
+	}
 
 	void regFunctions(langXState *state)
 	{
 		state->reg3rd("print", langX_print);
+		state->reg3rd("scanString", langX_scan_string);
+		state->reg3rd("scanNumber",langX_scan_number);
 	}
 
 }
