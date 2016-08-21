@@ -1164,7 +1164,7 @@ namespace langX {
 		langXObjectRef * objectRef = classinfo->newObject()->addRef();
 		objectRef->setEmergeEnv(getState()->getCurrentEnv());
 		Environment *env = objectRef->getRefObject()->getObjectEnvironment();
-		
+
 		//objectRef->setMembersEmergeEnv(env);
 		//getState()->addEnvToList(env);
 
@@ -1293,7 +1293,7 @@ namespace langX {
 		if (n->opr_obj->op_count <= 0)
 		{
 			// no args.  获得自己就好了
-			ObjectBridgeEnv *objEnv = (ObjectBridgeEnv* )env;
+			ObjectBridgeEnv *objEnv = (ObjectBridgeEnv*)env;
 			n->value = objEnv->getEnvObject()->addRef();
 			return;
 		}
@@ -1318,7 +1318,13 @@ namespace langX {
 		}
 
 		__execNode(n1);
-		n->value = n1->value->clone();
+		if (n1->value == NULL)
+		{
+			printf("error in __execTHIS, n1->value == NULL");
+		}
+		else {
+			n->value = n1->value->clone();
+		}
 
 		getState()->backEnv(false);
 		env->setRestrict(flag);

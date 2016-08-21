@@ -1,0 +1,50 @@
+//  教室， 学生 
+ClassRoom{
+  stu1,stu2,stu3;
+  
+  printStudentInfo => {
+    if ( stu1 ){
+	  stu1.printInfo();
+	}
+	
+	if ( stu2 ){
+	  stu2.printInfo();
+	}
+	
+	if ( stu3 ){
+	  stu3.printInfo();
+	}
+  }
+  
+}
+
+Student{
+  name,age,sex,grade;
+  
+  Student => (name,age,sex,grade) {
+    this .name = name;
+	this .age = age;
+	this .sex = sex;
+	this .grade = grade;
+  }
+  
+  printInfo => {
+    print("Hello,everyone! This is My Info.\n");
+	print("name: " + name + "\n");
+	print("age: " + age + "\n");
+	print("sex: " + sex + "\n");
+	print("grade: " + grade + "\n");
+  }
+}
+
+
+stu1 = new Student("小明" , 11,1,"五年六班一排一座");
+stu2 = new Student("小绿" , 11.2,1,"五年六班一排二座");
+stu3 = new Student("小红" , 11.3,0,"五年六班一排三座");
+
+room1 = new ClassRoom();
+room1.stu1 = stu1;
+room1.stu2 = stu2;
+room1.stu3 = stu3;
+
+room1.printStudentInfo();
