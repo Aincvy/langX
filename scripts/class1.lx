@@ -5,6 +5,7 @@ Student {
   Student => (name,age){
     this.name = name;
 	this.age = age;
+	printInfo("in ctor.");
   }
   
   a => { print("hello,a!\n");}

@@ -6,6 +6,7 @@
 #include "../include/Allocator.h"
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
+#include "../include/Environment.h"
 
 namespace langX {
 
@@ -14,17 +15,26 @@ namespace langX {
 	langXObject::langXObject(ClassInfo *claxxInfo)
 	{
 		this->m_class_info = claxxInfo;
-		
+		this->m_my_env = new ObjectBridgeEnv(this);
+
 		std::map<std::string, Object*> & map = claxxInfo->getMembers();
 		for (auto i = map.begin(); i != map.end(); i++)
 		{
 			Object *obj = i->second->clone();
+			//  类的字段值 为对象专有， 产生环境也是对象的环境
+			obj->setEmergeEnv(this->m_my_env);
 			this->m_members[i->first] = obj;
 		}
+
 	}
 
 	langXObject::~langXObject()
 	{
+		if (this->m_my_env != NULL)
+		{
+			delete this->m_my_env;
+			this->m_my_env = NULL;
+		}
 	}
 
 	void langXObject::setMember(const char *name, Object *obj)
@@ -99,6 +109,11 @@ namespace langX {
 		{
 			i->second->setEmergeEnv(env);
 		}
+	}
+
+	Environment * langXObject::getObjectEnvironment() const
+	{
+		return this->m_my_env;
 	}
 
 

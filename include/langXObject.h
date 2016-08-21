@@ -7,6 +7,8 @@ namespace langX {
 	class Object;
 	class ClassInfo;
 	class langXObjectRef;
+	class ObjectBridgeEnv;
+	class Environment;
 
 	/*
 	 * langXObject  与object 独立分开
@@ -40,10 +42,15 @@ namespace langX {
 		// 设置这个对象的成员的产生环境
 		void setMembersEmergeEnv(Environment *);
 
+		// 获得类的环境
+		Environment *getObjectEnvironment() const;
+
 	private:
 
 		std::map<std::string, Object*> m_members;
 		ClassInfo *m_class_info;
+		// 当前对象的环境
+		ObjectBridgeEnv *m_my_env;
 		int  m_ref_count = 0;
 	};
 

@@ -89,8 +89,8 @@ void deal_switch_info(SwitchInfo *si) {
 
 XNode * string(char *v)
 {
-	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
-	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
+	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
+	node->con_obj = (langX::Constant*) calloc(1,sizeof(langX::Constant) * 1);
 
 	node->freeOnExeced = true;
 	deal_state(&node->state);
@@ -106,8 +106,8 @@ XNode * string(char *v)
 
 XNode * number(double a)
 {
-	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
-	node->con_obj = (langX::Constant*) malloc(sizeof(langX::Constant) * 1);
+	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
+	node->con_obj = (langX::Constant*) calloc(1,sizeof(langX::Constant) * 1);
 
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
@@ -123,8 +123,8 @@ XNode * number(double a)
 
 XNode * var(char *name)
 {
-	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
-	node->var_obj = (langX::Variable*) malloc(sizeof(langX::Variable) * 1);
+	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
+	node->var_obj = (langX::Variable*) calloc(1,sizeof(langX::Variable) * 1);
 
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
@@ -143,9 +143,9 @@ XNode * opr(int opr, int npos, ...)
 {
 	va_list ap;
 
-	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
-	node->opr_obj = (langX::Operator*) malloc(sizeof(langX::Operator) * 1);
-	node->opr_obj->op = (XNode**)malloc(sizeof(XNode*) * npos);
+	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
+	node->opr_obj = (langX::Operator*) calloc(1,sizeof(langX::Operator) * 1);
+	node->opr_obj->op = (XNode**)calloc(1,sizeof(XNode*) * npos);
 
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
@@ -175,9 +175,9 @@ XNode * sopr(int opr, int npos, ...)
 	//printf("sopr: %d\n" ,opr);
 	va_list ap;
 
-	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
-	node->opr_obj = (langX::Operator*) malloc(sizeof(langX::Operator) * 1);
-	node->opr_obj->op = (XNode**)malloc(sizeof(XNode*) * npos);
+	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
+	node->opr_obj = (langX::Operator*) calloc(1,sizeof(langX::Operator) * 1);
+	node->opr_obj->op = (XNode**)calloc(1,sizeof(XNode*) * npos);
 
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
@@ -226,7 +226,7 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 
 XNode * xnull()
 {
-	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
+	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
 
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
@@ -280,17 +280,21 @@ XObject * callFunc(XFunction* function, XArgsList *args) {
 		// 第三方函数 
 		X3rdFunction *x3rdfunc = (X3rdFunction*)function;
 		X3rdArgs _3rdArgs;
-		for (int i = 0; i < args->index; i++)
+		if (args != NULL)
 		{
-			if (args->args[i] == NULL)
+			for (int i = 0; i < args->index; i++)
 			{
-				_3rdArgs.args[i] = NULL;
-				continue;
+				if (args->args[i] == NULL)
+				{
+					_3rdArgs.args[i] = NULL;
+					continue;
+				}
+				execNode(args->args[i]);
+				_3rdArgs.args[i] = args->args[i]->value;
 			}
-			execNode(args->args[i]);
-			_3rdArgs.args[i] = args->args[i]->value;
+			_3rdArgs.index = args->index;
 		}
-		_3rdArgs.index = args->index;
+		
 		return x3rdfunc->call(_3rdArgs);
 	}
 
@@ -326,7 +330,7 @@ XObject * callFunc(XFunction* function, XArgsList *args) {
 }
 
 XNode * argsNode(XArgsList * args) {
-	XNode * node = (XNode*)malloc(sizeof(XNode) * 1);
+	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
 	node->type = NODE_ARGS;
 	node->value = NULL;
 	node->postposition = NULL;

@@ -7,7 +7,7 @@ namespace langX {
 	class Object;
 	class Function;
 	class ClassInfo;
-	class langXObjectRef;
+	class langXObject;
 
 	/*
 	 * 环境类  
@@ -84,7 +84,7 @@ namespace langX {
 	class ObjectBridgeEnv : public Environment
 	{
 	public:
-		ObjectBridgeEnv(langXObjectRef *);
+		ObjectBridgeEnv(langXObject *);
 		~ObjectBridgeEnv();
 
 		void putObject(const char*, Object*);
@@ -93,11 +93,14 @@ namespace langX {
 
 		Function* getFunction(const std::string &);
 
+		// 获得桥接的是哪个类
+		langXObject *getEnvObject() const;
+
 		bool isObjectEnvironment() const;
 
 	private:
 
-		langXObjectRef* m_object = NULL;
+		langXObject* m_object = NULL;
 	};
 
 }

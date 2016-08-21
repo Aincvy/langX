@@ -8,9 +8,40 @@
 #include "../include/Allocator.h"
 #include "../include/YLlangX.h"
 
-namespace langX {
 
-	extern Allocator m_exec_alloc;
+langX::Allocator m_exec_alloc;
+extern void deal_state(langX::NodeState * state);
+extern void deal_switch_info(langX::SwitchInfo *si);
+
+void resetNodeState(langX::Node *n) {
+	deal_state(&n->state);
+	deal_switch_info(&n->switch_info);
+	if (n->value != NULL)
+	{
+		m_exec_alloc.free(n->value);
+		n->value = NULL;
+	}
+	// ptr_u 可能存放了参数， 等以后有问题的时候再进行调整，  0821
+	//n->ptr_u = NULL;
+	n->postposition = NULL;
+	n->state.in_func = true;
+
+	if (n->type == langX::NODE_OPERATOR)
+	{
+		for (int i = 0; i < n->opr_obj->op_count; i++)
+		{
+			langX::Node *t = n->opr_obj->op[i];
+			if (t == NULL)
+			{
+				continue;
+			}
+
+			resetNodeState(t);
+		}
+	}
+}
+
+namespace langX {
 
 	Function::Function()
 	{
@@ -80,7 +111,9 @@ namespace langX {
 			return NULL;
 		}
 
-		m_node_root->state.in_func = true;
+		resetNodeState(this->m_node_root);
+
+		//m_node_root->state.in_func = true;
 		__execNode(m_node_root);
 
 		if (m_node_root->value != NULL)
