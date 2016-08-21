@@ -1144,7 +1144,11 @@ namespace langX {
 		n->value = call(name, args);
 		//printf("func %s exec end\n" , name);
 		doSuffixOperationArgs(args);
-		freeArgsList(args);
+
+		if (!n->state.in_func)
+		{
+			freeArgsList(args);
+		}
 	}
 
 	void __execNEW(Node *n) {
@@ -1159,9 +1163,10 @@ namespace langX {
 		// 构造函数什么的 等会再加
 		langXObjectRef * objectRef = classinfo->newObject()->addRef();
 		objectRef->setEmergeEnv(getState()->getCurrentEnv());
-		ObjectBridgeEnv *env = new ObjectBridgeEnv(objectRef);
-		objectRef->setMembersEmergeEnv(env);
-		getState()->addEnvToList(env);
+		Environment *env = objectRef->getRefObject()->getObjectEnvironment();
+		
+		//objectRef->setMembersEmergeEnv(env);
+		//getState()->addEnvToList(env);
 
 		Node *argNode = n->opr_obj->op[1];
 		if (argNode != NULL)
@@ -1199,6 +1204,10 @@ namespace langX {
 			Node *t = n->opr_obj->op[i];
 			if (t == NULL || t->type != NODE_VARIABLE)
 			{
+				if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR)
+				{
+					__execVAR_DECLAR(t);
+				}
 				continue;
 			}
 
@@ -1238,12 +1247,19 @@ namespace langX {
 		}
 
 		langXObjectRef* objectRef = (langXObjectRef*)n1->value;
-		ObjectBridgeEnv env(objectRef);
-		getState()->newEnv(&env);
+		Environment *env = objectRef->getRefObject()->getObjectEnvironment();
+		getState()->newEnv(env);
 
 		// 根据语法解析文件可知， 第二个节点为一个函数调用节点
 		Node *n2 = n->opr_obj->op[1];
 		__execNode(n2);
+		if (n2->value != NULL)
+		{
+			n->value = n2->value->clone();
+		}
+		else {
+			n->value = NULL;
+		}
 
 		getState()->backEnv(false);
 
@@ -1274,6 +1290,14 @@ namespace langX {
 			printf("cannot find the object on use this!\n");
 			return;
 		}
+		if (n->opr_obj->op_count <= 0)
+		{
+			// no args.  获得自己就好了
+			ObjectBridgeEnv *objEnv = (ObjectBridgeEnv* )env;
+			n->value = objEnv->getEnvObject()->addRef();
+			return;
+		}
+
 		bool flag = env->isRestrict();
 		Environment *currEnv = getState()->getCurrentEnv();
 

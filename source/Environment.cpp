@@ -3,7 +3,7 @@
 #include "../include/ClassInfo.h"
 #include "../include/Number.h"
 #include "../include/Function.h"
-#include "../include/langXObjectRef.h"
+#include "../include/langXObject.h"
 
 namespace langX {
 
@@ -216,7 +216,7 @@ namespace langX {
 
 
 
-	ObjectBridgeEnv::ObjectBridgeEnv(langXObjectRef *obj)
+	ObjectBridgeEnv::ObjectBridgeEnv(langXObject *obj)
 	{
 		this->m_object = obj;
 	}
@@ -266,6 +266,11 @@ namespace langX {
 			return Environment::getFunction(name);
 		}
 		return func;
+	}
+
+	langXObject * ObjectBridgeEnv::getEnvObject() const
+	{
+		return this->m_object;
 	}
 
 	bool ObjectBridgeEnv::isObjectEnvironment() const
