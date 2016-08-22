@@ -4,6 +4,7 @@
 #include "../include/Number.h"
 #include "../include/Environment.h"
 #include "../include/Allocator.h"
+#include "../include/StackTrace.h"
 
 namespace langX {
 
@@ -15,6 +16,7 @@ namespace langX {
 		this->m_allocator = new Allocator();
 
 		this->m_env_list.push_front(this->m_current_env);
+		this->m_stacktrace.newFrame(NULL, NULL, "<startFrame>");
 	}
 	langXState::~langXState()
 	{
@@ -149,6 +151,11 @@ namespace langX {
 	Allocator & langXState::getAllocator() const
 	{
 		return (*this->m_allocator);
+	}
+
+	const StackTrace & langXState::getStackTrace() const
+	{
+		return this->m_stacktrace;
 	}
 
 }

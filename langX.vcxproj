@@ -41,6 +41,7 @@
     <ClInclude Include="include\Number.h" />
     <ClInclude Include="include\Object.h" />
     <ClInclude Include="include\RegFunctions.h" />
+    <ClInclude Include="include\StackTrace.h" />
     <ClInclude Include="include\String.h" />
     <ClInclude Include="include\Token.h" />
     <ClInclude Include="include\YLlangX.h" />
@@ -61,6 +62,7 @@
     <ClCompile Include="source\Number.cpp" />
     <ClCompile Include="source\Object.cpp" />
     <ClCompile Include="source\RegFunctions.cpp" />
+    <ClCompile Include="source\StackTrace.cpp" />
     <ClCompile Include="source\String.cpp" />
     <ClCompile Include="source\Token.cpp" />
     <ClCompile Include="source\YLlangX.cpp" />
