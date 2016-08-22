@@ -1,0 +1,39 @@
+Person{
+  name,sex,age;
+  
+  getName => { return name;}
+}
+
+Student extends Person{
+  grade,no;
+  
+  Student => (name,sex,age,grade,no){
+    this .name = name;
+	this .age = age;
+	this .sex = sex;
+	this .grade = grade;
+	this .no = no;
+  }
+  
+  printPeronInfo => {
+    print("Person Info: \n");
+	print(" name: " + name + "\n");
+	print("  sex: " + sex + "\n");
+	print("  age: " + age + "\n");
+  }
+  
+  printStuInfo => {
+    print("Student Info: \n");
+	print(" grade: " + grade + "\n");
+	print("    no: " + no + "\n");
+  }
+  
+}
+
+s1 = new Student("Jhon" ,1,16,"Grade 1." , 123456);
+print("s1.name: " + s1.getName() + "\n" );
+s1.printPeronInfo();
+s1.printStuInfo();
+print("\n\n\n");
+s1.printPeronInfo();
+s1.printStuInfo();

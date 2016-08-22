@@ -26,7 +26,7 @@ extern char * yytext;
 
 %token <iValue> TDOUBLE TBOOL
 %token <sValue> IDENTIFIER TSTRING
-%token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS
+%token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
 %token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
 
@@ -36,6 +36,7 @@ extern char * yytext;
 %type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt null_expr restrict_stmt this_stmt this_member_stmt 
 %type <params> param_list parameter
 %type <args> args_list args_expr
+%type <sValue> extends_stmt
 
 /* 优先级是从低到高 */
 
@@ -80,8 +81,14 @@ declar_stmt
 
 //  类声明语句
 class_declar_stmt
-	: IDENTIFIER '{' '}'            { $$ = claxx($1 , NULL); }
-	| IDENTIFIER '{' class_body '}' { $$ = claxx($1 , $3); }
+	: IDENTIFIER extends_stmt '{' '}'            { $$ = claxx($1 , $2, NULL); }
+	| IDENTIFIER extends_stmt '{' class_body '}' { $$ = claxx($1 , $2, $4); }
+	;
+
+//  类继承语句
+extends_stmt
+	:                     { $$ = NULL; }
+	| EXTENDS IDENTIFIER  { $$ = $2; }
 	;
 
 //  类主体
@@ -316,6 +323,8 @@ null_expr
 bool_param_expr
 	: assign_stmt_value_eq { $$ = $1; }
 	| arithmetic_stmt     { $$ = $1; }
+	| t_bool_expr         { $$ = $1; }
+	| string_expr         { $$ = $1; }
 	;
 
 //  逻辑语句 

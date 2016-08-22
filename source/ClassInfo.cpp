@@ -22,18 +22,39 @@ namespace langX {
 
 	bool ClassInfo::hasMember(const char *name) const
 	{
+		return hasMember(name, false);
+	}
+
+	bool ClassInfo::hasMember(const char *name, bool flag) const
+	{
 		if (this->m_members.find(name) != this->m_members.end())
 		{
 			return true;
 		}
+
+		if (this->m_parent != NULL)
+		{
+			return this->m_parent->hasMember(name);
+		}
+
 		return false;
 	}
 
 	Object * ClassInfo::getMember(const char *name) const
 	{
+		return getMember(name, false);
+	}
+
+	Object * ClassInfo::getMember(const char *name , bool flag) const
+	{
 		if (!hasMember(name))
 		{
-			return NULL;
+			if (this->m_parent == NULL)
+			{
+				return NULL;
+			}
+
+			return this->m_parent->getMember(name, true);
 		}
 		return this->m_members.at(name);
 	}
@@ -54,11 +75,30 @@ namespace langX {
 
 	Function * ClassInfo::getFunction(const char *name) const
 	{
+		return getFunction(name, false);
+	}
+
+	Function * ClassInfo::getFunction(const char *name , bool flag) const
+	{
 		if (!hasFunction(name))
 		{
-			return NULL;
+			if (this->m_parent == NULL)
+			{
+				return NULL;
+			}
+			return this->m_parent->getFunction(name, true);
 		}
 		return this->m_functions.at(name);
+	}
+
+	void ClassInfo::setParent(ClassInfo *c)
+	{
+		this->m_parent = c;
+	}
+
+	ClassInfo * ClassInfo::getParent() const
+	{
+		return this->m_parent;
 	}
 
 	const char * ClassInfo::getName() const

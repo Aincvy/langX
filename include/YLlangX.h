@@ -40,7 +40,7 @@ extern "C" {
 	// 创建一个后缀节点
 	XNode * sopr(int opr, int npos, ...);
 	// 创建一个类节点
-	XNode * claxx(char *name, XNode * node);
+	XNode * claxx(char *name, char *parent, XNode * node);
 	// 创建一个函数节点
 	XNode * func(char *, XParamsList *,XNode *);
 	// 创建一个 空引用节点
