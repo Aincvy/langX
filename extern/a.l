@@ -39,6 +39,7 @@ void count(void);
 "null" { count(); return XNULL; }
 "restrict" { count(); return RESTRICT;}
 "this" {count();  return THIS; }
+"extends"  { count(); return EXTENDS; }
 "=>"   {count();  return FUNC_OP; }
 "++"   {count();  return INC_OP;}
 "--"   {count();  return DEC_OP;}
