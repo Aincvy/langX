@@ -8,6 +8,7 @@
 namespace langX {
 	class Environment;
 	class Allocator;
+	class StackTrace;
 
 	class langXState
 	{
@@ -48,11 +49,15 @@ namespace langX {
 
 		Allocator &getAllocator() const;
 
+		// 获得当前的调用栈
+		const StackTrace & getStackTrace() const;
+
 	private:
 		// 全局环境
 		Environment *m_global_env = nullptr;
 		Environment *m_current_env = nullptr;
 		Allocator  *m_allocator = nullptr;
+		StackTrace m_stacktrace;
 
 		// 环境列表
 		std::list<Environment*> m_env_list;
