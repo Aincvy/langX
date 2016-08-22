@@ -279,6 +279,7 @@ arithmetic_stmt_factor
 	: assign_stmt_value_eq    { $$ = $1 ; }
 	| string_expr             { $$ = $1 ; }
 	| arithmetic_stmt         { $$ = $1 ; }
+	| class_member_stmt       { $$ = $1 ; }
 	| '(' arithmetic_stmt ')' { $$ = $2 ; }
 	;
 
