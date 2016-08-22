@@ -14,6 +14,13 @@ namespace langX {
 
 	langXObject::langXObject(ClassInfo *claxxInfo)
 	{
+		// 先生成父类对象
+		ClassInfo *pclass = claxxInfo->getParent();
+		if (pclass != nullptr)
+		{
+			this->m_parent = pclass->newObject();
+		}
+
 		this->m_class_info = claxxInfo;
 		this->m_my_env = new ObjectBridgeEnv(this);
 
@@ -30,19 +37,43 @@ namespace langX {
 
 	langXObject::~langXObject()
 	{
+		// 先干掉自己， 再干掉父类对象
+		
+		// 先调用自己的 析构函数
+		std::string str = "~";
+		str += this->m_class_info->getName();
+		callFunction(str.c_str());
+
 		if (this->m_my_env != NULL)
 		{
 			delete this->m_my_env;
 			this->m_my_env = NULL;
 		}
+
+		// 干掉父类对象
+		if (this->m_parent != NULL)
+		{
+			delete this->m_parent;
+			this->m_parent = NULL;
+		}
 	}
 
 	void langXObject::setMember(const char *name, Object *obj)
 	{
+		setMember(name, obj, false);
+	}
+
+	void langXObject::setMember(const char *name, Object *obj, bool flag)
+	{
 		if (this->m_members.find(name) == this->m_members.end())
 		{
-			printf("cannot find member %s!\n" ,name);
-			return;
+			if (this->m_parent == NULL)
+			{
+				printf("cannot find member %s!\n", name);
+				return;
+			}
+			
+			this->m_parent->setMember(name, obj, true);
 		}
 
 		Object *a = this->m_members[name];
@@ -59,9 +90,19 @@ namespace langX {
 
 	Object * langXObject::getMember(const char *name) const
 	{
+		return getMember(name, false);
+	}
+
+	Object * langXObject::getMember(const char *name, bool flag) const
+	{
 		if (this->m_members.find(name) != this->m_members.end())
 		{
 			return this->m_members.at(name);
+		}
+
+		if (this->m_parent != NULL)
+		{
+			return this->m_parent->getMember(name, true);
 		}
 
 		return NULL;
@@ -69,7 +110,12 @@ namespace langX {
 
 	Function * langXObject::getFunction(const char *name) const
 	{
-		return this->m_class_info->getFunction(name);
+		return getFunction(name, false);
+	}
+
+	Function * langXObject::getFunction(const char *name, bool flag) const
+	{
+		return this->m_class_info->getFunction(name,flag);
 	}
 
 	const ClassInfo * langXObject::getClassInfo() const
@@ -101,6 +147,22 @@ namespace langX {
 	Function * langXObject::getConstructor() const
 	{
 		return getFunction(this->m_class_info->getName());
+	}
+
+	Object * langXObject::callFunction(const char *name) const
+	{
+		Function * func = getFunction(name);
+		if (func == NULL)
+		{
+			//printf("cannot find func: %s\n" , name);
+			return NULL;
+		}
+
+		getState()->newEnv(this->m_my_env);
+		Object *obj = func->call();
+		getState()->backEnv(false);
+
+		return obj;
 	}
 
 	void langXObject::setMembersEmergeEnv(Environment *env)
