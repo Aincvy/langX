@@ -126,6 +126,55 @@ namespace langX {
 		}
 	}
 
+	// 将 n 及 n 下的所有子节点 的状态更新为在循环内
+	void stateInLoop(Node *n) {
+		if (!n)
+		{
+			return;
+		}
+
+		n->state.in_loop = true;
+
+		if (n->type == NODE_OPERATOR)
+		{
+			for (int i = 0; i < n->opr_obj->op_count; i++)
+			{
+				stateInLoop(n->opr_obj->op[i]);
+			}
+		}
+
+	}
+
+	//  释放 n 及 n 下的所有节点的参数列表内存
+	void freeAllArgList(Node *n) {
+		if (!n)
+		{
+			return;
+		}
+		if (n->state.in_func)
+		{
+			return;
+		}
+
+		if (n->type == NODE_OPERATOR)
+		{
+			if (n->opr_obj->opr == FUNC_CALL)
+			{
+				if (n->ptr_u != NULL)
+				{
+					freeArgsList((ArgsList*)n->ptr_u);
+					n->ptr_u = NULL;
+				}
+			}
+
+			for (int i = 0; i < n->opr_obj->op_count; i++)
+			{
+				freeAllArgList(n->opr_obj->op[i]);
+			}
+		}
+		
+	}
+
 	/*
 	  释放当前节点的子节点的值 内存
 	*/
@@ -709,14 +758,38 @@ namespace langX {
 	void __execEQ_OP(Node *n) {
 		doSubNodes(n);
 
-		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
-		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
+		Node *left = n->opr_obj->op[0];
+		Node *right = n->opr_obj->op[1];
 
-		if (a == b)
+		if (left->value->getType() == NUMBER && right->value->getType() == NUMBER)
 		{
-			n->value = m_exec_alloc.allocateNumber(1);
+			double a = ((Number*)left->value)->getDoubleValue();
+			double b = ((Number*)right->value)->getDoubleValue();
+
+			if (a == b)
+			{
+				n->value = m_exec_alloc.allocateNumber(1);
+			}
+			else {
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
+		}
+		else if (left->value->getType() == STRING && right->value->getType() == STRING)
+		{
+			// 字符串比较
+			const char * a = ((String*)left->value)->getValue();
+			const char * b = ((String*)right->value)->getValue();
+
+			if (strcmp(a,b) == 0)
+			{
+				n->value = m_exec_alloc.allocateNumber(1);
+			}
+			else {
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
 		}
 		else {
+			printf("类型不同，无法比较");
 			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
@@ -839,7 +912,9 @@ namespace langX {
 
 		// 先执行条件 节点 ,然后判断条件 节点的值， 然后释放条件 节点的内存
 		// 循环执行结束 ， 释放掉  所有节点值 的内存
-		stateExtends(n);
+		//stateExtends(n);
+		// TODO 处理节点， 以及子节点的状态
+		stateInLoop(n);
 
 		Node *conNode = n->opr_obj->op[0];
 		while (__tryConvertToBool(conNode))
@@ -873,6 +948,13 @@ namespace langX {
 			}
 		}
 
+		// 释放循环内的参数列表的内存
+		if (!n->state.in_func)
+		{
+			// 释放
+			freeAllArgList(n);
+		}
+
 		doSuffixOperation(n);
 		freeSubNodes(n);
 	}
@@ -882,7 +964,9 @@ namespace langX {
 		{
 			return;
 		}
-		stateExtends(n);
+		//stateExtends(n);
+		// TODO 处理节点， 以及子节点的状态
+		stateInLoop(n);
 
 		Node *conNode = n->opr_obj->op[1];
 		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode); __execNode(n->opr_obj->op[2]))
@@ -913,6 +997,13 @@ namespace langX {
 				}
 				break;
 			}
+		}
+
+		// 释放循环内的参数列表的内存
+		if (!n->state.in_func)
+		{
+			// 释放
+			freeAllArgList(n);
 		}
 
 		freeSubNodes(n);
@@ -1145,7 +1236,7 @@ namespace langX {
 		//printf("func %s exec end\n" , name);
 		doSuffixOperationArgs(args);
 
-		if (!n->state.in_func)
+		if (!n->state.in_func && !n->state.in_loop)
 		{
 			freeArgsList(args);
 		}

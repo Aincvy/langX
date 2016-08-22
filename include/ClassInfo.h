@@ -24,11 +24,20 @@ namespace langX {
 		void addMember(const char*, Object *);
 		// 是否包含那个 成员
 		bool hasMember(const char*) const;
+		// 这个请求是否从子类而来
+		bool hasMember(const char*,bool) const;
 		Object * getMember(const char *) const;
+		// 这个请求是否是从子类产生的
+		Object * getMember(const char *,bool) const;
 
 		void addFunction(const char*, Function*);
 		bool hasFunction(const char*) const;
 		Function * getFunction(const char *) const;
+		// 这个请求是否是从子类产生的
+		Function * getFunction(const char *,bool) const;
+
+		void setParent(ClassInfo *);
+		ClassInfo * getParent() const;
 
 		const char * getName() const;
 
@@ -45,6 +54,9 @@ namespace langX {
 
 		// 当前类叫什么名字
 		std::string m_name;
+
+		// 父类
+		ClassInfo *m_parent = nullptr;
 	};
 
 }

@@ -238,11 +238,23 @@ XNode * xnull()
 	return node;
 }
 
-XNode * claxx(char *name , XNode * node) {
+XNode * claxx(char *name , char *parent, XNode * node) {
+
+	ClassInfo *pclass = NULL;
+	if (parent != NULL)
+	{
+		pclass = getState()->getGlobalEnv()->getClass(parent);
+		if (pclass == NULL)
+		{
+			printf("error! cannot find class %s on extends!" , parent);
+		}
+		free(parent);
+	}
 
 	ClassInfo *claxxInfo = new ClassInfo(name);
+	claxxInfo->setParent(pclass);
 	free(name);
-	
+
 	if (node != NULL)
 	{
 		ClassBridgeEnv *env = new ClassBridgeEnv(claxxInfo);
