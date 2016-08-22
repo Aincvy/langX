@@ -322,6 +322,8 @@ null_expr
 bool_param_expr
 	: assign_stmt_value_eq { $$ = $1; }
 	| arithmetic_stmt     { $$ = $1; }
+	| t_bool_expr         { $$ = $1; }
+	| string_expr         { $$ = $1; }
 	;
 
 //  逻辑语句 
