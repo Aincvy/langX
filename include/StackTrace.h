@@ -1,11 +1,11 @@
 #pragma once
 #include <string>
-#include <queue>
+#include <vector>
 
 /*
  * date: 2016-08-22  ,filename: StackTrace.h
  * author:  hideDragon
- * desc:  ¶ÑÕ»¸ú×Ù
+ * desc:  å †æ ˆè·Ÿè¸ª
  */
 
 namespace langX {
@@ -13,7 +13,7 @@ namespace langX {
 	class ClassInfo;
 	class Function;
 
-	// ¶ÑÕ»¸ú×ÙµÄÒ»Ö¡
+	// å †æ ˆè·Ÿè¸ªçš„ä¸€å¸§
 	class StrackTraceFrame
 	{
 	public:
@@ -29,13 +29,14 @@ namespace langX {
 		void setFunction(Function *);
 		const Function & getFunction() const;
 
-		// »ñµÃµ±Ç°µ÷ÓÃÖ¡µÄĞÅÏ¢
+		// è·å¾—å½“å‰è°ƒç”¨å¸§çš„ä¿¡æ¯
 		const char * getInfo() const;
 
 	private:
 
-		// ±¸×¢
+		// å¤‡æ³¨
 		std::string m_remark;
+		mutable std::string m_info;
 
 		ClassInfo * m_class_info = nullptr;
 		Function *m_function = nullptr;
@@ -44,29 +45,31 @@ namespace langX {
 
 	struct StrackTraceFrameArray
 	{
-		StrackTraceFrame * frame;
+		const StrackTraceFrame ** frame;
 		int length;
 	};
 
-	// ¶ÑÕ»¸ú×Ù
+	// å †æ ˆè·Ÿè¸ª
 	class StackTrace
 	{
 	public:
 		StackTrace();
 		~StackTrace();
 
-		//  Éú³ÉÒ»¸öĞÂµÄÖ¡
+		//  ç”Ÿæˆä¸€ä¸ªæ–°çš„å¸§
 		StrackTraceFrame *newFrame(ClassInfo *, Function *, const char *);
 
-		// È¡³öÕ»¶¥µÄÖ¡ (»áÒÆ³ı)
-		StrackTraceFrame *popFrame();
+		// å–å‡ºæ ˆé¡¶çš„å¸§ (ä¼šç§»é™¤)
+		void popFrame();
 
-		// »ñµÃÖ¡Êı×é
+		StrackTraceFrame *top() const;
+
+		// è·å¾—å¸§æ•°ç»„.  å¸§æ•°ç»„å†…çš„ frames éœ€è¦åœ¨ä½¿ç”¨åç”¨ free å‡½æ•°è¿›è¡Œé‡Šæ”¾
 		StrackTraceFrameArray frames() const;
 
 	private:
 
-		std::queue<StrackTraceFrame*> m_frames;
+		std::vector<StrackTraceFrame*> m_frames;
 	};
 
 

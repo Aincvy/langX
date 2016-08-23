@@ -1,6 +1,7 @@
-#include "../include/StackTrace.h"
+#include "../include/Object.h"
 #include "../include/Function.h"
 #include "../include/ClassInfo.h"
+#include "../include/StackTrace.h"
 
 namespace langX {
 
@@ -46,8 +47,40 @@ namespace langX {
 
 	const char * StrackTraceFrame::getInfo() const
 	{
+		this->m_info.clear();
+		bool flag = false;
 
-		return nullptr;
+		if (this->m_class_info)
+		{
+			this->m_info += this->m_class_info->getName();
+			flag = true;
+		}
+
+		if (this->m_function)
+		{
+			if (flag)
+			{
+				this->m_info += ".";
+			}
+
+			this->m_info += this->m_function->getName();
+			this->m_info += "()";
+			flag = true;
+		}
+
+		if (!this->m_remark.empty())
+		{
+			if (flag)
+			{
+				this->m_info += ".";
+			}
+
+			this->m_info += "[";
+			this->m_info += this->m_remark.c_str();
+			this->m_info += "]";
+		}
+
+		return this->m_info.c_str();
 	}
 
 	StackTrace::StackTrace()
@@ -57,10 +90,14 @@ namespace langX {
 
 	StackTrace::~StackTrace()
 	{
-		while (!this->m_frames.empty()) {
-			delete this->m_frames.front();
-			this->m_frames.pop();
+		auto i = this->m_frames.begin();
+		while (i != this->m_frames.end())
+		{
+			delete (*i);
+			i++;
 		}
+
+		this->m_frames.clear();
 	}
 
 	StrackTraceFrame * StackTrace::newFrame(ClassInfo *a, Function *b, const char *c)
@@ -70,28 +107,47 @@ namespace langX {
 		f->setFunction(b);
 		f->setRemark(c);
 
-		this->m_frames.push(f);
+		// 追加到尾部
+		this->m_frames.push_back(f);
 
 		return f;
 	}
 
-	StrackTraceFrame * StackTrace::popFrame()
+	void StackTrace::popFrame()
+	{
+		if (this->m_frames.empty())
+		{
+			return;
+		}
+
+		StrackTraceFrame  *ret = this->m_frames.back();
+		this->m_frames.pop_back();
+		delete ret;
+		return ;
+	}
+
+	StrackTraceFrame * StackTrace::top() const
 	{
 		if (this->m_frames.empty())
 		{
 			return NULL;
 		}
 
-		StrackTraceFrame  *ret = this->m_frames.front();
-		this->m_frames.pop();
-		return ret;
+		return this->m_frames.back();
 	}
 
 	StrackTraceFrameArray StackTrace::frames() const
 	{
 		StrackTraceFrameArray ret;
+		ret.length = this->m_frames.size();
+		ret.frame = (const StrackTraceFrame**)calloc(ret.length, sizeof(StrackTraceFrame*));
 		
-		return StrackTraceFrameArray();
+		for (int i = 0 ; i < this->m_frames.size(); i++)
+		{
+			ret.frame[i] = this->m_frames[i];
+		}
+
+		return (ret);
 	}
 
 }

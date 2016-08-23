@@ -61,6 +61,7 @@ namespace langX {
 
 	void ClassInfo::addFunction(const char *name, Function *func)
 	{
+		func->setClassInfo(this);
 		this->m_functions[name] = func;
 	}
 

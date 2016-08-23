@@ -153,9 +153,22 @@ namespace langX {
 		return (*this->m_allocator);
 	}
 
-	const StackTrace & langXState::getStackTrace() const
+	StackTrace & langXState::getStackTrace()
 	{
 		return this->m_stacktrace;
+	}
+
+	void langXState::printStackTrace() const
+	{
+		StrackTraceFrameArray array1 = this->m_stacktrace.frames();
+
+		// 不打印自己这个函数
+		for (int i = 0; i < array1.length-1; i++)
+		{
+			printf("%s\n", array1.frame[i]->getInfo());
+		}
+
+		free(array1.frame);
 	}
 
 }

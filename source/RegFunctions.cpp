@@ -63,11 +63,19 @@ namespace langX {
 		return new Number(a);
 	}
 
+	Object * langX_print_stack_trace(X3rdFunction *func, const X3rdArgs & args) {
+		
+		func->getLangX()->printStackTrace();
+
+		return NULL;
+	}
+
 	void regFunctions(langXState *state)
 	{
 		state->reg3rd("print", langX_print);
 		state->reg3rd("scanString", langX_scan_string);
 		state->reg3rd("scanNumber",langX_scan_number);
+		state->reg3rd("printStackTrace", langX_print_stack_trace);
 	}
 
 }
