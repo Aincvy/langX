@@ -1,0 +1,23 @@
+funa => {
+  funb();
+}
+
+funb => {
+  printStackTrace();
+}
+
+fun1 => {
+  funa();
+}
+
+Class1{
+
+  func1 => { fun1() ; }
+  func2 => { func1(); }
+}
+
+c1 = new Class1();
+c1.func2();
+print("New Turn!\n");
+
+fun1();

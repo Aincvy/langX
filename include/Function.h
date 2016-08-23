@@ -2,6 +2,7 @@
 
 namespace langX {
 	class Object;
+	class ClassInfo;
 
 	class Function : public Object
 	{
@@ -15,7 +16,10 @@ namespace langX {
 		void setName(const char*);
 
 		void setParamsList(ParamsList *);
-		ParamsList *getParamsList();
+		ParamsList *getParamsList() const;
+
+		ClassInfo *getClassInfo() const;
+		void setClassInfo(ClassInfo *);
 
 		// 获取参数个数
 		int getArgsCount() const;
@@ -36,6 +40,8 @@ namespace langX {
 		Node * m_node_root = nullptr;
 		char * m_name;
 		ParamsList * m_params_list = nullptr;
+		// 当前函数是属于哪个类
+		ClassInfo *m_class_info = nullptr;
 
 		void finalize();
 	};

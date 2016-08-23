@@ -11,6 +11,10 @@
 #include "../include/Environment.h"
 #include "../include/Allocator.h"
 #include "../include/ClassInfo.h"
+#include "../include/StackTrace.h"
+
+
+extern int yyget_lineno(void);
 
 using namespace langX;
 
@@ -87,12 +91,33 @@ void deal_switch_info(SwitchInfo *si) {
 	si->doDefault = false;
 }
 
+void deal_fileinfo(NodeFileInfo *f) {
+	f->lineno = yyget_lineno();
+}
+
+std::string fileInfoString(const NodeFileInfo & f) {
+	std::string str = "";
+	if (f.filename)
+	{
+		str += f.filename;
+	}
+	else {
+		str += "<NoFile>";
+	}
+
+	str += ":";
+	str += f.lineno;
+
+	return (str);
+}
+
 XNode * string(char *v)
 {
 	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
 	node->con_obj = (langX::Constant*) calloc(1,sizeof(langX::Constant) * 1);
 
 	node->freeOnExeced = true;
+	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
 	node->value = NULL;
@@ -109,6 +134,7 @@ XNode * number(double a)
 	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
 	node->con_obj = (langX::Constant*) calloc(1,sizeof(langX::Constant) * 1);
 
+	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
 	node->type = NODE_CONSTANT_NUMBER;
@@ -126,6 +152,7 @@ XNode * var(char *name)
 	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
 	node->var_obj = (langX::Variable*) calloc(1,sizeof(langX::Variable) * 1);
 
+	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
 	node->type = NODE_VARIABLE;
@@ -147,6 +174,7 @@ XNode * opr(int opr, int npos, ...)
 	node->opr_obj = (langX::Operator*) calloc(1,sizeof(langX::Operator) * 1);
 	node->opr_obj->op = (XNode**)calloc(1,sizeof(XNode*) * npos);
 
+	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
 	node->value = NULL;
@@ -179,6 +207,7 @@ XNode * sopr(int opr, int npos, ...)
 	node->opr_obj = (langX::Operator*) calloc(1,sizeof(langX::Operator) * 1);
 	node->opr_obj->op = (XNode**)calloc(1,sizeof(XNode*) * npos);
 
+	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
 	node->state.isSuffix = true;
@@ -218,6 +247,7 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	free(name);
 	XNode * nodeF = (XNode*)calloc(1,sizeof(XNode) * 1);
 	nodeF->type = NODE_FUNCTION;
+	deal_fileinfo(&node->fileinfo);
 	deal_state(&nodeF->state);
 	deal_switch_info(&nodeF->switch_info);
 	nodeF->value = func;
@@ -228,6 +258,7 @@ XNode * xnull()
 {
 	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
 
+	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
 	node->type = NODE_NULL;
@@ -267,6 +298,7 @@ XNode * claxx(char *name , char *parent, XNode * node) {
 	
 	XNode * nodeC = (XNode*)calloc(1, sizeof(XNode) * 1);
 	nodeC->type = NODE_CLASS;
+	deal_fileinfo(&node->fileinfo);
 	deal_state(&nodeC->state);
 	deal_switch_info(&nodeC->switch_info);
 	nodeC->ptr_u = claxxInfo;
@@ -287,6 +319,13 @@ XObject * call(char *name, XArgsList* args)
 }
 
 XObject * callFunc(XFunction* function, XArgsList *args) {
+	if (function == NULL)
+	{
+		return NULL;
+	}
+
+	getState()->getStackTrace().newFrame(function->getClassInfo(), function, "");
+
 	if (function->is3rd())
 	{
 		// 第三方函数 
@@ -307,7 +346,9 @@ XObject * callFunc(XFunction* function, XArgsList *args) {
 			_3rdArgs.index = args->index;
 		}
 		
-		return x3rdfunc->call(_3rdArgs);
+		Object * ret1 = x3rdfunc->call(_3rdArgs);
+		getState()->getStackTrace().popFrame();
+		return ret1;
 	}
 
 	Environment * env = getState()->newEnv();
@@ -336,6 +377,7 @@ XObject * callFunc(XFunction* function, XArgsList *args) {
 	else {
 		ret = function->call();
 	}
+	getState()->getStackTrace().popFrame();
 	getState()->backEnv();
 
 	return ret;
@@ -347,6 +389,7 @@ XNode * argsNode(XArgsList * args) {
 	node->value = NULL;
 	node->postposition = NULL;
 	node->ptr_u = args;
+	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
 

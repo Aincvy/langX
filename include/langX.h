@@ -4,11 +4,11 @@
 #include <list>
 #include "Object.h"
 #include "Function.h"
+#include "StackTrace.h"
 
 namespace langX {
 	class Environment;
 	class Allocator;
-	class StackTrace;
 
 	class langXState
 	{
@@ -50,7 +50,10 @@ namespace langX {
 		Allocator &getAllocator() const;
 
 		// 获得当前的调用栈
-		const StackTrace & getStackTrace() const;
+		StackTrace & getStackTrace();
+
+		// 打印调用堆栈信息
+		void printStackTrace() const;
 
 	private:
 		// 全局环境

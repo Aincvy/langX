@@ -7,6 +7,7 @@
 #include "../include/Function.h"
 #include "../include/Allocator.h"
 #include "../include/YLlangX.h"
+#include "../include/ClassInfo.h"
 
 
 langX::Allocator m_exec_alloc;
@@ -94,7 +95,17 @@ namespace langX {
 		this->m_params_list = list;
 	}
 
-	ParamsList * Function::getParamsList()
+	ClassInfo * Function::getClassInfo() const
+	{
+		return this->m_class_info;
+	}
+
+	void Function::setClassInfo(ClassInfo *a)
+	{
+		this->m_class_info = a;
+	}
+
+	ParamsList * Function::getParamsList() const
 	{
 		return this->m_params_list;
 	}

@@ -136,6 +136,15 @@ namespace langX {
 		bool doDefault;
 	};
 
+	// 节点的文件信息
+	struct NodeFileInfo
+	{
+		// 文件名
+		const char * filename;
+		// 行号
+		int lineno;
+	};
+
 	struct Constant
 	{
 		int iValue;
@@ -170,6 +179,8 @@ namespace langX {
 		SwitchInfo switch_info;
 		// 节点状态
 		NodeState state;
+		// 文件信息
+		NodeFileInfo fileinfo;
 		// 后置值 ， 如果当前节点为一个 变量节点， 当前属性则为有用
 		Object *postposition;
 
