@@ -14,6 +14,9 @@ extern int yyget_lineno(void);
 extern int column; 
 extern char * yytext;
 
+// 正在解析的文件 的文件名
+const char * parseFileName=NULL;
+
 %}
 
 %union {
@@ -412,6 +415,7 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 	
+	parseFileName = argv[1];
 	extern FILE* yyin; 
 	yyin=fp;
 	initLangX();

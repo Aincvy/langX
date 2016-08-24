@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include <string>
+#include <sstream>
 #include "../include/YLlangX.h"
 #include "../include/langX.h"
 #include "../include/Object.h"
@@ -15,6 +15,7 @@
 
 
 extern int yyget_lineno(void);
+extern const char * parseFileName;
 
 using namespace langX;
 
@@ -93,22 +94,24 @@ void deal_switch_info(SwitchInfo *si) {
 
 void deal_fileinfo(NodeFileInfo *f) {
 	f->lineno = yyget_lineno();
+	f->filename = parseFileName;
 }
 
 std::string fileInfoString(const NodeFileInfo & f) {
-	std::string str = "";
+	std::stringstream ss;
+	ss << "at ";
 	if (f.filename)
 	{
-		str += f.filename;
+		ss << f.filename;
 	}
 	else {
-		str += "<NoFile>";
+		ss << "<NoFile>";
 	}
 
-	str += ":";
-	str += f.lineno;
+	ss << ":";
+	ss << f.lineno;
 
-	return (str);
+	return std::string(ss.str());
 }
 
 XNode * string(char *v)
@@ -306,7 +309,7 @@ XNode * claxx(char *name , char *parent, XNode * node) {
 	return nodeC;
 }
 
-XObject * call(char *name, XArgsList* args)
+XObject * call(char *name, XArgsList* args , const char *remark)
 {
 	Function *function = getState()->getCurrentEnv()->getFunction(name);
 	if (function == NULL)
@@ -315,16 +318,17 @@ XObject * call(char *name, XArgsList* args)
 		return NULL;
 	}
 
-	return callFunc(function, args);
+	return callFunc(function, args, remark);
 }
 
-XObject * callFunc(XFunction* function, XArgsList *args) {
+XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 	if (function == NULL)
 	{
 		return NULL;
 	}
 
-	getState()->getStackTrace().newFrame(function->getClassInfo(), function, "");
+
+	getState()->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
 	if (function->is3rd())
 	{
