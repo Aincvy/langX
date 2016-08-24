@@ -1232,7 +1232,7 @@ namespace langX {
 
 		char * name = n->opr_obj->op[0]->var_obj->name;
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
-		n->value = call(name, args);
+		n->value = call(name, args , fileInfoString(n->fileinfo).c_str());
 		//printf("func %s exec end\n" , name);
 		doSuffixOperationArgs(args);
 
@@ -1268,7 +1268,7 @@ namespace langX {
 				XArgsList *args = (XArgsList *)argNode->ptr_u;
 
 				getState()->newEnv(env);
-				callFunc(func, args);
+				callFunc(func, args , fileInfoString(n->fileinfo).c_str());
 				getState()->backEnv(false);
 
 			}

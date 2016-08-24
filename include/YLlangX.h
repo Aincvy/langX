@@ -2,6 +2,7 @@
 #include "Object.h"
 #include "langX.h"
 #include "Function.h"
+#include <string>
 
 /*
 *   创建时间：  2016-07-07
@@ -46,9 +47,9 @@ extern "C" {
 	// 创建一个 空引用节点
 	XNode * xnull();
 	// 使用一个函数
-	XObject * call(char *, XArgsList *);
+	XObject * call(char *, XArgsList *, const char *);
 	// 调用一个函数
-	XObject * callFunc(XFunction*, XArgsList *);
+	XObject * callFunc(XFunction*, XArgsList *, const char *);
 	// 创建一个节点， 节点内容为实参列表
 	XNode * argsNode(XArgsList *);
 
@@ -75,3 +76,6 @@ langX::Object* getValue(const char*);
 langX::langXState * getState();
 
 void assignment(const char*, langX::Object * obj);
+
+// 把文件信息变一下
+std::string fileInfoString(const langX::NodeFileInfo & f);

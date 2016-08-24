@@ -70,11 +70,6 @@ namespace langX {
 
 		if (!this->m_remark.empty())
 		{
-			if (flag)
-			{
-				this->m_info += ".";
-			}
-
 			this->m_info += "[";
 			this->m_info += this->m_remark.c_str();
 			this->m_info += "]";
