@@ -18,7 +18,7 @@ namespace langX {
 	// 对象类型
 	enum ObjectType
 	{
-		UNKNOWN=100, NUMBER , STRING, FUNCTION, OBJECT , NULLOBJECT
+		UNKNOWN=100, NUMBER , STRING, FUNCTION, OBJECT , NULLOBJECT ,XARRAY
 	};
 
 	class Object
@@ -98,7 +98,9 @@ namespace langX {
 		// 类节点 （类声明） 当节点类型为 类的时候， 类引用在 node->ptr_u  上面
 		NODE_CLASS ,
 		// 空引用节点
-		NODE_NULL  
+		NODE_NULL  ,
+		// 数组声明节点.  当为数组节点的时候。 数组基本信息存放在  node->ptr_u  上面。 执行完需要用free 释放
+		NODE_ARRAY
 	};
 
 	// 节点的状态， 比如： 正常，在循环内，在函数内
@@ -151,6 +153,15 @@ namespace langX {
 		double dValue;
 		char* sValue;
 		char cValue;
+	};
+
+	// 数组声明时使用
+	struct XArrayNode
+	{
+		// 数组名字
+		char * name;
+		// 数组长度
+		int length;
 	};
 
 	struct Operator

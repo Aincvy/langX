@@ -1525,6 +1525,19 @@ namespace langX {
 			node->value = m_exec_alloc.allocate(NULLOBJECT);
 			return;
 		}
+		else if (node->type == NODE_ARRAY)
+		{
+			if (node->ptr_u == NULL)
+			{
+				printf("delar array erorr!\n");
+				return;
+			}
+
+			XArrayNode *an = (XArrayNode *)node->ptr_u;
+			
+
+			return;
+		}
 
 		if (node->type != NODE_OPERATOR)
 		{
