@@ -20,6 +20,7 @@ const char * parseFileName=NULL;
 %}
 
 %union {
+ int intValue;
  double iValue; /* double value */
  char* sValue; /* string value */
  XNode* node;  /* var value */
@@ -27,10 +28,11 @@ const char * parseFileName=NULL;
  XArgsList *args;    /* args value */
 };
 
+%token <intValue> XINTEGER
 %token <iValue> TDOUBLE TBOOL
 %token <sValue> IDENTIFIER TSTRING
-%token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS
-%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ
+%token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS 
+%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ 
 %token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
@@ -170,6 +172,8 @@ expr_list
 var_declar_stmt
 	: id_expr ';'  { $$ = opr(VAR_DECLAR , 1, $1 ); }
 	| id_expr ',' var_declar_stmt { $$ = opr(VAR_DECLAR , 2, $1,$3);}
+	| IDENTIFIER '[' XINTEGER ']' ';' { $$ = NULL; }
+	| IDENTIFIER '[' XINTEGER ']' ',' var_declar_stmt  {$$ = NULL; }
 	;
 	
 //  条件控制语句
@@ -308,6 +312,7 @@ t_bool_expr
 
 double_expr
 	: TDOUBLE { $$ = number($1); }
+	| XINTEGER { $$ = number($1); }
 	;
 
 uminus_expr

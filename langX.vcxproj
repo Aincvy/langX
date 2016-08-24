@@ -44,6 +44,7 @@
     <ClInclude Include="include\StackTrace.h" />
     <ClInclude Include="include\String.h" />
     <ClInclude Include="include\Token.h" />
+    <ClInclude Include="include\XArray.h" />
     <ClInclude Include="include\YLlangX.h" />
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +66,7 @@
     <ClCompile Include="source\StackTrace.cpp" />
     <ClCompile Include="source\String.cpp" />
     <ClCompile Include="source\Token.cpp" />
+    <ClCompile Include="source\XArray.cpp" />
     <ClCompile Include="source\YLlangX.cpp" />
   </ItemGroup>
   <ItemGroup>

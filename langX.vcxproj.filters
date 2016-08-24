@@ -66,6 +66,9 @@
     <ClInclude Include="include\StackTrace.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\XArray.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Token.cpp">
@@ -123,6 +126,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\StackTrace.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XArray.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

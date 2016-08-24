@@ -125,6 +125,7 @@ XNode * string(char *v)
 	deal_switch_info(&node->switch_info);
 	node->value = NULL;
 	node->postposition = NULL;
+	node->ptr_u = NULL;
 	node->type = NODE_CONSTANT_STRING;
 	// v 是已经申请过的内存 ， 直接赋值就OK
 	node->con_obj->sValue = v;
@@ -142,6 +143,7 @@ XNode * number(double a)
 	deal_switch_info(&node->switch_info);
 	node->type = NODE_CONSTANT_NUMBER;
 	node->value = NULL;
+	node->ptr_u = NULL;
 	node->postposition = NULL;
 	node->freeOnExeced = true;
 	node->con_obj->dValue = a;
@@ -161,6 +163,7 @@ XNode * var(char *name)
 	node->type = NODE_VARIABLE;
 	node->freeOnExeced = true;
 	node->value = NULL;
+	node->ptr_u = NULL;
 	node->postposition = NULL;
 	node->var_obj->name = name;
 
@@ -181,6 +184,7 @@ XNode * opr(int opr, int npos, ...)
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
 	node->value = NULL;
+	node->ptr_u = NULL;
 	node->postposition = NULL;
 	node->type = NODE_OPERATOR;
 	node->freeOnExeced = true;
@@ -215,6 +219,7 @@ XNode * sopr(int opr, int npos, ...)
 	deal_switch_info(&node->switch_info);
 	node->state.isSuffix = true;
 	node->value = NULL;
+	node->ptr_u = NULL;
 	node->postposition = NULL;
 	node->type = NODE_OPERATOR;
 	node->freeOnExeced = true;
@@ -255,6 +260,21 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	deal_switch_info(&nodeF->switch_info);
 	nodeF->value = func;
 	return nodeF;
+}
+
+XNode * arrayNode(char *name, int length)
+{
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	deal_fileinfo(&node->fileinfo);
+	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
+	
+	XArrayNode *an = (XArrayNode*)calloc(1, sizeof(XArrayNode) * 1);
+	an->name = name;
+	an->length = length;
+	node->ptr_u = an;
+
+	return node;
 }
 
 XNode * xnull()
