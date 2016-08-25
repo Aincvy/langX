@@ -12,6 +12,7 @@
 #include "../include/ClassInfo.h"
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
+#include "../include/XArray.h"
 
 namespace langX {
 	// 内存的 管理器
@@ -172,7 +173,7 @@ namespace langX {
 				freeAllArgList(n->opr_obj->op[i]);
 			}
 		}
-		
+
 	}
 
 	/*
@@ -780,7 +781,7 @@ namespace langX {
 			const char * a = ((String*)left->value)->getValue();
 			const char * b = ((String*)right->value)->getValue();
 
-			if (strcmp(a,b) == 0)
+			if (strcmp(a, b) == 0)
 			{
 				n->value = m_exec_alloc.allocateNumber(1);
 			}
@@ -1232,7 +1233,7 @@ namespace langX {
 
 		char * name = n->opr_obj->op[0]->var_obj->name;
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
-		n->value = call(name, args , fileInfoString(n->fileinfo).c_str());
+		n->value = call(name, args, fileInfoString(n->fileinfo).c_str());
 		//printf("func %s exec end\n" , name);
 		doSuffixOperationArgs(args);
 
@@ -1268,7 +1269,7 @@ namespace langX {
 				XArgsList *args = (XArgsList *)argNode->ptr_u;
 
 				getState()->newEnv(env);
-				callFunc(func, args , fileInfoString(n->fileinfo).c_str());
+				callFunc(func, args, fileInfoString(n->fileinfo).c_str());
 				getState()->backEnv(false);
 
 			}
@@ -1288,6 +1289,7 @@ namespace langX {
 	void __execVAR_DECLAR(Node *n) {
 
 		// 都初始为 null
+		// 数组要赋值
 		Object *obj = m_exec_alloc.allocate(NULLOBJECT);
 		obj->setEmergeEnv(getState()->getCurrentEnv());
 		for (int i = 0; i < n->opr_obj->op_count; i++)
@@ -1298,6 +1300,21 @@ namespace langX {
 				if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR)
 				{
 					__execVAR_DECLAR(t);
+				}
+				else if (t->type == NODE_ARRAY)
+				{
+					if (t->ptr_u == NULL)
+					{
+						printf("delar array erorr!\n");
+						return;
+					}
+
+					XArrayNode *an = (XArrayNode *)t->ptr_u;
+					XArray *array1 = new XArray(an->length);
+					char *name = an->name;
+					Object *arrayRef = array1->addRef();
+					arrayRef->setEmergeEnv(getState()->getCurrentEnv());
+					setValueToEnv(name, obj);
 				}
 				continue;
 			}
@@ -1525,19 +1542,7 @@ namespace langX {
 			node->value = m_exec_alloc.allocate(NULLOBJECT);
 			return;
 		}
-		else if (node->type == NODE_ARRAY)
-		{
-			if (node->ptr_u == NULL)
-			{
-				printf("delar array erorr!\n");
-				return;
-			}
 
-			XArrayNode *an = (XArrayNode *)node->ptr_u;
-			
-
-			return;
-		}
 
 		if (node->type != NODE_OPERATOR)
 		{

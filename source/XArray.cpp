@@ -1,5 +1,9 @@
 #include <memory>
 #include "../include/XArray.h"
+#include "../include/NullObject.h"
+#include "../include/Allocator.h"
+
+extern langX::Allocator m_exec_alloc;
 
 namespace langX {
 
@@ -7,12 +11,22 @@ namespace langX {
 	{
 		this->m_length = length;
 		this->m_array = (Object**)calloc(length, sizeof(Object*));
+
+		for (int i = 0; i < length; i++)
+		{
+			this->m_array[i] = new NullObject();
+		}
 	}
 
 	XArray::~XArray()
 	{
 		free(this->m_array);
 		this->m_array = NULL;
+	}
+
+	int XArray::getLength() const
+	{
+		return this->m_length;
 	}
 
 	Object * XArray::at(int index) const
@@ -31,7 +45,26 @@ namespace langX {
 
 	void XArray::set(int index, Object *obj)
 	{
+		if (index < 0 || index >= m_length)
+		{
+			// TODO 这里应该抛出一个异常
+			return;
+		}
 
+		if ((obj == NULL || obj->getType() == NULLOBJECT) && this->m_array[index]->getType() == NULLOBJECT)
+		{
+			return;
+		}
+
+		Object *old = this->m_array[index];
+		if (old->getType() == obj->getType())
+		{
+			old->update(obj);
+		}
+		else {
+			this->m_array[index] = obj->clone();
+			m_exec_alloc.free(old);
+		}
 	}
 
 	void XArray::justAddRef()
@@ -93,6 +126,15 @@ namespace langX {
 		this->m_array->set(index, obj);
 	}
 
+	int XArrayRef::getLength() const
+	{
+		if (this->m_array == nullptr)
+		{
+			return -1;
+		}
+		this->m_array->getLength();
+	}
+
 	bool XArrayRef::isTrue() const
 	{
 		if (this->m_array == nullptr)
@@ -113,7 +155,9 @@ namespace langX {
 		{
 			return nullptr;
 		}
-		return this->m_array->addRef();
+		Object * obj = this->m_array->addRef();
+		obj->setEmergeEnv(this->getEmergeEnv());
+		return obj;
 	}
 
 	void XArrayRef::update(Object *)

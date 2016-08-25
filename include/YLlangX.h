@@ -54,7 +54,8 @@ extern "C" {
 	XObject * callFunc(XFunction*, XArgsList *, const char *);
 	// 创建一个节点， 节点内容为实参列表
 	XNode * argsNode(XArgsList *);
-
+	// 创建一个数组元素节点
+	XNode *arr(char *, int);
 	// 创建一个形参列表， 或者 追加一个参数到 列表中
 	XParamsList * params(XParamsList *, char *);
 	// 创建一个实参列表 ， 或者追加一个实参到列表中
