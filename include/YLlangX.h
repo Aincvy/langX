@@ -45,7 +45,7 @@ extern "C" {
 	// 创建一个函数节点
 	XNode * func(char *, XParamsList *,XNode *);
 	// 创建一个数组节点， 在执行这个节点的时候会创建一个数组
-	XNode * arrayNode(char *,int length);
+	XNode * arrayNode(char *,int length, XNode *);
 	// 创建一个 空引用节点
 	XNode * xnull();
 	// 使用一个函数
@@ -55,7 +55,7 @@ extern "C" {
 	// 创建一个节点， 节点内容为实参列表
 	XNode * argsNode(XArgsList *);
 	// 创建一个数组元素节点
-	XNode *arr(char *, int);
+	XNode *arr(char *, int ,XNode *);
 	// 创建一个形参列表， 或者 追加一个参数到 列表中
 	XParamsList * params(XParamsList *, char *);
 	// 创建一个实参列表 ， 或者追加一个实参到列表中

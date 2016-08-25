@@ -1,0 +1,13 @@
+// ษ๙ร๗สýื้
+len = 10 ;
+a[len] ;
+
+for (i = 0 ; i < len ; i++ ){
+  a[i] = len - i;
+}
+
+for (i = 0 ; i < len ; i++ ){
+  print("a[" + i+"] = " + a[i] + "\n" );
+}
+ 
+print("Script End!\n");

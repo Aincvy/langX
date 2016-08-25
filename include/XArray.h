@@ -47,6 +47,7 @@ namespace langX {
 		XArray * getArray() const;
 
 		Object * at(int index) const;
+		// 在set 的时候会获得一个 obj 的副本
 		void set(int index, Object *);
 		int getLength() const;
 
