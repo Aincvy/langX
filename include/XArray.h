@@ -5,11 +5,16 @@ namespace langX {
 
 	class XArrayRef;
 
+	/*  数组必须先声明之后才能使用 */
+
+	//  数组
 	class XArray
 	{
 	public:
 		XArray(int length);
 		~XArray();
+
+		int getLength() const;
 
 		Object * at(int index) const;
 
@@ -32,7 +37,7 @@ namespace langX {
 		int  m_ref_count = 0;
 	};
 
-	// 写一起吧先
+	// 写一起吧先。  数组引用
 	class XArrayRef : public Object
 	{
 	public:
@@ -43,6 +48,7 @@ namespace langX {
 
 		Object * at(int index) const;
 		void set(int index, Object *);
+		int getLength() const;
 
 		/* 当前值可以表示为真么？  null,0,false 都不会表示为真  */
 		bool isTrue() const ;

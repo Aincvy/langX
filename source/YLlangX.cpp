@@ -172,6 +172,28 @@ XNode * var(char *name)
 	return node;
 }
 
+// 数组元素节点
+XNode *arr(char *name, int index) {
+
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	node->arr_obj = (langX::ArrayInfo*) calloc(1, sizeof(langX::ArrayInfo) * 1);
+
+	deal_fileinfo(&node->fileinfo);
+	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
+	node->type = NODE_VARIABLE;
+	node->freeOnExeced = true;
+	node->value = NULL;
+	node->ptr_u = NULL;
+	node->postposition = NULL;
+
+	node->arr_obj->name = name;
+	node->arr_obj->index = index;
+
+	return node;
+
+}
+
 XNode * opr(int opr, int npos, ...)
 {
 	va_list ap;
@@ -268,7 +290,11 @@ XNode * arrayNode(char *name, int length)
 	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
-	
+	node->type = NODE_ARRAY;
+	node->freeOnExeced = true;
+	node->value = NULL;
+	node->postposition = NULL;
+
 	XArrayNode *an = (XArrayNode*)calloc(1, sizeof(XArrayNode) * 1);
 	an->name = name;
 	an->length = length;

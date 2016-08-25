@@ -100,7 +100,9 @@ namespace langX {
 		// 空引用节点
 		NODE_NULL  ,
 		// 数组声明节点.  当为数组节点的时候。 数组基本信息存放在  node->ptr_u  上面。 执行完需要用free 释放
-		NODE_ARRAY
+		NODE_ARRAY ,
+		// 数组元素节点
+		NODE_ARRAY_ELE
 	};
 
 	// 节点的状态， 比如： 正常，在循环内，在函数内
@@ -164,6 +166,15 @@ namespace langX {
 		int length;
 	};
 
+	// 数组信息
+	struct ArrayInfo
+	{
+		// 数组的名字
+		char *name;
+		// 数组的索引
+		int index;
+	};
+
 	struct Operator
 	{
 		// 我也不知道这啥
@@ -198,6 +209,7 @@ namespace langX {
 		Variable *var_obj;
 		Constant *con_obj;
 		Operator *opr_obj;
+		ArrayInfo *arr_obj;
 	};
 
 	// 参数列表 ,最大不超过30个参数
