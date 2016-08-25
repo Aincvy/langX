@@ -30,6 +30,7 @@ namespace langX {
 			return NULL;
 		}
 
+		ret->setEmergeEnv(obj->getEmergeEnv());
 		ret->update(obj);
 		return ret;
 	}

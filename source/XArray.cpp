@@ -160,8 +160,15 @@ namespace langX {
 		return obj;
 	}
 
-	void XArrayRef::update(Object *)
+	void XArrayRef::update(Object * obj)
 	{
+		if (obj == NULL || obj->getType() != XARRAY)
+		{
+			printf("cannot update.. target is not array\n");
+			return;
+		}
+
+		this->m_array = ((XArrayRef*)obj)->getArray();
 	}
 
 	void XArrayRef::finalize()

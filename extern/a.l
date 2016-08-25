@@ -47,8 +47,8 @@ void count(void);
 \"(\\.|[^\\"\n])*\"   {count();  yylval.sValue = strdup(yytext); return TSTRING;}
 [a-zA-Z][a-zA-Z0-9]*  {count();  yylval.sValue=strdup(yytext); return IDENTIFIER;}
 
-[1-9][0-9]*           {count();  yylval.intValue = atoi(yytext);  return XINTEGER; }
-0|((0|[1-9][0-9]*)\.[0-9]+) { count(); yylval.iValue = atof(yytext); return TDOUBLE;}
+0|([1-9][0-9]*)           {count();  yylval.intValue = atoi(yytext);  return XINTEGER; }
+(0|[1-9][0-9]*)\.[0-9]+ { count(); yylval.iValue = atof(yytext); return TDOUBLE;}
 
 "<=" {count(); return LE_OP;}
 ">=" {count(); return GE_OP;}

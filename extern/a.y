@@ -170,8 +170,10 @@ expr_list
 var_declar_stmt
 	: id_expr ';'  { $$ = opr(VAR_DECLAR , 1, $1 ); }
 	| id_expr ',' var_declar_stmt { $$ = opr(VAR_DECLAR , 2, $1,$3);}
-	| IDENTIFIER '[' XINTEGER ']' ';' { $$ = opr(VAR_DECLAR , 1, arrayNode($1,$3) ); }
-	| IDENTIFIER '[' XINTEGER ']' ',' var_declar_stmt  { $$ = opr(VAR_DECLAR , 2, arrayNode($1,$3),$6); }
+	| IDENTIFIER '[' XINTEGER ']' ';' { $$ = opr(VAR_DECLAR , 1, arrayNode($1,$3,NULL) ); }
+	| IDENTIFIER '[' XINTEGER ']' ',' var_declar_stmt  { $$ = opr(VAR_DECLAR , 2, arrayNode($1,$3,NULL),$6); }
+	| IDENTIFIER '[' IDENTIFIER ']' ';' %prec UMINUS {  $$ = opr(VAR_DECLAR , 1, arrayNode($1,-1,var($3)) ); }
+	| IDENTIFIER '[' IDENTIFIER ']' ',' var_declar_stmt {  $$ = opr(VAR_DECLAR , 2, arrayNode($1,-1,var($3)),$6); }
 	;
 	
 //  条件控制语句
@@ -292,6 +294,7 @@ arithmetic_stmt_factor
 	| string_expr             { $$ = $1 ; }
 	| arithmetic_stmt         { $$ = $1 ; }
 	| class_member_stmt       { $$ = $1 ; }
+	| array_ele_stmt          { $$ = $1; }
 	| '(' arithmetic_stmt ')' { $$ = $2 ; }
 	;
 
@@ -393,7 +396,8 @@ class_member_assign_stmt
 
 // 数组元素获取语句
 array_ele_stmt
-	: IDENTIFIER '[' XINTEGER ']'    { $$ = arr($1, $3); }
+	: IDENTIFIER '[' XINTEGER ']'    { $$ = arr($1, $3, NULL); }
+	| IDENTIFIER '[' IDENTIFIER ']'  { $$ = arr($1, -1, var($3)) ; }
 	;
 
 // ARRAY_ELE 意思是获得数组元素

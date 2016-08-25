@@ -164,6 +164,8 @@ namespace langX {
 		char * name;
 		// 数组长度
 		int length;
+		// 变量长度索引 . 如果变量索引节点存在， 则使用这个， 否则使用 length 
+		Node * lengthNode;
 	};
 
 	// 数组信息
@@ -173,6 +175,8 @@ namespace langX {
 		char *name;
 		// 数组的索引
 		int index;
+		// 变量索引 . 如果变量索引节点存在， 则使用这个， 否则使用 index 
+		Node * indexNode;
 	};
 
 	struct Operator

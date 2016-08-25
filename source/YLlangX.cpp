@@ -172,8 +172,9 @@ XNode * var(char *name)
 	return node;
 }
 
-// 数组元素节点
-XNode *arr(char *name, int index) {
+// 数组元素节点 
+// 如果使用的变量， 则值放在 第三个参数lengthNode 上
+XNode *arr(char *name, int index, XNode *indexNode) {
 
 	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
 	node->arr_obj = (langX::ArrayInfo*) calloc(1, sizeof(langX::ArrayInfo) * 1);
@@ -181,7 +182,7 @@ XNode *arr(char *name, int index) {
 	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
 	deal_switch_info(&node->switch_info);
-	node->type = NODE_VARIABLE;
+	node->type = NODE_ARRAY_ELE;
 	node->freeOnExeced = true;
 	node->value = NULL;
 	node->ptr_u = NULL;
@@ -189,6 +190,7 @@ XNode *arr(char *name, int index) {
 
 	node->arr_obj->name = name;
 	node->arr_obj->index = index;
+	node->arr_obj->indexNode = indexNode;
 
 	return node;
 
@@ -284,7 +286,7 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	return nodeF;
 }
 
-XNode * arrayNode(char *name, int length)
+XNode * arrayNode(char *name, int length, XNode *lengthNode)
 {
 	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
 	deal_fileinfo(&node->fileinfo);
@@ -298,6 +300,7 @@ XNode * arrayNode(char *name, int length)
 	XArrayNode *an = (XArrayNode*)calloc(1, sizeof(XArrayNode) * 1);
 	an->name = name;
 	an->length = length;
+	an->lengthNode = lengthNode;
 	node->ptr_u = an;
 
 	return node;
@@ -558,6 +561,12 @@ void freeNode(XNode * n) {
 
 		free(n->opr_obj->op);
 		free(n->opr_obj);
+		free(n);
+	}
+	else if (n->type == NODE_ARRAY_ELE)
+	{
+		free(n->arr_obj);
+		n->arr_obj = NULL;
 		free(n);
 	}
 }

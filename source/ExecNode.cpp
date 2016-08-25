@@ -424,6 +424,7 @@ namespace langX {
 		Node *left = n->opr_obj->op[0];
 
 		langXObjectRef *objectRef = NULL;
+		ArrayInfo *arrayInfo = NULL;
 		if (left->type == NODE_OPERATOR)
 		{
 			if (left->opr_obj->opr == CLAXX_MEMBER)
@@ -439,6 +440,10 @@ namespace langX {
 				printf("left not the CLAXX_MEMBER! \n");
 				return;
 			}
+		}
+		else if (left->type == NODE_ARRAY_ELE)
+		{
+			arrayInfo = left->arr_obj;
 		}
 		else
 			if (left->type != NODE_VARIABLE)
@@ -457,7 +462,7 @@ namespace langX {
 			right->value = m_exec_alloc.allocate(NULLOBJECT);
 		}
 
-		if (objectRef == NULL)
+		if (objectRef == NULL && arrayInfo == NULL)
 		{
 			checkVarValue(left, right->value->getType());
 			left->value->update(right->value);
@@ -474,10 +479,41 @@ namespace langX {
 			m_exec_alloc.free(left->value);
 			left->value = NULL;
 		}
+		else if (arrayInfo != NULL)
+		{
+			Object *obj = getValue(arrayInfo->name);
+			if (obj == NULL || obj->getType() != XARRAY)
+			{
+				printf("left value is not array with array operator!\n");
+				return;
+			}
+			
+			int index = arrayInfo->index;
+			if (arrayInfo->indexNode != NULL)
+			{
+				Node *t = arrayInfo->indexNode;
+				__execNode(t);
+
+				if (t->value == NULL || t->value->getType() != NUMBER)
+				{
+					printf("error array length !\n");
+					return;
+				}
+
+				index = ((Number*)t->value)->getIntValue();
+				m_exec_alloc.free(t->value);
+				t->value = NULL;
+			}
+
+			XArrayRef *ref = (XArrayRef*)obj;
+			ref->set(index, right->value);
+			n->value = m_exec_alloc.copy(right->value);
+		}
 		else {
 			// 这里的Left 已经被执行过了   
 			char * name = left->opr_obj->op[1]->var_obj->name;
-			objectRef->setMember(name, right->value->clone());
+			objectRef->setMember(name, right->value);
+			n->value = m_exec_alloc.copy(right->value);
 		}
 
 		if (left->type == NODE_OPERATOR && left->opr_obj->opr == THIS) {
@@ -970,7 +1006,9 @@ namespace langX {
 		stateInLoop(n);
 
 		Node *conNode = n->opr_obj->op[1];
-		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode); __execNode(n->opr_obj->op[2]))
+		// 后置节点
+		Node *sNode = n->opr_obj->op[2];
+		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode); __execNode(sNode) , doSuffixOperation(sNode) )
 		{
 			m_exec_alloc.free(conNode->value);
 			conNode->value = NULL;
@@ -1310,11 +1348,27 @@ namespace langX {
 					}
 
 					XArrayNode *an = (XArrayNode *)t->ptr_u;
-					XArray *array1 = new XArray(an->length);
+					int len = an->length;
+					if (an->lengthNode != NULL)
+					{
+						Node *t = an->lengthNode;
+						__execNode(t);
+						
+						if (t->value == NULL || t->value->getType() != NUMBER)
+						{
+							printf("error array length !\n");
+							continue;
+						}
+
+						len = ((Number*)t->value)->getIntValue();
+						m_exec_alloc.free(t->value);
+					}
+					XArray *array1 = new XArray(len);
 					char *name = an->name;
 					Object *arrayRef = array1->addRef();
 					arrayRef->setEmergeEnv(getState()->getCurrentEnv());
-					setValueToEnv(name, obj);
+					setValueToEnv(name, arrayRef);
+					
 				}
 				continue;
 			}
@@ -1540,6 +1594,35 @@ namespace langX {
 		else if (node->type == NODE_NULL)
 		{
 			node->value = m_exec_alloc.allocate(NULLOBJECT);
+			return;
+		}
+		else if (node->type == NODE_ARRAY_ELE)
+		{
+			ArrayInfo * arrayInfo = node->arr_obj;
+			Object *obj = getValue(arrayInfo->name);
+			if (obj == NULL || obj->getType() != XARRAY)
+			{
+				printf("left value is not array with array operator!\n");
+				return;
+			}
+
+			XArrayRef *ref = (XArrayRef*)obj;
+			int index = arrayInfo->index;
+			if (arrayInfo->indexNode != NULL)
+			{
+				Node *t = arrayInfo->indexNode;
+				__execNode(t);
+
+				if (t->value == NULL || t->value->getType() != NUMBER)
+				{
+					printf("error array length !\n");
+					return ;
+				}
+
+				index = ((Number*)t->value)->getIntValue();
+				m_exec_alloc.free(t->value);
+			}
+			node->value = ref->at(index)->clone();
 			return;
 		}
 
