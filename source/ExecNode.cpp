@@ -1426,14 +1426,35 @@ namespace langX {
 		//  执行节点1， 获得 类对象
 		Node *n1 = n->opr_obj->op[0];
 		__execNode(n1);
-		if (n1->value == NULL || n1->value->getType() != OBJECT)
+
+		if (n1->value == NULL)
 		{
-			printf("left value %s is not class object !\n", n1->var_obj->name);
+			printf("left value %s is not class object or array  !\n", n1->var_obj->name);
+			return;
+		}
+
+		char *memberName = n->opr_obj->op[1]->var_obj->name;
+
+		if (n1->value->getType() == XARRAY)
+		{
+			XArrayRef *arrayRef = (XArrayRef*)n1->value;
+			// 如果是数组， 则执行
+			if (strcmp(memberName,"length") == 0)
+			{
+				// array.length.
+				n->value = m_exec_alloc.allocateNumber(arrayRef->getLength());
+			}
+
+			return;
+		}
+
+		if (n1->value->getType() != OBJECT)
+		{
+			printf("left value %s is not class object or array  !\n", n1->var_obj->name);
 			return;
 		}
 
 		langXObjectRef* objectRef = (langXObjectRef*)n1->value;
-		char *memberName = n->opr_obj->op[1]->var_obj->name;
 		n->value = objectRef->getMember(memberName)->clone();
 		n->ptr_u = objectRef->clone();
 
