@@ -176,11 +176,50 @@ namespace langX {
 
 	}
 
+	//递归释放节点值的内存, 如果节点是 一个获得数组元素的节点， 同样释放 indexNode 节点的值内存
+	void recursiveFreeNodeValue(Node *n) {
+
+		if (n == NULL)
+		{
+			return;
+		}
+
+		if (n->value != NULL)
+		{
+			m_exec_alloc.free(n->value);
+			n->value = NULL;
+		}
+
+		if (n->type == NODE_ARRAY_ELE)
+		{
+			Node * t = n->arr_obj->indexNode;
+			if (t != NULL && t->value != NULL)
+			{
+				m_exec_alloc.free(t->value);
+				t->value = NULL;
+			}
+		}
+
+		if (n->type == NODE_OPERATOR)
+		{
+			for (int i = 0; i < n->opr_obj->op_count; i++)
+			{
+				recursiveFreeNodeValue(n->opr_obj->op[i]);
+			}
+		}
+
+	}
+
 	/*
 	  释放当前节点的子节点的值 内存
 	*/
 	void freeSubNodes(Node *n) {
 		if (n == NULL)
+		{
+			return;
+		}
+
+		if (n->type != NODE_OPERATOR)
 		{
 			return;
 		}
@@ -197,6 +236,8 @@ namespace langX {
 			n->opr_obj->op[i]->value = NULL;
 		}
 	}
+
+
 
 	/* 如果这个变量不存在， 则new 一个放上去
 	   并且会放到当前的环境里面
@@ -1008,7 +1049,7 @@ namespace langX {
 		Node *conNode = n->opr_obj->op[1];
 		// 后置节点
 		Node *sNode = n->opr_obj->op[2];
-		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode); __execNode(sNode) , doSuffixOperation(sNode) )
+		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode); freeSubNodes(sNode), __execNode(sNode) , doSuffixOperation(sNode) )
 		{
 			m_exec_alloc.free(conNode->value);
 			conNode->value = NULL;
@@ -1020,6 +1061,7 @@ namespace langX {
 			}
 			run->state.in_loop = true;
 			__execNode(run);
+			recursiveFreeNodeValue(run);
 			if (run->state.isBreak)
 			{
 				break;
@@ -1621,6 +1663,7 @@ namespace langX {
 
 				index = ((Number*)t->value)->getIntValue();
 				m_exec_alloc.free(t->value);
+				t->value = NULL;
 			}
 			node->value = ref->at(index)->clone();
 			return;
