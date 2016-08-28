@@ -149,7 +149,7 @@ namespace langX {
 
 	Object * Function::clone() const
 	{
-		return (Object*)this;
+		return const_cast<Function*>(this);
 	}
 
 	void Function::update(Object *)

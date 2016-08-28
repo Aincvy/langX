@@ -1,18 +1,36 @@
 #include <stdio.h>
+#include "../include/ClassInfo.h"
 #include "../include/langX.h"
 #include "../include/Object.h"
 #include "../include/Number.h"
 #include "../include/Environment.h"
 #include "../include/Allocator.h"
 #include "../include/StackTrace.h"
+#include "../include/ExecNode.h"
+#include "../include/langXObject.h"
+#include "../include/langXObjectRef.h"
+#include "../include/YLlangX.h"
+#include "../include/Exception.h"
+#include "../include/Function.h"
 
 namespace langX {
+
+	void  gTryCatchCB(langXObjectRef *obj) {
+		Function *func = obj->getFunction("printStackTrace");
+		if (func != NULL)
+		{
+			func->call();
+		}
+	}
 
 	langXState::langXState()
 	{
 		this->m_global_env = new Environment();
 		this->m_global_env->setParent(NULL);
-		this->m_current_env = this->m_global_env;
+		TryEnvironment *tryEnv = new TryEnvironment();
+		tryEnv->setParent(this->m_global_env);
+		tryEnv->setCatchCB(gTryCatchCB);
+		this->m_current_env = tryEnv;
 		this->m_allocator = new Allocator();
 
 		this->m_env_list.push_front(this->m_current_env);
@@ -146,6 +164,17 @@ namespace langX {
 	void langXState::unreg3rd(const char *name)
 	{
 		// do nothing now. 
+
+	}
+
+	void langXState::regClass(ClassInfo *c)
+	{
+		if (c == NULL)
+		{
+			return;
+		}
+
+		this->m_global_env->putClass(c->getName(),c);
 	}
 
 	Allocator & langXState::getAllocator() const
@@ -163,12 +192,101 @@ namespace langX {
 		StrackTraceFrameArray array1 = this->m_stacktrace.frames();
 
 		// 不打印自己这个函数
-		for (int i = 0; i < array1.length-1; i++)
+		for (int i = array1.length-2; i >= 0; i--)
 		{
 			printf("%s\n", array1.frame[i]->getInfo());
 		}
 
 		free(array1.frame);
+	}
+
+	void langXState::throwException(langXObjectRef *obj)
+	{
+		// 丢出一个异常
+
+		// 找到try环境
+		TryEnvironment *tryEnv = NULL;
+		Environment *env = this->m_current_env;
+		while (1)
+		{
+			if (env == NULL)
+			{
+				break;
+			}
+
+			if (env->isTryEnvironment())
+			{
+				tryEnv = (TryEnvironment *)env;
+				break;
+			}
+
+			// 因为丢出了异常， 所以到 try 环境之前的所有环境都会变成死亡环境
+			//env->setDead(true);
+			Environment *p = env->getParent();
+			
+			// 退回一级环境 ，直到退回try 环境
+			backEnv();
+
+			env = p;
+		}
+
+		if (tryEnv == NULL)
+		{
+			printf("cannot find try env, throw error!\n");
+			return;
+		}
+
+		//  退出try 环境
+		backEnv(false);
+
+		// check call back first.
+		CBCatch c = tryEnv->getCatchCB();
+		if (c != NULL)
+		{
+			c(obj);
+
+			// 删除对象
+			delete obj->getRefObject();
+			delete obj;
+			obj = NULL;
+		}
+		else {
+			setInException(true);
+			// 将异常赋值
+			// 进入catch 环境
+			env = newEnv();
+			Node *cNode = tryEnv->getCatchNode();
+			env->putObject(cNode->opr_obj->op[0]->var_obj->name, obj);
+
+			// 执行 catch 块的语句
+			__execNode(cNode->opr_obj->op[1]);
+
+			// 销毁try 环境
+			delete tryEnv;
+			tryEnv = NULL;
+
+			// 主动进行 try-catch 操作的时候 ， try 执行后会释放一个环境，所以当前环境保留
+			// 将当前环境设置为死亡环境， 这样就可以忽略 try 内的剩余操作了？
+			env->setDead(true);
+
+			setInException(false);
+
+			// 删除对象
+			delete obj->getRefObject();
+			//delete obj;
+			obj = NULL;
+		}
+	}
+
+	langXObject * langXState::newObject(const char * name) const
+	{
+		ClassInfo* classinfo = this->m_global_env->getClass(name);
+		if (classinfo == NULL)
+		{
+			return NULL;
+		}
+
+		return classinfo->newObject();
 	}
 
 }

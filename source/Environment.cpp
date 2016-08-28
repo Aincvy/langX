@@ -29,8 +29,6 @@ namespace langX {
 		}
 	}
 
-
-
 	void Environment::putObject(const char *name, Object *obj)
 	{
 		putObject(std::string(name), obj);		
@@ -118,6 +116,16 @@ namespace langX {
 		this->m_parent = env;
 	}
 
+	void Environment::setDead(bool b)
+	{
+		this->m_dead = b;
+	}
+
+	bool Environment::isDead() const
+	{
+		return this->m_dead;
+	}
+
 	void Environment::setRestrict(bool flag)
 	{
 		this->m_restrict = flag;
@@ -134,6 +142,11 @@ namespace langX {
 	}
 
 	bool Environment::isObjectEnvironment() const
+	{
+		return false;
+	}
+
+	bool Environment::isTryEnvironment() const
 	{
 		return false;
 	}
@@ -276,6 +289,39 @@ namespace langX {
 	bool ObjectBridgeEnv::isObjectEnvironment() const
 	{
 		return true;
+	}
+
+	TryEnvironment::TryEnvironment()
+	{
+	}
+
+	TryEnvironment::~TryEnvironment()
+	{
+	}
+
+	bool TryEnvironment::isTryEnvironment() const
+	{
+		return true;
+	}
+
+	void TryEnvironment::setCatchCB(CBCatch c)
+	{
+		this->m_catch_cb = c;
+	}
+
+	CBCatch TryEnvironment::getCatchCB() const
+	{
+		return (this->m_catch_cb);
+	}
+
+	void TryEnvironment::setCatchNode(Node *n)
+	{
+		this->m_catch_node = n;
+	}
+
+	Node * TryEnvironment::getCatchNode() const
+	{
+		return this->m_catch_node;
 	}
 
 }

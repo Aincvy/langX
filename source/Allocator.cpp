@@ -81,6 +81,10 @@ namespace langX {
 		{
 			delete (NullObject*)obj;
 		}
+		else if (obj->getType() == FUNCTION)
+		{
+			// do nothing in free funtion.
+		}
 	}
 	
 	Number * Allocator::allocateNumber() const

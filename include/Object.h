@@ -14,6 +14,8 @@ namespace langX {
 #define PARAM_COUNT 30
 
 	class Environment;
+	class langXObject;
+	class XArrayRef;
 
 	// 对象类型
 	enum ObjectType
@@ -237,5 +239,8 @@ namespace langX {
 		Object *args[PARAM_COUNT];
 		// 实参索引, 一般表示 数量了
 		int index;
+
+		XArrayRef *arrayRef;
+		langXObject * object;
 	};
 }

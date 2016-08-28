@@ -1,0 +1,14 @@
+
+a = 10 ;
+try {
+  print("1\n");
+  print("2\n");
+  b = a - c ;
+  print("3\n");
+  a = 11 ;
+  print("4\n");
+} catch (e) {
+  e.printStackTrace();
+}
+
+print("a: " + a + "\n");
