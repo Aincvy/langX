@@ -35,6 +35,8 @@ namespace langX {
 		
 		// 获得类信息
 		const ClassInfo * getClassInfo() const;
+		// 获得类名字
+		const char * getClassName() const;
 
 		// 只是自增一个自己的引用次数
 		void justAddRef();

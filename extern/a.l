@@ -40,6 +40,8 @@ void count(void);
 "restrict" { count(); return RESTRICT;}
 "this" {count();  return THIS; }
 "extends"  { count(); return EXTENDS; }
+"try"  {count();  return XTRY; }
+"catch" {count();  return XCATCH; }
 "=>"   {count();  return FUNC_OP; }
 "++"   {count();  return INC_OP;}
 "--"   {count();  return DEC_OP;}

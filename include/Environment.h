@@ -1,13 +1,14 @@
 #pragma once
 #include <map>
 #include <string>
+#include "Object.h"
 
 namespace langX {
 
-	class Object;
 	class Function;
 	class ClassInfo;
 	class langXObject;
+	class langXObjectRef;
 
 	/*
 	 * 环境类  
@@ -35,6 +36,11 @@ namespace langX {
 		Environment *getParent() const;
 		void setParent(Environment *);
 
+		//  死亡符号。  如果当前环境为 死亡环境， 则不应该执行节点，直接返回就好了
+		void setDead(bool);
+		//  死亡符号。  如果当前环境为 死亡环境， 则不应该执行节点，直接返回就好了
+		bool isDead() const;
+
 		// 设置限定
 		void setRestrict(bool);
 		// 是否限定
@@ -44,6 +50,8 @@ namespace langX {
 		virtual bool isClassEnvironment() const;
 		// 是否是对象的桥接环境
 		virtual bool isObjectEnvironment() const;
+		// 是否是 try 环境
+		virtual bool isTryEnvironment() const;
 
 	private:
 		std::map<std::string, Object*> m_objects_map;
@@ -55,6 +63,8 @@ namespace langX {
 		//  是否限定， 如果限定， 则寻找变量的时候不会去寻找父级环境
 		//  限定只会针对  变量， 不会针对 函数
 		bool m_restrict = false;
+		//  死亡符号。  如果当前环境为 死亡环境， 则不应该执行节点，直接返回就好了
+		bool m_dead = false;
 	};
 
 
@@ -93,7 +103,7 @@ namespace langX {
 
 		Function* getFunction(const std::string &);
 
-		// 获得桥接的是哪个类
+		// 获得桥接的是哪个对象
 		langXObject *getEnvObject() const;
 
 		bool isObjectEnvironment() const;
@@ -102,5 +112,31 @@ namespace langX {
 
 		langXObject* m_object = NULL;
 	};
+
+	// catch 块的 callback
+	typedef void (*CBCatch)(langXObjectRef *);
+
+	//  try-catch 中的 try 环境
+	class TryEnvironment : public Environment
+	{
+	public:
+		TryEnvironment();
+		~TryEnvironment();
+
+		bool isTryEnvironment() const;
+
+		void setCatchCB(CBCatch);
+		CBCatch getCatchCB() const;
+
+		void setCatchNode(Node *);
+		Node *getCatchNode() const;
+
+	private:
+		// catach 节点的根节点
+		Node * m_catch_node = nullptr;
+		// 优先使用 callback, 如果callback 不存在则使用catch节点
+		CBCatch m_catch_cb = NULL;
+	};
+
 
 }

@@ -12,7 +12,8 @@
 #include "../include/Allocator.h"
 #include "../include/ClassInfo.h"
 #include "../include/StackTrace.h"
-
+#include "../include/Exception.h"
+#include "../include/langXObject.h"
 
 extern int yyget_lineno(void);
 extern const char * parseFileName;
@@ -20,6 +21,8 @@ extern const char * parseFileName;
 using namespace langX;
 
 static langXState* state = NULL;
+static Node *currentNode = NULL;
+static bool inException = false;
 
 void initLangX()
 {
@@ -29,6 +32,7 @@ void initLangX()
 		state = new langXState();
 
 		regFunctions(state);
+		regExceptions();
 	}
 }
 
@@ -112,6 +116,47 @@ std::string fileInfoString(const NodeFileInfo & f) {
 	ss << f.lineno;
 
 	return std::string(ss.str());
+}
+
+XFunction * create3rdFunc(const char *name, langX::X3rdFuncWorker worker)
+{
+	X3rdFunction *func = new X3rdFunction();
+	func->setName(name);
+	func->setWorker(worker);
+	func->setParamsList(NULL);
+	func->setLangX(state);
+
+	return func;
+}
+
+NodeFileInfo getCurrentNodeFileInfo()
+{
+	if (currentNode== NULL)
+	{
+		NodeFileInfo f;
+		deal_fileinfo(&f);
+		return (f);
+	}
+	return currentNode->fileinfo;
+}
+
+void setExecNode(XNode *n) {
+	currentNode = n;
+}
+
+XNode * getExecNode()
+{
+	return currentNode;
+}
+
+void setInException(bool f)
+{
+	inException = f;
+}
+
+bool getInException()
+{
+	return inException;
 }
 
 XNode * string(char *v)
@@ -363,7 +408,10 @@ XObject * call(char *name, XArgsList* args , const char *remark)
 	Function *function = getState()->getCurrentEnv()->getFunction(name);
 	if (function == NULL)
 	{
-		printf("cannot find function %s\n", name);
+		char tmp[100] = { 0 };
+		sprintf(tmp,"cannot find function %s" , name);
+		getState()->throwException(newFunctionNotFoundException(tmp)->addRef());
+		//printf("cannot find function %s\n", name);
 		return NULL;
 	}
 
@@ -373,6 +421,7 @@ XObject * call(char *name, XArgsList* args , const char *remark)
 XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 	if (function == NULL)
 	{
+		getState()->throwException(newException("function is null when call function.")->addRef());
 		return NULL;
 	}
 
@@ -398,7 +447,12 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 			}
 			_3rdArgs.index = args->index;
 		}
-		
+		Environment *currEnv1 = getState()->getCurrentEnv();
+		if (currEnv1->isObjectEnvironment())
+		{
+			_3rdArgs.object = ((ObjectBridgeEnv*)currEnv1)->getEnvObject();
+		}
+
 		Object * ret1 = x3rdfunc->call(_3rdArgs);
 		getState()->getStackTrace().popFrame();
 		return ret1;

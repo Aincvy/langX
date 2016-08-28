@@ -74,6 +74,7 @@ namespace langX {
 			}
 			
 			this->m_parent->setMember(name, obj, true);
+			return;
 		}
 
 		Object *a = this->m_members[name];
@@ -121,6 +122,11 @@ namespace langX {
 	const ClassInfo * langXObject::getClassInfo() const
 	{
 		return this->m_class_info;
+	}
+
+	const char * langXObject::getClassName() const
+	{
+		return this->m_class_info->getName();
 	}
 
 	void langXObject::justAddRef()

@@ -13,6 +13,7 @@
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 #include "../include/XArray.h"
+#include "../include/Exception.h"
 
 namespace langX {
 	// 内存的 管理器
@@ -316,25 +317,6 @@ namespace langX {
 		}
 	}
 
-	int __readRealNumber(Object *obj, double* v) {
-		if (obj == NULL)
-		{
-			return -1;
-		}
-
-		//printf("__readRealNumber1\n");
-		if (obj->getType() != NUMBER)
-		{
-			return -1;
-		}
-		//printf("__readRealNumber2\n");
-
-		Number * a = (Number*)obj;
-		*v = a->getDoubleValue();
-		//printf("__readRealNumber: %.2f\n" , (*v));
-		return 0;
-	}
-
 	//  尝试吧这个节点的 值 转换成一个 布尔值。
 	// 如果这个节点并没有被运算， 则会运算这个节点
 	// 判断之后， 并不会释放这个节点的内存
@@ -358,10 +340,20 @@ namespace langX {
 	void __exec43(Node *n) {
 		doSubNodes(n);
 
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '+'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
 		// 子节点的值是为了计算当前结点的值， 如果当前结点的值 计算 结束， 则释放掉子节点值得内存
 		// 子节点的值如果是一个常量， 则该值是一个 new 的内存， 如果是一个变量， 则该值是一个 clone 出现的对象
-		Object * left = n->opr_obj->op[0]->value;
-		Object * right = n->opr_obj->op[1]->value;
+		Object * left = n1->value;
+		Object * right = n2->value;
 
 		if (left->getType() == NUMBER && right->getType() == NUMBER)
 		{
@@ -425,6 +417,9 @@ namespace langX {
 
 					n->value = m_exec_alloc.allocateString(ss.str().c_str());
 		}
+		else {
+			getState()->throwException(newArithmeticException("args type error when do opr '+' .")->addRef());
+		}
 
 		freeSubNodes(n);
 
@@ -434,29 +429,83 @@ namespace langX {
 	// -
 	void __exec45(Node *n) {
 		doSubNodes(n);
-		//n->value = new Number(a - b);
-		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() - ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
-		freeSubNodes(n);
 
-		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '-'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() - ((Number*)n2->value)->getDoubleValue());
+		freeSubNodes(n);
 	}
 
 	// *
 	void __exec42(Node *n) {
 		doSubNodes(n);
-		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() * ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '*'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '*'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() * ((Number*)n2->value)->getDoubleValue());
 		freeSubNodes(n);
 
-		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// /
 	void __exec47(Node *n) {
 		doSubNodes(n);
-		n->value = m_exec_alloc.allocateNumber(((Number*)n->opr_obj->op[0]->value)->getDoubleValue() / ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '/'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '/'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		double d2 = ((Number*)n2->value)->getDoubleValue();
+		if (d2 == 0)
+		{
+			getState()->throwException(newArithmeticException("/ by zero on opr '/'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() / d2);
 		freeSubNodes(n);
 
-		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
 	// 赋值操作 = 
@@ -478,7 +527,9 @@ namespace langX {
 				__execNode(left);
 			}
 			else {
-				printf("left not the CLAXX_MEMBER! \n");
+				//printf("left not the CLAXX_MEMBER! \n");
+				getState()->throwException(newException("left not the CLAXX_MEMBER!")->addRef());
+				freeSubNodes(n);
 				return;
 			}
 		}
@@ -489,7 +540,9 @@ namespace langX {
 		else
 			if (left->type != NODE_VARIABLE)
 			{
-				printf("left not the NODE_VARIABLE\n");
+				//printf("left not the NODE_VARIABLE\n");
+				getState()->throwException(newTypeErrorException("left not the NODE_VARIABLE")->addRef());
+				freeSubNodes(n);
 				return;
 			}
 
@@ -525,10 +578,12 @@ namespace langX {
 			Object *obj = getValue(arrayInfo->name);
 			if (obj == NULL || obj->getType() != XARRAY)
 			{
-				printf("left value is not array with array operator!\n");
+				getState()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
+				freeSubNodes(n);
+				//printf("left value is not array with array operator!\n");
 				return;
 			}
-			
+
 			int index = arrayInfo->index;
 			if (arrayInfo->indexNode != NULL)
 			{
@@ -537,7 +592,9 @@ namespace langX {
 
 				if (t->value == NULL || t->value->getType() != NUMBER)
 				{
-					printf("error array length !\n");
+					getState()->throwException(newException("error array length!")->addRef());
+					freeSubNodes(n);
+					//printf("error array length !\n");
 					return;
 				}
 
@@ -548,13 +605,28 @@ namespace langX {
 
 			XArrayRef *ref = (XArrayRef*)obj;
 			ref->set(index, right->value);
+			m_exec_alloc.free(right->value);
+			right->value = NULL;
+
 			n->value = m_exec_alloc.copy(right->value);
 		}
 		else {
 			// 这里的Left 已经被执行过了   
 			char * name = left->opr_obj->op[1]->var_obj->name;
-			objectRef->setMember(name, right->value);
-			n->value = m_exec_alloc.copy(right->value);
+			if (!objectRef->getClassInfo()->hasMember(name))
+			{
+				char tmp[100] = { 0 };
+				sprintf(tmp,"cannot find member %s in class %s!", name,objectRef->getClassInfo()->getName());
+				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+
+			}
+			else {
+				objectRef->setMember(name, right->value);
+				n->value = m_exec_alloc.copy(right->value);
+			}
+			
+			m_exec_alloc.free(right->value);
+			right->value = NULL;
 		}
 
 		if (left->type == NODE_OPERATOR && left->opr_obj->opr == THIS) {
@@ -567,40 +639,112 @@ namespace langX {
 
 	void __execADD_EQ(Node *n) {
 		doSubNodes(n);
-		Node *left = n->opr_obj->op[0];
-		n->value = m_exec_alloc.allocateNumber(((Number*)left->value)->getDoubleValue() + ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
 
-		setValueToEnv(left->var_obj->name, n->value);
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '+='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '+='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() + ((Number*)n2->value)->getDoubleValue());
+
+		setValueToEnv(n1->var_obj->name, n->value);
 
 		freeSubNodes(n);
 	}
 
 	void __execSUB_EQ(Node *n) {
 		doSubNodes(n);
-		Node *left = n->opr_obj->op[0];
-		n->value = m_exec_alloc.allocateNumber(((Number*)left->value)->getDoubleValue() - ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
 
-		setValueToEnv(left->var_obj->name, n->value);
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '-='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '-='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() - ((Number*)n2->value)->getDoubleValue());
+
+		setValueToEnv(n1->var_obj->name, n->value);
 
 		freeSubNodes(n);
 	}
 
 	void __execMUL_EQ(Node *n) {
 		doSubNodes(n);
-		Node *left = n->opr_obj->op[0];
-		n->value = m_exec_alloc.allocateNumber(((Number*)left->value)->getDoubleValue() * ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
 
-		setValueToEnv(left->var_obj->name, n->value);
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '*='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '*='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() * ((Number*)n2->value)->getDoubleValue());
+
+		setValueToEnv(n1->var_obj->name, n->value);
 
 		freeSubNodes(n);
 	}
 
 	void __execDIV_EQ(Node *n) {
 		doSubNodes(n);
-		Node *left = n->opr_obj->op[0];
-		n->value = m_exec_alloc.allocateNumber(((Number*)left->value)->getDoubleValue() / ((Number*)n->opr_obj->op[1]->value)->getDoubleValue());
 
-		setValueToEnv(left->var_obj->name, n->value);
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '/='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '/='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		double d2 = ((Number*)n2->value)->getDoubleValue();
+		if (d2 == 0)
+		{
+			getState()->throwException(newArithmeticException("/ by zero on opr '/='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() / ((Number*)n2->value)->getDoubleValue());
+
+		setValueToEnv(n1->var_obj->name, n->value);
 
 		freeSubNodes(n);
 	}
@@ -613,7 +757,8 @@ namespace langX {
 
 		if (!n->state.in_loop && !n->state.in_switch)
 		{
-			printf("无效的BREAK 语句 ");
+			getState()->throwException(newUnsupportedOperationException("invalid break stmt.")->addRef());
+			//printf("无效的BREAK 语句 ");
 			return;
 		}
 
@@ -630,7 +775,8 @@ namespace langX {
 		// 回头再调整吧， 这个 无伤大雅
 		if (!n->state.in_func)
 		{
-			printf("无效的 return 语句");
+			getState()->throwException(newUnsupportedOperationException("invalid return stmt.")->addRef());
+			//printf("无效的 return 语句");
 			return;
 		}
 
@@ -662,6 +808,21 @@ namespace langX {
 		doSubNodes(n);
 
 		Node *n1 = n->opr_obj->op[0];
+
+		if (n1 == NULL)
+		{
+			getState()->throwException(newArithmeticException("node is null on opr '++'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		if (n1->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
 		if (!n->state.isSuffix)
 		{
 			// 前缀自增
@@ -686,6 +847,20 @@ namespace langX {
 		 */
 
 		Node *n1 = n->opr_obj->op[0];
+		if (n1 == NULL)
+		{
+			getState()->throwException(newArithmeticException("node is null on opr '--'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		if (n1->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '--'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
 		if (!n->state.isSuffix)
 		{
 			// 前缀自减
@@ -760,8 +935,25 @@ namespace langX {
 	void __exec62(Node *n) {
 		doSubNodes(n);
 
-		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
-		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '>'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '>'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		double a = ((Number*)n1->value)->getDoubleValue();
+		double b = ((Number*)n2->value)->getDoubleValue();
 
 		if (a > b)
 		{
@@ -779,8 +971,25 @@ namespace langX {
 	void __execGE_OP(Node *n) {
 		doSubNodes(n);
 
-		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
-		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '>='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '>='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		double a = ((Number*)n1->value)->getDoubleValue();
+		double b = ((Number*)n2->value)->getDoubleValue();
 
 		if (a >= b)
 		{
@@ -798,8 +1007,25 @@ namespace langX {
 	void __exec60(Node *n) {
 		doSubNodes(n);
 
-		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
-		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '<'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '<'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		double a = ((Number*)n1->value)->getDoubleValue();
+		double b = ((Number*)n2->value)->getDoubleValue();
 
 		if (a < b)
 		{
@@ -817,8 +1043,25 @@ namespace langX {
 	void __execLE_OP(Node *n) {
 		doSubNodes(n);
 
-		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
-		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '<='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '<='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		double a = ((Number*)n1->value)->getDoubleValue();
+		double b = ((Number*)n2->value)->getDoubleValue();
 
 		if (a <= b)
 		{
@@ -836,13 +1079,21 @@ namespace langX {
 	void __execEQ_OP(Node *n) {
 		doSubNodes(n);
 
-		Node *left = n->opr_obj->op[0];
-		Node *right = n->opr_obj->op[1];
 
-		if (left->value->getType() == NUMBER && right->value->getType() == NUMBER)
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
 		{
-			double a = ((Number*)left->value)->getDoubleValue();
-			double b = ((Number*)right->value)->getDoubleValue();
+			getState()->throwException(newArithmeticException("value is null on opr '=='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		if (n1->value->getType() == NUMBER && n2->value->getType() == NUMBER)
+		{
+			double a = ((Number*)n1->value)->getDoubleValue();
+			double b = ((Number*)n2->value)->getDoubleValue();
 
 			if (a == b)
 			{
@@ -852,11 +1103,11 @@ namespace langX {
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 		}
-		else if (left->value->getType() == STRING && right->value->getType() == STRING)
+		else if (n1->value->getType() == STRING && n2->value->getType() == STRING)
 		{
 			// 字符串比较
-			const char * a = ((String*)left->value)->getValue();
-			const char * b = ((String*)right->value)->getValue();
+			const char * a = ((String*)n1->value)->getValue();
+			const char * b = ((String*)n2->value)->getValue();
 
 			if (strcmp(a, b) == 0)
 			{
@@ -867,7 +1118,8 @@ namespace langX {
 			}
 		}
 		else {
-			printf("类型不同，无法比较");
+			//printf("类型不同，无法比较");
+			getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
 			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
@@ -879,14 +1131,46 @@ namespace langX {
 	void __execNE_OP(Node *n) {
 		doSubNodes(n);
 
-		double a = ((Number*)n->opr_obj->op[0]->value)->getDoubleValue();
-		double b = ((Number*)n->opr_obj->op[1]->value)->getDoubleValue();
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
 
-		if (a != b)
+		if (n1->value == NULL || n2->value == NULL)
 		{
-			n->value = m_exec_alloc.allocateNumber(1);
+			getState()->throwException(newArithmeticException("value is null on opr '=='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		if (n1->value->getType() == NUMBER && n2->value->getType() == NUMBER)
+		{
+			double a = ((Number*)n1->value)->getDoubleValue();
+			double b = ((Number*)n2->value)->getDoubleValue();
+
+			if (a != b)
+			{
+				n->value = m_exec_alloc.allocateNumber(1);
+			}
+			else {
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
+		}
+		else if (n1->value->getType() == STRING && n2->value->getType() == STRING)
+		{
+			// 字符串比较
+			const char * a = ((String*)n1->value)->getValue();
+			const char * b = ((String*)n2->value)->getValue();
+
+			if (strcmp(a, b) != 0)
+			{
+				n->value = m_exec_alloc.allocateNumber(1);
+			}
+			else {
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
 		}
 		else {
+			//printf("类型不同，无法比较");
+			getState()->throwException(newArithmeticException("type error on opr '!='! only can number or string!")->addRef());
 			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
@@ -1024,6 +1308,13 @@ namespace langX {
 
 				break;
 			}
+
+			// 如果当前环境为一个死亡环境， 则直接返回
+			// TODO 清理内存
+			if (getState()->getCurrentEnv()->isDead())
+			{
+				return;
+			}
 		}
 
 		// 释放循环内的参数列表的内存
@@ -1049,7 +1340,7 @@ namespace langX {
 		Node *conNode = n->opr_obj->op[1];
 		// 后置节点
 		Node *sNode = n->opr_obj->op[2];
-		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode); freeSubNodes(sNode), __execNode(sNode) , doSuffixOperation(sNode) )
+		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode); freeSubNodes(sNode), __execNode(sNode), doSuffixOperation(sNode))
 		{
 			m_exec_alloc.free(conNode->value);
 			conNode->value = NULL;
@@ -1078,6 +1369,14 @@ namespace langX {
 				}
 				break;
 			}
+
+			// 如果当前环境为一个死亡环境， 则直接返回
+			// TODO 清理内存
+			if (getState()->getCurrentEnv()->isDead())
+			{
+				return;
+			}
+
 		}
 
 		// 释放循环内的参数列表的内存
@@ -1099,6 +1398,11 @@ namespace langX {
 		bool flag = true;
 		Node * id_expr = n->opr_obj->op[0];
 		__execNode(id_expr);
+		if (id_expr->value == NULL)
+		{
+			getState()->throwException(newUnsupportedOperationException("null condition value in switch()!")->addRef());
+			return;
+		}
 		//printf("switch id_expr value: %f\n" , ((Number*)id_expr->value)->getDoubleValue());
 
 		n->state.in_switch = true;
@@ -1106,6 +1410,13 @@ namespace langX {
 		//printf("case_list op_count: %d\n", case_list->opr_obj->op_count);
 		for (int i = 0; i < case_list->opr_obj->op_count; i++)
 		{
+			// 如果当前环境为一个死亡环境， 则直接返回
+			// TODO 清理内存
+			if (getState()->getCurrentEnv()->isDead())
+			{
+				return;
+			}
+
 			Node * t = case_list->opr_obj->op[i];
 			if (t == NULL)
 			{
@@ -1165,6 +1476,13 @@ namespace langX {
 		bool flag = true;
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
+			// 如果当前环境为一个死亡环境， 则直接返回
+			// TODO 清理内存
+			if (getState()->getCurrentEnv()->isDead())
+			{
+				return;
+			}
+
 			Node * t = n->opr_obj->op[i];
 			if (t == NULL)
 			{
@@ -1288,13 +1606,18 @@ namespace langX {
 		Node *n1 = n->opr_obj->op[0];
 
 		if (n1->value == NULL) {
-			printf("__execUMINUS n1->value is NULL\n");
+			//printf("__execUMINUS n1->value is NULL\n");
+			getState()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
+			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER)
 		{
-			printf("ERROR:  __execUMINUS is NOT NUMBER...  \n");
-			n->value = m_exec_alloc.allocateNumber();
+			//printf("ERROR:  __execUMINUS is NOT NUMBER...  \n");
+			getState()->throwException(newArithmeticException("type error on opr '-'! only can number!")->addRef());
+			freeSubNodes(n);
+			
+			return;
 		}
 		else {
 			n->value = m_exec_alloc.allocateNumber(-((Number*)n1->value)->getDoubleValue());
@@ -1325,15 +1648,14 @@ namespace langX {
 
 	void __execNEW(Node *n) {
 		// new 一个对象
-		char *name = n->opr_obj->op[0]->var_obj->name;
-		ClassInfo* classinfo = getState()->getGlobalEnv()->getClass(name);
-		if (classinfo == NULL)
+		char *className = n->opr_obj->op[0]->var_obj->name;
+		langXObject *object = getState()->newObject(className);
+		if (object == NULL)
 		{
-			printf("没有找到类: %s\n", name);
+			getState()->throwException(newClassNotFoundException(className)->addRef());
 			return;
 		}
-		// 构造函数什么的 等会再加
-		langXObjectRef * objectRef = classinfo->newObject()->addRef();
+		langXObjectRef * objectRef = object->addRef();
 		objectRef->setEmergeEnv(getState()->getCurrentEnv());
 		Environment *env = objectRef->getRefObject()->getObjectEnvironment();
 
@@ -1385,7 +1707,9 @@ namespace langX {
 				{
 					if (t->ptr_u == NULL)
 					{
-						printf("delar array erorr!\n");
+						//printf("delar array erorr!\n");
+						getState()->throwException(newException("Inner Error! delar array erorr!")->addRef());
+						m_exec_alloc.free(obj);
 						return;
 					}
 
@@ -1395,11 +1719,12 @@ namespace langX {
 					{
 						Node *t = an->lengthNode;
 						__execNode(t);
-						
+
 						if (t->value == NULL || t->value->getType() != NUMBER)
 						{
-							printf("error array length !\n");
-							continue;
+							//printf("error array length !\n");
+							getState()->throwException(newException("error array length !")->addRef());
+							return;
 						}
 
 						len = ((Number*)t->value)->getIntValue();
@@ -1410,7 +1735,7 @@ namespace langX {
 					Object *arrayRef = array1->addRef();
 					arrayRef->setEmergeEnv(getState()->getCurrentEnv());
 					setValueToEnv(name, arrayRef);
-					
+
 				}
 				continue;
 			}
@@ -1429,7 +1754,11 @@ namespace langX {
 
 		if (n1->value == NULL)
 		{
-			printf("left value %s is not class object or array  !\n", n1->var_obj->name);
+			//printf("left value %s is not class object or array  !\n", n1->var_obj->name);
+			char tmp[100] = { 0 };
+			sprintf(tmp, "left value %s is not class object or array  !\n", n1->var_obj->name);
+			getState()->throwException(newTypeErrorException(tmp)->addRef());
+			freeSubNodes(n);
 			return;
 		}
 
@@ -1439,23 +1768,36 @@ namespace langX {
 		{
 			XArrayRef *arrayRef = (XArrayRef*)n1->value;
 			// 如果是数组， 则执行
-			if (strcmp(memberName,"length") == 0)
+			if (strcmp(memberName, "length") == 0)
 			{
 				// array.length.
 				n->value = m_exec_alloc.allocateNumber(arrayRef->getLength());
 			}
+			else {
+				getState()->throwException(newNoClassMemberException(memberName)->addRef());
+			}
 
+			freeSubNodes(n);
 			return;
 		}
 
 		if (n1->value->getType() != OBJECT)
 		{
-			printf("left value %s is not class object or array  !\n", n1->var_obj->name);
+			getState()->throwException(newTypeErrorException("left value is not a object.")->addRef());
+			//printf("left value %s is not class object or array  !\n", n1->var_obj->name);
+			freeSubNodes(n);
 			return;
 		}
 
 		langXObjectRef* objectRef = (langXObjectRef*)n1->value;
-		n->value = objectRef->getMember(memberName)->clone();
+		Object *t = objectRef->getMember(memberName);
+		if (t == NULL)
+		{
+			getState()->throwException(newNoClassMemberException(memberName)->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		n->value = t->clone();
 		n->ptr_u = objectRef->clone();
 
 		freeSubNodes(n);
@@ -1467,7 +1809,9 @@ namespace langX {
 
 		if (n1->value == NULL || n1->value->getType() != OBJECT)
 		{
-			printf("left value %s is not class object !\n", n1->var_obj->name);
+			getState()->throwException(newTypeErrorException("left value is not class object !")->addRef());
+			//printf("left value %s is not class object !\n", n1->var_obj->name);
+			freeSubNodes(n);
 			return;
 		}
 
@@ -1512,7 +1856,8 @@ namespace langX {
 		Environment * env = getState()->getNearestObjectEnv();
 		if (!env)
 		{
-			printf("cannot find the object on use this!\n");
+			//printf("cannot find the object on use this!\n");
+			getState()->throwException(newUnsupportedOperationException("invalid this stmt! cannot find the object on use this!")->addRef());
 			return;
 		}
 		if (n->opr_obj->op_count <= 0)
@@ -1545,7 +1890,8 @@ namespace langX {
 		__execNode(n1);
 		if (n1->value == NULL)
 		{
-			printf("error in __execTHIS, n1->value == NULL");
+			//printf("error in __execTHIS, n1->value == NULL");
+			getState()->throwException(newException("error in __execTHIS, n1->value == NULL")->addRef());
 		}
 		else {
 			n->value = n1->value->clone();
@@ -1557,6 +1903,22 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
+	// 执行 try {}
+	void __execXTRY(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		TryEnvironment * tryEnv = new TryEnvironment();
+		tryEnv->setCatchNode(n->opr_obj->op[1]);
+		getState()->newEnv(tryEnv);
+		__execNode(n->opr_obj->op[0]);
+		getState()->backEnv();
+
+		// OK ,这就算执行完毕了。 如果出发了异常 会走另外一个地方。
+		// 正常执行完毕， 会无视 catch 内的东西
+	}
 
 	/*
 	 * 执行节点，  节点的结果 将 放在  Node.value 上
@@ -1574,10 +1936,21 @@ namespace langX {
 		//	return;
 		//}
 
+		// 如果当前环境为一个死亡环境， 则什么都不做
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			return;
+		}
+
 		if (node->state.isBreak || node->state.isReturn)
 		{
 			//  节点中断
 			return;
+		}
+
+		if (!getInException())
+		{
+			setExecNode(node);
 		}
 
 		//printf("__execNode 01x\n");
@@ -1640,7 +2013,7 @@ namespace langX {
 				return;
 			}
 			ClassInfo *cinfo = (ClassInfo*)node->ptr_u;
-			getState()->getGlobalEnv()->putClass(cinfo->getName(), cinfo);
+			getState()->regClass(cinfo);
 			return;
 		}
 		else if (node->type == NODE_FUNCTION)
@@ -1665,7 +2038,8 @@ namespace langX {
 			Object *obj = getValue(arrayInfo->name);
 			if (obj == NULL || obj->getType() != XARRAY)
 			{
-				printf("left value is not array with array operator!\n");
+				//printf("left value is not array with array operator!\n");
+				getState()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
 				return;
 			}
 
@@ -1678,8 +2052,9 @@ namespace langX {
 
 				if (t->value == NULL || t->value->getType() != NUMBER)
 				{
-					printf("error array length !\n");
-					return ;
+					//printf("error array length !\n");
+					getState()->throwException(newException("error array length !")->addRef());
+					return;
 				}
 
 				index = ((Number*)t->value)->getIntValue();
@@ -1693,7 +2068,10 @@ namespace langX {
 
 		if (node->type != NODE_OPERATOR)
 		{
-			printf("undeal type: %d\n", node->type);
+			//printf("undeal type: %d\n", node->type);
+			char tmp[100] = { 0 };
+			sprintf(tmp,"undeal type: %d",node->type);
+			getState()->throwException(newException(tmp)->addRef());
 			return;
 		}
 
@@ -1813,6 +2191,9 @@ namespace langX {
 			break;
 		case THIS:
 			__execTHIS(node);
+			break;
+		case XTRY:
+			__execXTRY(node);
 			break;
 		default:
 			break;

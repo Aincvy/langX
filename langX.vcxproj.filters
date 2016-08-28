@@ -39,9 +39,6 @@
     <ClInclude Include="include\ExecNode.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\Execption.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\Environment.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -67,6 +64,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\XArray.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Exception.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,9 +98,6 @@
     <ClCompile Include="source\ExecNode.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\Execption.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="source\String.cpp">
       <Filter>source</Filter>
     </ClCompile>
@@ -129,6 +126,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\XArray.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Exception.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

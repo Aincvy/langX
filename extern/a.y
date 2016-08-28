@@ -31,12 +31,12 @@ const char * parseFileName=NULL;
 %token <intValue> XINTEGER
 %token <iValue> TDOUBLE TBOOL
 %token <sValue> IDENTIFIER TSTRING
-%token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE
+%token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ 
 %token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
-%type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr
+%type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt 
 %type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt
 %type <params> param_list parameter
@@ -75,6 +75,17 @@ statement
 	| declar_stmt    { $$ = $1; }
 	| con_ctl_stmt   { $$ = $1; }
 	| simple_stmt ';'   { $$ = $1; }
+	| try_stmt       { $$ = $1; }
+	;
+
+// try 语句
+try_stmt
+	: XTRY '{' expr_list '}'   { $$ = opr(XTRY, 2,$3,NULL); }
+	| XTRY '{' expr_list '}' catch_block_stmt  { $$ = opr(XTRY, 2,$3,$5); }
+	;
+
+catch_block_stmt
+	: XCATCH '(' id_expr ')' '{' expr_list '}'  { $$ = opr(XCATCH, 2, $3,$6); }
 	;
 
 //  声明语句

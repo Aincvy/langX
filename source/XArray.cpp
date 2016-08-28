@@ -2,6 +2,9 @@
 #include "../include/XArray.h"
 #include "../include/NullObject.h"
 #include "../include/Allocator.h"
+#include "../include/YLlangX.h"
+#include "../include/Exception.h"
+#include "../include/langXObject.h"
 
 extern langX::Allocator m_exec_alloc;
 
@@ -47,7 +50,9 @@ namespace langX {
 	{
 		if (index < 0 || index >= m_length)
 		{
-			// TODO 这里应该抛出一个异常
+			char tmp[100] = { 0 };
+			sprintf(tmp,"array index of bounds: %d" ,index);
+			getState()->throwException(newIndexOutOfBoundsException(tmp)->addRef());
 			return;
 		}
 
@@ -164,7 +169,8 @@ namespace langX {
 	{
 		if (obj == NULL || obj->getType() != XARRAY)
 		{
-			printf("cannot update.. target is not array\n");
+			getState()->throwException(newException("Inner Error! cannot update.. target is not array!")->addRef());
+			//printf("cannot update.. target is not array\n");
 			return;
 		}
 
