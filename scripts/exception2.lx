@@ -1,0 +1,55 @@
+
+Class1{
+  member1,member2;
+  
+  func1 => {}
+}
+
+try {
+  
+  c1 = new Class2();  //exception
+  print("c1\n");
+} catch (e){
+  e.printStackTrace();
+}
+
+
+try {
+  
+  c2 = new Class1();
+  print("c2\n");
+  c2.x = 1 ;  //exception
+  print("c2.1\n");
+} catch (e){
+  e.printStackTrace();
+}
+
+try {
+  
+  c3 = new Class1();
+  c3.func2();    //exception
+  print("c3\n");
+} catch (e){
+  e.printStackTrace();
+}
+
+Class2{
+  member1,member2;
+  
+  Class2 => (x,y) { this.x=x; this.y=y;}   //exception
+}
+
+try {
+  
+  c4 = new Class2( 12 , 13 );   //exception
+  
+  c4.member1 = 15 ;
+  
+  print("c4\n");
+} catch (e){
+  e.printStackTrace();
+}
+
+a = 1 ;
+b = a - c ;    //exception
+print(b + "\n");
