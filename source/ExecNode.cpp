@@ -274,6 +274,10 @@ namespace langX {
 
 			return;
 		}
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			return;
+		}
 
 		Object *obj = getState()->getObject(left->var_obj->name);
 		if (obj == NULL)
@@ -546,10 +550,18 @@ namespace langX {
 				return;
 			}
 
+		if (getState()->getCurrentEnv()->isDead()) {
+			return;
+		}
+
 		//printf("__exec61 left name: %s\n", left->var_obj->name);
 		Node *right = n->opr_obj->op[1];
 		//printf("right->value: %p\n", right->value);
 		checkValue(right);
+		if (getState()->getCurrentEnv()->isDead()) {
+			return;
+		}
+
 		// 赋值操作的结果 为 右值的结果
 		if (right->value == NULL)
 		{
@@ -619,7 +631,7 @@ namespace langX {
 			if (!objectRef->getClassInfo()->hasMember(name))
 			{
 				char tmp[100] = { 0 };
-				sprintf(tmp,"cannot find member %s in class %s!", name,objectRef->getClassInfo()->getName());
+				sprintf(tmp, "cannot find member %s in class %s!", name, objectRef->getClassInfo()->getName());
 				getState()->throwException(newNoClassMemberException(tmp)->addRef());
 
 			}
@@ -627,14 +639,18 @@ namespace langX {
 				objectRef->setMember(name, right->value);
 				n->value = m_exec_alloc.copy(right->value);
 			}
-			
+
 			m_exec_alloc.free(right->value);
 			right->value = NULL;
 		}
 
 		if (left->type == NODE_OPERATOR && left->opr_obj->opr == THIS) {
-			free(left->var_obj);
-			left->var_obj = NULL;
+			if (left->var_obj != NULL)
+			{
+				free(left->var_obj);
+				left->var_obj = NULL;
+			}
+
 		}
 
 		doSuffixOperation(n);
@@ -903,6 +919,13 @@ namespace langX {
 			run->state.in_loop = n->state.in_loop;
 			run->state.in_switch = n->state.in_switch;
 			__execNode(run);
+
+			if (getState()->getCurrentEnv()->isDead())
+			{
+				freeSubNodes(n);
+				return;
+			}
+
 			if (run->state.isBreak)
 			{
 				n->state.isBreak = true;
@@ -1619,7 +1642,7 @@ namespace langX {
 			//printf("ERROR:  __execUMINUS is NOT NUMBER...  \n");
 			getState()->throwException(newArithmeticException("type error on opr '-'! only can number!")->addRef());
 			freeSubNodes(n);
-			
+
 			return;
 		}
 		else {
@@ -1675,6 +1698,11 @@ namespace langX {
 
 				getState()->newEnv(env);
 				callFunc(func, args, fileInfoString(n->fileinfo).c_str());
+
+				if (getState()->getCurrentEnv()->isDead())
+				{
+					return;
+				}
 				getState()->backEnv(false);
 
 			}
@@ -1825,6 +1853,11 @@ namespace langX {
 		// 根据语法解析文件可知， 第二个节点为一个函数调用节点
 		Node *n2 = n->opr_obj->op[1];
 		__execNode(n2);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 		if (n2->value != NULL)
 		{
 			n->value = n2->value->clone();
@@ -1863,10 +1896,11 @@ namespace langX {
 			getState()->throwException(newUnsupportedOperationException("invalid this stmt! cannot find the object on use this!")->addRef());
 			return;
 		}
+
+		ObjectBridgeEnv *objEnv = (ObjectBridgeEnv*)env;
 		if (n->opr_obj->op_count <= 0)
 		{
 			// no args.  获得自己就好了
-			ObjectBridgeEnv *objEnv = (ObjectBridgeEnv*)env;
 			n->value = objEnv->getEnvObject()->addRef();
 			return;
 		}
@@ -1878,19 +1912,32 @@ namespace langX {
 		env->setRestrict(true);
 		getState()->setCurrentEnv(env);
 
+		langXObject *thisObj = objEnv->getEnvObject();
 		Node *n1 = n->opr_obj->op[0];
 		//  产生变量的名字
 		n->var_obj = (Variable*)calloc(1, sizeof(Variable));
 		if (n1->type == NODE_VARIABLE)
 		{
 			n->var_obj->name = n1->var_obj->name;
+			if (!thisObj->hasMember(n->var_obj->name))
+			{
+				// 没有那个成员
+				char tmp[100] = { 0 };
+				sprintf(tmp, "no class member %s in class %s!", n->var_obj->name, thisObj->getClassName());
+				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+				free(n->var_obj);
+				n->var_obj = NULL;
+				return;
+			}
 		}
 		else if (n1->type == NODE_OPERATOR)
 		{
+			// 语法解释器并没有实现这部分， 所以暂时先不管。
 			n->var_obj->name = n1->opr_obj->op[1]->var_obj->name;
 		}
 
 		__execNode(n1);
+
 		if (n1->value == NULL)
 		{
 			//printf("error in __execTHIS, n1->value == NULL");
@@ -2073,7 +2120,7 @@ namespace langX {
 		{
 			//printf("undeal type: %d\n", node->type);
 			char tmp[100] = { 0 };
-			sprintf(tmp,"undeal type: %d",node->type);
+			sprintf(tmp, "undeal type: %d", node->type);
 			getState()->throwException(newException(tmp)->addRef());
 			return;
 		}

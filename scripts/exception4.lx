@@ -1,0 +1,21 @@
+
+Class2{
+  member1,member2;
+  
+  Class2 => (x,y) { this.x=x; this.y=y;}   //exception
+}
+
+try {
+  
+  c4 = new Class2( 12 , 13 );   //exception
+  
+  c4.member1 = 15 ;
+  
+  print("c4\n");
+} catch (e){
+  e.printStackTrace();
+}
+
+a = 1 ;
+b = a - c ;    //exception
+print(b + "\n");

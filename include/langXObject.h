@@ -24,6 +24,8 @@ namespace langX {
 		void setMember(const char*, Object *);
 		//  这个请求是否是来自子类 
 		void setMember(const char*, Object *,bool);
+		//  是否存在某个成员
+		bool hasMember(const char *) const;
 
 		Object * getMember(const char *) const;
 		//  这个请求是否是来自子类 

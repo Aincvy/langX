@@ -275,21 +275,32 @@ namespace langX {
 			// 执行 catch 块的语句
 			__execNode(cNode->opr_obj->op[1]);
 
-			// 销毁try 环境
-			delete tryEnv;
-			tryEnv = NULL;
+			// 将环境back 到env
+			while (env != this->m_current_env)
+			{
+				if (this->m_current_env == NULL)
+				{
+					break;
+				}
+
+				backEnv();
+			}
 
 			// 主动进行 try-catch 操作的时候 ， try 执行后会释放一个环境，所以当前环境保留
 			// 将当前环境设置为死亡环境， 这样就可以忽略 try 内的剩余操作了？
 			env->setDead(true);
 
 			setInException(false);
-
+			
 			// 删除对象
 			delete obj->getRefObject();
 			//delete obj;
 			obj = NULL;
 		}
+
+		// 销毁try 环境
+		delete tryEnv;
+		tryEnv = NULL;
 	}
 
 	langXObject * langXState::newObject(const char * name) const
