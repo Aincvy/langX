@@ -39,6 +39,7 @@ Class2{
   Class2 => (x,y) { this.x=x; this.y=y;}   //exception
 }
 
+print("Will try Class2!\n");
 try {
   
   c4 = new Class2( 12 , 13 );   //exception

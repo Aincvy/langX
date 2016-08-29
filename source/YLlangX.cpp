@@ -14,6 +14,7 @@
 #include "../include/StackTrace.h"
 #include "../include/Exception.h"
 #include "../include/langXObject.h"
+#include "../extern/y.tab.h"
 
 extern int yyget_lineno(void);
 extern const char * parseFileName;
@@ -485,6 +486,10 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 		ret = function->call();
 	}
 	getState()->getStackTrace().popFrame();
+	if (getState()->getCurrentEnv()->isDead())
+	{
+		return NULL;
+	}
 	getState()->backEnv();
 
 	return ret;
@@ -607,6 +612,14 @@ void freeNode(XNode * n) {
 	}
 	else if (n->type == NODE_OPERATOR)
 	{
+		if (n->opr_obj->opr == THIS)
+		{
+			if (n->var_obj != NULL)
+			{
+				free(n->var_obj);
+				n->var_obj = NULL;
+			}
+		}
 		//printf("00001\n");
 		for (size_t i = 0; i < n->opr_obj->op_count; i++)
 		{

@@ -89,6 +89,15 @@ namespace langX {
 		}
 	}
 
+	bool langXObject::hasMember(const char *name) const
+	{
+		if (this->m_members.find(name) == this->m_members.end())
+		{
+			return false;
+		}
+		return true;
+	}
+
 	Object * langXObject::getMember(const char *name) const
 	{
 		return getMember(name, false);
