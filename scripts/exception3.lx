@@ -1,0 +1,16 @@
+
+
+try {
+  c1[5];
+  c1[5] = 10 ;  //exception
+  print("c1\n");
+} catch (e){
+  e.printStackTrace();
+}
+
+try {
+  c2.getName();  //exception
+  print("c2\n");
+} catch (e){
+  e.printStackTrace();
+}
