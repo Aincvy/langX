@@ -559,6 +559,9 @@ namespace langX {
 		if (objectRef == NULL && arrayInfo == NULL)
 		{
 			checkVarValue(left, right->value->getType());
+			if (getState()->getCurrentEnv()->isDead()) {
+				return;
+			}
 			left->value->update(right->value);
 
 			// 释放右值的内存 

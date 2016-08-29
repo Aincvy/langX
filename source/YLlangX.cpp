@@ -324,7 +324,7 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	free(name);
 	XNode * nodeF = (XNode*)calloc(1,sizeof(XNode) * 1);
 	nodeF->type = NODE_FUNCTION;
-	deal_fileinfo(&node->fileinfo);
+	deal_fileinfo(&nodeF->fileinfo);
 	deal_state(&nodeF->state);
 	deal_switch_info(&nodeF->switch_info);
 	nodeF->value = func;

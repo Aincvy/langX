@@ -19,7 +19,18 @@ namespace langX {
 		Function *func = obj->getFunction("printStackTrace");
 		if (func != NULL)
 		{
-			func->call();
+			if (func->is3rd())
+			{
+				X3rdArgs _3rdArgs;
+				_3rdArgs.object = obj->getRefObject();
+				_3rdArgs.index = 0;
+				_3rdArgs.arrayRef = NULL;
+				X3rdFunction *f = (X3rdFunction*)func;
+				f->call(_3rdArgs);
+			}
+			else {
+				func->call();
+			}
 		}
 	}
 
@@ -244,6 +255,9 @@ namespace langX {
 		if (c != NULL)
 		{
 			c(obj);
+
+			// 设置当前环境为 dead 环境
+			this->m_current_env->setDead(true);
 
 			// 删除对象
 			delete obj->getRefObject();
