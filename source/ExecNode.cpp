@@ -344,6 +344,12 @@ namespace langX {
 	void __exec43(Node *n) {
 		doSubNodes(n);
 
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return ;
+		}
+
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
 
@@ -1696,14 +1702,14 @@ namespace langX {
 			{
 				XArgsList *args = (XArgsList *)argNode->ptr_u;
 
-				getState()->newEnv(env);
+				getState()->newEnv2(env);
 				callFunc(func, args, fileInfoString(n->fileinfo).c_str());
 
 				if (getState()->getCurrentEnv()->isDead())
 				{
 					return;
 				}
-				getState()->backEnv(false);
+				getState()->backEnv();
 
 			}
 		}
@@ -1805,7 +1811,9 @@ namespace langX {
 				n->value = m_exec_alloc.allocateNumber(arrayRef->getLength());
 			}
 			else {
-				getState()->throwException(newNoClassMemberException(memberName)->addRef());
+				char tmp[100] = { 0 };
+				sprintf(tmp,"no member %s in array.",memberName);
+				getState()->throwException(newNoClassMemberException(tmp)->addRef());
 			}
 
 			freeSubNodes(n);
@@ -1824,7 +1832,9 @@ namespace langX {
 		Object *t = objectRef->getMember(memberName);
 		if (t == NULL)
 		{
-			getState()->throwException(newNoClassMemberException(memberName)->addRef());
+			char tmp[100] = { 0 };
+			sprintf(tmp,"no member %s in class %s.", memberName,objectRef->getClassInfo()->getName());
+			getState()->throwException(newNoClassMemberException(tmp)->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1848,7 +1858,7 @@ namespace langX {
 
 		langXObjectRef* objectRef = (langXObjectRef*)n1->value;
 		Environment *env = objectRef->getRefObject()->getObjectEnvironment();
-		getState()->newEnv(env);
+		getState()->newEnv2(env);
 
 		// 根据语法解析文件可知， 第二个节点为一个函数调用节点
 		Node *n2 = n->opr_obj->op[1];
@@ -1866,7 +1876,7 @@ namespace langX {
 			n->value = NULL;
 		}
 
-		getState()->backEnv(false);
+		getState()->backEnv();
 
 		freeSubNodes(n);
 	}
@@ -1905,12 +1915,9 @@ namespace langX {
 			return;
 		}
 
-		bool flag = env->isRestrict();
-		Environment *currEnv = getState()->getCurrentEnv();
-
 		// 限定好像没什么卵用。。 
-		env->setRestrict(true);
-		getState()->setCurrentEnv(env);
+		//env->setRestrict(true);
+		getState()->newEnv2(env);
 
 		langXObject *thisObj = objEnv->getEnvObject();
 		Node *n1 = n->opr_obj->op[0];
@@ -1947,9 +1954,7 @@ namespace langX {
 			n->value = n1->value->clone();
 		}
 
-		getState()->backEnv(false);
-		env->setRestrict(flag);
-		getState()->setCurrentEnv(currEnv);
+		getState()->backEnv();
 		freeSubNodes(n);
 	}
 

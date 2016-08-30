@@ -349,7 +349,15 @@ namespace langX {
 
 	Object * EnvironmentBridgeEnv::getObject(const std::string &name)
 	{
-		return this->m_env->getObject(name);
+		Object *o = this->m_env->getObject(name);
+		if (o == NULL)
+		{
+			if (this->getParent() != NULL)
+			{
+				return this->getParent()->getObject(name);
+			}
+		}
+		return o;
 	}
 
 	Object * EnvironmentBridgeEnv::getObjectSelf(const char *name) const
@@ -369,12 +377,40 @@ namespace langX {
 
 	Function * EnvironmentBridgeEnv::getFunction(const std::string &name)
 	{
-		return this->m_env->getFunction(name);
+		Function *f = this->m_env->getFunction(name);
+		if (f == NULL)
+		{
+			if (this->getParent() != NULL)
+			{
+				return this->getParent()->getFunction(name);
+			}
+		}
+		return f;
+	}
+
+	Environment * EnvironmentBridgeEnv::getBridgeEnv()
+	{
+		return this->m_env;
 	}
 
 	bool EnvironmentBridgeEnv::isEnvEnvironment() const
 	{
 		return true;
+	}
+
+	bool EnvironmentBridgeEnv::isClassEnvironment() const
+	{
+		return this->m_env->isClassEnvironment();
+	}
+
+	bool EnvironmentBridgeEnv::isObjectEnvironment() const
+	{
+		return this->m_env->isObjectEnvironment();
+	}
+
+	bool EnvironmentBridgeEnv::isTryEnvironment() const
+	{
+		return this->m_env->isTryEnvironment();
 	}
 
 }

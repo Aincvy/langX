@@ -132,7 +132,7 @@ XFunction * create3rdFunc(const char *name, langX::X3rdFuncWorker worker)
 
 NodeFileInfo getCurrentNodeFileInfo()
 {
-	if (currentNode== NULL)
+	if (currentNode == NULL)
 	{
 		NodeFileInfo f;
 		deal_fileinfo(&f);
@@ -162,8 +162,8 @@ bool getInException()
 
 XNode * string(char *v)
 {
-	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
-	node->con_obj = (langX::Constant*) calloc(1,sizeof(langX::Constant) * 1);
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
 
 	node->freeOnExeced = true;
 	deal_fileinfo(&node->fileinfo);
@@ -181,8 +181,8 @@ XNode * string(char *v)
 
 XNode * number(double a)
 {
-	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
-	node->con_obj = (langX::Constant*) calloc(1,sizeof(langX::Constant) * 1);
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
 
 	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
@@ -200,8 +200,8 @@ XNode * number(double a)
 
 XNode * var(char *name)
 {
-	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
-	node->var_obj = (langX::Variable*) calloc(1,sizeof(langX::Variable) * 1);
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	node->var_obj = (langX::Variable*) calloc(1, sizeof(langX::Variable) * 1);
 
 	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
@@ -246,9 +246,9 @@ XNode * opr(int opr, int npos, ...)
 {
 	va_list ap;
 
-	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
-	node->opr_obj = (langX::Operator*) calloc(1,sizeof(langX::Operator) * 1);
-	node->opr_obj->op = (XNode**)calloc(1,sizeof(XNode*) * npos);
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	node->opr_obj = (langX::Operator*) calloc(1, sizeof(langX::Operator) * 1);
+	node->opr_obj->op = (XNode**)calloc(1, sizeof(XNode*) * npos);
 
 	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
@@ -280,9 +280,9 @@ XNode * sopr(int opr, int npos, ...)
 	//printf("sopr: %d\n" ,opr);
 	va_list ap;
 
-	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
-	node->opr_obj = (langX::Operator*) calloc(1,sizeof(langX::Operator) * 1);
-	node->opr_obj->op = (XNode**)calloc(1,sizeof(XNode*) * npos);
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	node->opr_obj = (langX::Operator*) calloc(1, sizeof(langX::Operator) * 1);
+	node->opr_obj->op = (XNode**)calloc(1, sizeof(XNode*) * npos);
 
 	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
@@ -323,7 +323,7 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	//  在执行他的时候再把它放入环境中
 	//getState()->getCurrentEnv()->putFunction(name, func);
 	free(name);
-	XNode * nodeF = (XNode*)calloc(1,sizeof(XNode) * 1);
+	XNode * nodeF = (XNode*)calloc(1, sizeof(XNode) * 1);
 	nodeF->type = NODE_FUNCTION;
 	deal_fileinfo(&nodeF->fileinfo);
 	deal_state(&nodeF->state);
@@ -354,7 +354,7 @@ XNode * arrayNode(char *name, int length, XNode *lengthNode)
 
 XNode * xnull()
 {
-	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
 
 	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
@@ -367,7 +367,7 @@ XNode * xnull()
 	return node;
 }
 
-XNode * claxx(char *name , char *parent, XNode * node) {
+XNode * claxx(char *name, char *parent, XNode * node) {
 
 	ClassInfo *pclass = NULL;
 	if (parent != NULL)
@@ -375,7 +375,7 @@ XNode * claxx(char *name , char *parent, XNode * node) {
 		pclass = getState()->getGlobalEnv()->getClass(parent);
 		if (pclass == NULL)
 		{
-			printf("error! cannot find class %s on extends!" , parent);
+			printf("error! cannot find class %s on extends!", parent);
 		}
 		free(parent);
 	}
@@ -389,14 +389,12 @@ XNode * claxx(char *name , char *parent, XNode * node) {
 		ClassBridgeEnv *env = new ClassBridgeEnv(claxxInfo);
 		state->newEnv(env);
 		__execNode(node);
-		state->backEnv(false);
-		// 把环境添加到List ，等langXState 析构的时候会析构这个变量
-		state->addEnvToList(env);
+		state->backEnv();
 	}
-	
+
 	XNode * nodeC = (XNode*)calloc(1, sizeof(XNode) * 1);
 	nodeC->type = NODE_CLASS;
-	deal_fileinfo(&node->fileinfo);
+	deal_fileinfo(&nodeC->fileinfo);
 	deal_state(&nodeC->state);
 	deal_switch_info(&nodeC->switch_info);
 	nodeC->ptr_u = claxxInfo;
@@ -404,13 +402,13 @@ XNode * claxx(char *name , char *parent, XNode * node) {
 	return nodeC;
 }
 
-XObject * call(char *name, XArgsList* args , const char *remark)
+XObject * call(char *name, XArgsList* args, const char *remark)
 {
 	Function *function = getState()->getCurrentEnv()->getFunction(name);
 	if (function == NULL)
 	{
 		char tmp[100] = { 0 };
-		sprintf(tmp,"cannot find function %s" , name);
+		sprintf(tmp, "cannot find function %s", name);
 		getState()->throwException(newFunctionNotFoundException(tmp)->addRef());
 		//printf("cannot find function %s\n", name);
 		return NULL;
@@ -444,6 +442,12 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 					continue;
 				}
 				execNode(args->args[i]);
+
+				if (getState()->getCurrentEnv()->isDead())
+				{
+					return NULL;
+				}
+
 				_3rdArgs.args[i] = args->args[i]->value;
 			}
 			_3rdArgs.index = args->index;
@@ -451,7 +455,15 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 		Environment *currEnv1 = getState()->getCurrentEnv();
 		if (currEnv1->isObjectEnvironment())
 		{
-			_3rdArgs.object = ((ObjectBridgeEnv*)currEnv1)->getEnvObject();
+			if (currEnv1->isEnvEnvironment())
+			{
+				_3rdArgs.object = ((ObjectBridgeEnv*)((EnvironmentBridgeEnv*)currEnv1)->getBridgeEnv())->getEnvObject();
+			}
+			else {
+				_3rdArgs.object = ((ObjectBridgeEnv*)currEnv1)->getEnvObject();
+			}
+
+
 		}
 
 		Object * ret1 = x3rdfunc->call(_3rdArgs);
@@ -474,6 +486,12 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 			if (args->args[i] != NULL)
 			{
 				execNode(args->args[i]);
+
+				if (getState()->getCurrentEnv()->isDead())
+				{
+					return NULL;
+				}
+
 				env->putObject(params->args[i], args->args[i]->value->clone());
 				//printf("put object: %s\n", params->args[i]);
 			}
@@ -496,7 +514,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 }
 
 XNode * argsNode(XArgsList * args) {
-	XNode * node = (XNode*)calloc(1,sizeof(XNode) * 1);
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
 	node->type = NODE_ARGS;
 	node->value = NULL;
 	node->postposition = NULL;
@@ -513,7 +531,7 @@ XParamsList * params(XParamsList *args, char *name)
 	XParamsList * list = NULL;
 	if (args == NULL)
 	{
-		list = (XParamsList* )calloc(1, sizeof(XParamsList));
+		list = (XParamsList*)calloc(1, sizeof(XParamsList));
 		list->index = 0;
 	}
 	else {

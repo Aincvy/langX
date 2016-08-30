@@ -23,6 +23,7 @@ namespace langX {
 
 		this->m_class_info = claxxInfo;
 		this->m_my_env = new ObjectBridgeEnv(this);
+		this->m_my_env->setParent(NULL);
 
 		std::map<std::string, Object*> & map = claxxInfo->getMembers();
 		for (auto i = map.begin(); i != map.end(); i++)
@@ -93,7 +94,12 @@ namespace langX {
 	{
 		if (this->m_members.find(name) == this->m_members.end())
 		{
-			return false;
+			if (this->m_parent == NULL)
+			{
+				return false;
+			}
+
+			return this->m_parent->hasMember(name);
 		}
 		return true;
 	}
@@ -173,9 +179,9 @@ namespace langX {
 			return NULL;
 		}
 
-		getState()->newEnv(this->m_my_env);
+		getState()->newEnv2(this->m_my_env);
 		Object *obj = func->call();
-		getState()->backEnv(false);
+		getState()->backEnv();
 
 		return obj;
 	}

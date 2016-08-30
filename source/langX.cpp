@@ -66,7 +66,6 @@ namespace langX {
 		this->m_current_env = tryEnv;
 		this->m_allocator = new Allocator();
 
-		this->m_env_list.push_front(this->m_current_env);
 		this->m_stacktrace.newFrame(NULL, NULL, "<startFrame>");
 	}
 	langXState::~langXState()
@@ -75,13 +74,14 @@ namespace langX {
 		
 		delete this->m_allocator;
 
-		while (!this->m_env_list.empty())
+		while (this->m_current_env != NULL && this->m_current_env->getParent() != NULL)
 		{
 			backEnv();
 		}
 
 		freeEnv(this->m_current_env);
 		this->m_current_env = NULL;
+		this->m_global_env = NULL;
 	}
 	void langXState::putObject(const char * name, Object *obj)
 	{
@@ -108,6 +108,18 @@ namespace langX {
 	}
 
 	Environment * langXState::newEnv(Environment *env)
+	{
+		if (env == NULL)
+		{
+			return NULL;
+		}
+
+		env->setParent(this->m_current_env);
+		this->m_current_env = env;
+		return env;
+	}
+
+	Environment * langXState::newEnv2(Environment *env)
 	{
 		if (env == NULL)
 		{
@@ -141,11 +153,6 @@ namespace langX {
 		this->m_current_env = env;
 	}
 
-	void langXState::setCurrentEnv(Environment *env)
-	{
-		this->m_current_env = env;
-	}
-
 	Environment * langXState::getCurrentEnv() const
 	{
 		return this->m_current_env;
@@ -164,6 +171,10 @@ namespace langX {
 		{
 			if (env->isObjectEnvironment())
 			{
+				if (env->isEnvEnvironment())
+				{
+					return ((EnvironmentBridgeEnv*)env)->getBridgeEnv();
+				}
 				return env;
 			}
 
@@ -171,16 +182,6 @@ namespace langX {
 		}
 
 		return nullptr;
-	}
-
-	void langXState::addEnvToList(Environment *env)
-	{
-		if (env == NULL)
-		{
-			return;
-		}
-
-		this->m_env_list.push_front(env);
 	}
 
 	void langXState::reg3rd(const char *name, X3rdFuncWorker worker)
@@ -248,7 +249,13 @@ namespace langX {
 
 			if (env->isTryEnvironment())
 			{
-				tryEnv = (TryEnvironment *)env;
+				if (env->isEnvEnvironment())
+				{
+					tryEnv = (TryEnvironment *)((EnvironmentBridgeEnv*)env)->getBridgeEnv();
+				}
+				else {
+					tryEnv = (TryEnvironment *)env;
+				}
 				break;
 			}
 

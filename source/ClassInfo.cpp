@@ -34,7 +34,7 @@ namespace langX {
 
 		if (this->m_parent != NULL)
 		{
-			return this->m_parent->hasMember(name);
+			return this->m_parent->hasMember(name ,true);
 		}
 
 		return false;
