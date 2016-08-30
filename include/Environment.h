@@ -150,17 +150,29 @@ namespace langX {
 		EnvironmentBridgeEnv(Environment *);
 		~EnvironmentBridgeEnv();
 
+		// 放置对象到桥接的那个环境中
 		void putObject(const char*, Object*);
+		// 放置对象到桥接的那个环境中
 		void putObject(const std::string &, Object*);
+		// 如果桥接的环境没有这个Object ，则会 搜索父环境
 		Object* getObject(const std::string &);
-		// 只从自己的环境中寻找对象
+		// 只从桥接的那个环境中寻找对象
 		Object* getObjectSelf(const char *) const;
 
+		// 放置函数到桥接的那个环境中
 		void putFunction(const char*, Function*);
+		// 放置函数到桥接的那个环境中
 		void putFunction(const std::string &, Function*);
+		//  如果桥接的目标环境没有这个函数， 则会搜寻父环境
 		Function* getFunction(const std::string &);
 
+		// 获得 桥接的是哪个环境
+		Environment *getBridgeEnv();
+
 		bool isEnvEnvironment() const;
+		bool isClassEnvironment() const;
+		bool isObjectEnvironment() const;
+		bool isTryEnvironment() const;
 
 	private:
 		Environment *m_env = nullptr;

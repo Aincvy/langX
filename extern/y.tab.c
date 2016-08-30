@@ -1079,11 +1079,11 @@ case 14:
 break;
 case 15:
 #line 100 "a.y"
-	{ yyval.node = claxx(yystack.l_mark[-3].sValue , yystack.l_mark[-2].sValue, NULL); }
+	{ /*if($2 != NULL) printf("parentName: %s\n",$2);*/ yyval.node = claxx(yystack.l_mark[-3].sValue , yystack.l_mark[-2].sValue, NULL); }
 break;
 case 16:
 #line 101 "a.y"
-	{ yyval.node = claxx(yystack.l_mark[-4].sValue , yystack.l_mark[-3].sValue, yystack.l_mark[-1].node); }
+	{ /*if($2 != NULL) printf("parentName: %s\n",$2);*/ yyval.node = claxx(yystack.l_mark[-4].sValue , yystack.l_mark[-3].sValue, yystack.l_mark[-1].node); }
 break;
 case 17:
 #line 106 "a.y"

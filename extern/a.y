@@ -97,8 +97,8 @@ declar_stmt
 
 //  类声明语句
 class_declar_stmt
-	: IDENTIFIER extends_stmt '{' '}'            { $$ = claxx($1 , $2, NULL); }
-	| IDENTIFIER extends_stmt '{' class_body '}' { $$ = claxx($1 , $2, $4); }
+	: IDENTIFIER extends_stmt '{' '}'            { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($1 , $2, NULL); }
+	| IDENTIFIER extends_stmt '{' class_body '}' { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($1 , $2, $4); }
 	;
 
 //  类继承语句
