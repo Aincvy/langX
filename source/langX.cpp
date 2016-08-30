@@ -15,6 +15,28 @@
 
 namespace langX {
 
+	void freeEnv(Environment *p) {
+		if (p->isClassEnvironment())
+		{
+			delete (ClassBridgeEnv*)p;
+		}
+		else if (p->isObjectEnvironment())
+		{
+			delete (ObjectBridgeEnv*)p;
+		}
+		else if (p->isTryEnvironment())
+		{
+			delete (TryEnvironment*)p;
+		}
+		else if (p->isEnvEnvironment())
+		{
+			delete (EnvironmentBridgeEnv*)p;
+		}
+		else {
+			delete p;
+		}
+	}
+
 	void  gTryCatchCB(langXObjectRef *obj) {
 		Function *func = obj->getFunction("printStackTrace");
 		if (func != NULL)
@@ -53,17 +75,13 @@ namespace langX {
 		
 		delete this->m_allocator;
 
-		if (!this->m_env_list.empty())
+		while (!this->m_env_list.empty())
 		{
-			for (auto i = m_env_list.begin(); i != m_env_list.end(); i++)
-			{
-				Environment *env = (*i);
-				delete env;
-			}
-
-			this->m_env_list.clear();
+			backEnv();
 		}
 
+		freeEnv(this->m_current_env);
+		this->m_current_env = NULL;
 	}
 	void langXState::putObject(const char * name, Object *obj)
 	{
@@ -96,9 +114,10 @@ namespace langX {
 			return NULL;
 		}
 
-		env->setParent(this->m_current_env);
-		this->m_current_env = env;
-		return env;
+		EnvironmentBridgeEnv *bEnv = new EnvironmentBridgeEnv(env);
+		bEnv->setParent(this->m_current_env);
+		this->m_current_env = bEnv;
+		return bEnv;
 	}
 
 	void langXState::backEnv()
@@ -115,7 +134,9 @@ namespace langX {
 		}
 		if (flag)
 		{
-			delete this->m_current_env;
+			//  ×ÓÀà
+			freeEnv(this->m_current_env);
+			this->m_current_env = NULL;
 		}
 		this->m_current_env = env;
 	}
