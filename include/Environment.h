@@ -25,6 +25,8 @@ namespace langX {
 		virtual void putObject(const char*, Object*);
 		virtual void putObject(const std::string &, Object*);
 		virtual Object* getObject(const std::string &);
+		// 只从自己的环境中寻找对象
+		virtual Object* getObjectSelf(const char *) const;
 
 		virtual void putFunction(const char*, Function*);
 		virtual void putFunction(const std::string &, Function*);
@@ -52,6 +54,8 @@ namespace langX {
 		virtual bool isObjectEnvironment() const;
 		// 是否是 try 环境
 		virtual bool isTryEnvironment() const;
+		// 是否是 环境的桥接环境
+		virtual bool isEnvEnvironment() const;
 
 	private:
 		std::map<std::string, Object*> m_objects_map;
@@ -138,5 +142,28 @@ namespace langX {
 		CBCatch m_catch_cb = NULL;
 	};
 
+
+	// 环境的桥接环境
+	class EnvironmentBridgeEnv : public Environment
+	{
+	public:
+		EnvironmentBridgeEnv(Environment *);
+		~EnvironmentBridgeEnv();
+
+		void putObject(const char*, Object*);
+		void putObject(const std::string &, Object*);
+		Object* getObject(const std::string &);
+		// 只从自己的环境中寻找对象
+		Object* getObjectSelf(const char *) const;
+
+		void putFunction(const char*, Function*);
+		void putFunction(const std::string &, Function*);
+		Function* getFunction(const std::string &);
+
+		bool isEnvEnvironment() const;
+
+	private:
+		Environment *m_env = nullptr;
+	};
 
 }

@@ -51,18 +51,17 @@ namespace langX {
 			return NULL;
 		}
 
-		Object * obj = this->m_objects_map[name];
-		if (obj == NULL)
+		return this->m_objects_map[name];
+	}
+
+	Object * Environment::getObjectSelf(const char *name) const
+	{
+		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
 			return NULL;
 		}
-		if (obj->getType() == NUMBER)
-		{
-			//printf("get a number object: %s\n", name.c_str());
-			Number * number = (Number*)obj;
-			//printf("getObject.. number value is: %.2f\n", number->getDoubleValue());
-		}
-		return obj;
+
+		return this->m_objects_map.at(name);
 	}
 
 	void Environment::putFunction(const char *name, Function *obj)
@@ -147,6 +146,11 @@ namespace langX {
 	}
 
 	bool Environment::isTryEnvironment() const
+	{
+		return false;
+	}
+
+	bool Environment::isEnvEnvironment() const
 	{
 		return false;
 	}
@@ -322,6 +326,55 @@ namespace langX {
 	Node * TryEnvironment::getCatchNode() const
 	{
 		return this->m_catch_node;
+	}
+
+	EnvironmentBridgeEnv::EnvironmentBridgeEnv(Environment *env)
+	{
+		this->m_env = env;
+	}
+
+	EnvironmentBridgeEnv::~EnvironmentBridgeEnv()
+	{
+	}
+
+	void EnvironmentBridgeEnv::putObject(const char *name, Object *obj)
+	{
+		this->m_env->putObject(name, obj);
+	}
+
+	void EnvironmentBridgeEnv::putObject(const std::string &name, Object *obj)
+	{
+		this->m_env->putObject(name, obj);
+	}
+
+	Object * EnvironmentBridgeEnv::getObject(const std::string &name)
+	{
+		return this->m_env->getObject(name);
+	}
+
+	Object * EnvironmentBridgeEnv::getObjectSelf(const char *name) const
+	{
+		return this->m_env->getObjectSelf(name);
+	}
+
+	void EnvironmentBridgeEnv::putFunction(const char *name, Function *f)
+	{
+		this->m_env->putFunction(name, f);
+	}
+
+	void EnvironmentBridgeEnv::putFunction(const std::string &name, Function *f)
+	{
+		this->m_env->putFunction(name, f);
+	}
+
+	Function * EnvironmentBridgeEnv::getFunction(const std::string &name)
+	{
+		return this->m_env->getFunction(name);
+	}
+
+	bool EnvironmentBridgeEnv::isEnvEnvironment() const
+	{
+		return true;
 	}
 
 }
