@@ -242,6 +242,25 @@ XNode *arr(char *name, int index, XNode *indexNode) {
 
 }
 
+XNode * xint(int i)
+{
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
+
+	deal_fileinfo(&node->fileinfo);
+	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
+	node->type = NODE_CONSTANT_INTEGER;
+	node->value = NULL;
+	node->ptr_u = NULL;
+	node->postposition = NULL;
+	node->freeOnExeced = true;
+	node->con_obj->iValue = i;
+	node->con_obj->sValue = NULL;
+	//printf("createNumberNode: %.5f\n", a);
+	return node;
+}
+
 XNode * opr(int opr, int npos, ...)
 {
 	va_list ap;
@@ -602,7 +621,7 @@ void freeNode(XNode * n) {
 	}
 
 	//printf("free node\n");
-	if (n->type == NODE_CONSTANT_NUMBER)
+	if (n->type == NODE_CONSTANT_NUMBER || n->type == NODE_CONSTANT_INTEGER)
 	{
 		free(n->con_obj);
 		free(n);
