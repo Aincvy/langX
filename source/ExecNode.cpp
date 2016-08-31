@@ -439,6 +439,11 @@ namespace langX {
 	// -
 	void __exec45(Node *n) {
 		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -463,6 +468,11 @@ namespace langX {
 	// *
 	void __exec42(Node *n) {
 		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -488,6 +498,11 @@ namespace langX {
 	// /
 	void __exec47(Node *n) {
 		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -514,6 +529,211 @@ namespace langX {
 		}
 
 		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() / d2);
+		freeSubNodes(n);
+
+	}
+
+	// 按位或  |
+	void __exec124(Node *n) {
+
+		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '|'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '|'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		int i1 = ((Number*)n1->value)->getIntValue();
+		int i2 = ((Number*)n2->value)->getIntValue();
+		int i3 = i1 | i2;
+
+		n->value = m_exec_alloc.allocateNumber(i3);
+		freeSubNodes(n);
+
+	}
+
+	// 按位与  &
+	void __exec38(Node *n) {
+		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '&'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '&'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		int i1 = ((Number*)n1->value)->getIntValue();
+		int i2 = ((Number*)n2->value)->getIntValue();
+		int i3 = i1 & i2;
+
+		n->value = m_exec_alloc.allocateNumber(i3);
+		freeSubNodes(n);
+
+	}
+
+	// 按位异或  ^
+	void __exec94(Node *n) {
+		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '^'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '^'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		int i1 = ((Number*)n1->value)->getIntValue();
+		int i2 = ((Number*)n2->value)->getIntValue();
+		int i3 = i1 ^ i2;
+
+		n->value = m_exec_alloc.allocateNumber(i3);
+		freeSubNodes(n);
+
+	}
+
+	// 按位取反  ~
+	void __exec126(Node *n) {
+
+		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+
+		Node *n1 = n->opr_obj->op[0];
+
+		if (n1->value == NULL )
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '~'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER )
+		{
+			getState()->throwException(newArithmeticException("type error on opr '~'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		int i1 = ((Number*)n1->value)->getIntValue();
+		int i3 = ~i1;
+
+		n->value = m_exec_alloc.allocateNumber(i3);
+		freeSubNodes(n);
+
+	}
+
+	// 向左移位
+	void __execLEFT_SHIFT(Node *n) {
+		
+		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '<<'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '<<'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		int i1 = ((Number*)n1->value)->getIntValue();
+		int i2 = ((Number*)n2->value)->getIntValue();
+		int i3 = i1 << i2;
+
+		n->value = m_exec_alloc.allocateNumber(i3);
+		freeSubNodes(n);
+	}
+
+	// 向右移位
+	void __execRIGHT_SHIFT(Node *n) {
+
+		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '>>'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '>>'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		int i1 = ((Number*)n1->value)->getIntValue();
+		int i2 = ((Number*)n2->value)->getIntValue();
+		int i3 = i1 >> i2;
+
+		n->value = m_exec_alloc.allocateNumber(i3);
 		freeSubNodes(n);
 
 	}
@@ -664,6 +884,11 @@ namespace langX {
 
 	void __execADD_EQ(Node *n) {
 		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -690,6 +915,11 @@ namespace langX {
 
 	void __execSUB_EQ(Node *n) {
 		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -716,6 +946,11 @@ namespace langX {
 
 	void __execMUL_EQ(Node *n) {
 		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -742,6 +977,11 @@ namespace langX {
 
 	void __execDIV_EQ(Node *n) {
 		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -831,6 +1071,11 @@ namespace langX {
 	// 自增运算符 ++ 
 	void __execINC_OP(Node *n) {
 		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 
@@ -866,6 +1111,11 @@ namespace langX {
 	// 自减运算符 -- 
 	void __execDEC_OP(Node *n) {
 		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		/*
 		 * 后置值 被加到 变量身上， 而非 ++/-- 操作符身上了。
@@ -966,7 +1216,11 @@ namespace langX {
 	// 符号： >
 	void __exec62(Node *n) {
 		doSubNodes(n);
-
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -1002,7 +1256,11 @@ namespace langX {
 	// 大于等于
 	void __execGE_OP(Node *n) {
 		doSubNodes(n);
-
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -1038,7 +1296,11 @@ namespace langX {
 	// 符号： <
 	void __exec60(Node *n) {
 		doSubNodes(n);
-
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -1074,7 +1336,11 @@ namespace langX {
 	// 小于等于
 	void __execLE_OP(Node *n) {
 		doSubNodes(n);
-
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -1110,7 +1376,11 @@ namespace langX {
 	// 等于
 	void __execEQ_OP(Node *n) {
 		doSubNodes(n);
-
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -1162,6 +1432,11 @@ namespace langX {
 	// 不等于
 	void __execNE_OP(Node *n) {
 		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -1217,7 +1492,13 @@ namespace langX {
 		}
 
 		stateExtends(n);
-		if (__tryConvertToBool(n->opr_obj->op[0]))
+		bool f = __tryConvertToBool(n->opr_obj->op[0]);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+		if (f)
 		{
 			n->value = __tryConvertToBool(n->opr_obj->op[1]) ? n->value = m_exec_alloc.allocateNumber(1) : n->value = m_exec_alloc.allocateNumber(0);
 		}
@@ -1235,7 +1516,14 @@ namespace langX {
 		}
 
 		stateExtends(n);
-		if (__tryConvertToBool(n->opr_obj->op[0]))
+		bool f = __tryConvertToBool(n->opr_obj->op[0]);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+
+		if (f)
 		{
 			n->value = m_exec_alloc.allocateNumber(1);
 		}
@@ -1252,9 +1540,16 @@ namespace langX {
 			return;
 		}
 
-		stateExtends(n);
-		if (__tryConvertToBool(n->opr_obj->op[0]))
+		bool f = __tryConvertToBool(n->opr_obj->op[0]);
+		if (getState()->getCurrentEnv()->isDead())
 		{
+			freeSubNodes(n);
+			return;
+		}
+
+		if (f)
+		{
+
 			Node * a = n->opr_obj->op[1];
 			if (a != NULL)
 			{
@@ -1635,6 +1930,13 @@ namespace langX {
 		}
 
 		doSubNodes(n);
+
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+
 		Node *n1 = n->opr_obj->op[0];
 
 		if (n1->value == NULL) {
@@ -2060,6 +2362,10 @@ namespace langX {
 
 			return;
 		}
+		else if (node->type == NODE_CONSTANT_INTEGER)
+		{
+			node->value = m_exec_alloc.allocateNumber(node->con_obj->iValue);
+		}
 		else if (node->type == NODE_CLASS)
 		{
 			// 类
@@ -2158,6 +2464,18 @@ namespace langX {
 		case '<':
 			__exec60(node);
 			break;
+		case '&':
+			__exec38(node);
+			break;
+		case '|' :
+			__exec124(node);
+			break;
+		case '^':
+			__exec94(node);
+			break;
+		case '~':
+			__exec126(node);
+			break;
 		case UMINUS:
 			__execUMINUS(node);
 			break;
@@ -2249,6 +2567,12 @@ namespace langX {
 			break;
 		case XTRY:
 			__execXTRY(node);
+			break;
+		case LEFT_SHIFT:
+			__execLEFT_SHIFT(node);
+			break;
+		case RIGHT_SHIFT:
+			__execRIGHT_SHIFT(node);
 			break;
 		default:
 			break;

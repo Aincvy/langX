@@ -72,9 +72,14 @@ void count(void);
 "." {count(); return '.'; }
 "[" {count(); return '['; }
 "]" {count(); return ']'; }
-[+-/*()] {count(); return *yytext;}
+"&" {count(); return '&'; }
+"|" {count(); return '|'; }
+"^" {count(); return '^'; }
+"<<" {count(); return LEFT_SHIFT;}
+">>" {count(); return RIGHT_SHIFT; }
 "&&" {count(); return AND_OP;}
 "||" {count(); return OR_OP;}
+[+-/*()] {count(); return *yytext;}
 
 [ \t]  {count(); }
 [\n]   {count(); yylineno++; }

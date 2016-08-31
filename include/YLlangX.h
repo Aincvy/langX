@@ -56,6 +56,8 @@ extern "C" {
 	XNode * argsNode(XArgsList *);
 	// 创建一个数组元素节点
 	XNode *arr(char *, int ,XNode *);
+	// 创建一个int类型的常量节点
+	XNode *xint(int);
 	// 创建一个形参列表， 或者 追加一个参数到 列表中
 	XParamsList * params(XParamsList *, char *);
 	// 创建一个实参列表 ， 或者追加一个实参到列表中

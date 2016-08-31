@@ -104,7 +104,9 @@ namespace langX {
 		// 数组声明节点.  当为数组节点的时候。 数组基本信息存放在  node->ptr_u  上面。 执行完需要用free 释放
 		NODE_ARRAY ,
 		// 数组元素节点
-		NODE_ARRAY_ELE
+		NODE_ARRAY_ELE ,
+		// int 类型数据的节点
+		NODE_CONSTANT_INTEGER
 	};
 
 	// 节点的状态， 比如： 正常，在循环内，在函数内
