@@ -1,0 +1,14 @@
+print( 3 & 5 );
+print("\n");
+print( 9 | 5 );
+print("\n");
+print( 9 ^ 5 );
+print("\n");
+print( ~ 0 );
+print("\n");
+print( ~ 25 );
+print("\n");
+print( 3 << 4  );
+print("\n");
+print( 15 >> 2 );
+print("\n");

@@ -57,6 +57,8 @@ const char * parseFileName=NULL;
 %left LE_OP GE_OP EQ_OP NE_OP '>' '<'
 %left '+' '-' 
 %left '*' '/'
+%left '&' '|' '^' LEFT_SHIFT RIGHT_SHIFT
+%right '~'
 %nonassoc UMINUS
 
 %start program
@@ -300,7 +302,7 @@ arithmetic_stmt
 	| bit_opr_factor '&' bit_opr_factor  { $$ = opr('&',2,$1,$3); }
 	| bit_opr_factor '|' bit_opr_factor  { $$ = opr('|',2,$1,$3); }
 	| bit_opr_factor '^' bit_opr_factor  { $$ = opr('^',2,$1,$3); }
-	| '~' bit_opr_factor  { $$ = opr('~',1,$2); }
+	| '~' bit_opr_factor  { /* printf("get a ~ opr.\n"); */ $$ = opr('~',1,$2); }
 	| bit_opr_factor LEFT_SHIFT bit_opr_factor  { $$ = opr(LEFT_SHIFT,2,$1,$3); }
 	| bit_opr_factor RIGHT_SHIFT bit_opr_factor  { $$ = opr(RIGHT_SHIFT,2,$1,$3); }
 	;
