@@ -32,7 +32,7 @@ const char * parseFileName=NULL;
 %token <iValue> TDOUBLE TBOOL
 %token <sValue> IDENTIFIER TSTRING
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
-%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT
+%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ
 %token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
@@ -52,10 +52,10 @@ const char * parseFileName=NULL;
 
 %left FUNC_OP
 %left ','
-%right '=' ADD_EQ SUB_EQ MUL_EQ DIV_EQ
+%right '=' ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ 
 %left AND_OP OR_OP
 %left LE_OP GE_OP EQ_OP NE_OP '>' '<'
-%left '+' '-' 
+%left '+' '-' '%'
 %left '*' '/'
 %left '&' '|' '^' LEFT_SHIFT RIGHT_SHIFT
 %right '~'
@@ -295,10 +295,11 @@ parentheses_stmt
 
 //  运算语句
 arithmetic_stmt
-	: arithmetic_stmt_factor '+' arithmetic_stmt_factor { $$ = opr('+',2,$1,$3);}
-	| arithmetic_stmt_factor '-' arithmetic_stmt_factor  { $$ = opr('-',2,$1,$3); }
+	: arithmetic_stmt_factor '+' arithmetic_stmt_factor { $$ = opr('+',2,$1,$3); }
+	| arithmetic_stmt_factor '-' arithmetic_stmt_factor { $$ = opr('-',2,$1,$3); }
 	| arithmetic_stmt_factor '*' arithmetic_stmt_factor { $$ = opr('*',2,$1,$3); }
-	| arithmetic_stmt_factor '/' arithmetic_stmt_factor  { $$ = opr('/',2,$1,$3); }
+	| arithmetic_stmt_factor '/' arithmetic_stmt_factor { $$ = opr('/',2,$1,$3); }
+	| arithmetic_stmt_factor '%' arithmetic_stmt_factor { $$ = opr('%',2,$1,$3); }
 	| bit_opr_factor '&' bit_opr_factor  { $$ = opr('&',2,$1,$3); }
 	| bit_opr_factor '|' bit_opr_factor  { $$ = opr('|',2,$1,$3); }
 	| bit_opr_factor '^' bit_opr_factor  { $$ = opr('^',2,$1,$3); }
@@ -440,6 +441,7 @@ assign_stmt
 	| id_expr SUB_EQ assign_stmt_value_eq { $$ = opr(SUB_EQ,2,$1,$3);}
 	| id_expr MUL_EQ assign_stmt_value_eq { $$ = opr(MUL_EQ,2,$1,$3);}
 	| id_expr DIV_EQ assign_stmt_value_eq { $$ = opr(DIV_EQ,2,$1,$3);}
+	| id_expr MOD_EQ assign_stmt_value_eq { $$ = opr(MOD_EQ,2,$1,$3);}
 	;
 	
 %%

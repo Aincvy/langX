@@ -60,6 +60,7 @@ void count(void);
 "-=" {count(); return SUB_EQ; }
 "*=" {count(); return MUL_EQ; }
 "/=" {count(); return DIV_EQ; }
+"%=" {count(); return MOD_EQ; }
 ">" {count(); return '>'; }
 "<" {count(); return '<'; }
 "{" {count(); return '{'; }
@@ -76,6 +77,7 @@ void count(void);
 "|" {count(); return '|'; }
 "^" {count(); return '^'; }
 "~" {count(); return '~'; }
+"%" {count(); return '%'; }
 "<<" {count(); return LEFT_SHIFT;}
 ">>" {count(); return RIGHT_SHIFT; }
 "&&" {count(); return AND_OP;}
