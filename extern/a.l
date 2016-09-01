@@ -75,6 +75,7 @@ void count(void);
 "&" {count(); return '&'; }
 "|" {count(); return '|'; }
 "^" {count(); return '^'; }
+"~" {count(); return '~'; }
 "<<" {count(); return LEFT_SHIFT;}
 ">>" {count(); return RIGHT_SHIFT; }
 "&&" {count(); return AND_OP;}

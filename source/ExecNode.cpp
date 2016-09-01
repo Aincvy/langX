@@ -2365,6 +2365,8 @@ namespace langX {
 		else if (node->type == NODE_CONSTANT_INTEGER)
 		{
 			node->value = m_exec_alloc.allocateNumber(node->con_obj->iValue);
+			
+			return ;
 		}
 		else if (node->type == NODE_CLASS)
 		{
