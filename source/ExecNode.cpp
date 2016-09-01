@@ -738,6 +738,41 @@ namespace langX {
 
 	}
 
+	//  取模运算 %
+	void __exec37(Node *n) {
+
+		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '%'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '%'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		int i1 = ((Number*)n1->value)->getIntValue();
+		int i2 = ((Number*)n2->value)->getIntValue();
+		int i3 = i1 % i2;
+
+		n->value = m_exec_alloc.allocateNumber(i3);
+		freeSubNodes(n);
+
+	}
+
 	// 赋值操作 = 
 	void __exec61(Node *n) {
 		//printf("__exec61 start\n");
@@ -1008,6 +1043,41 @@ namespace langX {
 		}
 
 		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() / ((Number*)n2->value)->getDoubleValue());
+
+		setValueToEnv(n1->var_obj->name, n->value);
+
+		freeSubNodes(n);
+	}
+
+	void __execMOD_EQ(Node *n) {
+		doSubNodes(n);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		if (n1->value == NULL || n2->value == NULL)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '%='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("type error on opr '%='!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		int i1 = ((Number*)n1->value)->getIntValue();
+		int i2 = ((Number*)n2->value)->getIntValue();
+		int i3 = i1 % i2;
+
+		n->value = m_exec_alloc.allocateNumber(i3);
 
 		setValueToEnv(n1->var_obj->name, n->value);
 
@@ -2454,6 +2524,9 @@ namespace langX {
 		case '/':
 			__exec47(node);
 			break;
+		case '%':
+			__exec37(node);
+			break;
 		case '=':
 			__exec61(node);
 			break;
@@ -2498,6 +2571,9 @@ namespace langX {
 			break;
 		case DIV_EQ:
 			__execDIV_EQ(node);
+			break;
+		case MOD_EQ:
+			__execMOD_EQ(node);
 			break;
 		case LE_OP:
 			__execLE_OP(node);
