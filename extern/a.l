@@ -44,6 +44,7 @@ void count(void);
 "catch" {count();  return XCATCH; }
 "public" {count(); return XPUBLIC;}
 "set"  {count();  return XSET; }
+"is"   {count();  return XIS; }
 "=>"   {count();  return FUNC_OP; }
 "++"   {count();  return INC_OP;}
 "--"   {count();  return DEC_OP;}

@@ -2357,6 +2357,76 @@ namespace langX {
 		// 正常执行完毕， 会无视 catch 内的东西
 	}
 
+	//  类型判断语句， 返回一个 true/false
+	void __execXIS(Node *n) {
+
+		Node *n1 = n->opr_obj->op[0];
+		Node *n2 = n->opr_obj->op[1];
+
+		__execNode(n1);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			freeSubNodes(n);
+			return;
+		}
+
+		if (n1->value == NULL)
+		{
+			n->value = m_exec_alloc.allocateNumber(0);
+		}
+		else {
+			//UNKNOWN=100, NUMBER , STRING, FUNCTION, OBJECT , NULLOBJECT ,XARRAY
+			int i = 0;
+			char *type = n2->var_obj->name;
+			switch (n1->value->getType())
+			{
+			case NUMBER:
+				if (strcmp(type, "Number") == 0)
+				{
+					i = 1;
+				}
+				break;
+			case STRING:
+				if (strcmp(type, "String") == 0)
+				{
+					i = 1;
+				}
+				break;
+			case FUNCTION:
+				if (strcmp(type, "Function") == 0)
+				{
+					i = 1;
+				}
+				break;
+			case OBJECT:
+
+				if (((langXObjectRef*)n1->value)->getClassInfo()->isInstanceOf(type))
+				{
+					i = 1;
+				}
+				break;
+			case NULLOBJECT:
+				if (strcmp(type, "Null") == 0)
+				{
+					i = 1;
+				}
+				break;
+			case XARRAY:
+				if (strcmp(type, "Array") == 0)
+				{
+					i = 1;
+				}
+				break;
+			default:
+				break;
+			}
+
+			n->value = m_exec_alloc.allocateNumber(i);
+		}
+
+		freeSubNodes(n);
+	}
+
 	/*
 	 * 执行节点，  节点的结果 将 放在  Node.value 上
 	 * 这是一个 Object 类型的指针    07-24
@@ -2456,6 +2526,17 @@ namespace langX {
 				return;
 			}
 			ClassInfo *cinfo = (ClassInfo*)node->ptr_u;
+
+			if (getState()->getCurrentEnv()->getClassSelf(cinfo->getName()) != NULL)
+			{
+				char tmp[100] = { 0 };
+				sprintf(tmp, "class %s already declared.", cinfo->getName());
+				getState()->throwException(newRedeclarationException(tmp)->addRef());
+				delete cinfo;
+				node->ptr_u = NULL;
+				return ;
+			}
+
 			getState()->regClass(cinfo);
 			return;
 		}
@@ -2467,6 +2548,16 @@ namespace langX {
 				return;
 			}
 			Function *func = (Function*)node->value;
+			if (getState()->getCurrentEnv()->getFunctionSelf(func->getName()) != NULL)
+			{
+				char tmp[100] = { 0 };
+				sprintf(tmp, "function %s already declared.", func->getName());
+				getState()->throwException(newRedeclarationException(tmp)->addRef());
+				delete func;
+				node->value = NULL;
+				return ;
+			}
+
 			getState()->getCurrentEnv()->putFunction(func->getName(), func);
 			return;
 		}
@@ -2697,6 +2788,9 @@ namespace langX {
 			break;
 		case RIGHT_SHIFT:
 			__execRIGHT_SHIFT(node);
+			break;
+		case XIS:
+			__execXIS(node);
 			break;
 		default:
 			break;

@@ -1,4 +1,5 @@
 #include <string>
+#include <string.h>
 #include "../include/Object.h"
 #include "../include/Function.h"
 #include "../include/langXObject.h"
@@ -120,6 +121,20 @@ namespace langX {
 	std::map<std::string, Function*>& ClassInfo::getFunctions()
 	{
 		return this->m_functions;
+	}
+
+	bool ClassInfo::isInstanceOf(const char *name) const
+	{
+		if (strcmp(this->m_name.c_str(), name ) == 0)
+		{
+			return true;
+		}
+
+		if (this->m_parent != NULL)
+		{
+			return this->m_parent->isInstanceOf(name);
+		}
+		return false;
 	}
 
 
