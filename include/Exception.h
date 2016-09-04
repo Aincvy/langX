@@ -29,4 +29,5 @@ namespace langX {
 	langXObject *newTypeErrorException(const char *message);
 	langXObject *newFunctionNotFoundException(const char *message);
 	langXObject *newIndexOutOfBoundsException(const char *message);
+	langXObject *newRedeclarationException(const char *message);
 }

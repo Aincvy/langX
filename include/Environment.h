@@ -46,9 +46,12 @@ namespace langX {
 		virtual void putFunction(const char*, Function*) = 0;
 		virtual void putFunction(const std::string &, Function*) = 0;
 		virtual Function* getFunction(const std::string &) = 0;
+		// 仅从当前环境中尝试获得函数
+		virtual Function* getFunctionSelf(const std::string &);
 
 		virtual void putClass(const char *, ClassInfo *);
 		virtual ClassInfo *getClass(const char *);
+		virtual ClassInfo *getClassSelf(const char *);
 
 		Environment *getParent() const;
 		void setParent(Environment *);
@@ -137,9 +140,12 @@ namespace langX {
 		void putFunction(const char*, Function*) ;
 		void putFunction(const std::string &, Function*);
 		Function* getFunction(const std::string &) ;
+		// 仅从当前环境中尝试获得函数
+		Function* getFunctionSelf(const std::string &);
 
 		void putClass(const char *, ClassInfo *);
 		ClassInfo *getClass(const char *);
+		ClassInfo *getClassSelf(const char *);
 
 		EnvironmentType getType() const;
 
@@ -168,9 +174,12 @@ namespace langX {
 		void putFunction(const char*, Function*);
 		void putFunction(const std::string &, Function*);
 		Function* getFunction(const std::string &);
+		// 仅从当前环境中尝试获得函数
+		Function* getFunctionSelf(const std::string &);
 
 		void putClass(const char *, ClassInfo *);
 		ClassInfo *getClass(const char *);
+		ClassInfo *getClassSelf(const char *);
 
 		// 添加命名空间的引用
 		void addNameSpace(XNameSpace *);
@@ -212,6 +221,7 @@ namespace langX {
 
 		void putClass(const char *, ClassInfo *);
 		ClassInfo *getClass(const char *);
+		ClassInfo *getClassSelf(const char *);
 
 		void putNameSpace(const char *, XNameSpace *);
 		XNameSpace * getNameSpace(const char *);
@@ -242,6 +252,8 @@ namespace langX {
 		void putFunction(const char*, Function*);
 		void putFunction(const std::string &, Function*);
 		Function* getFunction(const std::string &);
+		// 仅从当前环境中尝试获得函数
+		Function* getFunctionSelf(const std::string &);
 
 		bool isClassEnvironment() const;
 
@@ -268,6 +280,8 @@ namespace langX {
 		void putFunction(const char*, Function*) ;
 		void putFunction(const std::string &, Function*) ;
 		Function* getFunction(const std::string &);
+		// 仅从当前环境中尝试获得函数
+		Function* getFunctionSelf(const std::string &);
 
 		// 获得桥接的是哪个对象
 		langXObject *getEnvObject() const;
@@ -308,10 +322,16 @@ namespace langX {
 		void putFunction(const char*, Function*) ;
 		void putFunction(const std::string &, Function*);
 		Function* getFunction(const std::string &) ;
+		// 仅从当前环境中尝试获得函数
+		Function* getFunctionSelf(const std::string &);
 
 		EnvironmentType getType() const;
 
 	private:
+
+		std::map<std::string, Function*> m_functions_map;
+		std::map<std::string, Object*> m_objects_map;
+
 		// catach 节点的根节点
 		Node * m_catch_node = nullptr;
 		// 优先使用 callback, 如果callback 不存在则使用catch节点
@@ -341,6 +361,12 @@ namespace langX {
 		void putFunction(const std::string &, Function*);
 		//  如果桥接的目标环境没有这个函数， 则会搜寻父环境
 		Function* getFunction(const std::string &);
+		// 仅从当前环境中尝试获得函数
+		Function* getFunctionSelf(const std::string &);
+
+		void putClass(const char *, ClassInfo *);
+		ClassInfo *getClass(const char *);
+		ClassInfo *getClassSelf(const char *);
 
 		// 获得 桥接的是哪个环境
 		Environment *getBridgeEnv();

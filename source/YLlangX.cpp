@@ -350,11 +350,11 @@ XNode * sopr(int opr, int npos, ...)
 
 XNode * func(char *name, XParamsList *params, XNode *node)
 {
+	//printf("create Func: %s\n" , name);
 	if (node != NULL)
 	{
 		node->freeOnExeced = false;
 	}
-	//printf("create Func: %s\n" , name);
 
 	Function *func = new Function(name, node);
 	func->setParamsList(params);
@@ -410,7 +410,7 @@ XNode * claxx(char *name, char *parent, XNode * node) {
 	ClassInfo *pclass = NULL;
 	if (parent != NULL)
 	{
-		pclass = getState()->getGlobalEnv()->getClass(parent);
+		pclass = getState()->getClass(parent);
 		if (pclass == NULL)
 		{
 			printf("error! cannot find class %s on extends!", parent);

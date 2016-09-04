@@ -1,0 +1,49 @@
+//  ¿‡–Õ≈–∂œΩ≈±æ
+
+a1 = 10 ;
+if ( a1 is Number ){
+  print("a1 is Number!\n");
+}
+
+a2 = "hello" ;
+if ( a2 is Number ){
+  print("a2 is Number!\n");
+}
+if ( a2 is String ){
+  print("a2 is String!\n");
+}
+
+a3 = null ;
+if ( a3 is Null ){
+  print("a3 is NULL!\n");
+}
+
+Person {
+
+}
+
+Student extends Person{
+}
+
+p1 = new Person();
+if ( p1 is Person ){
+  print("p1 is Person !\n");
+}
+if ( p1 is Student ){
+  print("p1 is Student !\n");
+}
+
+p2 = new Student();
+if ( p2 is Person ){
+  print("p2 is Person !\n");
+}
+if ( p2 is Student ){
+  print("p2 is Student !\n");
+}
+
+a4[10] ;
+if ( a4 is Array ){
+  print("a4 is Array!\n");
+}
+
+print("Script End!\n");

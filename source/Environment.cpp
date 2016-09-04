@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "../include/Environment.h"
 #include "../include/Object.h"
 #include "../include/ClassInfo.h"
@@ -5,6 +6,8 @@
 #include "../include/Function.h"
 #include "../include/langXObject.h"
 #include "../include/XNameSpace.h"
+#include "../include/YLlangX.h"
+#include "../include/Exception.h"
 
 namespace langX {
 
@@ -39,13 +42,18 @@ namespace langX {
 		return NULL;
 	}
 
+	Function * Environment::getFunctionSelf(const std::string &)
+	{
+		return nullptr;
+	}
+
 	void Environment::putClass(const char *name, ClassInfo *claxx)
 	{
-		/*if (claxx == NULL)
-		{
-			return;
-		}
-		this->m_classes_map[name] = claxx;*/
+		char tmp[200] = { 0 };
+		sprintf(tmp, "cannot put class %s into a (Environment/TryEnvironment)!", name);
+		getState()->throwException(newUnsupportedOperationException(tmp)->addRef());
+
+		delete claxx;
 	}
 
 	ClassInfo * Environment::getClass(const char *name)
@@ -54,6 +62,11 @@ namespace langX {
 		{
 			return this->m_parent->getClass(name);
 		}
+		return nullptr;
+	}
+
+	ClassInfo * Environment::getClassSelf(const char *)
+	{
 		return nullptr;
 	}
 
@@ -193,7 +206,14 @@ namespace langX {
 			{
 				return this->m_parent->getFunction(name);
 			}
+
+			return NULL;
 		}
+		return this->m_class->getFunction(name.c_str());
+	}
+
+	Function * ClassBridgeEnv::getFunctionSelf(const std::string &name)
+	{
 		return this->m_class->getFunction(name.c_str());
 	}
 
@@ -265,12 +285,22 @@ namespace langX {
 		return nullptr;
 	}
 
-	void ObjectBridgeEnv::putFunction(const char *, Function *)
+	void ObjectBridgeEnv::putFunction(const char *name, Function *f)
 	{
+		char tmp[200] = { 0 };
+		sprintf(tmp,"cannot put function %s into a object!", name);
+		getState()->throwException(newUnsupportedOperationException(tmp)->addRef());
+
+		delete f;
 	}
 
-	void ObjectBridgeEnv::putFunction(const std::string &, Function *)
+	void ObjectBridgeEnv::putFunction(const std::string &name, Function *f)
 	{
+		char tmp[200] = { 0 };
+		sprintf(tmp, "cannot put function %s into a object!", name.c_str());
+		getState()->throwException(newUnsupportedOperationException(tmp)->addRef());
+
+		delete f;
 	}
 
 	Function * ObjectBridgeEnv::getFunction(const std::string &name)
@@ -291,6 +321,16 @@ namespace langX {
 			}
 		}
 		return func;
+	}
+
+	Function * ObjectBridgeEnv::getFunctionSelf(const std::string &name)
+	{
+		if (this->m_object == NULL)
+		{
+			return NULL;
+		}
+
+		return this->m_object->getFunction(name.c_str());
 	}
 
 	langXObject * ObjectBridgeEnv::getEnvObject() const
@@ -314,6 +354,28 @@ namespace langX {
 
 	TryEnvironment::~TryEnvironment()
 	{
+		this->m_parent = NULL;
+		//printf("~Environment\n");
+		if (!m_objects_map.empty())
+		{
+			for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++) {
+				//a->second->decRefCount();
+				delete a->second;
+			}
+
+			m_objects_map.clear();
+		}
+
+		if (!m_functions_map.empty())
+		{
+			for (auto a = m_functions_map.begin(); a != m_functions_map.end(); a++) {
+				//a->second->decRefCount();
+				delete a->second;
+			}
+
+			m_functions_map.clear();
+		}
+
 	}
 
 	bool TryEnvironment::isTryEnvironment() const
@@ -343,19 +405,26 @@ namespace langX {
 
 	void TryEnvironment::putObject(const char *name, Object *obj)
 	{
-
+		putObject(std::string(name),obj);
 	}
 
-	void TryEnvironment::putObject(const std::string &, Object *)
+	void TryEnvironment::putObject(const std::string &name, Object *obj)
 	{
+		this->m_objects_map[name] = obj;
 	}
 
 	Object * TryEnvironment::getObject(const std::string &name)
 	{
-		if (this->m_parent != nullptr)
+		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
-			return this->m_parent->getObject(name);
+			if (this->m_parent != nullptr)
+			{
+				return this->m_parent->getObject(name);
+			}
+			return NULL;
 		}
+
+		return this->m_objects_map.at(name);
 	}
 
 	Object * TryEnvironment::getObjectSelf(const char *name) const
@@ -366,20 +435,40 @@ namespace langX {
 		}
 	}
 
-	void TryEnvironment::putFunction(const char *, Function *)
+	void TryEnvironment::putFunction(const char *name, Function *f)
 	{
+		putFunction(std::string(name), f);
 	}
 
-	void TryEnvironment::putFunction(const std::string &, Function *)
+	void TryEnvironment::putFunction(const std::string &name, Function *f)
 	{
+		this->m_functions_map[name] = f;
 	}
 
 	Function * TryEnvironment::getFunction(const std::string &name)
 	{
-		if (this->m_parent != nullptr)
+		if (this->m_functions_map.find(name) == this->m_functions_map.end())
 		{
-			return this->m_parent->getFunction(name);
+			// not found.
+			if (this->m_parent != nullptr)
+			{
+				return this->m_parent->getFunction(name);
+			}
+
+			return NULL;
 		}
+		return this->m_functions_map.at(name);
+	}
+
+	Function * TryEnvironment::getFunctionSelf(const std::string &name)
+	{
+		if (this->m_functions_map.find(name) == this->m_functions_map.end())
+		{
+			// not found.
+
+			return NULL;
+		}
+		return this->m_functions_map.at(name);
 	}
 
 	EnvironmentType TryEnvironment::getType() const
@@ -445,6 +534,26 @@ namespace langX {
 			}
 		}
 		return f;
+	}
+
+	Function * EnvironmentBridgeEnv::getFunctionSelf(const std::string &name)
+	{
+		return this->m_env->getFunctionSelf(name);
+	}
+
+	void EnvironmentBridgeEnv::putClass(const char *name, ClassInfo *c)
+	{
+		this->m_env->putClass(name, c);
+	}
+
+	ClassInfo * EnvironmentBridgeEnv::getClass(const char *name)
+	{
+		return this->m_env->getClass(name);
+	}
+
+	ClassInfo * EnvironmentBridgeEnv::getClassSelf(const char *name)
+	{
+		return this->m_env->getClassSelf(name);
 	}
 
 	Environment * EnvironmentBridgeEnv::getBridgeEnv()
@@ -637,6 +746,11 @@ namespace langX {
 		return c;
 	}
 
+	ClassInfo * XNameSpaceEnvironment::getClassSelf(const char *name)
+	{
+		return  this->m_space->getClass(name);
+	}
+
 	void XNameSpaceEnvironment::putNameSpace(const char *name, XNameSpace *env)
 	{
 		this->m_space->putNameSpace(name, env);
@@ -706,6 +820,17 @@ namespace langX {
 		return this->m_functions_map[name];
 	}
 
+	Function * GlobalEnvironment::getFunctionSelf(const std::string &name)
+	{
+		if (this->m_functions_map.find(name) == this->m_functions_map.end())
+		{
+			// not found.
+
+			return NULL;
+		}
+		return this->m_functions_map.at(name);
+	}
+
 	void GlobalEnvironment::putClass(const char *name, ClassInfo *claxx)
 	{
 		if (claxx == NULL)
@@ -723,6 +848,16 @@ namespace langX {
 			{
 				return this->m_parent->getClass(name);
 			}
+			return nullptr;
+		}
+		return this->m_classes_map.at(name);
+	}
+
+	ClassInfo * GlobalEnvironment::getClassSelf(const char *name)
+	{
+		if (this->m_classes_map.find(name) == this->m_classes_map.end())
+		{
+			return nullptr;
 		}
 		return this->m_classes_map.at(name);
 	}
@@ -844,6 +979,17 @@ namespace langX {
 		return this->m_functions_map[name];
 	}
 
+	Function * ScriptEnvironment::getFunctionSelf(const std::string &name)
+	{
+		if (this->m_functions_map.find(name) == this->m_functions_map.end())
+		{
+			// not found.
+
+			return NULL;
+		}
+		return this->m_functions_map.at(name);
+	}
+
 	void ScriptEnvironment::putClass(const char *name, ClassInfo *claxx)
 	{
 		if (claxx == NULL)
@@ -874,6 +1020,15 @@ namespace langX {
 				return this->m_parent->getClass(name);
 			}
 			return NULL;
+		}
+		return this->m_classes_map.at(name);
+	}
+
+	ClassInfo * ScriptEnvironment::getClassSelf(const char *name)
+	{
+		if (this->m_classes_map.find(name) == this->m_classes_map.end())
+		{
+			return nullptr;
 		}
 		return this->m_classes_map.at(name);
 	}

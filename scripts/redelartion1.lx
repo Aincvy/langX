@@ -1,0 +1,15 @@
+try {
+  
+  funa => {} 
+
+  funa => {} 
+  
+} catch ( e ){
+  e.printStackTrace();
+}
+
+Class1{}
+
+Class1{}
+
+print("Script End!\n");

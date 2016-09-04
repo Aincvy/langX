@@ -132,6 +132,12 @@ namespace langX {
 		ClassInfo *indexOutOfBoundsException = new ClassInfo("IndexOutOfBoundsException");
 		indexOutOfBoundsException->setParent(exception);
 		l->regClassToGlobal(indexOutOfBoundsException);
+
+		// RedeclarationException      重复声明异常
+		ClassInfo *redeclarationException = new ClassInfo("RedeclarationException");
+		redeclarationException->setParent(exception);
+		l->regClassToGlobal(redeclarationException);
+
 	}
 
 	langXObject * newException(const char * message)
@@ -199,6 +205,11 @@ namespace langX {
 	langXObject * newIndexOutOfBoundsException(const char * message)
 	{
 		return  newException("IndexOutOfBoundsException", message);
+	}
+
+	langXObject * newRedeclarationException(const char * message)
+	{
+		return  newException("RedeclarationException", message);
 	}
 
 }

@@ -46,6 +46,9 @@ namespace langX {
 		std::map<std::string, Object*> & getMembers();
 		std::map<std::string, Function*> & getFunctions();
 
+		// 当前类是否是该类 OR 该类的子类
+		bool isInstanceOf(const char *) const;
+
 	private:
 		//  当前类的 字段map ...
 		//  key:  属性名,  value:  对象指针
