@@ -12,30 +12,51 @@
 #include "../include/YLlangX.h"
 #include "../include/Exception.h"
 #include "../include/Function.h"
+#include "../include/XNameSpace.h"
+
+// 释放环境内存
+void freeEnv(langX::Environment **env) {
+
+	if (env == NULL || (*env) == NULL)
+	{
+		return;
+	}
+
+	langX::Environment *p = (*env);
+	switch (p->getType())
+	{
+	case langX::TDefaultEnvironment:
+		delete (langX::DefaultEnvironment*) p;
+		break;
+	case	langX::TGlobalEnvironment:
+		delete (langX::GlobalEnvironment*) p;
+		break;
+	case	langX::TScriptEnvironment:
+		delete (langX::ScriptEnvironment*) p;
+		break;
+	case	langX::TXNameSpaceEnvironment:
+		delete (langX::XNameSpaceEnvironment*) p;
+		break;
+	case	langX::TClassBridgeEnv:
+		delete (langX::ClassBridgeEnv*) p;
+		break;
+	case	langX::TObjectBridgeEnv:
+		delete (langX::ObjectBridgeEnv*) p;
+		break;
+	case	langX::TTryEnvironment:
+		delete (langX::TryEnvironment*) p;
+		break;
+	case	langX::TEnvironmentBridgeEnv:
+		delete (langX::EnvironmentBridgeEnv*) p;
+		break;
+	default:
+		break;
+	}
+
+	*env = NULL;
+}
 
 namespace langX {
-
-	void freeEnv(Environment *p) {
-		if (p->isClassEnvironment())
-		{
-			delete (ClassBridgeEnv*)p;
-		}
-		else if (p->isObjectEnvironment())
-		{
-			delete (ObjectBridgeEnv*)p;
-		}
-		else if (p->isTryEnvironment())
-		{
-			delete (TryEnvironment*)p;
-		}
-		else if (p->isEnvEnvironment())
-		{
-			delete (EnvironmentBridgeEnv*)p;
-		}
-		else {
-			delete p;
-		}
-	}
 
 	void  gTryCatchCB(langXObjectRef *obj) {
 		Function *func = obj->getFunction("printStackTrace");
@@ -58,20 +79,31 @@ namespace langX {
 
 	langXState::langXState()
 	{
-		this->m_global_env = new Environment();
+		XNameSpace *s = new XNameSpace("$NoName1");
+		this->m_namespace_map[s->getName()] = s;
+		this->m_global_env = new GlobalEnvironment();
 		this->m_global_env->setParent(NULL);
+		this->m_global_env->setDeep(0);
 		TryEnvironment *tryEnv = new TryEnvironment();
 		tryEnv->setParent(this->m_global_env);
 		tryEnv->setCatchCB(gTryCatchCB);
+		tryEnv->setDeep(1);
 		this->m_current_env = tryEnv;
+		this->m_current_deep = 1;
 		this->m_allocator = new Allocator();
 
 		this->m_stacktrace.newFrame(NULL, NULL, "<startFrame>");
 	}
+
 	langXState::~langXState()
 	{
-		//delete this->m_current_env;
-		
+		for (std::map<std::string, XNameSpace*>::iterator i = this->m_namespace_map.begin(); i != this->m_namespace_map.end(); i++)
+		{
+			XNameSpace *p = i->second;
+			delete p;
+		}
+		this->m_namespace_map.clear();
+
 		delete this->m_allocator;
 
 		while (this->m_current_env != NULL && this->m_current_env->getParent() != NULL)
@@ -79,9 +111,11 @@ namespace langX {
 			backEnv();
 		}
 
-		freeEnv(this->m_current_env);
-		this->m_current_env = NULL;
-		this->m_global_env = NULL;
+		//  下面那条语句的当前环境就是  m_global_env  ，所以无需释放 m_global_env
+		freeEnv(&this->m_current_env);
+		//this->m_current_env = NULL;
+		//delete this->m_global_env;
+		//this->m_global_env = NULL;
 	}
 	void langXState::putObject(const char * name, Object *obj)
 	{
@@ -97,12 +131,13 @@ namespace langX {
 		return this->m_current_env->getObject(name);
 	}
 
-	
+
 
 	Environment * langXState::newEnv()
 	{
-		Environment *env = new Environment();
+		Environment *env = new DefaultEnvironment();
 		env->setParent(this->m_current_env);
+		env->setDeep((++this->m_current_deep));
 		this->m_current_env = env;
 		return env;
 	}
@@ -115,6 +150,7 @@ namespace langX {
 		}
 
 		env->setParent(this->m_current_env);
+		env->setDeep((++this->m_current_deep));
 		this->m_current_env = env;
 		return env;
 	}
@@ -128,6 +164,7 @@ namespace langX {
 
 		EnvironmentBridgeEnv *bEnv = new EnvironmentBridgeEnv(env);
 		bEnv->setParent(this->m_current_env);
+		bEnv->setDeep((++this->m_current_deep));
 		this->m_current_env = bEnv;
 		return bEnv;
 	}
@@ -147,9 +184,10 @@ namespace langX {
 		if (flag)
 		{
 			//  子类
-			freeEnv(this->m_current_env);
-			this->m_current_env = NULL;
+			freeEnv(&this->m_current_env);
+			//this->m_current_env = NULL;
 		}
+		this->m_current_deep--;
 		this->m_current_env = env;
 	}
 
@@ -207,7 +245,17 @@ namespace langX {
 			return;
 		}
 
-		this->m_global_env->putClass(c->getName(),c);
+		this->m_script_env->putClass(c->getName(), c);
+	}
+
+	void langXState::regClassToGlobal(ClassInfo *c)
+	{
+		if (c == NULL)
+		{
+			return;
+		}
+
+		this->m_global_env->putClass(c->getName(), c);
 	}
 
 	Allocator & langXState::getAllocator() const
@@ -225,7 +273,7 @@ namespace langX {
 		StrackTraceFrameArray array1 = this->m_stacktrace.frames();
 
 		// 不打印自己这个函数
-		for (int i = array1.length-2; i >= 0; i--)
+		for (int i = array1.length - 2; i >= 0; i--)
 		{
 			printf("%s\n", array1.frame[i]->getInfo());
 		}
@@ -262,7 +310,7 @@ namespace langX {
 			// 因为丢出了异常， 所以到 try 环境之前的所有环境都会变成死亡环境
 			//env->setDead(true);
 			Environment *p = env->getParent();
-			
+
 			// 退回一级环境 ，直到退回try 环境
 			backEnv();
 
@@ -284,7 +332,8 @@ namespace langX {
 		{
 			c(obj);
 
-			// 设置当前环境为 dead 环境
+			// 新建一个环境，并设置当前环境为 dead 环境
+			newEnv();
 			this->m_current_env->setDead(true);
 
 			// 删除对象
@@ -319,7 +368,7 @@ namespace langX {
 			env->setDead(true);
 
 			setInException(false);
-			
+
 			// 删除对象
 			delete obj->getRefObject();
 			//delete obj;
@@ -340,6 +389,71 @@ namespace langX {
 		}
 
 		return classinfo->newObject();
+	}
+
+	ClassInfo * langXState::getClass(const char *name) const
+	{
+		ClassInfo * c = nullptr;
+		if (this->m_script_env != nullptr)
+		{
+			c = this->m_script_env->getClass(name);
+			if (c != nullptr)
+			{
+				return c;
+			}
+		}
+
+		return this->m_global_env->getClass(name);
+	}
+
+	XNameSpace * langXState::getNameSpace(const char *name)
+	{
+		if (this->m_namespace_map.find(name) != this->m_namespace_map.end())
+		{
+			return this->m_namespace_map[name];
+		}
+
+		XNameSpace *space = new XNameSpace(name);
+		this->m_namespace_map[name] = space;
+		return space;
+	}
+
+	void langXState::changeNameSpace(XNameSpace *s)
+	{
+		if (s == nullptr)
+		{
+			return;
+		}
+
+		//  释放内存到 深度为1 的tryEnv
+		while (this->m_current_deep != 1) {
+			backEnv();
+		}
+		
+		this->m_script_env = new XNameSpaceEnvironment(s);
+		this->m_current_deep++;
+		this->m_script_env->setDeep(this->m_current_deep);
+		this->m_script_env->setParent(this->m_current_env);
+		this->m_current_env = this->m_script_env;
+	}
+
+	void langXState::newScriptEnv(const char * name)
+	{
+		if (name == NULL)
+		{
+			return;
+		}
+
+		//  释放内存到 深度为1 的tryEnv
+		while (this->m_current_deep != 1) {
+			backEnv();
+		}
+
+		this->m_script_env = new ScriptEnvironment(name);
+		this->m_current_deep++;
+		this->m_script_env->setDeep(this->m_current_deep);
+		this->m_script_env->setParent(this->m_current_env);
+		this->m_current_env = this->m_script_env;
 	}
 
 }

@@ -73,65 +73,65 @@ namespace langX {
 		exception->addFunction("Exception", create3rdFunc("Exception", langX_Exception_Exception));
 		exception->addFunction("getMessage", create3rdFunc("getMessage", langX_Exception_getMessage));
 		exception->addFunction("printStackTrace", create3rdFunc("printStackTrace", langX_Exception_printStackTrace));
-		l->regClass(exception);
+		l->regClassToGlobal(exception);
 
 		// ArithmeticException    计算异常
 		ClassInfo *arithmeticException = new ClassInfo("ArithmeticException");
 		arithmeticException->setParent(exception);
 		arithmeticException->addFunction("ArithmeticException", create3rdFunc("ArithmeticException", langX_Exception_Exception));
-		l->regClass(arithmeticException);
+		l->regClassToGlobal(arithmeticException);
 
 		// NullPointerRefException   空指针异常
 		ClassInfo *nullPointerRefException = new ClassInfo("NullPointerRefException");
 		nullPointerRefException->setParent(exception);
 		nullPointerRefException->addFunction("NullPointerRefException", create3rdFunc("NullPointerRefException", langX_Exception_Exception));
-		l->regClass(nullPointerRefException);
+		l->regClassToGlobal(nullPointerRefException);
 
 		//  IOException       IO 异常
 		ClassInfo *ioException = new ClassInfo("IOException");
 		ioException->setParent(exception);
 		ioException->addFunction("IOException", create3rdFunc("IOException", langX_Exception_Exception));
-		l->regClass(ioException);
+		l->regClassToGlobal(ioException);
 
 		//   MemberException   成员异常
 		ClassInfo *memberException = new ClassInfo("MemberException");
 		memberException->setParent(exception);
-		l->regClass(exception);
+		l->regClassToGlobal(exception);
 
 		//   NoClassMemberException  没有类成员异常
 		ClassInfo *noClassMemberException = new ClassInfo("NoClassMemberException");
 		noClassMemberException->setParent(memberException);
-		l->regClass(noClassMemberException);
+		l->regClassToGlobal(noClassMemberException);
 
 		//   NoClassFunctionException  没有类函数异常
 		ClassInfo *noClassFunctionException = new ClassInfo("NoClassFunctionException");
 		noClassFunctionException->setParent(memberException);
-		l->regClass(noClassFunctionException);
+		l->regClassToGlobal(noClassFunctionException);
 
 		//   ClassNotFoundException    类没找到异常
 		ClassInfo *classNotFoundException = new ClassInfo("ClassNotFoundException");
 		classNotFoundException->setParent(memberException);
-		l->regClass(classNotFoundException);
+		l->regClassToGlobal(classNotFoundException);
 
 		// UnsupportedOperationException   不支持的操作异常
 		ClassInfo *unsupportedOperationException = new ClassInfo("UnsupportedOperationException");
 		unsupportedOperationException->setParent(exception);
-		l->regClass(unsupportedOperationException);
+		l->regClassToGlobal(unsupportedOperationException);
 
 		// TypeErrorException     类型错误异常
 		ClassInfo *typeErrorException = new ClassInfo("TypeErrorException");
 		typeErrorException->setParent(exception);
-		l->regClass(typeErrorException);
+		l->regClassToGlobal(typeErrorException);
 
 		// FunctionNotFoundException    函数未找到异常
 		ClassInfo *functionNotFoundException = new ClassInfo("FunctionNotFoundException");
 		functionNotFoundException->setParent(exception);
-		l->regClass(functionNotFoundException);
+		l->regClassToGlobal(functionNotFoundException);
 
 		// IndexOutOfBoundsException    下标越界异常
 		ClassInfo *indexOutOfBoundsException = new ClassInfo("IndexOutOfBoundsException");
 		indexOutOfBoundsException->setParent(exception);
-		l->regClass(indexOutOfBoundsException);
+		l->regClassToGlobal(indexOutOfBoundsException);
 	}
 
 	langXObject * newException(const char * message)

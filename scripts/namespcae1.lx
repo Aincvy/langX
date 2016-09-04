@@ -1,0 +1,11 @@
+set public = langX.core.namespace1.sub1.aa6;
+
+a,b,c,d;
+Person{
+  name,sex ;
+  funa => { ; }
+}
+
+a = 16 ;
+
+print("in NameSpace!\na: " + a + "\n");

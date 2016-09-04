@@ -22,7 +22,7 @@ void resetNodeState(langX::Node *n) {
 		m_exec_alloc.free(n->value);
 		n->value = NULL;
 	}
-	// ptr_u ¿ÉÄÜ´æ·ÅÁË²ÎÊý£¬ µÈÒÔºóÓÐÎÊÌâµÄÊ±ºòÔÙ½øÐÐµ÷Õû£¬  0821
+	// ptr_u å¯èƒ½å­˜æ”¾äº†å‚æ•°ï¼Œ ç­‰ä»¥åŽæœ‰é—®é¢˜çš„æ—¶å€™å†è¿›è¡Œè°ƒæ•´ï¼Œ  0821
 	//n->ptr_u = NULL;
 	n->postposition = NULL;
 	n->state.in_func = true;
@@ -38,6 +38,27 @@ void resetNodeState(langX::Node *n) {
 			}
 
 			resetNodeState(t);
+		}
+	}
+}
+
+// è®¾ç½®èŠ‚ç‚¹çš„çŠ¶æ€ä¸º å¯é‡Šæ”¾ [æš‚æ—¶æ²¡ç”¨åˆ°è¿™ä¸ªå‡½æ•°]
+void setStateToCanFree(langX::Node *n) {
+	deal_state(&n->state);
+	deal_switch_info(&n->switch_info);
+	n->freeOnExeced = true;
+
+	if (n->type == langX::NODE_OPERATOR)
+	{
+		for (int i = 0; i < n->opr_obj->op_count; i++)
+		{
+			langX::Node *t = n->opr_obj->op[i];
+			if (t == NULL)
+			{
+				continue;
+			}
+
+			setStateToCanFree(t);
 		}
 	}
 }

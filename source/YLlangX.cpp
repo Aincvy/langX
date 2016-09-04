@@ -261,6 +261,25 @@ XNode * xint(int i)
 	return node;
 }
 
+XNode * changeNameSpace(char * name)
+{
+	//printf("node will change space to: %s\n" ,name);
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
+
+	deal_fileinfo(&node->fileinfo);
+	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
+	node->type = NODE_CHANGE_NAMESPACE;
+	node->value = NULL;
+	node->ptr_u = NULL;
+	node->postposition = NULL;
+	node->freeOnExeced = true;
+	node->con_obj->sValue = name;
+	//printf("createNumberNode: %.5f\n", a);
+	return node;
+}
+
 XNode * opr(int opr, int npos, ...)
 {
 	va_list ap;
@@ -621,8 +640,13 @@ void freeNode(XNode * n) {
 	}
 
 	//printf("free node\n");
-	if (n->type == NODE_CONSTANT_NUMBER || n->type == NODE_CONSTANT_INTEGER)
+	if (n->type == NODE_CONSTANT_NUMBER || n->type == NODE_CONSTANT_INTEGER || n->type == NODE_CHANGE_NAMESPACE)
 	{
+		if (n->con_obj->sValue != NULL)
+		{
+			free(n->con_obj->sValue);
+			n->con_obj->sValue = NULL;
+		}
 		free(n->con_obj);
 		free(n);
 	}
@@ -673,6 +697,11 @@ void freeNode(XNode * n) {
 		n->arr_obj = NULL;
 		free(n);
 	}
+}
+
+void changeScriptEnv(const char * name)
+{
+	state->newScriptEnv(name);
 }
 
 void execNode(XNode *n) {

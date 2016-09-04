@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <string>
+#include <list>
 #include "Object.h"
 
 namespace langX {
@@ -9,6 +10,20 @@ namespace langX {
 	class ClassInfo;
 	class langXObject;
 	class langXObjectRef;
+	class XNameSpace;
+
+	//  环境类型
+	enum EnvironmentType
+	{
+		TDefaultEnvironment,
+		TGlobalEnvironment,
+		TScriptEnvironment,
+		TXNameSpaceEnvironment,
+		TClassBridgeEnv,
+		TObjectBridgeEnv,
+		TTryEnvironment,
+		TEnvironmentBridgeEnv
+	};
 
 	/*
 	 * 环境类  
@@ -22,18 +37,18 @@ namespace langX {
 		/* 在释放这个对象的时候并不会施放他的父级环境对象 */
 		~Environment();
 
-		virtual void putObject(const char*, Object*);
-		virtual void putObject(const std::string &, Object*);
-		virtual Object* getObject(const std::string &);
+		virtual void putObject(const char*, Object*) = 0;
+		virtual void putObject(const std::string &, Object*) = 0;
+		virtual Object* getObject(const std::string &) = 0;
 		// 只从自己的环境中寻找对象
-		virtual Object* getObjectSelf(const char *) const;
+		virtual Object* getObjectSelf(const char *) const = 0;
 
-		virtual void putFunction(const char*, Function*);
-		virtual void putFunction(const std::string &, Function*);
-		virtual Function* getFunction(const std::string &);
+		virtual void putFunction(const char*, Function*) = 0;
+		virtual void putFunction(const std::string &, Function*) = 0;
+		virtual Function* getFunction(const std::string &) = 0;
 
-		void putClass(const char *, ClassInfo *);
-		ClassInfo *getClass(const char *);
+		virtual void putClass(const char *, ClassInfo *);
+		virtual ClassInfo *getClass(const char *);
 
 		Environment *getParent() const;
 		void setParent(Environment *);
@@ -56,12 +71,19 @@ namespace langX {
 		virtual bool isTryEnvironment() const;
 		// 是否是 环境的桥接环境
 		virtual bool isEnvEnvironment() const;
+		// 是否是 命名空间环境
+		virtual bool isNameSpaceEnv() const;
+
+		virtual EnvironmentType getType() const = 0;
+
+		int getDeep() const;
+		void setDeep(int);
 
 	private:
-		std::map<std::string, Object*> m_objects_map;
-		std::map<std::string, Function*> m_functions_map;
-		std::map<std::string, ClassInfo*> m_classes_map;
+		//std::map<std::string, Function*> m_functions_map;
+		//std::map<std::string, ClassInfo*> m_classes_map;
 
+	protected:
 		Environment *m_parent = nullptr;
 
 		//  是否限定， 如果限定， 则寻找变量的时候不会去寻找父级环境
@@ -69,8 +91,141 @@ namespace langX {
 		bool m_restrict = false;
 		//  死亡符号。  如果当前环境为 死亡环境， 则不应该执行节点，直接返回就好了
 		bool m_dead = false;
+
+		// 当前环境的深度 即 第几层环境
+		int m_deep = -1;
 	};
 
+	//  默认的环境实现（只包含变量）
+	class DefaultEnvironment : public Environment
+	{
+	public:
+		DefaultEnvironment();
+		~DefaultEnvironment();
+
+		void putObject(const char*, Object*);
+		void putObject(const std::string &, Object*);
+		Object* getObject(const std::string &);
+		// 只从自己的环境中寻找对象
+		Object* getObjectSelf(const char *) const;
+
+		void putFunction(const char*, Function*);
+		void putFunction(const std::string &, Function*);
+		Function* getFunction(const std::string &);
+
+		EnvironmentType getType() const;
+
+	private:
+		//  变量的集合
+		std::map<std::string, Object*> m_objects_map;
+
+	};
+
+	//  全局环境 (只包含 类和函数)
+	class GlobalEnvironment : public Environment
+	{
+	public:
+		GlobalEnvironment();
+		~GlobalEnvironment();
+
+		void putObject(const char*, Object*) ;
+		void putObject(const std::string &, Object*) ;
+		Object* getObject(const std::string &) ;
+		// 只从自己的环境中寻找对象
+		Object* getObjectSelf(const char *) const ;
+
+		void putFunction(const char*, Function*) ;
+		void putFunction(const std::string &, Function*);
+		Function* getFunction(const std::string &) ;
+
+		void putClass(const char *, ClassInfo *);
+		ClassInfo *getClass(const char *);
+
+		EnvironmentType getType() const;
+
+	private:
+
+		std::map<std::string, Function*> m_functions_map;
+		std::map<std::string, ClassInfo*> m_classes_map;
+		
+	};
+
+	//  脚本环境。 可以放 类，函数， 变量 等。
+	//  脚本环境释放的时候会释放 脚本内的所有 类，函数， 变量等
+	class ScriptEnvironment : public Environment
+	{
+	public:
+		ScriptEnvironment(const char *);
+		~ScriptEnvironment();
+
+
+		void putObject(const char*, Object*);
+		void putObject(const std::string &, Object*);
+		Object* getObject(const std::string &);
+		// 只从自己的环境中寻找对象
+		Object* getObjectSelf(const char *) const;
+
+		void putFunction(const char*, Function*);
+		void putFunction(const std::string &, Function*);
+		Function* getFunction(const std::string &);
+
+		void putClass(const char *, ClassInfo *);
+		ClassInfo *getClass(const char *);
+
+		// 添加命名空间的引用
+		void addNameSpace(XNameSpace *);
+
+		//  脚本的文件名
+		const char * getName() const;
+
+		EnvironmentType getType() const;
+
+	private:
+
+		std::string m_name;
+
+		std::map<std::string, Function*> m_functions_map;
+		std::map<std::string, ClassInfo*> m_classes_map;
+		std::map<std::string, Object*> m_objects_map;
+		std::list< XNameSpace*> m_namespaces;
+	};
+
+
+	// 命名空间环境
+	class XNameSpaceEnvironment : public Environment
+	{
+	public:
+		XNameSpaceEnvironment(XNameSpace *);
+		~XNameSpaceEnvironment();
+
+		const char * getName() const;
+
+		void putObject(const char*, Object*) ;
+		void putObject(const std::string &, Object*);
+		Object* getObject(const std::string &);
+		// 只从自己的环境中寻找对象
+		Object* getObjectSelf(const char *) const ;
+
+		void putFunction(const char*, Function*);
+		void putFunction(const std::string &, Function*);
+		Function* getFunction(const std::string &);
+
+		void putClass(const char *, ClassInfo *);
+		ClassInfo *getClass(const char *);
+
+		void putNameSpace(const char *, XNameSpace *);
+		XNameSpace * getNameSpace(const char *);
+
+		// 更换环境桥接到的命名空间
+		void setXNameSpace(XNameSpace *);
+
+		EnvironmentType getType() const;
+
+	private:
+
+		XNameSpace *m_space;
+		
+	};
 
 	// 类的桥接环境  
 	class ClassBridgeEnv : public Environment
@@ -82,12 +237,15 @@ namespace langX {
 		void putObject(const char*, Object*);
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
+		Object* getObjectSelf(const char *) const;
 
 		void putFunction(const char*, Function*);
 		void putFunction(const std::string &, Function*);
 		Function* getFunction(const std::string &);
 
 		bool isClassEnvironment() const;
+
+		EnvironmentType getType() const;
 
 	private:
 
@@ -104,13 +262,19 @@ namespace langX {
 		void putObject(const char*, Object*);
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
+		Object* getObjectSelf(const char *) const;
 
+
+		void putFunction(const char*, Function*) ;
+		void putFunction(const std::string &, Function*) ;
 		Function* getFunction(const std::string &);
 
 		// 获得桥接的是哪个对象
 		langXObject *getEnvObject() const;
 
 		bool isObjectEnvironment() const;
+
+		EnvironmentType getType() const;
 
 	private:
 
@@ -134,6 +298,18 @@ namespace langX {
 
 		void setCatchNode(Node *);
 		Node *getCatchNode() const;
+
+		void putObject(const char*, Object*);
+		void putObject(const std::string &, Object*) ;
+		Object* getObject(const std::string &) ;
+		// 只从自己的环境中寻找对象
+		Object* getObjectSelf(const char *) const ;
+
+		void putFunction(const char*, Function*) ;
+		void putFunction(const std::string &, Function*);
+		Function* getFunction(const std::string &) ;
+
+		EnvironmentType getType() const;
 
 	private:
 		// catach 节点的根节点
@@ -173,6 +349,9 @@ namespace langX {
 		bool isClassEnvironment() const;
 		bool isObjectEnvironment() const;
 		bool isTryEnvironment() const;
+		bool isNameSpaceEnv() const;
+
+		EnvironmentType getType() const;
 
 	private:
 		Environment *m_env = nullptr;

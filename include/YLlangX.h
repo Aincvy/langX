@@ -58,6 +58,8 @@ extern "C" {
 	XNode *arr(char *, int ,XNode *);
 	// 创建一个int类型的常量节点
 	XNode *xint(int);
+	// 切换命名空间
+	XNode *changeNameSpace(char *);
 	// 创建一个形参列表， 或者 追加一个参数到 列表中
 	XParamsList * params(XParamsList *, char *);
 	// 创建一个实参列表 ， 或者追加一个实参到列表中
@@ -74,6 +76,9 @@ extern "C" {
 
 	// 释放一个节点的内存
 	void freeNode(XNode *);
+
+	// 更改脚本环境
+	void changeScriptEnv(const char *);
 }
 
 langX::Object* getValue(const char*);
