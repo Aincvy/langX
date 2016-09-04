@@ -106,7 +106,9 @@ namespace langX {
 		// 数组元素节点
 		NODE_ARRAY_ELE ,
 		// int 类型数据的节点
-		NODE_CONSTANT_INTEGER
+		NODE_CONSTANT_INTEGER ,
+		// 切换命名空间
+		NODE_CHANGE_NAMESPACE 
 	};
 
 	// 节点的状态， 比如： 正常，在循环内，在函数内

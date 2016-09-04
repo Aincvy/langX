@@ -8,10 +8,13 @@
 
 namespace langX {
 	class Environment;
+	class XNameSpaceEnvironment;
 	class Allocator;
 	class ClassInfo;
 	class langXObjectRef;
 	class langXObject;
+	class XNameSpace;
+	class GlobalEnvironment;
 
 	class langXState
 	{
@@ -46,8 +49,11 @@ namespace langX {
 		// 解除函数的注册
 		void unreg3rd(const char *);
 
-		// 注册一个类 到 公共环境内。  在公共环境释放内存的时候会释放类信息， 所以不必手动释放
+		//  注册一个类到 当前的脚本环境/命名空间环境
 		void regClass(ClassInfo *);
+
+		// 注册一个类 到 全局环境内。  在公共环境释放内存的时候会释放类信息， 所以不必手动释放
+		void regClassToGlobal(ClassInfo *);
 
 		Allocator &getAllocator() const;
 
@@ -63,12 +69,28 @@ namespace langX {
 		// NEW 一个对象 ，并不会执行对象的构造函数
 		langXObject *newObject(const char *) const;
 
+		// 获得类信息。  会先搜索当前脚本环境， 如果不存在， 则去搜索全局环境
+		ClassInfo *getClass(const char *) const;
+
+		// 获得一个命名空间， 如果该命名空间不存在， 则会添加一个进去
+		XNameSpace *getNameSpace(const char *);
+
+		void changeNameSpace(XNameSpace *);
+
+		// 建立一个新的脚本环境
+		void newScriptEnv(const char *);
+
 	private:
 		// 全局环境
-		Environment *m_global_env = nullptr;
+		GlobalEnvironment *m_global_env = nullptr;
 		Environment *m_current_env = nullptr;
+		Environment *m_script_env = nullptr;
 		Allocator  *m_allocator = nullptr;
 		StackTrace m_stacktrace;
+
+		std::map<std::string, XNameSpace*> m_namespace_map;
+
+		int m_current_deep = 0;
 
 	};
 }

@@ -14,6 +14,8 @@
 #include "../include/langXObjectRef.h"
 #include "../include/XArray.h"
 #include "../include/Exception.h"
+#include "../include/XNameSpace.h"
+#include "../include/StackTrace.h"
 
 namespace langX {
 	// 内存的 管理器
@@ -347,7 +349,7 @@ namespace langX {
 		if (getState()->getCurrentEnv()->isDead())
 		{
 			freeSubNodes(n);
-			return ;
+			return;
 		}
 
 		Node *n1 = n->opr_obj->op[0];
@@ -648,13 +650,13 @@ namespace langX {
 
 		Node *n1 = n->opr_obj->op[0];
 
-		if (n1->value == NULL )
+		if (n1->value == NULL)
 		{
 			getState()->throwException(newArithmeticException("value is null on opr '~'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
-		if (n1->value->getType() != NUMBER )
+		if (n1->value->getType() != NUMBER)
 		{
 			getState()->throwException(newArithmeticException("type error on opr '~'!")->addRef());
 			freeSubNodes(n);
@@ -671,7 +673,7 @@ namespace langX {
 
 	// 向左移位
 	void __execLEFT_SHIFT(Node *n) {
-		
+
 		doSubNodes(n);
 		if (getState()->getCurrentEnv()->isDead())
 		{
@@ -2053,7 +2055,13 @@ namespace langX {
 	void __execNEW(Node *n) {
 		// new 一个对象
 		char *className = n->opr_obj->op[0]->var_obj->name;
-		langXObject *object = getState()->newObject(className);
+		ClassInfo *claxxInfo = getState()->getClass(className);
+		if (claxxInfo == NULL)
+		{
+			getState()->throwException(newClassNotFoundException(className)->addRef());
+			return;
+		}
+		langXObject *object = claxxInfo->newObject();
 		if (object == NULL)
 		{
 			getState()->throwException(newClassNotFoundException(className)->addRef());
@@ -2075,12 +2083,14 @@ namespace langX {
 				XArgsList *args = (XArgsList *)argNode->ptr_u;
 
 				getState()->newEnv2(env);
+				getState()->getStackTrace().newFrame(claxxInfo, func, "<__init>");
 				callFunc(func, args, fileInfoString(n->fileinfo).c_str());
 
 				if (getState()->getCurrentEnv()->isDead())
 				{
 					return;
 				}
+				getState()->getStackTrace().popFrame();
 				getState()->backEnv();
 
 			}
@@ -2184,7 +2194,7 @@ namespace langX {
 			}
 			else {
 				char tmp[100] = { 0 };
-				sprintf(tmp,"no member %s in array.",memberName);
+				sprintf(tmp, "no member %s in array.", memberName);
 				getState()->throwException(newNoClassMemberException(tmp)->addRef());
 			}
 
@@ -2205,7 +2215,7 @@ namespace langX {
 		if (t == NULL)
 		{
 			char tmp[100] = { 0 };
-			sprintf(tmp,"no member %s in class %s.", memberName,objectRef->getClassInfo()->getName());
+			sprintf(tmp, "no member %s in class %s.", memberName, objectRef->getClassInfo()->getName());
 			getState()->throwException(newNoClassMemberException(tmp)->addRef());
 			freeSubNodes(n);
 			return;
@@ -2435,8 +2445,8 @@ namespace langX {
 		else if (node->type == NODE_CONSTANT_INTEGER)
 		{
 			node->value = m_exec_alloc.allocateNumber(node->con_obj->iValue);
-			
-			return ;
+
+			return;
 		}
 		else if (node->type == NODE_CLASS)
 		{
@@ -2497,6 +2507,42 @@ namespace langX {
 			node->value = ref->at(index)->clone();
 			return;
 		}
+		else if (node->type == NODE_CHANGE_NAMESPACE)
+		{
+			// 切换命名空间
+			char* name = node->con_obj->sValue;
+			std::string str = std::string(name);
+			XNameSpace *space = NULL;
+
+			auto dotIndex = str.find_first_of(".");
+
+			while (dotIndex != std::string::npos)
+			{
+				std::string f = str.substr(0, dotIndex);
+				str = str.substr(dotIndex + 1);
+				dotIndex = str.find_first_of(".");
+
+				// f is namespace name
+				if (space == NULL)
+				{
+					space = getState()->getNameSpace(f.c_str());
+				}
+				else {
+					space = space->getNameSpace2(f.c_str());
+				}
+			}
+
+			if (space == NULL)
+			{
+				space = getState()->getNameSpace(str.c_str());
+			}
+			else {
+				space = space->getNameSpace2(str.c_str());
+			}
+
+			getState()->changeNameSpace(space);
+			return;
+		}
 
 
 		if (node->type != NODE_OPERATOR)
@@ -2542,7 +2588,7 @@ namespace langX {
 		case '&':
 			__exec38(node);
 			break;
-		case '|' :
+		case '|':
 			__exec124(node);
 			break;
 		case '^':
