@@ -43,7 +43,7 @@ char *namespaceNameCat(char *,char *);
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
 %type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt bit_opr_factor
-%type <node> type_judge_stmt
+%type <node> type_judge_stmt lambda_stmt
 %type <params> param_list parameter
 %type <args> args_list args_expr
 %type <sValue> extends_stmt namespace_name_stmt
@@ -177,6 +177,12 @@ class_func_serial_stmt
 // 函数声明语句
 func_declar_stmt
 	: IDENTIFIER FUNC_OP param_list '{' expr_list '}' { $$ = func($1,$3,$5);}
+	;
+
+// lambda 表达式
+lambda_stmt
+	: '(' parameter ')' FUNC_OP '{' expr_list '}'  %prec UMINUS  { $$ = NULL ;}
+//	| parameter FUNC_OP '{' expr_list '}'   %prec UMINUS { $$ = NULL ;}
 	;
 
 param_list
@@ -346,7 +352,7 @@ new_expr
 	;
 
 id_expr
-	: IDENTIFIER    { $$ = var($1); }
+	: IDENTIFIER   %prec NONASSOC { $$ = var($1); }
 	;
 
 t_bool_expr
@@ -413,7 +419,7 @@ assign_stmt_value
 	| t_bool_expr   { $$ = $1; }
 	| arithmetic_stmt { $$ = $1; }
 	| call_statement  { $$ = $1; }
-	| id_expr       { $$ = $1; }
+	| id_expr      %prec NONASSOC { $$ = $1; }
 	| string_expr   { $$ = $1; }
 	| self_inc_dec_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
@@ -421,6 +427,7 @@ assign_stmt_value
 	| null_expr      { $$ = $1; }
 	| this_stmt    %prec UMINUS  { $$ = $1; }
 	| array_ele_stmt { $$ = $1; }
+	| lambda_stmt  %prec UMINUS  { $$ = $1; }
 	;
 
 //  += -= *= /=  的值

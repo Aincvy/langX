@@ -60,6 +60,8 @@ extern "C" {
 	XNode *xint(int);
 	// 切换命名空间
 	XNode *changeNameSpace(char *);
+	// 生成一个lamdba 表达式的节点
+	XNode *lambda(XParamsList *,XNode *);
 	// 创建一个形参列表， 或者 追加一个参数到 列表中
 	XParamsList * params(XParamsList *, char *);
 	// 创建一个实参列表 ， 或者追加一个实参到列表中
