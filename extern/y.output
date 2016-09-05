@@ -9,192 +9,241 @@
    5            | declar_stmt
    6            | con_ctl_stmt
    7            | simple_stmt ';'
+   8            | try_stmt
 
-   8  declar_stmt : func_declar_stmt
-   9              | var_declar_stmt
-  10              | class_declar_stmt
+   9  try_stmt : XTRY '{' expr_list '}'
+  10           | XTRY '{' expr_list '}' catch_block_stmt
 
-  11  class_declar_stmt : IDENTIFIER '{' '}'
-  12                    | IDENTIFIER '{' class_body '}'
+  11  catch_block_stmt : XCATCH '(' id_expr ')' '{' expr_list '}'
 
-  13  class_body : class_body_stmt
-  14             | class_body class_body_stmt
+  12  declar_stmt : func_declar_stmt
+  13              | var_declar_stmt
+  14              | class_declar_stmt
+  15              | namespace_declar_stmt ';'
 
-  15  class_body_stmt : var_declar_stmt
-  16                  | single_assign_stmt ';'
-  17                  | func_declar_stmt
+  16  namespace_declar_stmt : XSET XPUBLIC '=' namespace_name_stmt
 
-  18  this_stmt : THIS '.' id_expr
-  19            | THIS '.' class_member_stmt
-  20            | THIS '.' id_expr '(' args_list ')'
-  21            | THIS '.' class_member_func_stmt
+  17  namespace_name_stmt : IDENTIFIER
+  18                      | namespace_name_stmt '.' IDENTIFIER
 
-  22  this_member_stmt : THIS '.' id_expr
-  23                   | THIS '.' class_member_stmt
+  19  class_declar_stmt : IDENTIFIER extends_stmt '{' '}'
+  20                    | IDENTIFIER extends_stmt '{' class_body '}'
 
-  24  class_member_stmt : id_expr '.' id_expr
-  25                    | class_member_func_stmt '.' id_expr
-  26                    | IDENTIFIER '(' args_list ')' '.' id_expr
-  27                    | class_member_stmt '.' id_expr
+  21  extends_stmt :
+  22               | EXTENDS IDENTIFIER
 
-  28  class_member_func_stmt : id_expr '.' id_expr '(' args_list ')'
-  29                         | IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list ')'
-  30                         | class_member_stmt '.' id_expr '(' args_list ')'
-  31                         | class_member_func_stmt '.' id_expr '(' args_list ')'
+  23  class_body : class_body_stmt
+  24             | class_body class_body_stmt
 
-  32  class_func_serial_stmt : IDENTIFIER '(' args_list ')' IDENTIFIER '(' args_list ')'
-  33                         | id_expr '.' id_expr '(' args_list ')' IDENTIFIER '(' args_list ')'
-  34                         | class_func_serial_stmt IDENTIFIER '(' args_list ')'
+  25  class_body_stmt : var_declar_stmt
+  26                  | single_assign_stmt ';'
+  27                  | func_declar_stmt
 
-  35  func_declar_stmt : IDENTIFIER FUNC_OP param_list '{' expr_list '}'
+  28  this_stmt : THIS
+  29            | THIS '.' id_expr
+  30            | THIS '.' id_expr '(' args_list ')'
 
-  36  param_list :
-  37             | '(' parameter ')'
+  31  this_member_stmt : THIS '.' id_expr
+  32                   | THIS '.' class_member_stmt
 
-  38  parameter : IDENTIFIER
-  39            | parameter ',' IDENTIFIER
-  40            |
+  33  class_member_stmt : id_expr '.' id_expr
+  34                    | class_member_func_stmt '.' id_expr
+  35                    | IDENTIFIER '(' args_list ')' '.' id_expr
+  36                    | class_member_stmt '.' id_expr
 
-  41  expr_list : expr_list statement
-  42            |
+  37  class_member_func_stmt : id_expr '.' id_expr '(' args_list ')'
+  38                         | IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list ')'
+  39                         | class_member_stmt '.' id_expr '(' args_list ')'
+  40                         | class_member_func_stmt '.' id_expr '(' args_list ')'
 
-  43  var_declar_stmt : id_expr ';'
-  44                  | id_expr ',' var_declar_stmt
+  41  class_func_serial_stmt : IDENTIFIER '(' args_list ')' IDENTIFIER '(' args_list ')'
+  42                         | id_expr '.' id_expr '(' args_list ')' IDENTIFIER '(' args_list ')'
+  43                         | class_func_serial_stmt IDENTIFIER '(' args_list ')'
 
-  45  con_ctl_stmt : selection_stmt
-  46               | loop_stmt
+  44  func_declar_stmt : IDENTIFIER FUNC_OP param_list '{' expr_list '}'
 
-  47  selection_stmt : IF '(' logic_stmt ')' block
-  48                 | IF '(' logic_stmt ')' block ELSE block
-  49                 | SWITCH '(' id_expr ')' '{' case_stmt_list '}'
+  45  lambda_stmt : '(' parameter ')' FUNC_OP '{' expr_list '}'
+  46              | parameter FUNC_OP '{' expr_list '}'
 
-  50  case_stmt_list : case_stmt
-  51                 | case_stmt_list case_stmt
+  47  param_list :
+  48             | '(' parameter ')'
 
-  52  case_stmt : CASE double_expr ':' expr_list
-  53            | DEFAULT ':' expr_list
+  49  parameter : IDENTIFIER
+  50            | parameter ',' IDENTIFIER
+  51            |
 
-  54  loop_stmt : WHILE '(' logic_stmt ')' block
-  55            | FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block
+  52  expr_list : expr_list statement
+  53            |
 
-  56  for_1_stmt :
-  57             | assign_stmt
-  58             | var_declar_stmt
-  59             | self_inc_dec_stmt
+  54  var_declar_stmt : id_expr ';'
+  55                  | id_expr ',' var_declar_stmt
+  56                  | IDENTIFIER '[' XINTEGER ']' ';'
+  57                  | IDENTIFIER '[' XINTEGER ']' ',' var_declar_stmt
+  58                  | IDENTIFIER '[' IDENTIFIER ']' ';'
+  59                  | IDENTIFIER '[' IDENTIFIER ']' ',' var_declar_stmt
 
-  60  simple_stmt : assign_stmt
-  61              | call_statement
-  62              | DELETE IDENTIFIER ';'
-  63              | interrupt_stmt
-  64              | new_expr
-  65              | class_func_serial_stmt
-  66              | restrict_stmt
+  60  con_ctl_stmt : selection_stmt
+  61               | loop_stmt
 
-  67  restrict_stmt : RESTRICT
-  68                | RESTRICT t_bool_expr
+  62  selection_stmt : IF '(' logic_stmt ')' block
+  63                 | IF '(' logic_stmt ')' block ELSE block
+  64                 | SWITCH '(' id_expr ')' '{' case_stmt_list '}'
 
-  69  interrupt_stmt : BREAK
-  70                 | RETURN
-  71                 | RETURN assign_stmt_value
+  65  case_stmt_list : case_stmt
+  66                 | case_stmt_list case_stmt
 
-  72  call_statement : IDENTIFIER '(' args_list ')'
-  73                 | class_member_func_stmt
+  67  case_stmt : CASE double_expr ':' expr_list
+  68            | DEFAULT ':' expr_list
 
-  74  args_list :
-  75            | args_expr
+  69  loop_stmt : WHILE '(' logic_stmt ')' block
+  70            | FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block
 
-  76  args_expr : args_expr_collection
-  77            | args_expr ',' args_expr_collection
+  71  for_1_stmt :
+  72             | assign_stmt
+  73             | var_declar_stmt
+  74             | self_inc_dec_stmt
 
-  78  args_expr_collection : t_bool_expr
-  79                       | double_expr
-  80                       | id_expr
-  81                       | string_expr
-  82                       | uminus_expr
-  83                       | call_statement
-  84                       | arithmetic_stmt
+  75  simple_stmt : assign_stmt
+  76              | call_statement
+  77              | DELETE IDENTIFIER ';'
+  78              | interrupt_stmt
+  79              | new_expr
+  80              | class_func_serial_stmt
+  81              | restrict_stmt
 
-  85  block : '{' expr_list '}'
-  86        | statement
+  82  restrict_stmt : RESTRICT
+  83                | RESTRICT t_bool_expr
 
-  87  double_or_ps_expr : double_expr
-  88                    | parentheses_stmt
+  84  interrupt_stmt : BREAK
+  85                 | RETURN
+  86                 | RETURN assign_stmt_value
 
-  89  parentheses_stmt : '(' assign_stmt_value_eq ')'
+  87  call_statement : IDENTIFIER '(' args_list ')'
+  88                 | class_member_func_stmt
 
-  90  arithmetic_stmt : arithmetic_stmt_factor '+' arithmetic_stmt_factor
-  91                  | arithmetic_stmt_factor '-' arithmetic_stmt_factor
-  92                  | arithmetic_stmt_factor '*' arithmetic_stmt_factor
-  93                  | arithmetic_stmt_factor '/' arithmetic_stmt_factor
+  89  args_list :
+  90            | args_expr
 
-  94  arithmetic_stmt_factor : assign_stmt_value_eq
-  95                         | string_expr
-  96                         | arithmetic_stmt
-  97                         | '(' arithmetic_stmt ')'
+  91  args_expr : args_expr_collection
+  92            | args_expr ',' args_expr_collection
 
-  98  new_expr : NEW id_expr '(' args_list ')'
+  93  args_expr_collection : t_bool_expr
+  94                       | double_expr
+  95                       | id_expr
+  96                       | string_expr
+  97                       | uminus_expr
+  98                       | call_statement
+  99                       | arithmetic_stmt
 
-  99  id_expr : IDENTIFIER
+ 100  block : '{' expr_list '}'
+ 101        | statement
 
- 100  t_bool_expr : TBOOL
+ 102  double_or_ps_expr : double_expr
+ 103                    | parentheses_stmt
 
- 101  double_expr : TDOUBLE
+ 104  parentheses_stmt : '(' assign_stmt_value_eq ')'
 
- 102  uminus_expr : '-' double_or_ps_expr
+ 105  arithmetic_stmt : arithmetic_stmt_factor '+' arithmetic_stmt_factor
+ 106                  | arithmetic_stmt_factor '-' arithmetic_stmt_factor
+ 107                  | arithmetic_stmt_factor '*' arithmetic_stmt_factor
+ 108                  | arithmetic_stmt_factor '/' arithmetic_stmt_factor
+ 109                  | arithmetic_stmt_factor '%' arithmetic_stmt_factor
+ 110                  | bit_opr_factor '&' bit_opr_factor
+ 111                  | bit_opr_factor '|' bit_opr_factor
+ 112                  | bit_opr_factor '^' bit_opr_factor
+ 113                  | '~' bit_opr_factor
+ 114                  | bit_opr_factor LEFT_SHIFT bit_opr_factor
+ 115                  | bit_opr_factor RIGHT_SHIFT bit_opr_factor
 
- 103  string_expr : TSTRING
+ 116  bit_opr_factor : XINTEGER
+ 117                 | id_expr
 
- 104  null_expr : XNULL
+ 118  arithmetic_stmt_factor : assign_stmt_value_eq
+ 119                         | string_expr
+ 120                         | arithmetic_stmt
+ 121                         | class_member_stmt
+ 122                         | array_ele_stmt
+ 123                         | '(' arithmetic_stmt ')'
 
- 105  bool_param_expr : assign_stmt_value_eq
- 106                  | arithmetic_stmt
+ 124  new_expr : NEW id_expr '(' args_list ')'
 
- 107  logic_stmt : bool_param_expr
- 108             | bool_param_expr '>' bool_param_expr
- 109             | bool_param_expr '<' bool_param_expr
- 110             | bool_param_expr LE_OP bool_param_expr
- 111             | bool_param_expr GE_OP bool_param_expr
- 112             | bool_param_expr EQ_OP bool_param_expr
- 113             | bool_param_expr NE_OP bool_param_expr
- 114             | logic_stmt AND_OP logic_stmt
- 115             | logic_stmt OR_OP logic_stmt
+ 125  id_expr : IDENTIFIER
 
- 116  self_inc_dec_stmt : INC_OP id_expr
- 117                    | DEC_OP id_expr
- 118                    | id_expr INC_OP
- 119                    | id_expr DEC_OP
+ 126  t_bool_expr : TBOOL
 
- 120  assign_stmt_value : double_expr
- 121                    | uminus_expr
- 122                    | t_bool_expr
- 123                    | arithmetic_stmt
- 124                    | call_statement
- 125                    | id_expr
- 126                    | string_expr
- 127                    | self_inc_dec_stmt
- 128                    | new_expr
- 129                    | class_member_stmt
- 130                    | null_expr
- 131                    | this_stmt
+ 127  double_expr : TDOUBLE
+ 128              | XINTEGER
 
- 132  assign_stmt_value_eq : double_expr
- 133                       | uminus_expr
- 134                       | call_statement
- 135                       | id_expr
- 136                       | self_inc_dec_stmt
+ 129  uminus_expr : '-' double_or_ps_expr
 
- 137  single_assign_stmt : id_expr '=' assign_stmt_value
- 138                     | id_expr '=' single_assign_stmt
+ 130  string_expr : TSTRING
 
- 139  class_member_assign_stmt : class_member_stmt '=' assign_stmt_value
- 140                           | this_member_stmt '=' assign_stmt_value
+ 131  null_expr : XNULL
 
- 141  assign_stmt : single_assign_stmt
- 142              | class_member_assign_stmt
- 143              | id_expr ADD_EQ assign_stmt_value_eq
- 144              | id_expr SUB_EQ assign_stmt_value_eq
- 145              | id_expr MUL_EQ assign_stmt_value_eq
- 146              | id_expr DIV_EQ assign_stmt_value_eq
+ 132  bool_param_expr : assign_stmt_value_eq
+ 133                  | arithmetic_stmt
+ 134                  | t_bool_expr
+ 135                  | string_expr
+ 136                  | null_expr
+
+ 137  logic_stmt : bool_param_expr
+ 138             | type_judge_stmt
+ 139             | bool_param_expr '>' bool_param_expr
+ 140             | bool_param_expr '<' bool_param_expr
+ 141             | bool_param_expr LE_OP bool_param_expr
+ 142             | bool_param_expr GE_OP bool_param_expr
+ 143             | bool_param_expr EQ_OP bool_param_expr
+ 144             | bool_param_expr NE_OP bool_param_expr
+ 145             | logic_stmt AND_OP logic_stmt
+ 146             | logic_stmt OR_OP logic_stmt
+
+ 147  type_judge_stmt : id_expr XIS id_expr
+
+ 148  self_inc_dec_stmt : INC_OP id_expr
+ 149                    | DEC_OP id_expr
+ 150                    | id_expr INC_OP
+ 151                    | id_expr DEC_OP
+
+ 152  assign_stmt_value : double_expr
+ 153                    | uminus_expr
+ 154                    | t_bool_expr
+ 155                    | arithmetic_stmt
+ 156                    | call_statement
+ 157                    | id_expr
+ 158                    | string_expr
+ 159                    | self_inc_dec_stmt
+ 160                    | new_expr
+ 161                    | class_member_stmt
+ 162                    | null_expr
+ 163                    | this_stmt
+ 164                    | array_ele_stmt
+ 165                    | lambda_stmt
+
+ 166  assign_stmt_value_eq : double_expr
+ 167                       | uminus_expr
+ 168                       | call_statement
+ 169                       | id_expr
+ 170                       | self_inc_dec_stmt
+
+ 171  single_assign_stmt : id_expr '=' assign_stmt_value
+ 172                     | id_expr '=' single_assign_stmt
+
+ 173  class_member_assign_stmt : class_member_stmt '=' assign_stmt_value
+ 174                           | this_member_stmt '=' assign_stmt_value
+
+ 175  array_ele_stmt : IDENTIFIER '[' XINTEGER ']'
+ 176                 | IDENTIFIER '[' IDENTIFIER ']'
+
+ 177  array_ele_assign_stmt : array_ele_stmt '=' assign_stmt_value
+
+ 178  assign_stmt : single_assign_stmt
+ 179              | class_member_assign_stmt
+ 180              | array_ele_assign_stmt
+ 181              | id_expr ADD_EQ assign_stmt_value_eq
+ 182              | id_expr SUB_EQ assign_stmt_value_eq
+ 183              | id_expr MUL_EQ assign_stmt_value_eq
+ 184              | id_expr DIV_EQ assign_stmt_value_eq
+ 185              | id_expr MOD_EQ assign_stmt_value_eq
 
 state 0
 	$accept : . program $end  (0)
@@ -219,3474 +268,5048 @@ state 2
 	IDENTIFIER  shift 3
 	RESTRICT  shift 4
 	THIS  shift 5
-	IF  shift 6
-	WHILE  shift 7
-	FOR  shift 8
-	DELETE  shift 9
-	BREAK  shift 10
-	RETURN  shift 11
-	SWITCH  shift 12
-	NEW  shift 13
-	';'  shift 14
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
 	$end  reduce 1
 
-	statement  goto 15
-	declar_stmt  goto 16
-	con_ctl_stmt  goto 17
-	simple_stmt  goto 18
-	func_declar_stmt  goto 19
-	var_declar_stmt  goto 20
-	selection_stmt  goto 21
-	loop_stmt  goto 22
-	assign_stmt  goto 23
-	call_statement  goto 24
-	single_assign_stmt  goto 25
-	interrupt_stmt  goto 26
-	new_expr  goto 27
-	id_expr  goto 28
-	class_declar_stmt  goto 29
-	class_member_stmt  goto 30
-	class_member_assign_stmt  goto 31
-	class_member_func_stmt  goto 32
-	class_func_serial_stmt  goto 33
-	restrict_stmt  goto 34
-	this_member_stmt  goto 35
+	statement  goto 17
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
 
 
 state 3
-	class_declar_stmt : IDENTIFIER . '{' '}'  (11)
-	class_declar_stmt : IDENTIFIER . '{' class_body '}'  (12)
-	class_member_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'  (29)
-	class_func_serial_stmt : IDENTIFIER . '(' args_list ')' IDENTIFIER '(' args_list ')'  (32)
-	func_declar_stmt : IDENTIFIER . FUNC_OP param_list '{' expr_list '}'  (35)
-	call_statement : IDENTIFIER . '(' args_list ')'  (72)
-	id_expr : IDENTIFIER .  (99)
+	class_declar_stmt : IDENTIFIER . extends_stmt '{' '}'  (19)
+	class_declar_stmt : IDENTIFIER . extends_stmt '{' class_body '}'  (20)
+	class_member_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'  (38)
+	class_func_serial_stmt : IDENTIFIER . '(' args_list ')' IDENTIFIER '(' args_list ')'  (41)
+	func_declar_stmt : IDENTIFIER . FUNC_OP param_list '{' expr_list '}'  (44)
+	var_declar_stmt : IDENTIFIER . '[' XINTEGER ']' ';'  (56)
+	var_declar_stmt : IDENTIFIER . '[' XINTEGER ']' ',' var_declar_stmt  (57)
+	var_declar_stmt : IDENTIFIER . '[' IDENTIFIER ']' ';'  (58)
+	var_declar_stmt : IDENTIFIER . '[' IDENTIFIER ']' ',' var_declar_stmt  (59)
+	call_statement : IDENTIFIER . '(' args_list ')'  (87)
+	id_expr : IDENTIFIER .  (125)
+	array_ele_stmt : IDENTIFIER . '[' XINTEGER ']'  (175)
+	array_ele_stmt : IDENTIFIER . '[' IDENTIFIER ']'  (176)
+	extends_stmt : .  (21)
 
-	FUNC_OP  shift 36
-	'{'  shift 37
-	'('  shift 38
-	ADD_EQ  reduce 99
-	SUB_EQ  reduce 99
-	MUL_EQ  reduce 99
-	DIV_EQ  reduce 99
-	','  reduce 99
-	'='  reduce 99
-	';'  reduce 99
-	'.'  reduce 99
+	FUNC_OP  shift 42
+	EXTENDS  shift 43
+	'('  shift 44
+	'['  shift 45
+	ADD_EQ  reduce 125
+	SUB_EQ  reduce 125
+	MUL_EQ  reduce 125
+	DIV_EQ  reduce 125
+	MOD_EQ  reduce 125
+	','  reduce 125
+	'='  reduce 125
+	';'  reduce 125
+	'{'  reduce 21
+	'.'  reduce 125
+
+	extends_stmt  goto 46
 
 
 state 4
-	restrict_stmt : RESTRICT .  (67)
-	restrict_stmt : RESTRICT . t_bool_expr  (68)
+	restrict_stmt : RESTRICT .  (82)
+	restrict_stmt : RESTRICT . t_bool_expr  (83)
 
-	TBOOL  shift 39
-	';'  reduce 67
+	TBOOL  shift 47
+	';'  reduce 82
 
-	t_bool_expr  goto 40
+	t_bool_expr  goto 48
 
 
 state 5
-	this_member_stmt : THIS . '.' id_expr  (22)
-	this_member_stmt : THIS . '.' class_member_stmt  (23)
+	this_member_stmt : THIS . '.' id_expr  (31)
+	this_member_stmt : THIS . '.' class_member_stmt  (32)
 
-	'.'  shift 41
+	'.'  shift 49
 	.  error
 
 
 state 6
-	selection_stmt : IF . '(' logic_stmt ')' block  (47)
-	selection_stmt : IF . '(' logic_stmt ')' block ELSE block  (48)
+	try_stmt : XTRY . '{' expr_list '}'  (9)
+	try_stmt : XTRY . '{' expr_list '}' catch_block_stmt  (10)
 
-	'('  shift 42
+	'{'  shift 50
 	.  error
 
 
 state 7
-	loop_stmt : WHILE . '(' logic_stmt ')' block  (54)
+	namespace_declar_stmt : XSET . XPUBLIC '=' namespace_name_stmt  (16)
 
-	'('  shift 43
+	XPUBLIC  shift 51
 	.  error
 
 
 state 8
-	loop_stmt : FOR . '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block  (55)
+	selection_stmt : IF . '(' logic_stmt ')' block  (62)
+	selection_stmt : IF . '(' logic_stmt ')' block ELSE block  (63)
 
-	'('  shift 44
+	'('  shift 52
 	.  error
 
 
 state 9
-	simple_stmt : DELETE . IDENTIFIER ';'  (62)
+	loop_stmt : WHILE . '(' logic_stmt ')' block  (69)
 
-	IDENTIFIER  shift 45
+	'('  shift 53
 	.  error
 
 
 state 10
-	interrupt_stmt : BREAK .  (69)
+	loop_stmt : FOR . '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block  (70)
 
-	.  reduce 69
+	'('  shift 54
+	.  error
 
 
 state 11
-	interrupt_stmt : RETURN .  (70)
-	interrupt_stmt : RETURN . assign_stmt_value  (71)
+	simple_stmt : DELETE . IDENTIFIER ';'  (77)
 
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	THIS  shift 51
-	NEW  shift 13
-	XNULL  shift 52
-	'-'  shift 53
-	'('  shift 54
-	';'  reduce 70
-
-	arithmetic_stmt  goto 55
-	self_inc_dec_stmt  goto 56
-	call_statement  goto 57
-	assign_stmt_value_eq  goto 58
-	assign_stmt_value  goto 59
-	new_expr  goto 60
-	id_expr  goto 61
-	t_bool_expr  goto 62
-	double_expr  goto 63
-	uminus_expr  goto 64
-	string_expr  goto 65
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 67
-	class_member_func_stmt  goto 32
-	null_expr  goto 68
-	this_stmt  goto 69
+	IDENTIFIER  shift 55
+	.  error
 
 
 state 12
-	selection_stmt : SWITCH . '(' id_expr ')' '{' case_stmt_list '}'  (49)
+	interrupt_stmt : BREAK .  (84)
 
-	'('  shift 70
-	.  error
+	.  reduce 84
 
 
 state 13
-	new_expr : NEW . id_expr '(' args_list ')'  (98)
+	interrupt_stmt : RETURN .  (85)
+	interrupt_stmt : RETURN . assign_stmt_value  (86)
+	parameter : .  (51)
 
-	IDENTIFIER  shift 71
-	.  error
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 58
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	THIS  shift 62
+	NEW  shift 15
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 66
+	FUNC_OP  reduce 51
+	','  reduce 51
+	';'  reduce 85
 
-	id_expr  goto 72
+	arithmetic_stmt  goto 67
+	self_inc_dec_stmt  goto 68
+	call_statement  goto 69
+	assign_stmt_value_eq  goto 70
+	assign_stmt_value  goto 71
+	new_expr  goto 72
+	id_expr  goto 73
+	t_bool_expr  goto 74
+	double_expr  goto 75
+	uminus_expr  goto 76
+	string_expr  goto 77
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 79
+	class_member_func_stmt  goto 36
+	null_expr  goto 80
+	this_stmt  goto 81
+	array_ele_stmt  goto 82
+	bit_opr_factor  goto 83
+	lambda_stmt  goto 84
+	parameter  goto 85
 
 
 state 14
+	selection_stmt : SWITCH . '(' id_expr ')' '{' case_stmt_list '}'  (64)
+
+	'('  shift 86
+	.  error
+
+
+state 15
+	new_expr : NEW . id_expr '(' args_list ')'  (124)
+
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 88
+
+
+state 16
 	statement : ';' .  (4)
 
 	.  reduce 4
 
 
-state 15
+state 17
 	statement_list : statement_list statement .  (2)
 
 	.  reduce 2
 
 
-state 16
+state 18
 	statement : declar_stmt .  (5)
 
 	.  reduce 5
 
 
-state 17
+state 19
 	statement : con_ctl_stmt .  (6)
 
 	.  reduce 6
 
 
-state 18
+state 20
 	statement : simple_stmt . ';'  (7)
 
-	';'  shift 73
+	';'  shift 89
 	.  error
 
 
-state 19
-	declar_stmt : func_declar_stmt .  (8)
-
-	.  reduce 8
-
-
-state 20
-	declar_stmt : var_declar_stmt .  (9)
-
-	.  reduce 9
-
-
 state 21
-	con_ctl_stmt : selection_stmt .  (45)
+	declar_stmt : func_declar_stmt .  (12)
 
-	.  reduce 45
+	.  reduce 12
 
 
 state 22
-	con_ctl_stmt : loop_stmt .  (46)
+	declar_stmt : var_declar_stmt .  (13)
 
-	.  reduce 46
+	.  reduce 13
 
 
 state 23
-	simple_stmt : assign_stmt .  (60)
+	con_ctl_stmt : selection_stmt .  (60)
 
 	.  reduce 60
 
 
 state 24
-	simple_stmt : call_statement .  (61)
+	con_ctl_stmt : loop_stmt .  (61)
 
 	.  reduce 61
 
 
 state 25
-	assign_stmt : single_assign_stmt .  (141)
+	simple_stmt : assign_stmt .  (75)
 
-	.  reduce 141
+	.  reduce 75
 
 
 state 26
-	simple_stmt : interrupt_stmt .  (63)
+	simple_stmt : call_statement .  (76)
 
-	.  reduce 63
+	.  reduce 76
 
 
 state 27
-	simple_stmt : new_expr .  (64)
+	assign_stmt : single_assign_stmt .  (178)
 
-	.  reduce 64
+	.  reduce 178
 
 
 state 28
-	class_member_stmt : id_expr . '.' id_expr  (24)
-	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (28)
-	class_func_serial_stmt : id_expr . '.' id_expr '(' args_list ')' IDENTIFIER '(' args_list ')'  (33)
-	var_declar_stmt : id_expr . ';'  (43)
-	var_declar_stmt : id_expr . ',' var_declar_stmt  (44)
-	single_assign_stmt : id_expr . '=' assign_stmt_value  (137)
-	single_assign_stmt : id_expr . '=' single_assign_stmt  (138)
-	assign_stmt : id_expr . ADD_EQ assign_stmt_value_eq  (143)
-	assign_stmt : id_expr . SUB_EQ assign_stmt_value_eq  (144)
-	assign_stmt : id_expr . MUL_EQ assign_stmt_value_eq  (145)
-	assign_stmt : id_expr . DIV_EQ assign_stmt_value_eq  (146)
+	simple_stmt : interrupt_stmt .  (78)
 
-	ADD_EQ  shift 74
-	SUB_EQ  shift 75
-	MUL_EQ  shift 76
-	DIV_EQ  shift 77
-	','  shift 78
-	'='  shift 79
-	';'  shift 80
-	'.'  shift 81
-	.  error
+	.  reduce 78
 
 
 state 29
-	declar_stmt : class_declar_stmt .  (10)
+	simple_stmt : new_expr .  (79)
 
-	.  reduce 10
+	.  reduce 79
 
 
 state 30
-	class_member_stmt : class_member_stmt . '.' id_expr  (27)
-	class_member_func_stmt : class_member_stmt . '.' id_expr '(' args_list ')'  (30)
-	class_member_assign_stmt : class_member_stmt . '=' assign_stmt_value  (139)
+	statement : try_stmt .  (8)
 
-	'='  shift 82
-	'.'  shift 83
-	.  error
+	.  reduce 8
 
 
 state 31
-	assign_stmt : class_member_assign_stmt .  (142)
+	class_member_stmt : id_expr . '.' id_expr  (33)
+	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (37)
+	class_func_serial_stmt : id_expr . '.' id_expr '(' args_list ')' IDENTIFIER '(' args_list ')'  (42)
+	var_declar_stmt : id_expr . ';'  (54)
+	var_declar_stmt : id_expr . ',' var_declar_stmt  (55)
+	single_assign_stmt : id_expr . '=' assign_stmt_value  (171)
+	single_assign_stmt : id_expr . '=' single_assign_stmt  (172)
+	assign_stmt : id_expr . ADD_EQ assign_stmt_value_eq  (181)
+	assign_stmt : id_expr . SUB_EQ assign_stmt_value_eq  (182)
+	assign_stmt : id_expr . MUL_EQ assign_stmt_value_eq  (183)
+	assign_stmt : id_expr . DIV_EQ assign_stmt_value_eq  (184)
+	assign_stmt : id_expr . MOD_EQ assign_stmt_value_eq  (185)
 
-	.  reduce 142
+	ADD_EQ  shift 90
+	SUB_EQ  shift 91
+	MUL_EQ  shift 92
+	DIV_EQ  shift 93
+	MOD_EQ  shift 94
+	','  shift 95
+	'='  shift 96
+	';'  shift 97
+	'.'  shift 98
+	.  error
 
 
 state 32
-	class_member_stmt : class_member_func_stmt . '.' id_expr  (25)
-	class_member_func_stmt : class_member_func_stmt . '.' id_expr '(' args_list ')'  (31)
-	call_statement : class_member_func_stmt .  (73)
+	declar_stmt : class_declar_stmt .  (14)
 
-	'.'  shift 84
-	AND_OP  reduce 73
-	OR_OP  reduce 73
-	LE_OP  reduce 73
-	GE_OP  reduce 73
-	EQ_OP  reduce 73
-	NE_OP  reduce 73
-	','  reduce 73
-	'>'  reduce 73
-	'<'  reduce 73
-	'+'  reduce 73
-	'-'  reduce 73
-	'*'  reduce 73
-	'/'  reduce 73
-	';'  reduce 73
-	')'  reduce 73
+	.  reduce 14
 
 
 state 33
-	class_func_serial_stmt : class_func_serial_stmt . IDENTIFIER '(' args_list ')'  (34)
-	simple_stmt : class_func_serial_stmt .  (65)
+	declar_stmt : namespace_declar_stmt . ';'  (15)
 
-	IDENTIFIER  shift 85
-	';'  reduce 65
+	';'  shift 99
+	.  error
 
 
 state 34
-	simple_stmt : restrict_stmt .  (66)
+	class_member_stmt : class_member_stmt . '.' id_expr  (36)
+	class_member_func_stmt : class_member_stmt . '.' id_expr '(' args_list ')'  (39)
+	class_member_assign_stmt : class_member_stmt . '=' assign_stmt_value  (173)
 
-	.  reduce 66
+	'='  shift 100
+	'.'  shift 101
+	.  error
 
 
 state 35
-	class_member_assign_stmt : this_member_stmt . '=' assign_stmt_value  (140)
+	assign_stmt : class_member_assign_stmt .  (179)
 
-	'='  shift 86
-	.  error
+	.  reduce 179
 
 
 state 36
-	func_declar_stmt : IDENTIFIER FUNC_OP . param_list '{' expr_list '}'  (35)
-	param_list : .  (36)
+	class_member_stmt : class_member_func_stmt . '.' id_expr  (34)
+	class_member_func_stmt : class_member_func_stmt . '.' id_expr '(' args_list ')'  (40)
+	call_statement : class_member_func_stmt .  (88)
 
-	'('  shift 87
-	'{'  reduce 36
-
-	param_list  goto 88
+	'.'  shift 102
+	AND_OP  reduce 88
+	OR_OP  reduce 88
+	LE_OP  reduce 88
+	GE_OP  reduce 88
+	EQ_OP  reduce 88
+	NE_OP  reduce 88
+	','  reduce 88
+	'>'  reduce 88
+	'<'  reduce 88
+	'+'  reduce 88
+	'-'  reduce 88
+	'%'  reduce 88
+	'*'  reduce 88
+	'/'  reduce 88
+	';'  reduce 88
+	')'  reduce 88
 
 
 state 37
-	class_declar_stmt : IDENTIFIER '{' . '}'  (11)
-	class_declar_stmt : IDENTIFIER '{' . class_body '}'  (12)
+	class_func_serial_stmt : class_func_serial_stmt . IDENTIFIER '(' args_list ')'  (43)
+	simple_stmt : class_func_serial_stmt .  (80)
 
-	IDENTIFIER  shift 89
-	'}'  shift 90
-	.  error
-
-	func_declar_stmt  goto 91
-	var_declar_stmt  goto 92
-	single_assign_stmt  goto 93
-	id_expr  goto 94
-	class_body  goto 95
-	class_body_stmt  goto 96
+	IDENTIFIER  shift 103
+	';'  reduce 80
 
 
 state 38
-	class_member_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr '(' args_list ')'  (29)
-	class_func_serial_stmt : IDENTIFIER '(' . args_list ')' IDENTIFIER '(' args_list ')'  (32)
-	call_statement : IDENTIFIER '(' . args_list ')'  (72)
-	args_list : .  (74)
+	simple_stmt : restrict_stmt .  (81)
 
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 107
-	args_expr  goto 108
+	.  reduce 81
 
 
 state 39
-	t_bool_expr : TBOOL .  (100)
+	class_member_assign_stmt : this_member_stmt . '=' assign_stmt_value  (174)
 
-	.  reduce 100
+	'='  shift 104
+	.  error
 
 
 state 40
-	restrict_stmt : RESTRICT t_bool_expr .  (68)
+	array_ele_assign_stmt : array_ele_stmt . '=' assign_stmt_value  (177)
 
-	.  reduce 68
+	'='  shift 105
+	.  error
 
 
 state 41
-	this_member_stmt : THIS '.' . id_expr  (22)
-	this_member_stmt : THIS '.' . class_member_stmt  (23)
+	assign_stmt : array_ele_assign_stmt .  (180)
 
-	IDENTIFIER  shift 109
-	.  error
-
-	id_expr  goto 110
-	class_member_stmt  goto 111
-	class_member_func_stmt  goto 112
+	.  reduce 180
 
 
 state 42
-	selection_stmt : IF '(' . logic_stmt ')' block  (47)
-	selection_stmt : IF '(' . logic_stmt ')' block ELSE block  (48)
+	func_declar_stmt : IDENTIFIER FUNC_OP . param_list '{' expr_list '}'  (44)
+	param_list : .  (47)
 
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
+	'('  shift 106
+	'{'  reduce 47
 
-	logic_stmt  goto 113
-	arithmetic_stmt  goto 114
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 116
-	bool_param_expr  goto 117
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
+	param_list  goto 107
 
 
 state 43
-	loop_stmt : WHILE '(' . logic_stmt ')' block  (54)
+	extends_stmt : EXTENDS . IDENTIFIER  (22)
 
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
+	IDENTIFIER  shift 108
 	.  error
-
-	logic_stmt  goto 122
-	arithmetic_stmt  goto 114
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 116
-	bool_param_expr  goto 117
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
 
 
 state 44
-	loop_stmt : FOR '(' . for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block  (55)
-	for_1_stmt : .  (56)
+	class_member_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr '(' args_list ')'  (38)
+	class_func_serial_stmt : IDENTIFIER '(' . args_list ')' IDENTIFIER '(' args_list ')'  (41)
+	call_statement : IDENTIFIER '(' . args_list ')'  (87)
+	args_list : .  (89)
 
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
 	IDENTIFIER  shift 109
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	THIS  shift 5
-	';'  reduce 56
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
 
-	var_declar_stmt  goto 123
-	for_1_stmt  goto 124
-	assign_stmt  goto 125
-	self_inc_dec_stmt  goto 126
-	single_assign_stmt  goto 25
-	id_expr  goto 127
-	class_member_stmt  goto 30
-	class_member_assign_stmt  goto 31
-	class_member_func_stmt  goto 112
-	this_member_stmt  goto 35
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 122
+	args_expr  goto 123
 
 
 state 45
-	simple_stmt : DELETE IDENTIFIER . ';'  (62)
+	var_declar_stmt : IDENTIFIER '[' . XINTEGER ']' ';'  (56)
+	var_declar_stmt : IDENTIFIER '[' . XINTEGER ']' ',' var_declar_stmt  (57)
+	var_declar_stmt : IDENTIFIER '[' . IDENTIFIER ']' ';'  (58)
+	var_declar_stmt : IDENTIFIER '[' . IDENTIFIER ']' ',' var_declar_stmt  (59)
+	array_ele_stmt : IDENTIFIER '[' . XINTEGER ']'  (175)
+	array_ele_stmt : IDENTIFIER '[' . IDENTIFIER ']'  (176)
 
-	';'  shift 128
+	XINTEGER  shift 124
+	IDENTIFIER  shift 125
 	.  error
 
 
 state 46
-	double_expr : TDOUBLE .  (101)
+	class_declar_stmt : IDENTIFIER extends_stmt . '{' '}'  (19)
+	class_declar_stmt : IDENTIFIER extends_stmt . '{' class_body '}'  (20)
 
-	.  reduce 101
+	'{'  shift 126
+	.  error
 
 
 state 47
-	class_member_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'  (29)
-	call_statement : IDENTIFIER . '(' args_list ')'  (72)
-	id_expr : IDENTIFIER .  (99)
+	t_bool_expr : TBOOL .  (126)
 
-	'('  shift 129
-	AND_OP  reduce 99
-	OR_OP  reduce 99
-	LE_OP  reduce 99
-	GE_OP  reduce 99
-	EQ_OP  reduce 99
-	NE_OP  reduce 99
-	INC_OP  reduce 99
-	DEC_OP  reduce 99
-	','  reduce 99
-	'='  reduce 99
-	'>'  reduce 99
-	'<'  reduce 99
-	'+'  reduce 99
-	'-'  reduce 99
-	'*'  reduce 99
-	'/'  reduce 99
-	';'  reduce 99
-	'.'  reduce 99
-	')'  reduce 99
+	.  reduce 126
 
 
 state 48
-	string_expr : TSTRING .  (103)
+	restrict_stmt : RESTRICT t_bool_expr .  (83)
 
-	.  reduce 103
+	.  reduce 83
 
 
 state 49
-	self_inc_dec_stmt : INC_OP . id_expr  (116)
+	this_member_stmt : THIS '.' . id_expr  (31)
+	this_member_stmt : THIS '.' . class_member_stmt  (32)
 
-	IDENTIFIER  shift 71
+	IDENTIFIER  shift 127
 	.  error
 
-	id_expr  goto 130
+	id_expr  goto 128
+	class_member_stmt  goto 129
+	class_member_func_stmt  goto 130
 
 
 state 50
-	self_inc_dec_stmt : DEC_OP . id_expr  (117)
+	try_stmt : XTRY '{' . expr_list '}'  (9)
+	try_stmt : XTRY '{' . expr_list '}' catch_block_stmt  (10)
+	expr_list : .  (53)
 
-	IDENTIFIER  shift 71
-	.  error
+	.  reduce 53
 
-	id_expr  goto 131
+	expr_list  goto 131
 
 
 state 51
-	this_stmt : THIS . '.' id_expr  (18)
-	this_stmt : THIS . '.' class_member_stmt  (19)
-	this_stmt : THIS . '.' id_expr '(' args_list ')'  (20)
-	this_stmt : THIS . '.' class_member_func_stmt  (21)
+	namespace_declar_stmt : XSET XPUBLIC . '=' namespace_name_stmt  (16)
 
-	'.'  shift 132
+	'='  shift 132
 	.  error
 
 
 state 52
-	null_expr : XNULL .  (104)
+	selection_stmt : IF '(' . logic_stmt ')' block  (62)
+	selection_stmt : IF '(' . logic_stmt ')' block ELSE block  (63)
 
-	.  reduce 104
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	logic_stmt  goto 133
+	arithmetic_stmt  goto 134
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 136
+	bool_param_expr  goto 137
+	id_expr  goto 138
+	t_bool_expr  goto 139
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 142
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	null_expr  goto 143
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	type_judge_stmt  goto 144
 
 
 state 53
-	uminus_expr : '-' . double_or_ps_expr  (102)
+	loop_stmt : WHILE '(' . logic_stmt ')' block  (69)
 
-	TDOUBLE  shift 46
-	'('  shift 133
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
 	.  error
 
-	double_or_ps_expr  goto 134
-	parentheses_stmt  goto 135
-	double_expr  goto 136
+	logic_stmt  goto 145
+	arithmetic_stmt  goto 134
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 136
+	bool_param_expr  goto 137
+	id_expr  goto 138
+	t_bool_expr  goto 139
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 142
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	null_expr  goto 143
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	type_judge_stmt  goto 144
 
 
 state 54
-	arithmetic_stmt_factor : '(' . arithmetic_stmt ')'  (97)
+	loop_stmt : FOR '(' . for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block  (70)
+	for_1_stmt : .  (71)
 
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
+	IDENTIFIER  shift 146
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	THIS  shift 5
+	';'  reduce 71
 
-	arithmetic_stmt  goto 137
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
+	var_declar_stmt  goto 147
+	for_1_stmt  goto 148
+	assign_stmt  goto 149
+	self_inc_dec_stmt  goto 150
+	single_assign_stmt  goto 27
+	id_expr  goto 151
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 130
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
 
 
 state 55
-	arithmetic_stmt_factor : arithmetic_stmt .  (96)
-	assign_stmt_value : arithmetic_stmt .  (123)
+	simple_stmt : DELETE IDENTIFIER . ';'  (77)
 
-	'+'  reduce 96
-	'-'  reduce 96
-	'*'  reduce 96
-	'/'  reduce 96
-	';'  reduce 123
-	')'  reduce 123
-
-
-state 56
-	assign_stmt_value : self_inc_dec_stmt .  (127)
-	assign_stmt_value_eq : self_inc_dec_stmt .  (136)
-
-	'+'  reduce 136
-	'-'  reduce 136
-	'*'  reduce 136
-	'/'  reduce 136
-	';'  reduce 127
-	')'  reduce 127
-
-
-state 57
-	assign_stmt_value : call_statement .  (124)
-	assign_stmt_value_eq : call_statement .  (134)
-
-	'+'  reduce 134
-	'-'  reduce 134
-	'*'  reduce 134
-	'/'  reduce 134
-	';'  reduce 124
-	')'  reduce 124
-
-
-state 58
-	arithmetic_stmt_factor : assign_stmt_value_eq .  (94)
-
-	.  reduce 94
-
-
-state 59
-	interrupt_stmt : RETURN assign_stmt_value .  (71)
-
-	.  reduce 71
-
-
-state 60
-	assign_stmt_value : new_expr .  (128)
-
-	.  reduce 128
-
-
-state 61
-	class_member_stmt : id_expr . '.' id_expr  (24)
-	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (28)
-	self_inc_dec_stmt : id_expr . INC_OP  (118)
-	self_inc_dec_stmt : id_expr . DEC_OP  (119)
-	assign_stmt_value : id_expr .  (125)
-	assign_stmt_value_eq : id_expr .  (135)
-
-	INC_OP  shift 138
-	DEC_OP  shift 139
-	'.'  shift 140
-	'+'  reduce 135
-	'-'  reduce 135
-	'*'  reduce 135
-	'/'  reduce 135
-	';'  reduce 125
-	')'  reduce 125
-
-
-state 62
-	assign_stmt_value : t_bool_expr .  (122)
-
-	.  reduce 122
-
-
-state 63
-	assign_stmt_value : double_expr .  (120)
-	assign_stmt_value_eq : double_expr .  (132)
-
-	'+'  reduce 132
-	'-'  reduce 132
-	'*'  reduce 132
-	'/'  reduce 132
-	';'  reduce 120
-	')'  reduce 120
-
-
-state 64
-	assign_stmt_value : uminus_expr .  (121)
-	assign_stmt_value_eq : uminus_expr .  (133)
-
-	'+'  reduce 133
-	'-'  reduce 133
-	'*'  reduce 133
-	'/'  reduce 133
-	';'  reduce 121
-	')'  reduce 121
-
-
-state 65
-	arithmetic_stmt_factor : string_expr .  (95)
-	assign_stmt_value : string_expr .  (126)
-
-	'+'  reduce 95
-	'-'  reduce 95
-	'*'  reduce 95
-	'/'  reduce 95
-	';'  reduce 126
-	')'  reduce 126
-
-
-state 66
-	arithmetic_stmt : arithmetic_stmt_factor . '+' arithmetic_stmt_factor  (90)
-	arithmetic_stmt : arithmetic_stmt_factor . '-' arithmetic_stmt_factor  (91)
-	arithmetic_stmt : arithmetic_stmt_factor . '*' arithmetic_stmt_factor  (92)
-	arithmetic_stmt : arithmetic_stmt_factor . '/' arithmetic_stmt_factor  (93)
-
-	'+'  shift 141
-	'-'  shift 142
-	'*'  shift 143
-	'/'  shift 144
+	';'  shift 152
 	.  error
 
 
-state 67
-	class_member_stmt : class_member_stmt . '.' id_expr  (27)
-	class_member_func_stmt : class_member_stmt . '.' id_expr '(' args_list ')'  (30)
-	assign_stmt_value : class_member_stmt .  (129)
+state 56
+	bit_opr_factor : XINTEGER .  (116)
+	double_expr : XINTEGER .  (128)
 
-	'.'  shift 83
-	';'  reduce 129
-	')'  reduce 129
+	AND_OP  reduce 128
+	OR_OP  reduce 128
+	LE_OP  reduce 128
+	GE_OP  reduce 128
+	EQ_OP  reduce 128
+	NE_OP  reduce 128
+	LEFT_SHIFT  reduce 116
+	RIGHT_SHIFT  reduce 116
+	','  reduce 128
+	'>'  reduce 128
+	'<'  reduce 128
+	'+'  reduce 128
+	'-'  reduce 128
+	'%'  reduce 128
+	'*'  reduce 128
+	'/'  reduce 128
+	'&'  reduce 116
+	'|'  reduce 116
+	'^'  reduce 116
+	';'  reduce 128
+	')'  reduce 128
 
 
-state 68
-	assign_stmt_value : null_expr .  (130)
+state 57
+	double_expr : TDOUBLE .  (127)
+
+	.  reduce 127
+
+
+58: reduce/reduce conflict (reduce 49, reduce 125) on ')'
+state 58
+	class_member_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'  (38)
+	parameter : IDENTIFIER .  (49)
+	call_statement : IDENTIFIER . '(' args_list ')'  (87)
+	id_expr : IDENTIFIER .  (125)
+	array_ele_stmt : IDENTIFIER . '[' XINTEGER ']'  (175)
+	array_ele_stmt : IDENTIFIER . '[' IDENTIFIER ']'  (176)
+
+	'('  shift 153
+	'['  shift 154
+	FUNC_OP  reduce 49
+	INC_OP  reduce 125
+	DEC_OP  reduce 125
+	LEFT_SHIFT  reduce 125
+	RIGHT_SHIFT  reduce 125
+	','  reduce 49
+	'='  reduce 125
+	'+'  reduce 125
+	'-'  reduce 125
+	'%'  reduce 125
+	'*'  reduce 125
+	'/'  reduce 125
+	'&'  reduce 125
+	'|'  reduce 125
+	'^'  reduce 125
+	';'  reduce 125
+	')'  reduce 49
+	'.'  reduce 125
+
+
+state 59
+	string_expr : TSTRING .  (130)
 
 	.  reduce 130
 
 
-state 69
-	assign_stmt_value : this_stmt .  (131)
+state 60
+	self_inc_dec_stmt : INC_OP . id_expr  (148)
 
-	.  reduce 131
-
-
-state 70
-	selection_stmt : SWITCH '(' . id_expr ')' '{' case_stmt_list '}'  (49)
-
-	IDENTIFIER  shift 71
+	IDENTIFIER  shift 87
 	.  error
 
-	id_expr  goto 145
-
-
-state 71
-	id_expr : IDENTIFIER .  (99)
-
-	.  reduce 99
-
-
-state 72
-	new_expr : NEW id_expr . '(' args_list ')'  (98)
-
-	'('  shift 146
-	.  error
-
-
-state 73
-	statement : simple_stmt ';' .  (7)
-
-	.  reduce 7
-
-
-state 74
-	assign_stmt : id_expr ADD_EQ . assign_stmt_value_eq  (143)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	.  error
-
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 147
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 75
-	assign_stmt : id_expr SUB_EQ . assign_stmt_value_eq  (144)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	.  error
-
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 148
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 76
-	assign_stmt : id_expr MUL_EQ . assign_stmt_value_eq  (145)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	.  error
-
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 149
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 77
-	assign_stmt : id_expr DIV_EQ . assign_stmt_value_eq  (146)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	.  error
-
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 150
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 78
-	var_declar_stmt : id_expr ',' . var_declar_stmt  (44)
-
-	IDENTIFIER  shift 71
-	.  error
-
-	var_declar_stmt  goto 151
-	id_expr  goto 152
-
-
-state 79
-	single_assign_stmt : id_expr '=' . assign_stmt_value  (137)
-	single_assign_stmt : id_expr '=' . single_assign_stmt  (138)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	THIS  shift 51
-	NEW  shift 13
-	XNULL  shift 52
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 55
-	self_inc_dec_stmt  goto 56
-	call_statement  goto 57
-	assign_stmt_value_eq  goto 58
-	assign_stmt_value  goto 153
-	single_assign_stmt  goto 154
-	new_expr  goto 60
 	id_expr  goto 155
-	t_bool_expr  goto 62
-	double_expr  goto 63
-	uminus_expr  goto 64
-	string_expr  goto 65
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 67
-	class_member_func_stmt  goto 32
-	null_expr  goto 68
-	this_stmt  goto 69
 
 
-state 80
-	var_declar_stmt : id_expr ';' .  (43)
+state 61
+	self_inc_dec_stmt : DEC_OP . id_expr  (149)
 
-	.  reduce 43
-
-
-state 81
-	class_member_stmt : id_expr '.' . id_expr  (24)
-	class_member_func_stmt : id_expr '.' . id_expr '(' args_list ')'  (28)
-	class_func_serial_stmt : id_expr '.' . id_expr '(' args_list ')' IDENTIFIER '(' args_list ')'  (33)
-
-	IDENTIFIER  shift 71
+	IDENTIFIER  shift 87
 	.  error
 
 	id_expr  goto 156
 
 
-state 82
-	class_member_assign_stmt : class_member_stmt '=' . assign_stmt_value  (139)
+state 62
+	this_stmt : THIS .  (28)
+	this_stmt : THIS . '.' id_expr  (29)
+	this_stmt : THIS . '.' id_expr '(' args_list ')'  (30)
 
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	THIS  shift 51
-	NEW  shift 13
-	XNULL  shift 52
-	'-'  shift 53
-	'('  shift 54
+	'.'  shift 157
+	';'  reduce 28
+	')'  reduce 28
+
+
+state 63
+	null_expr : XNULL .  (131)
+
+	.  reduce 131
+
+
+state 64
+	uminus_expr : '-' . double_or_ps_expr  (129)
+
+	XINTEGER  shift 158
+	TDOUBLE  shift 57
+	'('  shift 159
 	.  error
 
-	arithmetic_stmt  goto 55
-	self_inc_dec_stmt  goto 56
-	call_statement  goto 57
-	assign_stmt_value_eq  goto 58
-	assign_stmt_value  goto 157
-	new_expr  goto 60
-	id_expr  goto 61
-	t_bool_expr  goto 62
-	double_expr  goto 63
-	uminus_expr  goto 64
-	string_expr  goto 65
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 67
-	class_member_func_stmt  goto 32
-	null_expr  goto 68
-	this_stmt  goto 69
+	double_or_ps_expr  goto 160
+	parentheses_stmt  goto 161
+	double_expr  goto 162
+
+
+state 65
+	arithmetic_stmt : '~' . bit_opr_factor  (113)
+
+	XINTEGER  shift 163
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 164
+	bit_opr_factor  goto 165
+
+
+state 66
+	lambda_stmt : '(' . parameter ')' FUNC_OP '{' expr_list '}'  (45)
+	arithmetic_stmt_factor : '(' . arithmetic_stmt ')'  (123)
+	parameter : .  (51)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 58
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	','  reduce 51
+	')'  reduce 51
+
+	arithmetic_stmt  goto 166
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 167
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 168
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	parameter  goto 169
+
+
+state 67
+	arithmetic_stmt_factor : arithmetic_stmt .  (120)
+	assign_stmt_value : arithmetic_stmt .  (155)
+
+	'+'  reduce 120
+	'-'  reduce 120
+	'%'  reduce 120
+	'*'  reduce 120
+	'/'  reduce 120
+	';'  reduce 155
+	')'  reduce 155
+
+
+state 68
+	assign_stmt_value : self_inc_dec_stmt .  (159)
+	assign_stmt_value_eq : self_inc_dec_stmt .  (170)
+
+	'+'  reduce 170
+	'-'  reduce 170
+	'%'  reduce 170
+	'*'  reduce 170
+	'/'  reduce 170
+	';'  reduce 159
+	')'  reduce 159
+
+
+state 69
+	assign_stmt_value : call_statement .  (156)
+	assign_stmt_value_eq : call_statement .  (168)
+
+	'+'  reduce 168
+	'-'  reduce 168
+	'%'  reduce 168
+	'*'  reduce 168
+	'/'  reduce 168
+	';'  reduce 156
+	')'  reduce 156
+
+
+state 70
+	arithmetic_stmt_factor : assign_stmt_value_eq .  (118)
+
+	.  reduce 118
+
+
+state 71
+	interrupt_stmt : RETURN assign_stmt_value .  (86)
+
+	.  reduce 86
+
+
+state 72
+	assign_stmt_value : new_expr .  (160)
+
+	.  reduce 160
+
+
+state 73
+	class_member_stmt : id_expr . '.' id_expr  (33)
+	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (37)
+	bit_opr_factor : id_expr .  (117)
+	self_inc_dec_stmt : id_expr . INC_OP  (150)
+	self_inc_dec_stmt : id_expr . DEC_OP  (151)
+	assign_stmt_value : id_expr .  (157)
+	assign_stmt_value_eq : id_expr .  (169)
+
+	INC_OP  shift 170
+	DEC_OP  shift 171
+	'.'  shift 172
+	LEFT_SHIFT  reduce 117
+	RIGHT_SHIFT  reduce 117
+	'+'  reduce 169
+	'-'  reduce 169
+	'%'  reduce 169
+	'*'  reduce 169
+	'/'  reduce 169
+	'&'  reduce 117
+	'|'  reduce 117
+	'^'  reduce 117
+	';'  reduce 157
+	')'  reduce 157
+
+
+state 74
+	assign_stmt_value : t_bool_expr .  (154)
+
+	.  reduce 154
+
+
+state 75
+	assign_stmt_value : double_expr .  (152)
+	assign_stmt_value_eq : double_expr .  (166)
+
+	'+'  reduce 166
+	'-'  reduce 166
+	'%'  reduce 166
+	'*'  reduce 166
+	'/'  reduce 166
+	';'  reduce 152
+	')'  reduce 152
+
+
+state 76
+	assign_stmt_value : uminus_expr .  (153)
+	assign_stmt_value_eq : uminus_expr .  (167)
+
+	'+'  reduce 167
+	'-'  reduce 167
+	'%'  reduce 167
+	'*'  reduce 167
+	'/'  reduce 167
+	';'  reduce 153
+	')'  reduce 153
+
+
+state 77
+	arithmetic_stmt_factor : string_expr .  (119)
+	assign_stmt_value : string_expr .  (158)
+
+	'+'  reduce 119
+	'-'  reduce 119
+	'%'  reduce 119
+	'*'  reduce 119
+	'/'  reduce 119
+	';'  reduce 158
+	')'  reduce 158
+
+
+state 78
+	arithmetic_stmt : arithmetic_stmt_factor . '+' arithmetic_stmt_factor  (105)
+	arithmetic_stmt : arithmetic_stmt_factor . '-' arithmetic_stmt_factor  (106)
+	arithmetic_stmt : arithmetic_stmt_factor . '*' arithmetic_stmt_factor  (107)
+	arithmetic_stmt : arithmetic_stmt_factor . '/' arithmetic_stmt_factor  (108)
+	arithmetic_stmt : arithmetic_stmt_factor . '%' arithmetic_stmt_factor  (109)
+
+	'+'  shift 173
+	'-'  shift 174
+	'%'  shift 175
+	'*'  shift 176
+	'/'  shift 177
+	.  error
+
+
+state 79
+	class_member_stmt : class_member_stmt . '.' id_expr  (36)
+	class_member_func_stmt : class_member_stmt . '.' id_expr '(' args_list ')'  (39)
+	arithmetic_stmt_factor : class_member_stmt .  (121)
+	assign_stmt_value : class_member_stmt .  (161)
+
+	'.'  shift 101
+	'+'  reduce 121
+	'-'  reduce 121
+	'%'  reduce 121
+	'*'  reduce 121
+	'/'  reduce 121
+	';'  reduce 161
+	')'  reduce 161
+
+
+state 80
+	assign_stmt_value : null_expr .  (162)
+
+	.  reduce 162
+
+
+state 81
+	assign_stmt_value : this_stmt .  (163)
+
+	.  reduce 163
+
+
+state 82
+	arithmetic_stmt_factor : array_ele_stmt .  (122)
+	assign_stmt_value : array_ele_stmt .  (164)
+
+	'+'  reduce 122
+	'-'  reduce 122
+	'%'  reduce 122
+	'*'  reduce 122
+	'/'  reduce 122
+	';'  reduce 164
+	')'  reduce 164
 
 
 state 83
-	class_member_stmt : class_member_stmt '.' . id_expr  (27)
-	class_member_func_stmt : class_member_stmt '.' . id_expr '(' args_list ')'  (30)
+	arithmetic_stmt : bit_opr_factor . '&' bit_opr_factor  (110)
+	arithmetic_stmt : bit_opr_factor . '|' bit_opr_factor  (111)
+	arithmetic_stmt : bit_opr_factor . '^' bit_opr_factor  (112)
+	arithmetic_stmt : bit_opr_factor . LEFT_SHIFT bit_opr_factor  (114)
+	arithmetic_stmt : bit_opr_factor . RIGHT_SHIFT bit_opr_factor  (115)
 
-	IDENTIFIER  shift 71
+	LEFT_SHIFT  shift 178
+	RIGHT_SHIFT  shift 179
+	'&'  shift 180
+	'|'  shift 181
+	'^'  shift 182
 	.  error
-
-	id_expr  goto 158
 
 
 state 84
-	class_member_stmt : class_member_func_stmt '.' . id_expr  (25)
-	class_member_func_stmt : class_member_func_stmt '.' . id_expr '(' args_list ')'  (31)
+	assign_stmt_value : lambda_stmt .  (165)
 
-	IDENTIFIER  shift 71
-	.  error
-
-	id_expr  goto 159
+	.  reduce 165
 
 
 state 85
-	class_func_serial_stmt : class_func_serial_stmt IDENTIFIER . '(' args_list ')'  (34)
+	lambda_stmt : parameter . FUNC_OP '{' expr_list '}'  (46)
+	parameter : parameter . ',' IDENTIFIER  (50)
 
-	'('  shift 160
+	FUNC_OP  shift 183
+	','  shift 184
 	.  error
 
 
 state 86
-	class_member_assign_stmt : this_member_stmt '=' . assign_stmt_value  (140)
+	selection_stmt : SWITCH '(' . id_expr ')' '{' case_stmt_list '}'  (64)
 
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	THIS  shift 51
-	NEW  shift 13
-	XNULL  shift 52
-	'-'  shift 53
-	'('  shift 54
+	IDENTIFIER  shift 87
 	.  error
 
-	arithmetic_stmt  goto 55
-	self_inc_dec_stmt  goto 56
-	call_statement  goto 57
-	assign_stmt_value_eq  goto 58
-	assign_stmt_value  goto 161
-	new_expr  goto 60
-	id_expr  goto 61
-	t_bool_expr  goto 62
-	double_expr  goto 63
-	uminus_expr  goto 64
-	string_expr  goto 65
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 67
-	class_member_func_stmt  goto 32
-	null_expr  goto 68
-	this_stmt  goto 69
+	id_expr  goto 185
 
 
 state 87
-	param_list : '(' . parameter ')'  (37)
-	parameter : .  (40)
+	id_expr : IDENTIFIER .  (125)
 
-	IDENTIFIER  shift 162
-	','  reduce 40
-	')'  reduce 40
-
-	parameter  goto 163
+	.  reduce 125
 
 
 state 88
-	func_declar_stmt : IDENTIFIER FUNC_OP param_list . '{' expr_list '}'  (35)
+	new_expr : NEW id_expr . '(' args_list ')'  (124)
 
-	'{'  shift 164
+	'('  shift 186
 	.  error
 
 
 state 89
-	func_declar_stmt : IDENTIFIER . FUNC_OP param_list '{' expr_list '}'  (35)
-	id_expr : IDENTIFIER .  (99)
+	statement : simple_stmt ';' .  (7)
 
-	FUNC_OP  shift 36
-	','  reduce 99
-	'='  reduce 99
-	';'  reduce 99
+	.  reduce 7
 
 
 state 90
-	class_declar_stmt : IDENTIFIER '{' '}' .  (11)
+	assign_stmt : id_expr ADD_EQ . assign_stmt_value_eq  (181)
 
-	.  reduce 11
+	XINTEGER  shift 158
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 187
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	.  error
+
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 188
+	id_expr  goto 189
+	double_expr  goto 140
+	uminus_expr  goto 141
+	class_member_stmt  goto 190
+	class_member_func_stmt  goto 36
 
 
 state 91
-	class_body_stmt : func_declar_stmt .  (17)
+	assign_stmt : id_expr SUB_EQ . assign_stmt_value_eq  (182)
 
-	.  reduce 17
+	XINTEGER  shift 158
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 187
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	.  error
+
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 191
+	id_expr  goto 189
+	double_expr  goto 140
+	uminus_expr  goto 141
+	class_member_stmt  goto 190
+	class_member_func_stmt  goto 36
 
 
 state 92
-	class_body_stmt : var_declar_stmt .  (15)
+	assign_stmt : id_expr MUL_EQ . assign_stmt_value_eq  (183)
+
+	XINTEGER  shift 158
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 187
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	.  error
+
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 192
+	id_expr  goto 189
+	double_expr  goto 140
+	uminus_expr  goto 141
+	class_member_stmt  goto 190
+	class_member_func_stmt  goto 36
+
+
+state 93
+	assign_stmt : id_expr DIV_EQ . assign_stmt_value_eq  (184)
+
+	XINTEGER  shift 158
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 187
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	.  error
+
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 193
+	id_expr  goto 189
+	double_expr  goto 140
+	uminus_expr  goto 141
+	class_member_stmt  goto 190
+	class_member_func_stmt  goto 36
+
+
+state 94
+	assign_stmt : id_expr MOD_EQ . assign_stmt_value_eq  (185)
+
+	XINTEGER  shift 158
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 187
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	.  error
+
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 194
+	id_expr  goto 189
+	double_expr  goto 140
+	uminus_expr  goto 141
+	class_member_stmt  goto 190
+	class_member_func_stmt  goto 36
+
+
+state 95
+	var_declar_stmt : id_expr ',' . var_declar_stmt  (55)
+
+	IDENTIFIER  shift 195
+	.  error
+
+	var_declar_stmt  goto 196
+	id_expr  goto 197
+
+
+state 96
+	single_assign_stmt : id_expr '=' . assign_stmt_value  (171)
+	single_assign_stmt : id_expr '=' . single_assign_stmt  (172)
+	parameter : .  (51)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 58
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	THIS  shift 62
+	NEW  shift 15
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 66
+	FUNC_OP  reduce 51
+	','  reduce 51
+
+	arithmetic_stmt  goto 67
+	self_inc_dec_stmt  goto 68
+	call_statement  goto 69
+	assign_stmt_value_eq  goto 70
+	assign_stmt_value  goto 198
+	single_assign_stmt  goto 199
+	new_expr  goto 72
+	id_expr  goto 200
+	t_bool_expr  goto 74
+	double_expr  goto 75
+	uminus_expr  goto 76
+	string_expr  goto 77
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 79
+	class_member_func_stmt  goto 36
+	null_expr  goto 80
+	this_stmt  goto 81
+	array_ele_stmt  goto 82
+	bit_opr_factor  goto 83
+	lambda_stmt  goto 84
+	parameter  goto 85
+
+
+state 97
+	var_declar_stmt : id_expr ';' .  (54)
+
+	.  reduce 54
+
+
+state 98
+	class_member_stmt : id_expr '.' . id_expr  (33)
+	class_member_func_stmt : id_expr '.' . id_expr '(' args_list ')'  (37)
+	class_func_serial_stmt : id_expr '.' . id_expr '(' args_list ')' IDENTIFIER '(' args_list ')'  (42)
+
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 201
+
+
+state 99
+	declar_stmt : namespace_declar_stmt ';' .  (15)
 
 	.  reduce 15
 
 
-state 93
-	class_body_stmt : single_assign_stmt . ';'  (16)
-
-	';'  shift 165
-	.  error
-
-
-state 94
-	var_declar_stmt : id_expr . ';'  (43)
-	var_declar_stmt : id_expr . ',' var_declar_stmt  (44)
-	single_assign_stmt : id_expr . '=' assign_stmt_value  (137)
-	single_assign_stmt : id_expr . '=' single_assign_stmt  (138)
-
-	','  shift 78
-	'='  shift 79
-	';'  shift 80
-	.  error
-
-
-state 95
-	class_declar_stmt : IDENTIFIER '{' class_body . '}'  (12)
-	class_body : class_body . class_body_stmt  (14)
-
-	IDENTIFIER  shift 89
-	'}'  shift 166
-	.  error
-
-	func_declar_stmt  goto 91
-	var_declar_stmt  goto 92
-	single_assign_stmt  goto 93
-	id_expr  goto 94
-	class_body_stmt  goto 167
-
-
-state 96
-	class_body : class_body_stmt .  (13)
-
-	.  reduce 13
-
-
-state 97
-	args_expr_collection : arithmetic_stmt .  (84)
-	arithmetic_stmt_factor : arithmetic_stmt .  (96)
-
-	','  reduce 84
-	'+'  reduce 96
-	'-'  reduce 96
-	'*'  reduce 96
-	'/'  reduce 96
-	')'  reduce 84
-
-
-state 98
-	assign_stmt_value_eq : self_inc_dec_stmt .  (136)
-
-	.  reduce 136
-
-
-state 99
-	args_expr_collection : call_statement .  (83)
-	assign_stmt_value_eq : call_statement .  (134)
-
-	','  reduce 83
-	'+'  reduce 134
-	'-'  reduce 134
-	'*'  reduce 134
-	'/'  reduce 134
-	')'  reduce 83
-
-
 state 100
-	args_expr : args_expr_collection .  (76)
+	class_member_assign_stmt : class_member_stmt '=' . assign_stmt_value  (173)
+	parameter : .  (51)
 
-	.  reduce 76
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 58
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	THIS  shift 62
+	NEW  shift 15
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 66
+	FUNC_OP  reduce 51
+	','  reduce 51
+
+	arithmetic_stmt  goto 67
+	self_inc_dec_stmt  goto 68
+	call_statement  goto 69
+	assign_stmt_value_eq  goto 70
+	assign_stmt_value  goto 202
+	new_expr  goto 72
+	id_expr  goto 73
+	t_bool_expr  goto 74
+	double_expr  goto 75
+	uminus_expr  goto 76
+	string_expr  goto 77
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 79
+	class_member_func_stmt  goto 36
+	null_expr  goto 80
+	this_stmt  goto 81
+	array_ele_stmt  goto 82
+	bit_opr_factor  goto 83
+	lambda_stmt  goto 84
+	parameter  goto 85
 
 
 state 101
-	class_member_stmt : id_expr . '.' id_expr  (24)
-	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (28)
-	args_expr_collection : id_expr .  (80)
-	self_inc_dec_stmt : id_expr . INC_OP  (118)
-	self_inc_dec_stmt : id_expr . DEC_OP  (119)
-	assign_stmt_value_eq : id_expr .  (135)
+	class_member_stmt : class_member_stmt '.' . id_expr  (36)
+	class_member_func_stmt : class_member_stmt '.' . id_expr '(' args_list ')'  (39)
 
-	INC_OP  shift 138
-	DEC_OP  shift 139
-	'.'  shift 140
-	','  reduce 80
-	'+'  reduce 135
-	'-'  reduce 135
-	'*'  reduce 135
-	'/'  reduce 135
-	')'  reduce 80
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 203
 
 
 state 102
-	args_expr_collection : t_bool_expr .  (78)
+	class_member_stmt : class_member_func_stmt '.' . id_expr  (34)
+	class_member_func_stmt : class_member_func_stmt '.' . id_expr '(' args_list ')'  (40)
 
-	.  reduce 78
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 204
 
 
 state 103
-	args_expr_collection : double_expr .  (79)
-	assign_stmt_value_eq : double_expr .  (132)
+	class_func_serial_stmt : class_func_serial_stmt IDENTIFIER . '(' args_list ')'  (43)
 
-	','  reduce 79
-	'+'  reduce 132
-	'-'  reduce 132
-	'*'  reduce 132
-	'/'  reduce 132
-	')'  reduce 79
-
-
-state 104
-	args_expr_collection : uminus_expr .  (82)
-	assign_stmt_value_eq : uminus_expr .  (133)
-
-	','  reduce 82
-	'+'  reduce 133
-	'-'  reduce 133
-	'*'  reduce 133
-	'/'  reduce 133
-	')'  reduce 82
-
-
-state 105
-	args_expr_collection : string_expr .  (81)
-	arithmetic_stmt_factor : string_expr .  (95)
-
-	','  reduce 81
-	'+'  reduce 95
-	'-'  reduce 95
-	'*'  reduce 95
-	'/'  reduce 95
-	')'  reduce 81
-
-
-state 106
-	class_member_stmt : class_member_stmt . '.' id_expr  (27)
-	class_member_func_stmt : class_member_stmt . '.' id_expr '(' args_list ')'  (30)
-
-	'.'  shift 83
+	'('  shift 205
 	.  error
 
 
-state 107
-	class_member_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr '(' args_list ')'  (29)
-	class_func_serial_stmt : IDENTIFIER '(' args_list . ')' IDENTIFIER '(' args_list ')'  (32)
-	call_statement : IDENTIFIER '(' args_list . ')'  (72)
+state 104
+	class_member_assign_stmt : this_member_stmt '=' . assign_stmt_value  (174)
+	parameter : .  (51)
 
-	')'  shift 168
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 58
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	THIS  shift 62
+	NEW  shift 15
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 66
+	FUNC_OP  reduce 51
+	','  reduce 51
+
+	arithmetic_stmt  goto 67
+	self_inc_dec_stmt  goto 68
+	call_statement  goto 69
+	assign_stmt_value_eq  goto 70
+	assign_stmt_value  goto 206
+	new_expr  goto 72
+	id_expr  goto 73
+	t_bool_expr  goto 74
+	double_expr  goto 75
+	uminus_expr  goto 76
+	string_expr  goto 77
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 79
+	class_member_func_stmt  goto 36
+	null_expr  goto 80
+	this_stmt  goto 81
+	array_ele_stmt  goto 82
+	bit_opr_factor  goto 83
+	lambda_stmt  goto 84
+	parameter  goto 85
+
+
+state 105
+	array_ele_assign_stmt : array_ele_stmt '=' . assign_stmt_value  (177)
+	parameter : .  (51)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 58
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	THIS  shift 62
+	NEW  shift 15
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 66
+	FUNC_OP  reduce 51
+	','  reduce 51
+
+	arithmetic_stmt  goto 67
+	self_inc_dec_stmt  goto 68
+	call_statement  goto 69
+	assign_stmt_value_eq  goto 70
+	assign_stmt_value  goto 207
+	new_expr  goto 72
+	id_expr  goto 73
+	t_bool_expr  goto 74
+	double_expr  goto 75
+	uminus_expr  goto 76
+	string_expr  goto 77
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 79
+	class_member_func_stmt  goto 36
+	null_expr  goto 80
+	this_stmt  goto 81
+	array_ele_stmt  goto 82
+	bit_opr_factor  goto 83
+	lambda_stmt  goto 84
+	parameter  goto 85
+
+
+state 106
+	param_list : '(' . parameter ')'  (48)
+	parameter : .  (51)
+
+	IDENTIFIER  shift 208
+	','  reduce 51
+	')'  reduce 51
+
+	parameter  goto 209
+
+
+state 107
+	func_declar_stmt : IDENTIFIER FUNC_OP param_list . '{' expr_list '}'  (44)
+
+	'{'  shift 210
 	.  error
 
 
 state 108
-	args_list : args_expr .  (75)
-	args_expr : args_expr . ',' args_expr_collection  (77)
+	extends_stmt : EXTENDS IDENTIFIER .  (22)
 
-	','  shift 169
-	')'  reduce 75
+	.  reduce 22
 
 
-109: shift/reduce conflict (shift 170, reduce 99) on '('
 state 109
-	class_member_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'  (29)
-	id_expr : IDENTIFIER .  (99)
+	class_member_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'  (38)
+	call_statement : IDENTIFIER . '(' args_list ')'  (87)
+	id_expr : IDENTIFIER .  (125)
+	array_ele_stmt : IDENTIFIER . '[' XINTEGER ']'  (175)
+	array_ele_stmt : IDENTIFIER . '[' IDENTIFIER ']'  (176)
 
-	'('  shift 170
-	INC_OP  reduce 99
-	DEC_OP  reduce 99
-	ADD_EQ  reduce 99
-	SUB_EQ  reduce 99
-	MUL_EQ  reduce 99
-	DIV_EQ  reduce 99
-	','  reduce 99
-	'='  reduce 99
-	';'  reduce 99
-	'.'  reduce 99
-	')'  reduce 99
+	'('  shift 153
+	'['  shift 154
+	AND_OP  reduce 125
+	OR_OP  reduce 125
+	LE_OP  reduce 125
+	GE_OP  reduce 125
+	EQ_OP  reduce 125
+	NE_OP  reduce 125
+	INC_OP  reduce 125
+	DEC_OP  reduce 125
+	LEFT_SHIFT  reduce 125
+	RIGHT_SHIFT  reduce 125
+	XIS  reduce 125
+	','  reduce 125
+	'>'  reduce 125
+	'<'  reduce 125
+	'+'  reduce 125
+	'-'  reduce 125
+	'%'  reduce 125
+	'*'  reduce 125
+	'/'  reduce 125
+	'&'  reduce 125
+	'|'  reduce 125
+	'^'  reduce 125
+	';'  reduce 125
+	')'  reduce 125
+	'.'  reduce 125
 
 
 state 110
-	this_member_stmt : THIS '.' id_expr .  (22)
-	class_member_stmt : id_expr . '.' id_expr  (24)
-	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (28)
+	arithmetic_stmt_factor : '(' . arithmetic_stmt ')'  (123)
 
-	'.'  shift 140
-	'='  reduce 22
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 166
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 167
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 168
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
 
 
 state 111
-	this_member_stmt : THIS '.' class_member_stmt .  (23)
-	class_member_stmt : class_member_stmt . '.' id_expr  (27)
-	class_member_func_stmt : class_member_stmt . '.' id_expr '(' args_list ')'  (30)
+	args_expr_collection : arithmetic_stmt .  (99)
+	arithmetic_stmt_factor : arithmetic_stmt .  (120)
 
-	'.'  shift 83
-	'='  reduce 23
+	','  reduce 99
+	'+'  reduce 120
+	'-'  reduce 120
+	'%'  reduce 120
+	'*'  reduce 120
+	'/'  reduce 120
+	')'  reduce 99
 
 
 state 112
-	class_member_stmt : class_member_func_stmt . '.' id_expr  (25)
-	class_member_func_stmt : class_member_func_stmt . '.' id_expr '(' args_list ')'  (31)
+	assign_stmt_value_eq : self_inc_dec_stmt .  (170)
 
-	'.'  shift 84
-	.  error
+	.  reduce 170
 
 
 state 113
-	selection_stmt : IF '(' logic_stmt . ')' block  (47)
-	selection_stmt : IF '(' logic_stmt . ')' block ELSE block  (48)
-	logic_stmt : logic_stmt . AND_OP logic_stmt  (114)
-	logic_stmt : logic_stmt . OR_OP logic_stmt  (115)
+	args_expr_collection : call_statement .  (98)
+	assign_stmt_value_eq : call_statement .  (168)
 
-	AND_OP  shift 171
-	OR_OP  shift 172
-	')'  shift 173
-	.  error
+	','  reduce 98
+	'+'  reduce 168
+	'-'  reduce 168
+	'%'  reduce 168
+	'*'  reduce 168
+	'/'  reduce 168
+	')'  reduce 98
 
 
 state 114
-	arithmetic_stmt_factor : arithmetic_stmt .  (96)
-	bool_param_expr : arithmetic_stmt .  (106)
+	args_expr : args_expr_collection .  (91)
 
-	AND_OP  reduce 106
-	OR_OP  reduce 106
-	LE_OP  reduce 106
-	GE_OP  reduce 106
-	EQ_OP  reduce 106
-	NE_OP  reduce 106
-	'>'  reduce 106
-	'<'  reduce 106
-	'+'  reduce 96
-	'-'  reduce 96
-	'*'  reduce 96
-	'/'  reduce 96
-	';'  reduce 106
-	')'  reduce 106
+	.  reduce 91
 
 
 state 115
-	assign_stmt_value_eq : call_statement .  (134)
+	class_member_stmt : id_expr . '.' id_expr  (33)
+	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (37)
+	args_expr_collection : id_expr .  (95)
+	bit_opr_factor : id_expr .  (117)
+	self_inc_dec_stmt : id_expr . INC_OP  (150)
+	self_inc_dec_stmt : id_expr . DEC_OP  (151)
+	assign_stmt_value_eq : id_expr .  (169)
+
+	INC_OP  shift 170
+	DEC_OP  shift 171
+	'.'  shift 172
+	LEFT_SHIFT  reduce 117
+	RIGHT_SHIFT  reduce 117
+	','  reduce 95
+	'+'  reduce 169
+	'-'  reduce 169
+	'%'  reduce 169
+	'*'  reduce 169
+	'/'  reduce 169
+	'&'  reduce 117
+	'|'  reduce 117
+	'^'  reduce 117
+	')'  reduce 95
+
+
+state 116
+	args_expr_collection : t_bool_expr .  (93)
+
+	.  reduce 93
+
+
+state 117
+	args_expr_collection : double_expr .  (94)
+	assign_stmt_value_eq : double_expr .  (166)
+
+	','  reduce 94
+	'+'  reduce 166
+	'-'  reduce 166
+	'%'  reduce 166
+	'*'  reduce 166
+	'/'  reduce 166
+	')'  reduce 94
+
+
+state 118
+	args_expr_collection : uminus_expr .  (97)
+	assign_stmt_value_eq : uminus_expr .  (167)
+
+	','  reduce 97
+	'+'  reduce 167
+	'-'  reduce 167
+	'%'  reduce 167
+	'*'  reduce 167
+	'/'  reduce 167
+	')'  reduce 97
+
+
+state 119
+	args_expr_collection : string_expr .  (96)
+	arithmetic_stmt_factor : string_expr .  (119)
+
+	','  reduce 96
+	'+'  reduce 119
+	'-'  reduce 119
+	'%'  reduce 119
+	'*'  reduce 119
+	'/'  reduce 119
+	')'  reduce 96
+
+
+state 120
+	class_member_stmt : class_member_stmt . '.' id_expr  (36)
+	class_member_func_stmt : class_member_stmt . '.' id_expr '(' args_list ')'  (39)
+	arithmetic_stmt_factor : class_member_stmt .  (121)
+
+	'.'  shift 101
+	AND_OP  reduce 121
+	OR_OP  reduce 121
+	LE_OP  reduce 121
+	GE_OP  reduce 121
+	EQ_OP  reduce 121
+	NE_OP  reduce 121
+	','  reduce 121
+	'>'  reduce 121
+	'<'  reduce 121
+	'+'  reduce 121
+	'-'  reduce 121
+	'%'  reduce 121
+	'*'  reduce 121
+	'/'  reduce 121
+	';'  reduce 121
+	')'  reduce 121
+
+
+state 121
+	arithmetic_stmt_factor : array_ele_stmt .  (122)
+
+	.  reduce 122
+
+
+state 122
+	class_member_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr '(' args_list ')'  (38)
+	class_func_serial_stmt : IDENTIFIER '(' args_list . ')' IDENTIFIER '(' args_list ')'  (41)
+	call_statement : IDENTIFIER '(' args_list . ')'  (87)
+
+	')'  shift 211
+	.  error
+
+
+state 123
+	args_list : args_expr .  (90)
+	args_expr : args_expr . ',' args_expr_collection  (92)
+
+	','  shift 212
+	')'  reduce 90
+
+
+state 124
+	var_declar_stmt : IDENTIFIER '[' XINTEGER . ']' ';'  (56)
+	var_declar_stmt : IDENTIFIER '[' XINTEGER . ']' ',' var_declar_stmt  (57)
+	array_ele_stmt : IDENTIFIER '[' XINTEGER . ']'  (175)
+
+	']'  shift 213
+	.  error
+
+
+state 125
+	var_declar_stmt : IDENTIFIER '[' IDENTIFIER . ']' ';'  (58)
+	var_declar_stmt : IDENTIFIER '[' IDENTIFIER . ']' ',' var_declar_stmt  (59)
+	array_ele_stmt : IDENTIFIER '[' IDENTIFIER . ']'  (176)
+
+	']'  shift 214
+	.  error
+
+
+state 126
+	class_declar_stmt : IDENTIFIER extends_stmt '{' . '}'  (19)
+	class_declar_stmt : IDENTIFIER extends_stmt '{' . class_body '}'  (20)
+
+	IDENTIFIER  shift 215
+	'}'  shift 216
+	.  error
+
+	func_declar_stmt  goto 217
+	var_declar_stmt  goto 218
+	single_assign_stmt  goto 219
+	id_expr  goto 220
+	class_body  goto 221
+	class_body_stmt  goto 222
+
+
+state 127
+	class_member_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'  (38)
+	id_expr : IDENTIFIER .  (125)
+
+	'('  shift 223
+	'='  reduce 125
+	'.'  reduce 125
+
+
+state 128
+	this_member_stmt : THIS '.' id_expr .  (31)
+	class_member_stmt : id_expr . '.' id_expr  (33)
+	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (37)
+
+	'.'  shift 172
+	'='  reduce 31
+
+
+state 129
+	this_member_stmt : THIS '.' class_member_stmt .  (32)
+	class_member_stmt : class_member_stmt . '.' id_expr  (36)
+	class_member_func_stmt : class_member_stmt . '.' id_expr '(' args_list ')'  (39)
+
+	'.'  shift 101
+	'='  reduce 32
+
+
+state 130
+	class_member_stmt : class_member_func_stmt . '.' id_expr  (34)
+	class_member_func_stmt : class_member_func_stmt . '.' id_expr '(' args_list ')'  (40)
+
+	'.'  shift 102
+	.  error
+
+
+state 131
+	try_stmt : XTRY '{' expr_list . '}'  (9)
+	try_stmt : XTRY '{' expr_list . '}' catch_block_stmt  (10)
+	expr_list : expr_list . statement  (52)
+
+	IDENTIFIER  shift 3
+	RESTRICT  shift 4
+	THIS  shift 5
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	'}'  shift 224
+	.  error
+
+	statement  goto 225
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
+state 132
+	namespace_declar_stmt : XSET XPUBLIC '=' . namespace_name_stmt  (16)
+
+	IDENTIFIER  shift 226
+	.  error
+
+	namespace_name_stmt  goto 227
+
+
+state 133
+	selection_stmt : IF '(' logic_stmt . ')' block  (62)
+	selection_stmt : IF '(' logic_stmt . ')' block ELSE block  (63)
+	logic_stmt : logic_stmt . AND_OP logic_stmt  (145)
+	logic_stmt : logic_stmt . OR_OP logic_stmt  (146)
+
+	AND_OP  shift 228
+	OR_OP  shift 229
+	')'  shift 230
+	.  error
+
+
+state 134
+	arithmetic_stmt_factor : arithmetic_stmt .  (120)
+	bool_param_expr : arithmetic_stmt .  (133)
+
+	AND_OP  reduce 133
+	OR_OP  reduce 133
+	LE_OP  reduce 133
+	GE_OP  reduce 133
+	EQ_OP  reduce 133
+	NE_OP  reduce 133
+	'>'  reduce 133
+	'<'  reduce 133
+	'+'  reduce 120
+	'-'  reduce 120
+	'%'  reduce 120
+	'*'  reduce 120
+	'/'  reduce 120
+	';'  reduce 133
+	')'  reduce 133
+
+
+state 135
+	assign_stmt_value_eq : call_statement .  (168)
+
+	.  reduce 168
+
+
+state 136
+	arithmetic_stmt_factor : assign_stmt_value_eq .  (118)
+	bool_param_expr : assign_stmt_value_eq .  (132)
+
+	AND_OP  reduce 132
+	OR_OP  reduce 132
+	LE_OP  reduce 132
+	GE_OP  reduce 132
+	EQ_OP  reduce 132
+	NE_OP  reduce 132
+	'>'  reduce 132
+	'<'  reduce 132
+	'+'  reduce 118
+	'-'  reduce 118
+	'%'  reduce 118
+	'*'  reduce 118
+	'/'  reduce 118
+	';'  reduce 132
+	')'  reduce 132
+
+
+state 137
+	logic_stmt : bool_param_expr .  (137)
+	logic_stmt : bool_param_expr . '>' bool_param_expr  (139)
+	logic_stmt : bool_param_expr . '<' bool_param_expr  (140)
+	logic_stmt : bool_param_expr . LE_OP bool_param_expr  (141)
+	logic_stmt : bool_param_expr . GE_OP bool_param_expr  (142)
+	logic_stmt : bool_param_expr . EQ_OP bool_param_expr  (143)
+	logic_stmt : bool_param_expr . NE_OP bool_param_expr  (144)
+
+	LE_OP  shift 231
+	GE_OP  shift 232
+	EQ_OP  shift 233
+	NE_OP  shift 234
+	'>'  shift 235
+	'<'  shift 236
+	AND_OP  reduce 137
+	OR_OP  reduce 137
+	';'  reduce 137
+	')'  reduce 137
+
+
+state 138
+	class_member_stmt : id_expr . '.' id_expr  (33)
+	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (37)
+	bit_opr_factor : id_expr .  (117)
+	type_judge_stmt : id_expr . XIS id_expr  (147)
+	self_inc_dec_stmt : id_expr . INC_OP  (150)
+	self_inc_dec_stmt : id_expr . DEC_OP  (151)
+	assign_stmt_value_eq : id_expr .  (169)
+
+	INC_OP  shift 170
+	DEC_OP  shift 171
+	XIS  shift 237
+	'.'  shift 172
+	AND_OP  reduce 169
+	OR_OP  reduce 169
+	LE_OP  reduce 169
+	GE_OP  reduce 169
+	EQ_OP  reduce 169
+	NE_OP  reduce 169
+	LEFT_SHIFT  reduce 117
+	RIGHT_SHIFT  reduce 117
+	'>'  reduce 169
+	'<'  reduce 169
+	'+'  reduce 169
+	'-'  reduce 169
+	'%'  reduce 169
+	'*'  reduce 169
+	'/'  reduce 169
+	'&'  reduce 117
+	'|'  reduce 117
+	'^'  reduce 117
+	';'  reduce 169
+	')'  reduce 169
+
+
+state 139
+	bool_param_expr : t_bool_expr .  (134)
 
 	.  reduce 134
 
 
-state 116
-	arithmetic_stmt_factor : assign_stmt_value_eq .  (94)
-	bool_param_expr : assign_stmt_value_eq .  (105)
+state 140
+	assign_stmt_value_eq : double_expr .  (166)
 
-	AND_OP  reduce 105
-	OR_OP  reduce 105
-	LE_OP  reduce 105
-	GE_OP  reduce 105
-	EQ_OP  reduce 105
-	NE_OP  reduce 105
-	'>'  reduce 105
-	'<'  reduce 105
-	'+'  reduce 94
-	'-'  reduce 94
-	'*'  reduce 94
-	'/'  reduce 94
-	';'  reduce 105
-	')'  reduce 105
+	.  reduce 166
 
 
-state 117
-	logic_stmt : bool_param_expr .  (107)
-	logic_stmt : bool_param_expr . '>' bool_param_expr  (108)
-	logic_stmt : bool_param_expr . '<' bool_param_expr  (109)
-	logic_stmt : bool_param_expr . LE_OP bool_param_expr  (110)
-	logic_stmt : bool_param_expr . GE_OP bool_param_expr  (111)
-	logic_stmt : bool_param_expr . EQ_OP bool_param_expr  (112)
-	logic_stmt : bool_param_expr . NE_OP bool_param_expr  (113)
+state 141
+	assign_stmt_value_eq : uminus_expr .  (167)
 
-	LE_OP  shift 174
-	GE_OP  shift 175
-	EQ_OP  shift 176
-	NE_OP  shift 177
-	'>'  shift 178
-	'<'  shift 179
-	AND_OP  reduce 107
-	OR_OP  reduce 107
-	';'  reduce 107
-	')'  reduce 107
+	.  reduce 167
 
 
-state 118
-	class_member_stmt : id_expr . '.' id_expr  (24)
-	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (28)
-	self_inc_dec_stmt : id_expr . INC_OP  (118)
-	self_inc_dec_stmt : id_expr . DEC_OP  (119)
-	assign_stmt_value_eq : id_expr .  (135)
+state 142
+	arithmetic_stmt_factor : string_expr .  (119)
+	bool_param_expr : string_expr .  (135)
 
-	INC_OP  shift 138
-	DEC_OP  shift 139
-	'.'  shift 140
 	AND_OP  reduce 135
 	OR_OP  reduce 135
 	LE_OP  reduce 135
 	GE_OP  reduce 135
 	EQ_OP  reduce 135
 	NE_OP  reduce 135
-	','  reduce 135
 	'>'  reduce 135
 	'<'  reduce 135
-	'+'  reduce 135
-	'-'  reduce 135
-	'*'  reduce 135
-	'/'  reduce 135
+	'+'  reduce 119
+	'-'  reduce 119
+	'%'  reduce 119
+	'*'  reduce 119
+	'/'  reduce 119
 	';'  reduce 135
 	')'  reduce 135
 
 
-state 119
-	assign_stmt_value_eq : double_expr .  (132)
-
-	.  reduce 132
-
-
-state 120
-	assign_stmt_value_eq : uminus_expr .  (133)
-
-	.  reduce 133
-
-
-state 121
-	arithmetic_stmt_factor : string_expr .  (95)
-
-	.  reduce 95
-
-
-state 122
-	loop_stmt : WHILE '(' logic_stmt . ')' block  (54)
-	logic_stmt : logic_stmt . AND_OP logic_stmt  (114)
-	logic_stmt : logic_stmt . OR_OP logic_stmt  (115)
-
-	AND_OP  shift 171
-	OR_OP  shift 172
-	')'  shift 180
-	.  error
-
-
-state 123
-	for_1_stmt : var_declar_stmt .  (58)
-
-	.  reduce 58
-
-
-state 124
-	loop_stmt : FOR '(' for_1_stmt . ';' logic_stmt ';' for_1_stmt ')' block  (55)
-
-	';'  shift 181
-	.  error
-
-
-state 125
-	for_1_stmt : assign_stmt .  (57)
-
-	.  reduce 57
-
-
-state 126
-	for_1_stmt : self_inc_dec_stmt .  (59)
-
-	.  reduce 59
-
-
-state 127
-	class_member_stmt : id_expr . '.' id_expr  (24)
-	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (28)
-	var_declar_stmt : id_expr . ';'  (43)
-	var_declar_stmt : id_expr . ',' var_declar_stmt  (44)
-	self_inc_dec_stmt : id_expr . INC_OP  (118)
-	self_inc_dec_stmt : id_expr . DEC_OP  (119)
-	single_assign_stmt : id_expr . '=' assign_stmt_value  (137)
-	single_assign_stmt : id_expr . '=' single_assign_stmt  (138)
-	assign_stmt : id_expr . ADD_EQ assign_stmt_value_eq  (143)
-	assign_stmt : id_expr . SUB_EQ assign_stmt_value_eq  (144)
-	assign_stmt : id_expr . MUL_EQ assign_stmt_value_eq  (145)
-	assign_stmt : id_expr . DIV_EQ assign_stmt_value_eq  (146)
-
-	INC_OP  shift 138
-	DEC_OP  shift 139
-	ADD_EQ  shift 74
-	SUB_EQ  shift 75
-	MUL_EQ  shift 76
-	DIV_EQ  shift 77
-	','  shift 78
-	'='  shift 79
-	';'  shift 80
-	'.'  shift 140
-	.  error
-
-
-state 128
-	simple_stmt : DELETE IDENTIFIER ';' .  (62)
-
-	.  reduce 62
-
-
-state 129
-	class_member_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr '(' args_list ')'  (29)
-	call_statement : IDENTIFIER '(' . args_list ')'  (72)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 182
-	args_expr  goto 108
-
-
-state 130
-	self_inc_dec_stmt : INC_OP id_expr .  (116)
-
-	.  reduce 116
-
-
-state 131
-	self_inc_dec_stmt : DEC_OP id_expr .  (117)
-
-	.  reduce 117
-
-
-state 132
-	this_stmt : THIS '.' . id_expr  (18)
-	this_stmt : THIS '.' . class_member_stmt  (19)
-	this_stmt : THIS '.' . id_expr '(' args_list ')'  (20)
-	this_stmt : THIS '.' . class_member_func_stmt  (21)
-
-	IDENTIFIER  shift 109
-	.  error
-
-	id_expr  goto 183
-	class_member_stmt  goto 184
-	class_member_func_stmt  goto 185
-
-
-state 133
-	parentheses_stmt : '(' . assign_stmt_value_eq ')'  (89)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	.  error
-
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 186
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 134
-	uminus_expr : '-' double_or_ps_expr .  (102)
-
-	.  reduce 102
-
-
-state 135
-	double_or_ps_expr : parentheses_stmt .  (88)
-
-	.  reduce 88
-
-
-state 136
-	double_or_ps_expr : double_expr .  (87)
-
-	.  reduce 87
-
-
-state 137
-	arithmetic_stmt_factor : arithmetic_stmt .  (96)
-	arithmetic_stmt_factor : '(' arithmetic_stmt . ')'  (97)
-
-	')'  shift 187
-	'+'  reduce 96
-	'-'  reduce 96
-	'*'  reduce 96
-	'/'  reduce 96
-
-
-state 138
-	self_inc_dec_stmt : id_expr INC_OP .  (118)
-
-	.  reduce 118
-
-
-state 139
-	self_inc_dec_stmt : id_expr DEC_OP .  (119)
-
-	.  reduce 119
-
-
-state 140
-	class_member_stmt : id_expr '.' . id_expr  (24)
-	class_member_func_stmt : id_expr '.' . id_expr '(' args_list ')'  (28)
-
-	IDENTIFIER  shift 71
-	.  error
-
-	id_expr  goto 188
-
-
-state 141
-	arithmetic_stmt : arithmetic_stmt_factor '+' . arithmetic_stmt_factor  (90)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 189
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 190
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 142
-	arithmetic_stmt : arithmetic_stmt_factor '-' . arithmetic_stmt_factor  (91)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 189
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 191
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
 state 143
-	arithmetic_stmt : arithmetic_stmt_factor '*' . arithmetic_stmt_factor  (92)
+	bool_param_expr : null_expr .  (136)
 
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 189
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 192
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
+	.  reduce 136
 
 
 state 144
-	arithmetic_stmt : arithmetic_stmt_factor '/' . arithmetic_stmt_factor  (93)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 189
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 193
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 145
-	selection_stmt : SWITCH '(' id_expr . ')' '{' case_stmt_list '}'  (49)
-
-	')'  shift 194
-	.  error
-
-
-state 146
-	new_expr : NEW id_expr '(' . args_list ')'  (98)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 195
-	args_expr  goto 108
-
-
-state 147
-	assign_stmt : id_expr ADD_EQ assign_stmt_value_eq .  (143)
-
-	.  reduce 143
-
-
-state 148
-	assign_stmt : id_expr SUB_EQ assign_stmt_value_eq .  (144)
-
-	.  reduce 144
-
-
-state 149
-	assign_stmt : id_expr MUL_EQ assign_stmt_value_eq .  (145)
-
-	.  reduce 145
-
-
-state 150
-	assign_stmt : id_expr DIV_EQ assign_stmt_value_eq .  (146)
-
-	.  reduce 146
-
-
-state 151
-	var_declar_stmt : id_expr ',' var_declar_stmt .  (44)
-
-	.  reduce 44
-
-
-state 152
-	var_declar_stmt : id_expr . ';'  (43)
-	var_declar_stmt : id_expr . ',' var_declar_stmt  (44)
-
-	','  shift 78
-	';'  shift 80
-	.  error
-
-
-state 153
-	single_assign_stmt : id_expr '=' assign_stmt_value .  (137)
-
-	.  reduce 137
-
-
-state 154
-	single_assign_stmt : id_expr '=' single_assign_stmt .  (138)
+	logic_stmt : type_judge_stmt .  (138)
 
 	.  reduce 138
 
 
-state 155
-	class_member_stmt : id_expr . '.' id_expr  (24)
-	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (28)
-	self_inc_dec_stmt : id_expr . INC_OP  (118)
-	self_inc_dec_stmt : id_expr . DEC_OP  (119)
-	assign_stmt_value : id_expr .  (125)
-	assign_stmt_value_eq : id_expr .  (135)
-	single_assign_stmt : id_expr . '=' assign_stmt_value  (137)
-	single_assign_stmt : id_expr . '=' single_assign_stmt  (138)
+state 145
+	loop_stmt : WHILE '(' logic_stmt . ')' block  (69)
+	logic_stmt : logic_stmt . AND_OP logic_stmt  (145)
+	logic_stmt : logic_stmt . OR_OP logic_stmt  (146)
 
-	INC_OP  shift 138
-	DEC_OP  shift 139
-	'='  shift 79
-	'.'  shift 140
-	'+'  reduce 135
-	'-'  reduce 135
-	'*'  reduce 135
-	'/'  reduce 135
-	';'  reduce 125
-	')'  reduce 125
-
-
-state 156
-	class_member_stmt : id_expr '.' id_expr .  (24)
-	class_member_func_stmt : id_expr '.' id_expr . '(' args_list ')'  (28)
-	class_func_serial_stmt : id_expr '.' id_expr . '(' args_list ')' IDENTIFIER '(' args_list ')'  (33)
-
-	'('  shift 196
-	'='  reduce 24
-	'.'  reduce 24
-
-
-state 157
-	class_member_assign_stmt : class_member_stmt '=' assign_stmt_value .  (139)
-
-	.  reduce 139
-
-
-state 158
-	class_member_stmt : class_member_stmt '.' id_expr .  (27)
-	class_member_func_stmt : class_member_stmt '.' id_expr . '(' args_list ')'  (30)
-
-	'('  shift 197
-	'='  reduce 27
-	';'  reduce 27
-	'.'  reduce 27
-	')'  reduce 27
-
-
-state 159
-	class_member_stmt : class_member_func_stmt '.' id_expr .  (25)
-	class_member_func_stmt : class_member_func_stmt '.' id_expr . '(' args_list ')'  (31)
-
-	'('  shift 198
-	'='  reduce 25
-	';'  reduce 25
-	'.'  reduce 25
-	')'  reduce 25
-
-
-state 160
-	class_func_serial_stmt : class_func_serial_stmt IDENTIFIER '(' . args_list ')'  (34)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 199
-	args_expr  goto 108
-
-
-state 161
-	class_member_assign_stmt : this_member_stmt '=' assign_stmt_value .  (140)
-
-	.  reduce 140
-
-
-state 162
-	parameter : IDENTIFIER .  (38)
-
-	.  reduce 38
-
-
-state 163
-	param_list : '(' parameter . ')'  (37)
-	parameter : parameter . ',' IDENTIFIER  (39)
-
-	','  shift 200
-	')'  shift 201
+	AND_OP  shift 228
+	OR_OP  shift 229
+	')'  shift 238
 	.  error
 
 
-state 164
-	func_declar_stmt : IDENTIFIER FUNC_OP param_list '{' . expr_list '}'  (35)
-	expr_list : .  (42)
-
-	.  reduce 42
-
-	expr_list  goto 202
-
-
-state 165
-	class_body_stmt : single_assign_stmt ';' .  (16)
-
-	.  reduce 16
-
-
-state 166
-	class_declar_stmt : IDENTIFIER '{' class_body '}' .  (12)
-
-	.  reduce 12
-
-
-state 167
-	class_body : class_body class_body_stmt .  (14)
-
-	.  reduce 14
-
-
-state 168
-	class_member_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr '(' args_list ')'  (29)
-	class_func_serial_stmt : IDENTIFIER '(' args_list ')' . IDENTIFIER '(' args_list ')'  (32)
-	call_statement : IDENTIFIER '(' args_list ')' .  (72)
-
-	IDENTIFIER  shift 203
-	'.'  shift 204
-	';'  reduce 72
-
-
-state 169
-	args_expr : args_expr ',' . args_expr_collection  (77)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 205
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 170
-	class_member_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr '(' args_list ')'  (29)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 206
-	args_expr  goto 108
-
-
-state 171
-	logic_stmt : logic_stmt AND_OP . logic_stmt  (114)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	logic_stmt  goto 207
-	arithmetic_stmt  goto 114
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 116
-	bool_param_expr  goto 117
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 172
-	logic_stmt : logic_stmt OR_OP . logic_stmt  (115)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	logic_stmt  goto 208
-	arithmetic_stmt  goto 114
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 116
-	bool_param_expr  goto 117
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 173
-	selection_stmt : IF '(' logic_stmt ')' . block  (47)
-	selection_stmt : IF '(' logic_stmt ')' . block ELSE block  (48)
-
-	IDENTIFIER  shift 3
-	RESTRICT  shift 4
-	THIS  shift 5
-	IF  shift 6
-	WHILE  shift 7
-	FOR  shift 8
-	DELETE  shift 9
-	BREAK  shift 10
-	RETURN  shift 11
-	SWITCH  shift 12
-	NEW  shift 13
-	';'  shift 14
-	'{'  shift 209
-	.  error
-
-	statement  goto 210
-	declar_stmt  goto 16
-	con_ctl_stmt  goto 17
-	simple_stmt  goto 18
-	func_declar_stmt  goto 19
-	var_declar_stmt  goto 20
-	selection_stmt  goto 21
-	loop_stmt  goto 22
-	block  goto 211
-	assign_stmt  goto 23
-	call_statement  goto 24
-	single_assign_stmt  goto 25
-	interrupt_stmt  goto 26
-	new_expr  goto 27
-	id_expr  goto 28
-	class_declar_stmt  goto 29
-	class_member_stmt  goto 30
-	class_member_assign_stmt  goto 31
-	class_member_func_stmt  goto 32
-	class_func_serial_stmt  goto 33
-	restrict_stmt  goto 34
-	this_member_stmt  goto 35
-
-
-state 174
-	logic_stmt : bool_param_expr LE_OP . bool_param_expr  (110)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 114
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 116
-	bool_param_expr  goto 212
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 175
-	logic_stmt : bool_param_expr GE_OP . bool_param_expr  (111)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 114
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 116
-	bool_param_expr  goto 213
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 176
-	logic_stmt : bool_param_expr EQ_OP . bool_param_expr  (112)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 114
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 116
-	bool_param_expr  goto 214
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 177
-	logic_stmt : bool_param_expr NE_OP . bool_param_expr  (113)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 114
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 116
-	bool_param_expr  goto 215
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 178
-	logic_stmt : bool_param_expr '>' . bool_param_expr  (108)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 114
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 116
-	bool_param_expr  goto 216
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 179
-	logic_stmt : bool_param_expr '<' . bool_param_expr  (109)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	arithmetic_stmt  goto 114
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 116
-	bool_param_expr  goto 217
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 180
-	loop_stmt : WHILE '(' logic_stmt ')' . block  (54)
-
-	IDENTIFIER  shift 3
-	RESTRICT  shift 4
-	THIS  shift 5
-	IF  shift 6
-	WHILE  shift 7
-	FOR  shift 8
-	DELETE  shift 9
-	BREAK  shift 10
-	RETURN  shift 11
-	SWITCH  shift 12
-	NEW  shift 13
-	';'  shift 14
-	'{'  shift 209
-	.  error
-
-	statement  goto 210
-	declar_stmt  goto 16
-	con_ctl_stmt  goto 17
-	simple_stmt  goto 18
-	func_declar_stmt  goto 19
-	var_declar_stmt  goto 20
-	selection_stmt  goto 21
-	loop_stmt  goto 22
-	block  goto 218
-	assign_stmt  goto 23
-	call_statement  goto 24
-	single_assign_stmt  goto 25
-	interrupt_stmt  goto 26
-	new_expr  goto 27
-	id_expr  goto 28
-	class_declar_stmt  goto 29
-	class_member_stmt  goto 30
-	class_member_assign_stmt  goto 31
-	class_member_func_stmt  goto 32
-	class_func_serial_stmt  goto 33
-	restrict_stmt  goto 34
-	this_member_stmt  goto 35
-
-
-state 181
-	loop_stmt : FOR '(' for_1_stmt ';' . logic_stmt ';' for_1_stmt ')' block  (55)
-
-	TDOUBLE  shift 46
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	.  error
-
-	logic_stmt  goto 219
-	arithmetic_stmt  goto 114
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 115
-	assign_stmt_value_eq  goto 116
-	bool_param_expr  goto 117
-	id_expr  goto 118
-	double_expr  goto 119
-	uminus_expr  goto 120
-	string_expr  goto 121
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-
-
-state 182
-	class_member_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr '(' args_list ')'  (29)
-	call_statement : IDENTIFIER '(' args_list . ')'  (72)
-
-	')'  shift 220
-	.  error
-
-
-state 183
-	this_stmt : THIS '.' id_expr .  (18)
-	this_stmt : THIS '.' id_expr . '(' args_list ')'  (20)
-	class_member_stmt : id_expr . '.' id_expr  (24)
-	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (28)
-
-	'.'  shift 140
-	'('  shift 221
-	';'  reduce 18
-	')'  reduce 18
-
-
-state 184
-	this_stmt : THIS '.' class_member_stmt .  (19)
-	class_member_stmt : class_member_stmt . '.' id_expr  (27)
-	class_member_func_stmt : class_member_stmt . '.' id_expr '(' args_list ')'  (30)
-
-	'.'  shift 83
-	';'  reduce 19
-	')'  reduce 19
-
-
-state 185
-	this_stmt : THIS '.' class_member_func_stmt .  (21)
-	class_member_stmt : class_member_func_stmt . '.' id_expr  (25)
-	class_member_func_stmt : class_member_func_stmt . '.' id_expr '(' args_list ')'  (31)
-
-	'.'  shift 84
-	';'  reduce 21
-	')'  reduce 21
-
-
-state 186
-	parentheses_stmt : '(' assign_stmt_value_eq . ')'  (89)
-
-	')'  shift 222
-	.  error
-
-
-state 187
-	arithmetic_stmt_factor : '(' arithmetic_stmt ')' .  (97)
-
-	.  reduce 97
-
-
-state 188
-	class_member_stmt : id_expr '.' id_expr .  (24)
-	class_member_func_stmt : id_expr '.' id_expr . '(' args_list ')'  (28)
+state 146
+	class_member_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'  (38)
+	var_declar_stmt : IDENTIFIER . '[' XINTEGER ']' ';'  (56)
+	var_declar_stmt : IDENTIFIER . '[' XINTEGER ']' ',' var_declar_stmt  (57)
+	var_declar_stmt : IDENTIFIER . '[' IDENTIFIER ']' ';'  (58)
+	var_declar_stmt : IDENTIFIER . '[' IDENTIFIER ']' ',' var_declar_stmt  (59)
+	id_expr : IDENTIFIER .  (125)
+	array_ele_stmt : IDENTIFIER . '[' XINTEGER ']'  (175)
+	array_ele_stmt : IDENTIFIER . '[' IDENTIFIER ']'  (176)
 
 	'('  shift 223
-	'='  reduce 24
-	';'  reduce 24
-	'.'  reduce 24
-	')'  reduce 24
+	'['  shift 45
+	INC_OP  reduce 125
+	DEC_OP  reduce 125
+	ADD_EQ  reduce 125
+	SUB_EQ  reduce 125
+	MUL_EQ  reduce 125
+	DIV_EQ  reduce 125
+	MOD_EQ  reduce 125
+	','  reduce 125
+	'='  reduce 125
+	';'  reduce 125
+	'.'  reduce 125
 
 
-state 189
-	arithmetic_stmt_factor : arithmetic_stmt .  (96)
+state 147
+	for_1_stmt : var_declar_stmt .  (73)
 
-	.  reduce 96
-
-
-state 190
-	arithmetic_stmt : arithmetic_stmt_factor . '+' arithmetic_stmt_factor  (90)
-	arithmetic_stmt : arithmetic_stmt_factor '+' arithmetic_stmt_factor .  (90)
-	arithmetic_stmt : arithmetic_stmt_factor . '-' arithmetic_stmt_factor  (91)
-	arithmetic_stmt : arithmetic_stmt_factor . '*' arithmetic_stmt_factor  (92)
-	arithmetic_stmt : arithmetic_stmt_factor . '/' arithmetic_stmt_factor  (93)
-
-	'*'  shift 143
-	'/'  shift 144
-	AND_OP  reduce 90
-	OR_OP  reduce 90
-	LE_OP  reduce 90
-	GE_OP  reduce 90
-	EQ_OP  reduce 90
-	NE_OP  reduce 90
-	','  reduce 90
-	'>'  reduce 90
-	'<'  reduce 90
-	'+'  reduce 90
-	'-'  reduce 90
-	';'  reduce 90
-	')'  reduce 90
+	.  reduce 73
 
 
-state 191
-	arithmetic_stmt : arithmetic_stmt_factor . '+' arithmetic_stmt_factor  (90)
-	arithmetic_stmt : arithmetic_stmt_factor . '-' arithmetic_stmt_factor  (91)
-	arithmetic_stmt : arithmetic_stmt_factor '-' arithmetic_stmt_factor .  (91)
-	arithmetic_stmt : arithmetic_stmt_factor . '*' arithmetic_stmt_factor  (92)
-	arithmetic_stmt : arithmetic_stmt_factor . '/' arithmetic_stmt_factor  (93)
+state 148
+	loop_stmt : FOR '(' for_1_stmt . ';' logic_stmt ';' for_1_stmt ')' block  (70)
 
-	'*'  shift 143
-	'/'  shift 144
-	AND_OP  reduce 91
-	OR_OP  reduce 91
-	LE_OP  reduce 91
-	GE_OP  reduce 91
-	EQ_OP  reduce 91
-	NE_OP  reduce 91
-	','  reduce 91
-	'>'  reduce 91
-	'<'  reduce 91
-	'+'  reduce 91
-	'-'  reduce 91
-	';'  reduce 91
-	')'  reduce 91
-
-
-state 192
-	arithmetic_stmt : arithmetic_stmt_factor . '+' arithmetic_stmt_factor  (90)
-	arithmetic_stmt : arithmetic_stmt_factor . '-' arithmetic_stmt_factor  (91)
-	arithmetic_stmt : arithmetic_stmt_factor . '*' arithmetic_stmt_factor  (92)
-	arithmetic_stmt : arithmetic_stmt_factor '*' arithmetic_stmt_factor .  (92)
-	arithmetic_stmt : arithmetic_stmt_factor . '/' arithmetic_stmt_factor  (93)
-
-	.  reduce 92
-
-
-state 193
-	arithmetic_stmt : arithmetic_stmt_factor . '+' arithmetic_stmt_factor  (90)
-	arithmetic_stmt : arithmetic_stmt_factor . '-' arithmetic_stmt_factor  (91)
-	arithmetic_stmt : arithmetic_stmt_factor . '*' arithmetic_stmt_factor  (92)
-	arithmetic_stmt : arithmetic_stmt_factor . '/' arithmetic_stmt_factor  (93)
-	arithmetic_stmt : arithmetic_stmt_factor '/' arithmetic_stmt_factor .  (93)
-
-	.  reduce 93
-
-
-state 194
-	selection_stmt : SWITCH '(' id_expr ')' . '{' case_stmt_list '}'  (49)
-
-	'{'  shift 224
+	';'  shift 239
 	.  error
 
 
-state 195
-	new_expr : NEW id_expr '(' args_list . ')'  (98)
+state 149
+	for_1_stmt : assign_stmt .  (72)
 
-	')'  shift 225
+	.  reduce 72
+
+
+state 150
+	for_1_stmt : self_inc_dec_stmt .  (74)
+
+	.  reduce 74
+
+
+state 151
+	class_member_stmt : id_expr . '.' id_expr  (33)
+	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (37)
+	var_declar_stmt : id_expr . ';'  (54)
+	var_declar_stmt : id_expr . ',' var_declar_stmt  (55)
+	self_inc_dec_stmt : id_expr . INC_OP  (150)
+	self_inc_dec_stmt : id_expr . DEC_OP  (151)
+	single_assign_stmt : id_expr . '=' assign_stmt_value  (171)
+	single_assign_stmt : id_expr . '=' single_assign_stmt  (172)
+	assign_stmt : id_expr . ADD_EQ assign_stmt_value_eq  (181)
+	assign_stmt : id_expr . SUB_EQ assign_stmt_value_eq  (182)
+	assign_stmt : id_expr . MUL_EQ assign_stmt_value_eq  (183)
+	assign_stmt : id_expr . DIV_EQ assign_stmt_value_eq  (184)
+	assign_stmt : id_expr . MOD_EQ assign_stmt_value_eq  (185)
+
+	INC_OP  shift 170
+	DEC_OP  shift 171
+	ADD_EQ  shift 90
+	SUB_EQ  shift 91
+	MUL_EQ  shift 92
+	DIV_EQ  shift 93
+	MOD_EQ  shift 94
+	','  shift 95
+	'='  shift 96
+	';'  shift 97
+	'.'  shift 172
 	.  error
 
 
-state 196
-	class_member_func_stmt : id_expr '.' id_expr '(' . args_list ')'  (28)
-	class_func_serial_stmt : id_expr '.' id_expr '(' . args_list ')' IDENTIFIER '(' args_list ')'  (33)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 226
-	args_expr  goto 108
-
-
-state 197
-	class_member_func_stmt : class_member_stmt '.' id_expr '(' . args_list ')'  (30)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 227
-	args_expr  goto 108
-
-
-state 198
-	class_member_func_stmt : class_member_func_stmt '.' id_expr '(' . args_list ')'  (31)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 228
-	args_expr  goto 108
-
-
-state 199
-	class_func_serial_stmt : class_func_serial_stmt IDENTIFIER '(' args_list . ')'  (34)
-
-	')'  shift 229
-	.  error
-
-
-state 200
-	parameter : parameter ',' . IDENTIFIER  (39)
-
-	IDENTIFIER  shift 230
-	.  error
-
-
-state 201
-	param_list : '(' parameter ')' .  (37)
-
-	.  reduce 37
-
-
-state 202
-	func_declar_stmt : IDENTIFIER FUNC_OP param_list '{' expr_list . '}'  (35)
-	expr_list : expr_list . statement  (41)
-
-	IDENTIFIER  shift 3
-	RESTRICT  shift 4
-	THIS  shift 5
-	IF  shift 6
-	WHILE  shift 7
-	FOR  shift 8
-	DELETE  shift 9
-	BREAK  shift 10
-	RETURN  shift 11
-	SWITCH  shift 12
-	NEW  shift 13
-	';'  shift 14
-	'}'  shift 231
-	.  error
-
-	statement  goto 232
-	declar_stmt  goto 16
-	con_ctl_stmt  goto 17
-	simple_stmt  goto 18
-	func_declar_stmt  goto 19
-	var_declar_stmt  goto 20
-	selection_stmt  goto 21
-	loop_stmt  goto 22
-	assign_stmt  goto 23
-	call_statement  goto 24
-	single_assign_stmt  goto 25
-	interrupt_stmt  goto 26
-	new_expr  goto 27
-	id_expr  goto 28
-	class_declar_stmt  goto 29
-	class_member_stmt  goto 30
-	class_member_assign_stmt  goto 31
-	class_member_func_stmt  goto 32
-	class_func_serial_stmt  goto 33
-	restrict_stmt  goto 34
-	this_member_stmt  goto 35
-
-
-state 203
-	class_func_serial_stmt : IDENTIFIER '(' args_list ')' IDENTIFIER . '(' args_list ')'  (32)
-
-	'('  shift 233
-	.  error
-
-
-state 204
-	class_member_stmt : IDENTIFIER '(' args_list ')' '.' . id_expr  (26)
-	class_member_func_stmt : IDENTIFIER '(' args_list ')' '.' . id_expr '(' args_list ')'  (29)
-
-	IDENTIFIER  shift 71
-	.  error
-
-	id_expr  goto 234
-
-
-state 205
-	args_expr : args_expr ',' args_expr_collection .  (77)
+state 152
+	simple_stmt : DELETE IDENTIFIER ';' .  (77)
 
 	.  reduce 77
 
 
-state 206
-	class_member_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr '(' args_list ')'  (29)
+state 153
+	class_member_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr '(' args_list ')'  (38)
+	call_statement : IDENTIFIER '(' . args_list ')'  (87)
+	args_list : .  (89)
 
-	')'  shift 235
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 240
+	args_expr  goto 123
+
+
+state 154
+	array_ele_stmt : IDENTIFIER '[' . XINTEGER ']'  (175)
+	array_ele_stmt : IDENTIFIER '[' . IDENTIFIER ']'  (176)
+
+	XINTEGER  shift 241
+	IDENTIFIER  shift 242
 	.  error
 
 
-state 207
-	logic_stmt : logic_stmt . AND_OP logic_stmt  (114)
-	logic_stmt : logic_stmt AND_OP logic_stmt .  (114)
-	logic_stmt : logic_stmt . OR_OP logic_stmt  (115)
+state 155
+	self_inc_dec_stmt : INC_OP id_expr .  (148)
 
-	.  reduce 114
+	.  reduce 148
 
 
-state 208
-	logic_stmt : logic_stmt . AND_OP logic_stmt  (114)
-	logic_stmt : logic_stmt . OR_OP logic_stmt  (115)
-	logic_stmt : logic_stmt OR_OP logic_stmt .  (115)
+state 156
+	self_inc_dec_stmt : DEC_OP id_expr .  (149)
 
-	.  reduce 115
+	.  reduce 149
 
 
-state 209
-	block : '{' . expr_list '}'  (85)
-	expr_list : .  (42)
+state 157
+	this_stmt : THIS '.' . id_expr  (29)
+	this_stmt : THIS '.' . id_expr '(' args_list ')'  (30)
 
-	.  reduce 42
+	IDENTIFIER  shift 87
+	.  error
 
-	expr_list  goto 236
-
-
-state 210
-	block : statement .  (86)
-
-	.  reduce 86
+	id_expr  goto 243
 
 
-state 211
-	selection_stmt : IF '(' logic_stmt ')' block .  (47)
-	selection_stmt : IF '(' logic_stmt ')' block . ELSE block  (48)
+state 158
+	double_expr : XINTEGER .  (128)
 
-	ELSE  shift 237
-	$end  reduce 47
-	IDENTIFIER  reduce 47
-	RESTRICT  reduce 47
-	THIS  reduce 47
-	IF  reduce 47
-	WHILE  reduce 47
-	FOR  reduce 47
-	DELETE  reduce 47
-	BREAK  reduce 47
-	RETURN  reduce 47
-	SWITCH  reduce 47
-	CASE  reduce 47
-	DEFAULT  reduce 47
-	NEW  reduce 47
-	';'  reduce 47
-	'}'  reduce 47
+	.  reduce 128
 
 
-state 212
-	logic_stmt : bool_param_expr LE_OP bool_param_expr .  (110)
+state 159
+	parentheses_stmt : '(' . assign_stmt_value_eq ')'  (104)
 
-	.  reduce 110
+	XINTEGER  shift 158
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 187
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	.  error
+
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 244
+	id_expr  goto 189
+	double_expr  goto 140
+	uminus_expr  goto 141
+	class_member_stmt  goto 190
+	class_member_func_stmt  goto 36
 
 
-state 213
-	logic_stmt : bool_param_expr GE_OP bool_param_expr .  (111)
+state 160
+	uminus_expr : '-' double_or_ps_expr .  (129)
 
-	.  reduce 111
-
-
-state 214
-	logic_stmt : bool_param_expr EQ_OP bool_param_expr .  (112)
-
-	.  reduce 112
+	.  reduce 129
 
 
-state 215
-	logic_stmt : bool_param_expr NE_OP bool_param_expr .  (113)
+state 161
+	double_or_ps_expr : parentheses_stmt .  (103)
+
+	.  reduce 103
+
+
+state 162
+	double_or_ps_expr : double_expr .  (102)
+
+	.  reduce 102
+
+
+state 163
+	bit_opr_factor : XINTEGER .  (116)
+
+	.  reduce 116
+
+
+state 164
+	bit_opr_factor : id_expr .  (117)
+
+	.  reduce 117
+
+
+state 165
+	arithmetic_stmt : '~' bit_opr_factor .  (113)
 
 	.  reduce 113
 
 
-state 216
-	logic_stmt : bool_param_expr '>' bool_param_expr .  (108)
-
-	.  reduce 108
-
-
-state 217
-	logic_stmt : bool_param_expr '<' bool_param_expr .  (109)
-
-	.  reduce 109
-
-
-state 218
-	loop_stmt : WHILE '(' logic_stmt ')' block .  (54)
-
-	.  reduce 54
-
-
-state 219
-	loop_stmt : FOR '(' for_1_stmt ';' logic_stmt . ';' for_1_stmt ')' block  (55)
-	logic_stmt : logic_stmt . AND_OP logic_stmt  (114)
-	logic_stmt : logic_stmt . OR_OP logic_stmt  (115)
-
-	AND_OP  shift 171
-	OR_OP  shift 172
-	';'  shift 238
-	.  error
-
-
-state 220
-	class_member_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr '(' args_list ')'  (29)
-	call_statement : IDENTIFIER '(' args_list ')' .  (72)
-
-	'.'  shift 204
-	AND_OP  reduce 72
-	OR_OP  reduce 72
-	LE_OP  reduce 72
-	GE_OP  reduce 72
-	EQ_OP  reduce 72
-	NE_OP  reduce 72
-	','  reduce 72
-	'>'  reduce 72
-	'<'  reduce 72
-	'+'  reduce 72
-	'-'  reduce 72
-	'*'  reduce 72
-	'/'  reduce 72
-	';'  reduce 72
-	')'  reduce 72
-
-
-state 221
-	this_stmt : THIS '.' id_expr '(' . args_list ')'  (20)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 239
-	args_expr  goto 108
-
-
-state 222
-	parentheses_stmt : '(' assign_stmt_value_eq ')' .  (89)
-
-	.  reduce 89
-
-
-state 223
-	class_member_func_stmt : id_expr '.' id_expr '(' . args_list ')'  (28)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 240
-	args_expr  goto 108
-
-
-state 224
-	selection_stmt : SWITCH '(' id_expr ')' '{' . case_stmt_list '}'  (49)
-
-	CASE  shift 241
-	DEFAULT  shift 242
-	.  error
-
-	case_stmt_list  goto 243
-	case_stmt  goto 244
-
-
-state 225
-	new_expr : NEW id_expr '(' args_list ')' .  (98)
-
-	.  reduce 98
-
-
-state 226
-	class_member_func_stmt : id_expr '.' id_expr '(' args_list . ')'  (28)
-	class_func_serial_stmt : id_expr '.' id_expr '(' args_list . ')' IDENTIFIER '(' args_list ')'  (33)
+state 166
+	arithmetic_stmt_factor : arithmetic_stmt .  (120)
+	arithmetic_stmt_factor : '(' arithmetic_stmt . ')'  (123)
 
 	')'  shift 245
-	.  error
+	'+'  reduce 120
+	'-'  reduce 120
+	'%'  reduce 120
+	'*'  reduce 120
+	'/'  reduce 120
 
 
-state 227
-	class_member_func_stmt : class_member_stmt '.' id_expr '(' args_list . ')'  (30)
+state 167
+	class_member_stmt : id_expr . '.' id_expr  (33)
+	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (37)
+	bit_opr_factor : id_expr .  (117)
+	self_inc_dec_stmt : id_expr . INC_OP  (150)
+	self_inc_dec_stmt : id_expr . DEC_OP  (151)
+	assign_stmt_value_eq : id_expr .  (169)
 
+	INC_OP  shift 170
+	DEC_OP  shift 171
+	'.'  shift 172
+	AND_OP  reduce 169
+	OR_OP  reduce 169
+	LE_OP  reduce 169
+	GE_OP  reduce 169
+	EQ_OP  reduce 169
+	NE_OP  reduce 169
+	LEFT_SHIFT  reduce 117
+	RIGHT_SHIFT  reduce 117
+	','  reduce 169
+	'>'  reduce 169
+	'<'  reduce 169
+	'+'  reduce 169
+	'-'  reduce 169
+	'%'  reduce 169
+	'*'  reduce 169
+	'/'  reduce 169
+	'&'  reduce 117
+	'|'  reduce 117
+	'^'  reduce 117
+	';'  reduce 169
+	')'  reduce 169
+
+
+state 168
+	arithmetic_stmt_factor : string_expr .  (119)
+
+	.  reduce 119
+
+
+state 169
+	lambda_stmt : '(' parameter . ')' FUNC_OP '{' expr_list '}'  (45)
+	parameter : parameter . ',' IDENTIFIER  (50)
+
+	','  shift 184
 	')'  shift 246
 	.  error
 
 
-state 228
-	class_member_func_stmt : class_member_func_stmt '.' id_expr '(' args_list . ')'  (31)
+state 170
+	self_inc_dec_stmt : id_expr INC_OP .  (150)
 
-	')'  shift 247
+	.  reduce 150
+
+
+state 171
+	self_inc_dec_stmt : id_expr DEC_OP .  (151)
+
+	.  reduce 151
+
+
+state 172
+	class_member_stmt : id_expr '.' . id_expr  (33)
+	class_member_func_stmt : id_expr '.' . id_expr '(' args_list ')'  (37)
+
+	IDENTIFIER  shift 87
 	.  error
 
-
-state 229
-	class_func_serial_stmt : class_func_serial_stmt IDENTIFIER '(' args_list ')' .  (34)
-
-	.  reduce 34
+	id_expr  goto 247
 
 
-state 230
-	parameter : parameter ',' IDENTIFIER .  (39)
+state 173
+	arithmetic_stmt : arithmetic_stmt_factor '+' . arithmetic_stmt_factor  (105)
 
-	.  reduce 39
-
-
-state 231
-	func_declar_stmt : IDENTIFIER FUNC_OP param_list '{' expr_list '}' .  (35)
-
-	.  reduce 35
-
-
-state 232
-	expr_list : expr_list statement .  (41)
-
-	.  reduce 41
-
-
-state 233
-	class_func_serial_stmt : IDENTIFIER '(' args_list ')' IDENTIFIER '(' . args_list ')'  (32)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 248
-	args_expr  goto 108
-
-
-state 234
-	class_member_stmt : IDENTIFIER '(' args_list ')' '.' id_expr .  (26)
-	class_member_func_stmt : IDENTIFIER '(' args_list ')' '.' id_expr . '(' args_list ')'  (29)
-
-	'('  shift 249
-	'='  reduce 26
-	';'  reduce 26
-	'.'  reduce 26
-	')'  reduce 26
-
-
-state 235
-	class_member_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr  (26)
-	class_member_func_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr '(' args_list ')'  (29)
-
-	'.'  shift 204
-	.  error
-
-
-state 236
-	expr_list : expr_list . statement  (41)
-	block : '{' expr_list . '}'  (85)
-
-	IDENTIFIER  shift 3
-	RESTRICT  shift 4
-	THIS  shift 5
-	IF  shift 6
-	WHILE  shift 7
-	FOR  shift 8
-	DELETE  shift 9
-	BREAK  shift 10
-	RETURN  shift 11
-	SWITCH  shift 12
-	NEW  shift 13
-	';'  shift 14
-	'}'  shift 250
-	.  error
-
-	statement  goto 232
-	declar_stmt  goto 16
-	con_ctl_stmt  goto 17
-	simple_stmt  goto 18
-	func_declar_stmt  goto 19
-	var_declar_stmt  goto 20
-	selection_stmt  goto 21
-	loop_stmt  goto 22
-	assign_stmt  goto 23
-	call_statement  goto 24
-	single_assign_stmt  goto 25
-	interrupt_stmt  goto 26
-	new_expr  goto 27
-	id_expr  goto 28
-	class_declar_stmt  goto 29
-	class_member_stmt  goto 30
-	class_member_assign_stmt  goto 31
-	class_member_func_stmt  goto 32
-	class_func_serial_stmt  goto 33
-	restrict_stmt  goto 34
-	this_member_stmt  goto 35
-
-
-state 237
-	selection_stmt : IF '(' logic_stmt ')' block ELSE . block  (48)
-
-	IDENTIFIER  shift 3
-	RESTRICT  shift 4
-	THIS  shift 5
-	IF  shift 6
-	WHILE  shift 7
-	FOR  shift 8
-	DELETE  shift 9
-	BREAK  shift 10
-	RETURN  shift 11
-	SWITCH  shift 12
-	NEW  shift 13
-	';'  shift 14
-	'{'  shift 209
-	.  error
-
-	statement  goto 210
-	declar_stmt  goto 16
-	con_ctl_stmt  goto 17
-	simple_stmt  goto 18
-	func_declar_stmt  goto 19
-	var_declar_stmt  goto 20
-	selection_stmt  goto 21
-	loop_stmt  goto 22
-	block  goto 251
-	assign_stmt  goto 23
-	call_statement  goto 24
-	single_assign_stmt  goto 25
-	interrupt_stmt  goto 26
-	new_expr  goto 27
-	id_expr  goto 28
-	class_declar_stmt  goto 29
-	class_member_stmt  goto 30
-	class_member_assign_stmt  goto 31
-	class_member_func_stmt  goto 32
-	class_func_serial_stmt  goto 33
-	restrict_stmt  goto 34
-	this_member_stmt  goto 35
-
-
-state 238
-	loop_stmt : FOR '(' for_1_stmt ';' logic_stmt ';' . for_1_stmt ')' block  (55)
-	for_1_stmt : .  (56)
-
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
 	IDENTIFIER  shift 109
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	THIS  shift 5
-	')'  reduce 56
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
 
-	var_declar_stmt  goto 123
-	for_1_stmt  goto 252
-	assign_stmt  goto 125
-	self_inc_dec_stmt  goto 126
-	single_assign_stmt  goto 25
-	id_expr  goto 127
-	class_member_stmt  goto 30
-	class_member_assign_stmt  goto 31
-	class_member_func_stmt  goto 112
-	this_member_stmt  goto 35
+	arithmetic_stmt  goto 248
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 167
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 168
+	arithmetic_stmt_factor  goto 249
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
 
 
-state 239
-	this_stmt : THIS '.' id_expr '(' args_list . ')'  (20)
+state 174
+	arithmetic_stmt : arithmetic_stmt_factor '-' . arithmetic_stmt_factor  (106)
 
-	')'  shift 253
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 248
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 167
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 168
+	arithmetic_stmt_factor  goto 250
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+
+
+state 175
+	arithmetic_stmt : arithmetic_stmt_factor '%' . arithmetic_stmt_factor  (109)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 248
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 167
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 168
+	arithmetic_stmt_factor  goto 251
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+
+
+state 176
+	arithmetic_stmt : arithmetic_stmt_factor '*' . arithmetic_stmt_factor  (107)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 248
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 167
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 168
+	arithmetic_stmt_factor  goto 252
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+
+
+state 177
+	arithmetic_stmt : arithmetic_stmt_factor '/' . arithmetic_stmt_factor  (108)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 248
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 167
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 168
+	arithmetic_stmt_factor  goto 253
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+
+
+state 178
+	arithmetic_stmt : bit_opr_factor LEFT_SHIFT . bit_opr_factor  (114)
+
+	XINTEGER  shift 163
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 164
+	bit_opr_factor  goto 254
+
+
+state 179
+	arithmetic_stmt : bit_opr_factor RIGHT_SHIFT . bit_opr_factor  (115)
+
+	XINTEGER  shift 163
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 164
+	bit_opr_factor  goto 255
+
+
+state 180
+	arithmetic_stmt : bit_opr_factor '&' . bit_opr_factor  (110)
+
+	XINTEGER  shift 163
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 164
+	bit_opr_factor  goto 256
+
+
+state 181
+	arithmetic_stmt : bit_opr_factor '|' . bit_opr_factor  (111)
+
+	XINTEGER  shift 163
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 164
+	bit_opr_factor  goto 257
+
+
+state 182
+	arithmetic_stmt : bit_opr_factor '^' . bit_opr_factor  (112)
+
+	XINTEGER  shift 163
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 164
+	bit_opr_factor  goto 258
+
+
+state 183
+	lambda_stmt : parameter FUNC_OP . '{' expr_list '}'  (46)
+
+	'{'  shift 259
 	.  error
 
 
-state 240
-	class_member_func_stmt : id_expr '.' id_expr '(' args_list . ')'  (28)
+state 184
+	parameter : parameter ',' . IDENTIFIER  (50)
 
-	')'  shift 254
+	IDENTIFIER  shift 260
 	.  error
 
 
-state 241
-	case_stmt : CASE . double_expr ':' expr_list  (52)
+state 185
+	selection_stmt : SWITCH '(' id_expr . ')' '{' case_stmt_list '}'  (64)
 
-	TDOUBLE  shift 46
-	.  error
-
-	double_expr  goto 255
-
-
-state 242
-	case_stmt : DEFAULT . ':' expr_list  (53)
-
-	':'  shift 256
+	')'  shift 261
 	.  error
 
 
-state 243
-	selection_stmt : SWITCH '(' id_expr ')' '{' case_stmt_list . '}'  (49)
-	case_stmt_list : case_stmt_list . case_stmt  (51)
+state 186
+	new_expr : NEW id_expr '(' . args_list ')'  (124)
+	args_list : .  (89)
 
-	CASE  shift 241
-	DEFAULT  shift 242
-	'}'  shift 257
-	.  error
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
 
-	case_stmt  goto 258
-
-
-state 244
-	case_stmt_list : case_stmt .  (50)
-
-	.  reduce 50
-
-
-state 245
-	class_member_func_stmt : id_expr '.' id_expr '(' args_list ')' .  (28)
-	class_func_serial_stmt : id_expr '.' id_expr '(' args_list ')' . IDENTIFIER '(' args_list ')'  (33)
-
-	IDENTIFIER  shift 259
-	';'  reduce 28
-	'.'  reduce 28
-
-
-state 246
-	class_member_func_stmt : class_member_stmt '.' id_expr '(' args_list ')' .  (30)
-
-	.  reduce 30
-
-
-state 247
-	class_member_func_stmt : class_member_func_stmt '.' id_expr '(' args_list ')' .  (31)
-
-	.  reduce 31
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 262
+	args_expr  goto 123
 
 
-state 248
-	class_func_serial_stmt : IDENTIFIER '(' args_list ')' IDENTIFIER '(' args_list . ')'  (32)
+state 187
+	class_member_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'  (38)
+	call_statement : IDENTIFIER . '(' args_list ')'  (87)
+	id_expr : IDENTIFIER .  (125)
 
-	')'  shift 260
-	.  error
-
-
-state 249
-	class_member_func_stmt : IDENTIFIER '(' args_list ')' '.' id_expr '(' . args_list ')'  (29)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 261
-	args_expr  goto 108
+	'('  shift 153
+	INC_OP  reduce 125
+	DEC_OP  reduce 125
+	';'  reduce 125
+	')'  reduce 125
+	'.'  reduce 125
 
 
-state 250
-	block : '{' expr_list '}' .  (85)
+state 188
+	assign_stmt : id_expr ADD_EQ assign_stmt_value_eq .  (181)
 
-	.  reduce 85
-
-
-state 251
-	selection_stmt : IF '(' logic_stmt ')' block ELSE block .  (48)
-
-	.  reduce 48
+	.  reduce 181
 
 
-state 252
-	loop_stmt : FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt . ')' block  (55)
+state 189
+	class_member_stmt : id_expr . '.' id_expr  (33)
+	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (37)
+	self_inc_dec_stmt : id_expr . INC_OP  (150)
+	self_inc_dec_stmt : id_expr . DEC_OP  (151)
+	assign_stmt_value_eq : id_expr .  (169)
 
-	')'  shift 262
+	INC_OP  shift 170
+	DEC_OP  shift 171
+	'.'  shift 172
+	';'  reduce 169
+	')'  reduce 169
+
+
+state 190
+	class_member_stmt : class_member_stmt . '.' id_expr  (36)
+	class_member_func_stmt : class_member_stmt . '.' id_expr '(' args_list ')'  (39)
+
+	'.'  shift 101
 	.  error
 
 
-state 253
-	this_stmt : THIS '.' id_expr '(' args_list ')' .  (20)
+state 191
+	assign_stmt : id_expr SUB_EQ assign_stmt_value_eq .  (182)
 
-	.  reduce 20
-
-
-state 254
-	class_member_func_stmt : id_expr '.' id_expr '(' args_list ')' .  (28)
-
-	.  reduce 28
+	.  reduce 182
 
 
-state 255
-	case_stmt : CASE double_expr . ':' expr_list  (52)
+state 192
+	assign_stmt : id_expr MUL_EQ assign_stmt_value_eq .  (183)
 
-	':'  shift 263
-	.  error
-
-
-state 256
-	case_stmt : DEFAULT ':' . expr_list  (53)
-	expr_list : .  (42)
-
-	.  reduce 42
-
-	expr_list  goto 264
+	.  reduce 183
 
 
-state 257
-	selection_stmt : SWITCH '(' id_expr ')' '{' case_stmt_list '}' .  (49)
+state 193
+	assign_stmt : id_expr DIV_EQ assign_stmt_value_eq .  (184)
 
-	.  reduce 49
-
-
-state 258
-	case_stmt_list : case_stmt_list case_stmt .  (51)
-
-	.  reduce 51
+	.  reduce 184
 
 
-state 259
-	class_func_serial_stmt : id_expr '.' id_expr '(' args_list ')' IDENTIFIER . '(' args_list ')'  (33)
+state 194
+	assign_stmt : id_expr MOD_EQ assign_stmt_value_eq .  (185)
 
-	'('  shift 265
-	.  error
-
-
-state 260
-	class_func_serial_stmt : IDENTIFIER '(' args_list ')' IDENTIFIER '(' args_list ')' .  (32)
-
-	.  reduce 32
+	.  reduce 185
 
 
-state 261
-	class_member_func_stmt : IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list . ')'  (29)
+state 195
+	var_declar_stmt : IDENTIFIER . '[' XINTEGER ']' ';'  (56)
+	var_declar_stmt : IDENTIFIER . '[' XINTEGER ']' ',' var_declar_stmt  (57)
+	var_declar_stmt : IDENTIFIER . '[' IDENTIFIER ']' ';'  (58)
+	var_declar_stmt : IDENTIFIER . '[' IDENTIFIER ']' ',' var_declar_stmt  (59)
+	id_expr : IDENTIFIER .  (125)
 
-	')'  shift 266
-	.  error
-
-
-state 262
-	loop_stmt : FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' . block  (55)
-
-	IDENTIFIER  shift 3
-	RESTRICT  shift 4
-	THIS  shift 5
-	IF  shift 6
-	WHILE  shift 7
-	FOR  shift 8
-	DELETE  shift 9
-	BREAK  shift 10
-	RETURN  shift 11
-	SWITCH  shift 12
-	NEW  shift 13
-	';'  shift 14
-	'{'  shift 209
-	.  error
-
-	statement  goto 210
-	declar_stmt  goto 16
-	con_ctl_stmt  goto 17
-	simple_stmt  goto 18
-	func_declar_stmt  goto 19
-	var_declar_stmt  goto 20
-	selection_stmt  goto 21
-	loop_stmt  goto 22
-	block  goto 267
-	assign_stmt  goto 23
-	call_statement  goto 24
-	single_assign_stmt  goto 25
-	interrupt_stmt  goto 26
-	new_expr  goto 27
-	id_expr  goto 28
-	class_declar_stmt  goto 29
-	class_member_stmt  goto 30
-	class_member_assign_stmt  goto 31
-	class_member_func_stmt  goto 32
-	class_func_serial_stmt  goto 33
-	restrict_stmt  goto 34
-	this_member_stmt  goto 35
+	'['  shift 263
+	','  reduce 125
+	';'  reduce 125
 
 
-state 263
-	case_stmt : CASE double_expr ':' . expr_list  (52)
-	expr_list : .  (42)
-
-	.  reduce 42
-
-	expr_list  goto 268
-
-
-state 264
-	expr_list : expr_list . statement  (41)
-	case_stmt : DEFAULT ':' expr_list .  (53)
-
-	IDENTIFIER  shift 3
-	RESTRICT  shift 4
-	THIS  shift 5
-	IF  shift 6
-	WHILE  shift 7
-	FOR  shift 8
-	DELETE  shift 9
-	BREAK  shift 10
-	RETURN  shift 11
-	SWITCH  shift 12
-	NEW  shift 13
-	';'  shift 14
-	CASE  reduce 53
-	DEFAULT  reduce 53
-	'}'  reduce 53
-
-	statement  goto 232
-	declar_stmt  goto 16
-	con_ctl_stmt  goto 17
-	simple_stmt  goto 18
-	func_declar_stmt  goto 19
-	var_declar_stmt  goto 20
-	selection_stmt  goto 21
-	loop_stmt  goto 22
-	assign_stmt  goto 23
-	call_statement  goto 24
-	single_assign_stmt  goto 25
-	interrupt_stmt  goto 26
-	new_expr  goto 27
-	id_expr  goto 28
-	class_declar_stmt  goto 29
-	class_member_stmt  goto 30
-	class_member_assign_stmt  goto 31
-	class_member_func_stmt  goto 32
-	class_func_serial_stmt  goto 33
-	restrict_stmt  goto 34
-	this_member_stmt  goto 35
-
-
-state 265
-	class_func_serial_stmt : id_expr '.' id_expr '(' args_list ')' IDENTIFIER '(' . args_list ')'  (33)
-	args_list : .  (74)
-
-	TDOUBLE  shift 46
-	TBOOL  shift 39
-	IDENTIFIER  shift 47
-	TSTRING  shift 48
-	INC_OP  shift 49
-	DEC_OP  shift 50
-	'-'  shift 53
-	'('  shift 54
-	')'  reduce 74
-
-	arithmetic_stmt  goto 97
-	self_inc_dec_stmt  goto 98
-	call_statement  goto 99
-	args_expr_collection  goto 100
-	assign_stmt_value_eq  goto 58
-	id_expr  goto 101
-	t_bool_expr  goto 102
-	double_expr  goto 103
-	uminus_expr  goto 104
-	string_expr  goto 105
-	arithmetic_stmt_factor  goto 66
-	class_member_stmt  goto 106
-	class_member_func_stmt  goto 32
-	args_list  goto 269
-	args_expr  goto 108
-
-
-state 266
-	class_member_func_stmt : IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list ')' .  (29)
-
-	.  reduce 29
-
-
-state 267
-	loop_stmt : FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block .  (55)
+state 196
+	var_declar_stmt : id_expr ',' var_declar_stmt .  (55)
 
 	.  reduce 55
 
 
-state 268
-	expr_list : expr_list . statement  (41)
-	case_stmt : CASE double_expr ':' expr_list .  (52)
+state 197
+	var_declar_stmt : id_expr . ';'  (54)
+	var_declar_stmt : id_expr . ',' var_declar_stmt  (55)
+
+	','  shift 95
+	';'  shift 97
+	.  error
+
+
+state 198
+	single_assign_stmt : id_expr '=' assign_stmt_value .  (171)
+
+	.  reduce 171
+
+
+state 199
+	single_assign_stmt : id_expr '=' single_assign_stmt .  (172)
+
+	.  reduce 172
+
+
+state 200
+	class_member_stmt : id_expr . '.' id_expr  (33)
+	class_member_func_stmt : id_expr . '.' id_expr '(' args_list ')'  (37)
+	bit_opr_factor : id_expr .  (117)
+	self_inc_dec_stmt : id_expr . INC_OP  (150)
+	self_inc_dec_stmt : id_expr . DEC_OP  (151)
+	assign_stmt_value : id_expr .  (157)
+	assign_stmt_value_eq : id_expr .  (169)
+	single_assign_stmt : id_expr . '=' assign_stmt_value  (171)
+	single_assign_stmt : id_expr . '=' single_assign_stmt  (172)
+
+	INC_OP  shift 170
+	DEC_OP  shift 171
+	'='  shift 96
+	'.'  shift 172
+	LEFT_SHIFT  reduce 117
+	RIGHT_SHIFT  reduce 117
+	'+'  reduce 169
+	'-'  reduce 169
+	'%'  reduce 169
+	'*'  reduce 169
+	'/'  reduce 169
+	'&'  reduce 117
+	'|'  reduce 117
+	'^'  reduce 117
+	';'  reduce 157
+	')'  reduce 157
+
+
+state 201
+	class_member_stmt : id_expr '.' id_expr .  (33)
+	class_member_func_stmt : id_expr '.' id_expr . '(' args_list ')'  (37)
+	class_func_serial_stmt : id_expr '.' id_expr . '(' args_list ')' IDENTIFIER '(' args_list ')'  (42)
+
+	'('  shift 264
+	'='  reduce 33
+	'.'  reduce 33
+
+
+state 202
+	class_member_assign_stmt : class_member_stmt '=' assign_stmt_value .  (173)
+
+	.  reduce 173
+
+
+state 203
+	class_member_stmt : class_member_stmt '.' id_expr .  (36)
+	class_member_func_stmt : class_member_stmt '.' id_expr . '(' args_list ')'  (39)
+
+	'('  shift 265
+	AND_OP  reduce 36
+	OR_OP  reduce 36
+	LE_OP  reduce 36
+	GE_OP  reduce 36
+	EQ_OP  reduce 36
+	NE_OP  reduce 36
+	','  reduce 36
+	'='  reduce 36
+	'>'  reduce 36
+	'<'  reduce 36
+	'+'  reduce 36
+	'-'  reduce 36
+	'%'  reduce 36
+	'*'  reduce 36
+	'/'  reduce 36
+	';'  reduce 36
+	')'  reduce 36
+	'.'  reduce 36
+
+
+state 204
+	class_member_stmt : class_member_func_stmt '.' id_expr .  (34)
+	class_member_func_stmt : class_member_func_stmt '.' id_expr . '(' args_list ')'  (40)
+
+	'('  shift 266
+	AND_OP  reduce 34
+	OR_OP  reduce 34
+	LE_OP  reduce 34
+	GE_OP  reduce 34
+	EQ_OP  reduce 34
+	NE_OP  reduce 34
+	','  reduce 34
+	'='  reduce 34
+	'>'  reduce 34
+	'<'  reduce 34
+	'+'  reduce 34
+	'-'  reduce 34
+	'%'  reduce 34
+	'*'  reduce 34
+	'/'  reduce 34
+	';'  reduce 34
+	')'  reduce 34
+	'.'  reduce 34
+
+
+state 205
+	class_func_serial_stmt : class_func_serial_stmt IDENTIFIER '(' . args_list ')'  (43)
+	args_list : .  (89)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 267
+	args_expr  goto 123
+
+
+state 206
+	class_member_assign_stmt : this_member_stmt '=' assign_stmt_value .  (174)
+
+	.  reduce 174
+
+
+state 207
+	array_ele_assign_stmt : array_ele_stmt '=' assign_stmt_value .  (177)
+
+	.  reduce 177
+
+
+state 208
+	parameter : IDENTIFIER .  (49)
+
+	.  reduce 49
+
+
+state 209
+	param_list : '(' parameter . ')'  (48)
+	parameter : parameter . ',' IDENTIFIER  (50)
+
+	','  shift 184
+	')'  shift 268
+	.  error
+
+
+state 210
+	func_declar_stmt : IDENTIFIER FUNC_OP param_list '{' . expr_list '}'  (44)
+	expr_list : .  (53)
+
+	.  reduce 53
+
+	expr_list  goto 269
+
+
+state 211
+	class_member_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr '(' args_list ')'  (38)
+	class_func_serial_stmt : IDENTIFIER '(' args_list ')' . IDENTIFIER '(' args_list ')'  (41)
+	call_statement : IDENTIFIER '(' args_list ')' .  (87)
+
+	IDENTIFIER  shift 270
+	'.'  shift 271
+	';'  reduce 87
+
+
+state 212
+	args_expr : args_expr ',' . args_expr_collection  (92)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 272
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+
+
+state 213
+	var_declar_stmt : IDENTIFIER '[' XINTEGER ']' . ';'  (56)
+	var_declar_stmt : IDENTIFIER '[' XINTEGER ']' . ',' var_declar_stmt  (57)
+	array_ele_stmt : IDENTIFIER '[' XINTEGER ']' .  (175)
+
+	','  shift 273
+	';'  shift 274
+	'='  reduce 175
+
+
+state 214
+	var_declar_stmt : IDENTIFIER '[' IDENTIFIER ']' . ';'  (58)
+	var_declar_stmt : IDENTIFIER '[' IDENTIFIER ']' . ',' var_declar_stmt  (59)
+	array_ele_stmt : IDENTIFIER '[' IDENTIFIER ']' .  (176)
+
+	','  shift 275
+	';'  shift 276
+	'='  reduce 176
+
+
+state 215
+	func_declar_stmt : IDENTIFIER . FUNC_OP param_list '{' expr_list '}'  (44)
+	var_declar_stmt : IDENTIFIER . '[' XINTEGER ']' ';'  (56)
+	var_declar_stmt : IDENTIFIER . '[' XINTEGER ']' ',' var_declar_stmt  (57)
+	var_declar_stmt : IDENTIFIER . '[' IDENTIFIER ']' ';'  (58)
+	var_declar_stmt : IDENTIFIER . '[' IDENTIFIER ']' ',' var_declar_stmt  (59)
+	id_expr : IDENTIFIER .  (125)
+
+	FUNC_OP  shift 42
+	'['  shift 263
+	','  reduce 125
+	'='  reduce 125
+	';'  reduce 125
+
+
+state 216
+	class_declar_stmt : IDENTIFIER extends_stmt '{' '}' .  (19)
+
+	.  reduce 19
+
+
+state 217
+	class_body_stmt : func_declar_stmt .  (27)
+
+	.  reduce 27
+
+
+state 218
+	class_body_stmt : var_declar_stmt .  (25)
+
+	.  reduce 25
+
+
+state 219
+	class_body_stmt : single_assign_stmt . ';'  (26)
+
+	';'  shift 277
+	.  error
+
+
+state 220
+	var_declar_stmt : id_expr . ';'  (54)
+	var_declar_stmt : id_expr . ',' var_declar_stmt  (55)
+	single_assign_stmt : id_expr . '=' assign_stmt_value  (171)
+	single_assign_stmt : id_expr . '=' single_assign_stmt  (172)
+
+	','  shift 95
+	'='  shift 96
+	';'  shift 97
+	.  error
+
+
+state 221
+	class_declar_stmt : IDENTIFIER extends_stmt '{' class_body . '}'  (20)
+	class_body : class_body . class_body_stmt  (24)
+
+	IDENTIFIER  shift 215
+	'}'  shift 278
+	.  error
+
+	func_declar_stmt  goto 217
+	var_declar_stmt  goto 218
+	single_assign_stmt  goto 219
+	id_expr  goto 220
+	class_body_stmt  goto 279
+
+
+state 222
+	class_body : class_body_stmt .  (23)
+
+	.  reduce 23
+
+
+state 223
+	class_member_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER '(' . args_list ')' '.' id_expr '(' args_list ')'  (38)
+	args_list : .  (89)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 280
+	args_expr  goto 123
+
+
+state 224
+	try_stmt : XTRY '{' expr_list '}' .  (9)
+	try_stmt : XTRY '{' expr_list '}' . catch_block_stmt  (10)
+
+	XCATCH  shift 281
+	$end  reduce 9
+	IDENTIFIER  reduce 9
+	RESTRICT  reduce 9
+	THIS  reduce 9
+	XTRY  reduce 9
+	XSET  reduce 9
+	IF  reduce 9
+	ELSE  reduce 9
+	WHILE  reduce 9
+	FOR  reduce 9
+	DELETE  reduce 9
+	BREAK  reduce 9
+	RETURN  reduce 9
+	SWITCH  reduce 9
+	CASE  reduce 9
+	DEFAULT  reduce 9
+	NEW  reduce 9
+	';'  reduce 9
+	'}'  reduce 9
+
+	catch_block_stmt  goto 282
+
+
+state 225
+	expr_list : expr_list statement .  (52)
+
+	.  reduce 52
+
+
+state 226
+	namespace_name_stmt : IDENTIFIER .  (17)
+
+	.  reduce 17
+
+
+state 227
+	namespace_declar_stmt : XSET XPUBLIC '=' namespace_name_stmt .  (16)
+	namespace_name_stmt : namespace_name_stmt . '.' IDENTIFIER  (18)
+
+	'.'  shift 283
+	';'  reduce 16
+
+
+state 228
+	logic_stmt : logic_stmt AND_OP . logic_stmt  (145)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	logic_stmt  goto 284
+	arithmetic_stmt  goto 134
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 136
+	bool_param_expr  goto 137
+	id_expr  goto 138
+	t_bool_expr  goto 139
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 142
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	null_expr  goto 143
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	type_judge_stmt  goto 144
+
+
+state 229
+	logic_stmt : logic_stmt OR_OP . logic_stmt  (146)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	logic_stmt  goto 285
+	arithmetic_stmt  goto 134
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 136
+	bool_param_expr  goto 137
+	id_expr  goto 138
+	t_bool_expr  goto 139
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 142
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	null_expr  goto 143
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	type_judge_stmt  goto 144
+
+
+state 230
+	selection_stmt : IF '(' logic_stmt ')' . block  (62)
+	selection_stmt : IF '(' logic_stmt ')' . block ELSE block  (63)
 
 	IDENTIFIER  shift 3
 	RESTRICT  shift 4
 	THIS  shift 5
-	IF  shift 6
-	WHILE  shift 7
-	FOR  shift 8
-	DELETE  shift 9
-	BREAK  shift 10
-	RETURN  shift 11
-	SWITCH  shift 12
-	NEW  shift 13
-	';'  shift 14
-	CASE  reduce 52
-	DEFAULT  reduce 52
-	'}'  reduce 52
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	'{'  shift 286
+	.  error
 
-	statement  goto 232
-	declar_stmt  goto 16
-	con_ctl_stmt  goto 17
-	simple_stmt  goto 18
-	func_declar_stmt  goto 19
-	var_declar_stmt  goto 20
-	selection_stmt  goto 21
-	loop_stmt  goto 22
-	assign_stmt  goto 23
-	call_statement  goto 24
-	single_assign_stmt  goto 25
-	interrupt_stmt  goto 26
-	new_expr  goto 27
-	id_expr  goto 28
-	class_declar_stmt  goto 29
-	class_member_stmt  goto 30
-	class_member_assign_stmt  goto 31
-	class_member_func_stmt  goto 32
-	class_func_serial_stmt  goto 33
-	restrict_stmt  goto 34
-	this_member_stmt  goto 35
+	statement  goto 287
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	block  goto 288
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
 
 
-state 269
-	class_func_serial_stmt : id_expr '.' id_expr '(' args_list ')' IDENTIFIER '(' args_list . ')'  (33)
+state 231
+	logic_stmt : bool_param_expr LE_OP . bool_param_expr  (141)
 
-	')'  shift 270
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 134
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 136
+	bool_param_expr  goto 289
+	id_expr  goto 167
+	t_bool_expr  goto 139
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 142
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	null_expr  goto 143
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+
+
+state 232
+	logic_stmt : bool_param_expr GE_OP . bool_param_expr  (142)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 134
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 136
+	bool_param_expr  goto 290
+	id_expr  goto 167
+	t_bool_expr  goto 139
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 142
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	null_expr  goto 143
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+
+
+state 233
+	logic_stmt : bool_param_expr EQ_OP . bool_param_expr  (143)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 134
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 136
+	bool_param_expr  goto 291
+	id_expr  goto 167
+	t_bool_expr  goto 139
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 142
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	null_expr  goto 143
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+
+
+state 234
+	logic_stmt : bool_param_expr NE_OP . bool_param_expr  (144)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 134
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 136
+	bool_param_expr  goto 292
+	id_expr  goto 167
+	t_bool_expr  goto 139
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 142
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	null_expr  goto 143
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+
+
+state 235
+	logic_stmt : bool_param_expr '>' . bool_param_expr  (139)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 134
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 136
+	bool_param_expr  goto 293
+	id_expr  goto 167
+	t_bool_expr  goto 139
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 142
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	null_expr  goto 143
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+
+
+state 236
+	logic_stmt : bool_param_expr '<' . bool_param_expr  (140)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	arithmetic_stmt  goto 134
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 136
+	bool_param_expr  goto 294
+	id_expr  goto 167
+	t_bool_expr  goto 139
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 142
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	null_expr  goto 143
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+
+
+state 237
+	type_judge_stmt : id_expr XIS . id_expr  (147)
+
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 295
+
+
+state 238
+	loop_stmt : WHILE '(' logic_stmt ')' . block  (69)
+
+	IDENTIFIER  shift 3
+	RESTRICT  shift 4
+	THIS  shift 5
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	'{'  shift 286
+	.  error
+
+	statement  goto 287
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	block  goto 296
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
+state 239
+	loop_stmt : FOR '(' for_1_stmt ';' . logic_stmt ';' for_1_stmt ')' block  (70)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	XNULL  shift 63
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	.  error
+
+	logic_stmt  goto 297
+	arithmetic_stmt  goto 134
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 135
+	assign_stmt_value_eq  goto 136
+	bool_param_expr  goto 137
+	id_expr  goto 138
+	t_bool_expr  goto 139
+	double_expr  goto 140
+	uminus_expr  goto 141
+	string_expr  goto 142
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	null_expr  goto 143
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	type_judge_stmt  goto 144
+
+
+state 240
+	class_member_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr '(' args_list ')'  (38)
+	call_statement : IDENTIFIER '(' args_list . ')'  (87)
+
+	')'  shift 298
 	.  error
 
 
+state 241
+	array_ele_stmt : IDENTIFIER '[' XINTEGER . ']'  (175)
+
+	']'  shift 299
+	.  error
+
+
+state 242
+	array_ele_stmt : IDENTIFIER '[' IDENTIFIER . ']'  (176)
+
+	']'  shift 300
+	.  error
+
+
+state 243
+	this_stmt : THIS '.' id_expr .  (29)
+	this_stmt : THIS '.' id_expr . '(' args_list ')'  (30)
+
+	'('  shift 301
+	';'  reduce 29
+	')'  reduce 29
+
+
+state 244
+	parentheses_stmt : '(' assign_stmt_value_eq . ')'  (104)
+
+	')'  shift 302
+	.  error
+
+
+state 245
+	arithmetic_stmt_factor : '(' arithmetic_stmt ')' .  (123)
+
+	.  reduce 123
+
+
+state 246
+	lambda_stmt : '(' parameter ')' . FUNC_OP '{' expr_list '}'  (45)
+
+	FUNC_OP  shift 303
+	.  error
+
+
+state 247
+	class_member_stmt : id_expr '.' id_expr .  (33)
+	class_member_func_stmt : id_expr '.' id_expr . '(' args_list ')'  (37)
+
+	'('  shift 304
+	AND_OP  reduce 33
+	OR_OP  reduce 33
+	LE_OP  reduce 33
+	GE_OP  reduce 33
+	EQ_OP  reduce 33
+	NE_OP  reduce 33
+	','  reduce 33
+	'='  reduce 33
+	'>'  reduce 33
+	'<'  reduce 33
+	'+'  reduce 33
+	'-'  reduce 33
+	'%'  reduce 33
+	'*'  reduce 33
+	'/'  reduce 33
+	';'  reduce 33
+	')'  reduce 33
+	'.'  reduce 33
+
+
+state 248
+	arithmetic_stmt_factor : arithmetic_stmt .  (120)
+
+	.  reduce 120
+
+
+state 249
+	arithmetic_stmt : arithmetic_stmt_factor . '+' arithmetic_stmt_factor  (105)
+	arithmetic_stmt : arithmetic_stmt_factor '+' arithmetic_stmt_factor .  (105)
+	arithmetic_stmt : arithmetic_stmt_factor . '-' arithmetic_stmt_factor  (106)
+	arithmetic_stmt : arithmetic_stmt_factor . '*' arithmetic_stmt_factor  (107)
+	arithmetic_stmt : arithmetic_stmt_factor . '/' arithmetic_stmt_factor  (108)
+	arithmetic_stmt : arithmetic_stmt_factor . '%' arithmetic_stmt_factor  (109)
+
+	'*'  shift 176
+	'/'  shift 177
+	AND_OP  reduce 105
+	OR_OP  reduce 105
+	LE_OP  reduce 105
+	GE_OP  reduce 105
+	EQ_OP  reduce 105
+	NE_OP  reduce 105
+	','  reduce 105
+	'>'  reduce 105
+	'<'  reduce 105
+	'+'  reduce 105
+	'-'  reduce 105
+	'%'  reduce 105
+	';'  reduce 105
+	')'  reduce 105
+
+
+state 250
+	arithmetic_stmt : arithmetic_stmt_factor . '+' arithmetic_stmt_factor  (105)
+	arithmetic_stmt : arithmetic_stmt_factor . '-' arithmetic_stmt_factor  (106)
+	arithmetic_stmt : arithmetic_stmt_factor '-' arithmetic_stmt_factor .  (106)
+	arithmetic_stmt : arithmetic_stmt_factor . '*' arithmetic_stmt_factor  (107)
+	arithmetic_stmt : arithmetic_stmt_factor . '/' arithmetic_stmt_factor  (108)
+	arithmetic_stmt : arithmetic_stmt_factor . '%' arithmetic_stmt_factor  (109)
+
+	'*'  shift 176
+	'/'  shift 177
+	AND_OP  reduce 106
+	OR_OP  reduce 106
+	LE_OP  reduce 106
+	GE_OP  reduce 106
+	EQ_OP  reduce 106
+	NE_OP  reduce 106
+	','  reduce 106
+	'>'  reduce 106
+	'<'  reduce 106
+	'+'  reduce 106
+	'-'  reduce 106
+	'%'  reduce 106
+	';'  reduce 106
+	')'  reduce 106
+
+
+state 251
+	arithmetic_stmt : arithmetic_stmt_factor . '+' arithmetic_stmt_factor  (105)
+	arithmetic_stmt : arithmetic_stmt_factor . '-' arithmetic_stmt_factor  (106)
+	arithmetic_stmt : arithmetic_stmt_factor . '*' arithmetic_stmt_factor  (107)
+	arithmetic_stmt : arithmetic_stmt_factor . '/' arithmetic_stmt_factor  (108)
+	arithmetic_stmt : arithmetic_stmt_factor . '%' arithmetic_stmt_factor  (109)
+	arithmetic_stmt : arithmetic_stmt_factor '%' arithmetic_stmt_factor .  (109)
+
+	'*'  shift 176
+	'/'  shift 177
+	AND_OP  reduce 109
+	OR_OP  reduce 109
+	LE_OP  reduce 109
+	GE_OP  reduce 109
+	EQ_OP  reduce 109
+	NE_OP  reduce 109
+	','  reduce 109
+	'>'  reduce 109
+	'<'  reduce 109
+	'+'  reduce 109
+	'-'  reduce 109
+	'%'  reduce 109
+	';'  reduce 109
+	')'  reduce 109
+
+
+state 252
+	arithmetic_stmt : arithmetic_stmt_factor . '+' arithmetic_stmt_factor  (105)
+	arithmetic_stmt : arithmetic_stmt_factor . '-' arithmetic_stmt_factor  (106)
+	arithmetic_stmt : arithmetic_stmt_factor . '*' arithmetic_stmt_factor  (107)
+	arithmetic_stmt : arithmetic_stmt_factor '*' arithmetic_stmt_factor .  (107)
+	arithmetic_stmt : arithmetic_stmt_factor . '/' arithmetic_stmt_factor  (108)
+	arithmetic_stmt : arithmetic_stmt_factor . '%' arithmetic_stmt_factor  (109)
+
+	.  reduce 107
+
+
+state 253
+	arithmetic_stmt : arithmetic_stmt_factor . '+' arithmetic_stmt_factor  (105)
+	arithmetic_stmt : arithmetic_stmt_factor . '-' arithmetic_stmt_factor  (106)
+	arithmetic_stmt : arithmetic_stmt_factor . '*' arithmetic_stmt_factor  (107)
+	arithmetic_stmt : arithmetic_stmt_factor . '/' arithmetic_stmt_factor  (108)
+	arithmetic_stmt : arithmetic_stmt_factor '/' arithmetic_stmt_factor .  (108)
+	arithmetic_stmt : arithmetic_stmt_factor . '%' arithmetic_stmt_factor  (109)
+
+	.  reduce 108
+
+
+state 254
+	arithmetic_stmt : bit_opr_factor LEFT_SHIFT bit_opr_factor .  (114)
+
+	.  reduce 114
+
+
+state 255
+	arithmetic_stmt : bit_opr_factor RIGHT_SHIFT bit_opr_factor .  (115)
+
+	.  reduce 115
+
+
+state 256
+	arithmetic_stmt : bit_opr_factor '&' bit_opr_factor .  (110)
+
+	.  reduce 110
+
+
+state 257
+	arithmetic_stmt : bit_opr_factor '|' bit_opr_factor .  (111)
+
+	.  reduce 111
+
+
+state 258
+	arithmetic_stmt : bit_opr_factor '^' bit_opr_factor .  (112)
+
+	.  reduce 112
+
+
+state 259
+	lambda_stmt : parameter FUNC_OP '{' . expr_list '}'  (46)
+	expr_list : .  (53)
+
+	.  reduce 53
+
+	expr_list  goto 305
+
+
+state 260
+	parameter : parameter ',' IDENTIFIER .  (50)
+
+	.  reduce 50
+
+
+state 261
+	selection_stmt : SWITCH '(' id_expr ')' . '{' case_stmt_list '}'  (64)
+
+	'{'  shift 306
+	.  error
+
+
+state 262
+	new_expr : NEW id_expr '(' args_list . ')'  (124)
+
+	')'  shift 307
+	.  error
+
+
+state 263
+	var_declar_stmt : IDENTIFIER '[' . XINTEGER ']' ';'  (56)
+	var_declar_stmt : IDENTIFIER '[' . XINTEGER ']' ',' var_declar_stmt  (57)
+	var_declar_stmt : IDENTIFIER '[' . IDENTIFIER ']' ';'  (58)
+	var_declar_stmt : IDENTIFIER '[' . IDENTIFIER ']' ',' var_declar_stmt  (59)
+
+	XINTEGER  shift 308
+	IDENTIFIER  shift 309
+	.  error
+
+
+state 264
+	class_member_func_stmt : id_expr '.' id_expr '(' . args_list ')'  (37)
+	class_func_serial_stmt : id_expr '.' id_expr '(' . args_list ')' IDENTIFIER '(' args_list ')'  (42)
+	args_list : .  (89)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 310
+	args_expr  goto 123
+
+
+state 265
+	class_member_func_stmt : class_member_stmt '.' id_expr '(' . args_list ')'  (39)
+	args_list : .  (89)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 311
+	args_expr  goto 123
+
+
+state 266
+	class_member_func_stmt : class_member_func_stmt '.' id_expr '(' . args_list ')'  (40)
+	args_list : .  (89)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 312
+	args_expr  goto 123
+
+
+state 267
+	class_func_serial_stmt : class_func_serial_stmt IDENTIFIER '(' args_list . ')'  (43)
+
+	')'  shift 313
+	.  error
+
+
+state 268
+	param_list : '(' parameter ')' .  (48)
+
+	.  reduce 48
+
+
+state 269
+	func_declar_stmt : IDENTIFIER FUNC_OP param_list '{' expr_list . '}'  (44)
+	expr_list : expr_list . statement  (52)
+
+	IDENTIFIER  shift 3
+	RESTRICT  shift 4
+	THIS  shift 5
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	'}'  shift 314
+	.  error
+
+	statement  goto 225
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
 state 270
-	class_func_serial_stmt : id_expr '.' id_expr '(' args_list ')' IDENTIFIER '(' args_list ')' .  (33)
+	class_func_serial_stmt : IDENTIFIER '(' args_list ')' IDENTIFIER . '(' args_list ')'  (41)
 
-	.  reduce 33
-
-
-State 109 contains 1 shift/reduce conflict.
+	'('  shift 315
+	.  error
 
 
-59 terminals, 51 nonterminals
-147 grammar rules, 271 states
+state 271
+	class_member_stmt : IDENTIFIER '(' args_list ')' '.' . id_expr  (35)
+	class_member_func_stmt : IDENTIFIER '(' args_list ')' '.' . id_expr '(' args_list ')'  (38)
+
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 316
+
+
+state 272
+	args_expr : args_expr ',' args_expr_collection .  (92)
+
+	.  reduce 92
+
+
+state 273
+	var_declar_stmt : IDENTIFIER '[' XINTEGER ']' ',' . var_declar_stmt  (57)
+
+	IDENTIFIER  shift 195
+	.  error
+
+	var_declar_stmt  goto 317
+	id_expr  goto 197
+
+
+state 274
+	var_declar_stmt : IDENTIFIER '[' XINTEGER ']' ';' .  (56)
+
+	.  reduce 56
+
+
+state 275
+	var_declar_stmt : IDENTIFIER '[' IDENTIFIER ']' ',' . var_declar_stmt  (59)
+
+	IDENTIFIER  shift 195
+	.  error
+
+	var_declar_stmt  goto 318
+	id_expr  goto 197
+
+
+state 276
+	var_declar_stmt : IDENTIFIER '[' IDENTIFIER ']' ';' .  (58)
+
+	.  reduce 58
+
+
+state 277
+	class_body_stmt : single_assign_stmt ';' .  (26)
+
+	.  reduce 26
+
+
+state 278
+	class_declar_stmt : IDENTIFIER extends_stmt '{' class_body '}' .  (20)
+
+	.  reduce 20
+
+
+state 279
+	class_body : class_body class_body_stmt .  (24)
+
+	.  reduce 24
+
+
+state 280
+	class_member_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER '(' args_list . ')' '.' id_expr '(' args_list ')'  (38)
+
+	')'  shift 319
+	.  error
+
+
+state 281
+	catch_block_stmt : XCATCH . '(' id_expr ')' '{' expr_list '}'  (11)
+
+	'('  shift 320
+	.  error
+
+
+state 282
+	try_stmt : XTRY '{' expr_list '}' catch_block_stmt .  (10)
+
+	.  reduce 10
+
+
+state 283
+	namespace_name_stmt : namespace_name_stmt '.' . IDENTIFIER  (18)
+
+	IDENTIFIER  shift 321
+	.  error
+
+
+state 284
+	logic_stmt : logic_stmt . AND_OP logic_stmt  (145)
+	logic_stmt : logic_stmt AND_OP logic_stmt .  (145)
+	logic_stmt : logic_stmt . OR_OP logic_stmt  (146)
+
+	.  reduce 145
+
+
+state 285
+	logic_stmt : logic_stmt . AND_OP logic_stmt  (145)
+	logic_stmt : logic_stmt . OR_OP logic_stmt  (146)
+	logic_stmt : logic_stmt OR_OP logic_stmt .  (146)
+
+	.  reduce 146
+
+
+state 286
+	block : '{' . expr_list '}'  (100)
+	expr_list : .  (53)
+
+	.  reduce 53
+
+	expr_list  goto 322
+
+
+state 287
+	block : statement .  (101)
+
+	.  reduce 101
+
+
+state 288
+	selection_stmt : IF '(' logic_stmt ')' block .  (62)
+	selection_stmt : IF '(' logic_stmt ')' block . ELSE block  (63)
+
+	ELSE  shift 323
+	$end  reduce 62
+	IDENTIFIER  reduce 62
+	RESTRICT  reduce 62
+	THIS  reduce 62
+	XTRY  reduce 62
+	XSET  reduce 62
+	IF  reduce 62
+	WHILE  reduce 62
+	FOR  reduce 62
+	DELETE  reduce 62
+	BREAK  reduce 62
+	RETURN  reduce 62
+	SWITCH  reduce 62
+	CASE  reduce 62
+	DEFAULT  reduce 62
+	NEW  reduce 62
+	';'  reduce 62
+	'}'  reduce 62
+
+
+state 289
+	logic_stmt : bool_param_expr LE_OP bool_param_expr .  (141)
+
+	.  reduce 141
+
+
+state 290
+	logic_stmt : bool_param_expr GE_OP bool_param_expr .  (142)
+
+	.  reduce 142
+
+
+state 291
+	logic_stmt : bool_param_expr EQ_OP bool_param_expr .  (143)
+
+	.  reduce 143
+
+
+state 292
+	logic_stmt : bool_param_expr NE_OP bool_param_expr .  (144)
+
+	.  reduce 144
+
+
+state 293
+	logic_stmt : bool_param_expr '>' bool_param_expr .  (139)
+
+	.  reduce 139
+
+
+state 294
+	logic_stmt : bool_param_expr '<' bool_param_expr .  (140)
+
+	.  reduce 140
+
+
+state 295
+	type_judge_stmt : id_expr XIS id_expr .  (147)
+
+	.  reduce 147
+
+
+state 296
+	loop_stmt : WHILE '(' logic_stmt ')' block .  (69)
+
+	.  reduce 69
+
+
+state 297
+	loop_stmt : FOR '(' for_1_stmt ';' logic_stmt . ';' for_1_stmt ')' block  (70)
+	logic_stmt : logic_stmt . AND_OP logic_stmt  (145)
+	logic_stmt : logic_stmt . OR_OP logic_stmt  (146)
+
+	AND_OP  shift 228
+	OR_OP  shift 229
+	';'  shift 324
+	.  error
+
+
+state 298
+	class_member_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr '(' args_list ')'  (38)
+	call_statement : IDENTIFIER '(' args_list ')' .  (87)
+
+	'.'  shift 271
+	AND_OP  reduce 87
+	OR_OP  reduce 87
+	LE_OP  reduce 87
+	GE_OP  reduce 87
+	EQ_OP  reduce 87
+	NE_OP  reduce 87
+	','  reduce 87
+	'>'  reduce 87
+	'<'  reduce 87
+	'+'  reduce 87
+	'-'  reduce 87
+	'%'  reduce 87
+	'*'  reduce 87
+	'/'  reduce 87
+	';'  reduce 87
+	')'  reduce 87
+
+
+state 299
+	array_ele_stmt : IDENTIFIER '[' XINTEGER ']' .  (175)
+
+	.  reduce 175
+
+
+state 300
+	array_ele_stmt : IDENTIFIER '[' IDENTIFIER ']' .  (176)
+
+	.  reduce 176
+
+
+state 301
+	this_stmt : THIS '.' id_expr '(' . args_list ')'  (30)
+	args_list : .  (89)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 325
+	args_expr  goto 123
+
+
+state 302
+	parentheses_stmt : '(' assign_stmt_value_eq ')' .  (104)
+
+	.  reduce 104
+
+
+state 303
+	lambda_stmt : '(' parameter ')' FUNC_OP . '{' expr_list '}'  (45)
+
+	'{'  shift 326
+	.  error
+
+
+state 304
+	class_member_func_stmt : id_expr '.' id_expr '(' . args_list ')'  (37)
+	args_list : .  (89)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 327
+	args_expr  goto 123
+
+
+state 305
+	lambda_stmt : parameter FUNC_OP '{' expr_list . '}'  (46)
+	expr_list : expr_list . statement  (52)
+
+	IDENTIFIER  shift 3
+	RESTRICT  shift 4
+	THIS  shift 5
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	'}'  shift 328
+	.  error
+
+	statement  goto 225
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
+state 306
+	selection_stmt : SWITCH '(' id_expr ')' '{' . case_stmt_list '}'  (64)
+
+	CASE  shift 329
+	DEFAULT  shift 330
+	.  error
+
+	case_stmt_list  goto 331
+	case_stmt  goto 332
+
+
+state 307
+	new_expr : NEW id_expr '(' args_list ')' .  (124)
+
+	.  reduce 124
+
+
+state 308
+	var_declar_stmt : IDENTIFIER '[' XINTEGER . ']' ';'  (56)
+	var_declar_stmt : IDENTIFIER '[' XINTEGER . ']' ',' var_declar_stmt  (57)
+
+	']'  shift 333
+	.  error
+
+
+state 309
+	var_declar_stmt : IDENTIFIER '[' IDENTIFIER . ']' ';'  (58)
+	var_declar_stmt : IDENTIFIER '[' IDENTIFIER . ']' ',' var_declar_stmt  (59)
+
+	']'  shift 334
+	.  error
+
+
+state 310
+	class_member_func_stmt : id_expr '.' id_expr '(' args_list . ')'  (37)
+	class_func_serial_stmt : id_expr '.' id_expr '(' args_list . ')' IDENTIFIER '(' args_list ')'  (42)
+
+	')'  shift 335
+	.  error
+
+
+state 311
+	class_member_func_stmt : class_member_stmt '.' id_expr '(' args_list . ')'  (39)
+
+	')'  shift 336
+	.  error
+
+
+state 312
+	class_member_func_stmt : class_member_func_stmt '.' id_expr '(' args_list . ')'  (40)
+
+	')'  shift 337
+	.  error
+
+
+state 313
+	class_func_serial_stmt : class_func_serial_stmt IDENTIFIER '(' args_list ')' .  (43)
+
+	.  reduce 43
+
+
+state 314
+	func_declar_stmt : IDENTIFIER FUNC_OP param_list '{' expr_list '}' .  (44)
+
+	.  reduce 44
+
+
+state 315
+	class_func_serial_stmt : IDENTIFIER '(' args_list ')' IDENTIFIER '(' . args_list ')'  (41)
+	args_list : .  (89)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 338
+	args_expr  goto 123
+
+
+state 316
+	class_member_stmt : IDENTIFIER '(' args_list ')' '.' id_expr .  (35)
+	class_member_func_stmt : IDENTIFIER '(' args_list ')' '.' id_expr . '(' args_list ')'  (38)
+
+	'('  shift 339
+	AND_OP  reduce 35
+	OR_OP  reduce 35
+	LE_OP  reduce 35
+	GE_OP  reduce 35
+	EQ_OP  reduce 35
+	NE_OP  reduce 35
+	','  reduce 35
+	'='  reduce 35
+	'>'  reduce 35
+	'<'  reduce 35
+	'+'  reduce 35
+	'-'  reduce 35
+	'%'  reduce 35
+	'*'  reduce 35
+	'/'  reduce 35
+	';'  reduce 35
+	')'  reduce 35
+	'.'  reduce 35
+
+
+state 317
+	var_declar_stmt : IDENTIFIER '[' XINTEGER ']' ',' var_declar_stmt .  (57)
+
+	.  reduce 57
+
+
+state 318
+	var_declar_stmt : IDENTIFIER '[' IDENTIFIER ']' ',' var_declar_stmt .  (59)
+
+	.  reduce 59
+
+
+state 319
+	class_member_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr  (35)
+	class_member_func_stmt : IDENTIFIER '(' args_list ')' . '.' id_expr '(' args_list ')'  (38)
+
+	'.'  shift 271
+	.  error
+
+
+state 320
+	catch_block_stmt : XCATCH '(' . id_expr ')' '{' expr_list '}'  (11)
+
+	IDENTIFIER  shift 87
+	.  error
+
+	id_expr  goto 340
+
+
+state 321
+	namespace_name_stmt : namespace_name_stmt '.' IDENTIFIER .  (18)
+
+	.  reduce 18
+
+
+state 322
+	expr_list : expr_list . statement  (52)
+	block : '{' expr_list . '}'  (100)
+
+	IDENTIFIER  shift 3
+	RESTRICT  shift 4
+	THIS  shift 5
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	'}'  shift 341
+	.  error
+
+	statement  goto 225
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
+state 323
+	selection_stmt : IF '(' logic_stmt ')' block ELSE . block  (63)
+
+	IDENTIFIER  shift 3
+	RESTRICT  shift 4
+	THIS  shift 5
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	'{'  shift 286
+	.  error
+
+	statement  goto 287
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	block  goto 342
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
+state 324
+	loop_stmt : FOR '(' for_1_stmt ';' logic_stmt ';' . for_1_stmt ')' block  (70)
+	for_1_stmt : .  (71)
+
+	IDENTIFIER  shift 146
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	THIS  shift 5
+	')'  reduce 71
+
+	var_declar_stmt  goto 147
+	for_1_stmt  goto 343
+	assign_stmt  goto 149
+	self_inc_dec_stmt  goto 150
+	single_assign_stmt  goto 27
+	id_expr  goto 151
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 130
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
+state 325
+	this_stmt : THIS '.' id_expr '(' args_list . ')'  (30)
+
+	')'  shift 344
+	.  error
+
+
+state 326
+	lambda_stmt : '(' parameter ')' FUNC_OP '{' . expr_list '}'  (45)
+	expr_list : .  (53)
+
+	.  reduce 53
+
+	expr_list  goto 345
+
+
+state 327
+	class_member_func_stmt : id_expr '.' id_expr '(' args_list . ')'  (37)
+
+	')'  shift 346
+	.  error
+
+
+state 328
+	lambda_stmt : parameter FUNC_OP '{' expr_list '}' .  (46)
+
+	.  reduce 46
+
+
+state 329
+	case_stmt : CASE . double_expr ':' expr_list  (67)
+
+	XINTEGER  shift 158
+	TDOUBLE  shift 57
+	.  error
+
+	double_expr  goto 347
+
+
+state 330
+	case_stmt : DEFAULT . ':' expr_list  (68)
+
+	':'  shift 348
+	.  error
+
+
+state 331
+	selection_stmt : SWITCH '(' id_expr ')' '{' case_stmt_list . '}'  (64)
+	case_stmt_list : case_stmt_list . case_stmt  (66)
+
+	CASE  shift 329
+	DEFAULT  shift 330
+	'}'  shift 349
+	.  error
+
+	case_stmt  goto 350
+
+
+state 332
+	case_stmt_list : case_stmt .  (65)
+
+	.  reduce 65
+
+
+state 333
+	var_declar_stmt : IDENTIFIER '[' XINTEGER ']' . ';'  (56)
+	var_declar_stmt : IDENTIFIER '[' XINTEGER ']' . ',' var_declar_stmt  (57)
+
+	','  shift 273
+	';'  shift 274
+	.  error
+
+
+state 334
+	var_declar_stmt : IDENTIFIER '[' IDENTIFIER ']' . ';'  (58)
+	var_declar_stmt : IDENTIFIER '[' IDENTIFIER ']' . ',' var_declar_stmt  (59)
+
+	','  shift 275
+	';'  shift 276
+	.  error
+
+
+state 335
+	class_member_func_stmt : id_expr '.' id_expr '(' args_list ')' .  (37)
+	class_func_serial_stmt : id_expr '.' id_expr '(' args_list ')' . IDENTIFIER '(' args_list ')'  (42)
+
+	IDENTIFIER  shift 351
+	';'  reduce 37
+	'.'  reduce 37
+
+
+state 336
+	class_member_func_stmt : class_member_stmt '.' id_expr '(' args_list ')' .  (39)
+
+	.  reduce 39
+
+
+state 337
+	class_member_func_stmt : class_member_func_stmt '.' id_expr '(' args_list ')' .  (40)
+
+	.  reduce 40
+
+
+state 338
+	class_func_serial_stmt : IDENTIFIER '(' args_list ')' IDENTIFIER '(' args_list . ')'  (41)
+
+	')'  shift 352
+	.  error
+
+
+state 339
+	class_member_func_stmt : IDENTIFIER '(' args_list ')' '.' id_expr '(' . args_list ')'  (38)
+	args_list : .  (89)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 353
+	args_expr  goto 123
+
+
+state 340
+	catch_block_stmt : XCATCH '(' id_expr . ')' '{' expr_list '}'  (11)
+
+	')'  shift 354
+	.  error
+
+
+state 341
+	block : '{' expr_list '}' .  (100)
+
+	.  reduce 100
+
+
+state 342
+	selection_stmt : IF '(' logic_stmt ')' block ELSE block .  (63)
+
+	.  reduce 63
+
+
+state 343
+	loop_stmt : FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt . ')' block  (70)
+
+	')'  shift 355
+	.  error
+
+
+state 344
+	this_stmt : THIS '.' id_expr '(' args_list ')' .  (30)
+
+	.  reduce 30
+
+
+state 345
+	lambda_stmt : '(' parameter ')' FUNC_OP '{' expr_list . '}'  (45)
+	expr_list : expr_list . statement  (52)
+
+	IDENTIFIER  shift 3
+	RESTRICT  shift 4
+	THIS  shift 5
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	'}'  shift 356
+	.  error
+
+	statement  goto 225
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
+state 346
+	class_member_func_stmt : id_expr '.' id_expr '(' args_list ')' .  (37)
+
+	.  reduce 37
+
+
+state 347
+	case_stmt : CASE double_expr . ':' expr_list  (67)
+
+	':'  shift 357
+	.  error
+
+
+state 348
+	case_stmt : DEFAULT ':' . expr_list  (68)
+	expr_list : .  (53)
+
+	.  reduce 53
+
+	expr_list  goto 358
+
+
+state 349
+	selection_stmt : SWITCH '(' id_expr ')' '{' case_stmt_list '}' .  (64)
+
+	.  reduce 64
+
+
+state 350
+	case_stmt_list : case_stmt_list case_stmt .  (66)
+
+	.  reduce 66
+
+
+state 351
+	class_func_serial_stmt : id_expr '.' id_expr '(' args_list ')' IDENTIFIER . '(' args_list ')'  (42)
+
+	'('  shift 359
+	.  error
+
+
+state 352
+	class_func_serial_stmt : IDENTIFIER '(' args_list ')' IDENTIFIER '(' args_list ')' .  (41)
+
+	.  reduce 41
+
+
+state 353
+	class_member_func_stmt : IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list . ')'  (38)
+
+	')'  shift 360
+	.  error
+
+
+state 354
+	catch_block_stmt : XCATCH '(' id_expr ')' . '{' expr_list '}'  (11)
+
+	'{'  shift 361
+	.  error
+
+
+state 355
+	loop_stmt : FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' . block  (70)
+
+	IDENTIFIER  shift 3
+	RESTRICT  shift 4
+	THIS  shift 5
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	'{'  shift 286
+	.  error
+
+	statement  goto 287
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	block  goto 362
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
+state 356
+	lambda_stmt : '(' parameter ')' FUNC_OP '{' expr_list '}' .  (45)
+
+	.  reduce 45
+
+
+state 357
+	case_stmt : CASE double_expr ':' . expr_list  (67)
+	expr_list : .  (53)
+
+	.  reduce 53
+
+	expr_list  goto 363
+
+
+state 358
+	expr_list : expr_list . statement  (52)
+	case_stmt : DEFAULT ':' expr_list .  (68)
+
+	IDENTIFIER  shift 3
+	RESTRICT  shift 4
+	THIS  shift 5
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	CASE  reduce 68
+	DEFAULT  reduce 68
+	'}'  reduce 68
+
+	statement  goto 225
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
+state 359
+	class_func_serial_stmt : id_expr '.' id_expr '(' args_list ')' IDENTIFIER '(' . args_list ')'  (42)
+	args_list : .  (89)
+
+	XINTEGER  shift 56
+	TDOUBLE  shift 57
+	TBOOL  shift 47
+	IDENTIFIER  shift 109
+	TSTRING  shift 59
+	INC_OP  shift 60
+	DEC_OP  shift 61
+	'-'  shift 64
+	'~'  shift 65
+	'('  shift 110
+	')'  reduce 89
+
+	arithmetic_stmt  goto 111
+	self_inc_dec_stmt  goto 112
+	call_statement  goto 113
+	args_expr_collection  goto 114
+	assign_stmt_value_eq  goto 70
+	id_expr  goto 115
+	t_bool_expr  goto 116
+	double_expr  goto 117
+	uminus_expr  goto 118
+	string_expr  goto 119
+	arithmetic_stmt_factor  goto 78
+	class_member_stmt  goto 120
+	class_member_func_stmt  goto 36
+	array_ele_stmt  goto 121
+	bit_opr_factor  goto 83
+	args_list  goto 364
+	args_expr  goto 123
+
+
+state 360
+	class_member_func_stmt : IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list ')' .  (38)
+
+	.  reduce 38
+
+
+state 361
+	catch_block_stmt : XCATCH '(' id_expr ')' '{' . expr_list '}'  (11)
+	expr_list : .  (53)
+
+	.  reduce 53
+
+	expr_list  goto 365
+
+
+state 362
+	loop_stmt : FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block .  (70)
+
+	.  reduce 70
+
+
+state 363
+	expr_list : expr_list . statement  (52)
+	case_stmt : CASE double_expr ':' expr_list .  (67)
+
+	IDENTIFIER  shift 3
+	RESTRICT  shift 4
+	THIS  shift 5
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	CASE  reduce 67
+	DEFAULT  reduce 67
+	'}'  reduce 67
+
+	statement  goto 225
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
+state 364
+	class_func_serial_stmt : id_expr '.' id_expr '(' args_list ')' IDENTIFIER '(' args_list . ')'  (42)
+
+	')'  shift 366
+	.  error
+
+
+state 365
+	catch_block_stmt : XCATCH '(' id_expr ')' '{' expr_list . '}'  (11)
+	expr_list : expr_list . statement  (52)
+
+	IDENTIFIER  shift 3
+	RESTRICT  shift 4
+	THIS  shift 5
+	XTRY  shift 6
+	XSET  shift 7
+	IF  shift 8
+	WHILE  shift 9
+	FOR  shift 10
+	DELETE  shift 11
+	BREAK  shift 12
+	RETURN  shift 13
+	SWITCH  shift 14
+	NEW  shift 15
+	';'  shift 16
+	'}'  shift 367
+	.  error
+
+	statement  goto 225
+	declar_stmt  goto 18
+	con_ctl_stmt  goto 19
+	simple_stmt  goto 20
+	func_declar_stmt  goto 21
+	var_declar_stmt  goto 22
+	selection_stmt  goto 23
+	loop_stmt  goto 24
+	assign_stmt  goto 25
+	call_statement  goto 26
+	single_assign_stmt  goto 27
+	interrupt_stmt  goto 28
+	new_expr  goto 29
+	try_stmt  goto 30
+	id_expr  goto 31
+	class_declar_stmt  goto 32
+	namespace_declar_stmt  goto 33
+	class_member_stmt  goto 34
+	class_member_assign_stmt  goto 35
+	class_member_func_stmt  goto 36
+	class_func_serial_stmt  goto 37
+	restrict_stmt  goto 38
+	this_member_stmt  goto 39
+	array_ele_stmt  goto 40
+	array_ele_assign_stmt  goto 41
+
+
+state 366
+	class_func_serial_stmt : id_expr '.' id_expr '(' args_list ')' IDENTIFIER '(' args_list ')' .  (42)
+
+	.  reduce 42
+
+
+state 367
+	catch_block_stmt : XCATCH '(' id_expr ')' '{' expr_list '}' .  (11)
+
+	.  reduce 11
+
+
+State 58 contains 1 reduce/reduce conflict.
+
+
+77 terminals, 61 nonterminals
+186 grammar rules, 368 states
