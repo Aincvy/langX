@@ -24,6 +24,10 @@ namespace langX {
 		{
 			return NULL; 
 		}
+		if (obj->getType() == FUNCTION )
+		{
+			return  obj;
+		}
 		Object *ret = allocate(obj->getType());
 		if (ret == NULL)
 		{

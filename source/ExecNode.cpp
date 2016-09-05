@@ -831,17 +831,30 @@ namespace langX {
 			right->value = m_exec_alloc.allocate(NULLOBJECT);
 		}
 
+		ObjectType rightType = right->value->getType();
 		if (objectRef == NULL && arrayInfo == NULL)
 		{
-			checkVarValue(left, right->value->getType());
-			if (getState()->getCurrentEnv()->isDead()) {
-				return;
-			}
-			left->value->update(right->value);
+			if (rightType == FUNCTION)
+			{
+				left->value = right->value;
+				right->value = NULL;
 
-			// 释放右值的内存 
-			m_exec_alloc.free(right->value);
-			right->value = NULL;
+				if (left->value->getEmergeEnv() == NULL)
+				{
+					left->value->setEmergeEnv(getState()->getCurrentEnv());
+				}
+			}
+			else {
+				checkVarValue(left, rightType);
+				if (getState()->getCurrentEnv()->isDead()) {
+					return;
+				}
+				left->value->update(right->value);
+
+				// 释放右值的内存 
+				m_exec_alloc.free(right->value);
+				right->value = NULL;
+			}
 
 			// 更新值到 Environment 
 			setValueToEnv2(left->var_obj->name, left->value, left->value->getEmergeEnv());
@@ -2040,11 +2053,31 @@ namespace langX {
 			return;
 		}
 
-		char * name = n->opr_obj->op[0]->var_obj->name;
+		Node *n1 = n->opr_obj->op[0];
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
-		n->value = call(name, args, fileInfoString(n->fileinfo).c_str());
-		//printf("func %s exec end\n" , name);
+		const char *remark = fileInfoString(n->fileinfo).c_str();
+
+		__execNode(n1);
+		if (getState()->getCurrentEnv()->isDead())
+		{
+			m_exec_alloc.free(n1->value);
+			n1->value = NULL;
+			return;
+		}
+
+		if (n1->value != NULL && n1->value->getType() == FUNCTION)
+		{
+			callFunc((Function*)n1->value, args, remark);
+		}
+		else {
+			char * name = n1->var_obj->name;
+			n->value = call(name, args, remark);
+			//printf("func %s exec end\n" , name);
+		}
+		
 		doSuffixOperationArgs(args);
+		m_exec_alloc.free(n1->value);
+		n1->value = NULL;
 
 		if (!n->state.in_func && !n->state.in_loop)
 		{
@@ -2534,7 +2567,7 @@ namespace langX {
 				getState()->throwException(newRedeclarationException(tmp)->addRef());
 				delete cinfo;
 				node->ptr_u = NULL;
-				return ;
+				return;
 			}
 
 			getState()->regClass(cinfo);
@@ -2548,6 +2581,11 @@ namespace langX {
 				return;
 			}
 			Function *func = (Function*)node->value;
+			if (!func->hasName())
+			{
+				// 匿名函数
+				return;
+			}
 			if (getState()->getCurrentEnv()->getFunctionSelf(func->getName()) != NULL)
 			{
 				char tmp[100] = { 0 };
@@ -2555,9 +2593,10 @@ namespace langX {
 				getState()->throwException(newRedeclarationException(tmp)->addRef());
 				delete func;
 				node->value = NULL;
-				return ;
+				return;
 			}
 
+			func->setEmergeEnv(getState()->getCurrentEnv());
 			getState()->getCurrentEnv()->putFunction(func->getName(), func);
 			return;
 		}

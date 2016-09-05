@@ -183,6 +183,15 @@ namespace langX {
 		return false;
 	}
 
+	bool Function::hasName() const
+	{
+		if (strcmp(this->m_name,"") == 0)
+		{
+			return false;
+		}
+		return true;
+	}
+
 	void Function::finalize()
 	{
 		delete this;

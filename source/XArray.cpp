@@ -62,6 +62,7 @@ namespace langX {
 		}
 
 		Object *old = this->m_array[index];
+
 		if (old->getType() == obj->getType())
 		{
 			old->update(obj);

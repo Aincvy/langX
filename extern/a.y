@@ -43,8 +43,8 @@ char *namespaceNameCat(char *,char *);
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
 %type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt bit_opr_factor
-%type <node> type_judge_stmt lambda_stmt lambda_args_stmt
-%type <params> param_list parameter
+%type <node> type_judge_stmt lambda_stmt 
+%type <params> param_list parameter lambda_args_stmt
 %type <args> args_list args_expr
 %type <sValue> extends_stmt namespace_name_stmt
 
@@ -181,14 +181,14 @@ func_declar_stmt
 
 // lambda 表达式
 lambda_stmt
-	: '(' parameter ')' FUNC_OP '{' expr_list '}' { $$ = NULL ;}
-	| IDENTIFIER FUNC_OP '{' expr_list '}'   { $$ = NULL ;}
-	| lambda_args_stmt FUNC_OP '{' expr_list '}'   { $$ = NULL ;}
+	: '(' parameter ')' FUNC_OP '{' expr_list '}' { $$ = lambda($2,$6) ;}
+	| IDENTIFIER FUNC_OP '{' expr_list '}'   { $$ = lambda(params(NULL, $1),$4) ; }
+	| lambda_args_stmt FUNC_OP '{' expr_list '}'   { $$ = lambda($1,$4) ; }
 	;
 
 lambda_args_stmt
-	: IDENTIFIER ',' IDENTIFIER { $$ = NULL;  }
-	| lambda_args_stmt ',' IDENTIFIER  { $$ = NULL;  }
+	: IDENTIFIER ',' IDENTIFIER { $$ = params2($1,$3);  }
+	| lambda_args_stmt ',' IDENTIFIER  { $$ = params($1,$3);  }
 	;
 
 param_list
@@ -198,7 +198,7 @@ param_list
 
 parameter
 	: IDENTIFIER { $$ = params(NULL, $1); }
-	| parameter ',' IDENTIFIER { params($1,$3); }
+	| parameter ',' IDENTIFIER { $$ = params($1,$3); }
 	|        { $$ = NULL; }
 	;
 
@@ -426,7 +426,7 @@ assign_stmt_value
 	| t_bool_expr   { $$ = $1; }
 	| arithmetic_stmt { $$ = $1; }
 	| call_statement  { $$ = $1; }
-//	| lambda_stmt   { $$ = $1; }
+	| lambda_stmt   { $$ = $1; }
 	| id_expr       { $$ = $1; }
 	| string_expr   { $$ = $1; }
 	| self_inc_dec_stmt { $$ = $1; }
