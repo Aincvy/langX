@@ -34,6 +34,8 @@ namespace langX {
 
 		// 是否是第三方函数
 		virtual bool is3rd() const;
+		// 当前函数是否有名字
+		bool hasName() const;
 
 	private:
 		// 内部函数执行的根节点

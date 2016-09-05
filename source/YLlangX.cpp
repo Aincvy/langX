@@ -370,6 +370,20 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	return nodeF;
 }
 
+XNode *lambda(XParamsList *params, XNode *node) {
+
+	Function *func = new Function("", node);
+	func->setParamsList(params);
+
+	XNode * nodeF = (XNode*)calloc(1, sizeof(XNode) * 1);
+	nodeF->type = NODE_FUNCTION;
+	deal_fileinfo(&nodeF->fileinfo);
+	deal_state(&nodeF->state);
+	deal_switch_info(&nodeF->switch_info);
+	nodeF->value = func;
+	return nodeF;
+}
+
 XNode * arrayNode(char *name, int length, XNode *lengthNode)
 {
 	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
@@ -579,6 +593,20 @@ XParamsList * params(XParamsList *args, char *name)
 	// name 的内存是申请过的， 现在直接使用， 等不用的时候释放掉就OK了
 	//printf("第 %d 个参数，名字: %s\n",list->index,name);
 	list->args[list->index] = name;
+	list->index++;
+
+	return	list;
+}
+
+XParamsList * params2(char *name1, char *name2)
+{
+	XParamsList * list = (XParamsList*)calloc(1, sizeof(XParamsList));
+
+	// name 的内存是申请过的， 现在直接使用， 等不用的时候释放掉就OK了
+	//printf("第 %d 个参数，名字: %s\n",list->index,name);
+	list->args[list->index] = name1;
+	list->index++;
+	list->args[list->index] = name2;
 	list->index++;
 
 	return	list;
