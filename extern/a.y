@@ -288,7 +288,8 @@ args_expr
 	;
 
 args_expr_collection
-	: t_bool_expr   { $$ = $1; }
+	: lambda_stmt   { $$ = $1; }
+	| t_bool_expr   { $$ = $1; }
 	| double_expr   { $$ = $1; }
 	| id_expr       { /*printf("IDENTIFIER $1= %s\n" , $1);*/ $$ = $1; }
 	| string_expr   { $$ = $1; }
@@ -419,7 +420,8 @@ assign_stmt_value
 	| t_bool_expr   { $$ = $1; }
 	| arithmetic_stmt { $$ = $1; }
 	| call_statement  { $$ = $1; }
-	| id_expr      %prec NONASSOC { $$ = $1; }
+//	| lambda_stmt   { $$ = $1; }
+	| id_expr       { $$ = $1; }
 	| string_expr   { $$ = $1; }
 	| self_inc_dec_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
@@ -427,7 +429,6 @@ assign_stmt_value
 	| null_expr      { $$ = $1; }
 	| this_stmt    %prec UMINUS  { $$ = $1; }
 	| array_ele_stmt { $$ = $1; }
-	| lambda_stmt  %prec UMINUS  { $$ = $1; }
 	;
 
 //  += -= *= /=  的值
