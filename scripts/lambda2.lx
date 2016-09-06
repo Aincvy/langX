@@ -1,0 +1,11 @@
+funa => { print("funa!\n"); } ;
+
+a = funa ;
+a(); 
+
+callback => (size){ print("in callback,size: " + size + "\n"); }
+
+b => (cb) {  size = 115 ; cb(size) ; }
+b(callback);
+
+print("Script End!\n");

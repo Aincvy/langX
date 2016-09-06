@@ -9,6 +9,7 @@
 #include "../include/Function.h"
 #include "../include/ClassInfo.h"
 #include "../include/langXObjectRef.h"
+#include "../include/XArray.h"
 
 namespace langX {
 	Allocator::Allocator()
@@ -61,6 +62,10 @@ namespace langX {
 		{
 			return new langXObjectRef(NULL);
 		}
+		else if (t == ObjectType::XARRAY)
+		{
+			return new XArrayRef(NULL);
+		}
 
 		return NULL;
 	}
@@ -88,6 +93,10 @@ namespace langX {
 		else if (obj->getType() == FUNCTION)
 		{
 			// do nothing in free funtion.
+		}
+		else if (obj->getType() == XARRAY)
+		{
+			delete (XArrayRef *) obj;
 		}
 	}
 	

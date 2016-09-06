@@ -64,6 +64,7 @@ void count(void);
 "*=" {count(); return MUL_EQ; }
 "/=" {count(); return DIV_EQ; }
 "%=" {count(); return MOD_EQ; }
+"::" {count(); return SCOPE;}
 ">" {count(); return '>'; }
 "<" {count(); return '<'; }
 "{" {count(); return '{'; }

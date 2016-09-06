@@ -1,0 +1,12 @@
+Class1 {
+
+  funa => { print("funa") ;}
+}
+
+a = Class1::funa ;
+
+a(); 
+
+Class1::funa();
+
+print("Script End!\n");

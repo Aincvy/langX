@@ -16,6 +16,7 @@
 #include "../include/Exception.h"
 #include "../include/XNameSpace.h"
 #include "../include/StackTrace.h"
+#include "../include/NullObject.h"
 
 namespace langX {
 	// 内存的 管理器
@@ -828,8 +829,22 @@ namespace langX {
 		// 赋值操作的结果 为 右值的结果
 		if (right->value == NULL)
 		{
-			right->value = m_exec_alloc.allocate(NULLOBJECT);
+			// 判断是否是函数
+			if (right->type == NODE_VARIABLE)
+			{
+				Function *func = getState()->getCurrentEnv()->getFunction(right->var_obj->name);
+				if (func != nullptr)
+				{
+					right->value = func;
+				}
+			}
+
+			if (right->value == NULL)
+			{
+				right->value = m_exec_alloc.allocate(NULLOBJECT);
+			}
 		}
+
 
 		ObjectType rightType = right->value->getType();
 		if (objectRef == NULL && arrayInfo == NULL)
@@ -839,10 +854,8 @@ namespace langX {
 				left->value = right->value;
 				right->value = NULL;
 
-				if (left->value->getEmergeEnv() == NULL)
-				{
-					left->value->setEmergeEnv(getState()->getCurrentEnv());
-				}
+				// 更新值到 Environment 
+				setValueToEnv2(left->var_obj->name, left->value, getState()->getCurrentEnv());
 			}
 			else {
 				checkVarValue(left, rightType);
@@ -854,10 +867,11 @@ namespace langX {
 				// 释放右值的内存 
 				m_exec_alloc.free(right->value);
 				right->value = NULL;
-			}
 
-			// 更新值到 Environment 
-			setValueToEnv2(left->var_obj->name, left->value, left->value->getEmergeEnv());
+
+				// 更新值到 Environment 
+				setValueToEnv2(left->var_obj->name, left->value, left->value->getEmergeEnv());
+			}
 
 			n->value = m_exec_alloc.copy(left->value);
 			// 左值是指向 Environment 内的内存的复制， 需要释放
@@ -2065,16 +2079,35 @@ namespace langX {
 			return;
 		}
 
-		if (n1->value != NULL && n1->value->getType() == FUNCTION)
+		char * name = n1->var_obj->name;
+		bool flag = true;
+		if (n1->value != NULL)
 		{
-			callFunc((Function*)n1->value, args, remark);
+			if (n1->value->getType() == FUNCTION)
+			{
+				callFunc((Function*)n1->value, args, remark);
+				flag = false;
+			}
+			else if (n1->value->getType() == STRING)
+			{
+				std::string str = "call function ";
+				String *n1Str = (String*)n1->value;
+				str += n1Str->getValue();
+				str += " by var ";
+				str += name;
+				str += " ";
+				str += remark;
+				n->value = call(n1Str->getValue(), args, remark);
+				flag = false;
+			}
 		}
-		else {
-			char * name = n1->var_obj->name;
+
+		if (flag)
+		{
 			n->value = call(name, args, remark);
 			//printf("func %s exec end\n" , name);
 		}
-		
+
 		doSuffixOperationArgs(args);
 		m_exec_alloc.free(n1->value);
 		n1->value = NULL;
@@ -2247,6 +2280,16 @@ namespace langX {
 		Object *t = objectRef->getMember(memberName);
 		if (t == NULL)
 		{
+			// check 函数  回头再check 
+			/*Function *func = objectRef->getFunction(memberName);
+			if (func != nullptr)
+			{
+				t = func;
+			}
+			else {
+				
+			}*/
+
 			char tmp[100] = { 0 };
 			sprintf(tmp, "no member %s in class %s.", memberName, objectRef->getClassInfo()->getName());
 			getState()->throwException(newNoClassMemberException(tmp)->addRef());
@@ -2371,6 +2414,86 @@ namespace langX {
 
 		getState()->backEnv();
 		freeSubNodes(n);
+	}
+
+	void __execSCOPE(Node *n) {
+
+		if (n == NULL)
+		{
+			return;
+		}
+
+		char *className = n->opr_obj->op[0]->var_obj->name;
+		ClassInfo *claxxInfo = getState()->getClass(className);
+		if (claxxInfo == NULL)
+		{
+			getState()->throwException(newClassNotFoundException(className)->addRef());
+			return;
+		}
+
+		char *memberName = n->opr_obj->op[1]->var_obj->name;
+		Object *t = claxxInfo->getMember(memberName);
+		if (t == NULL)
+		{
+			t = claxxInfo->getFunction(memberName);
+			if (t == NULL)
+			{
+				char tmp[100] = { 0 };
+				sprintf(tmp, "no member %s in class %s.", memberName, className);
+				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+				return;
+			}
+		}
+
+		n->value = t->clone();
+		//n->value->setEmergeEnv(getState()->getCurrentEnv());
+	}
+
+	void __execSCOPE_FUNC_CALL(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		// 根据语法文件可知 n1 是一个SCOPE 类型
+		Node *n1 = n->opr_obj->op[0];
+
+		char *className = n1->opr_obj->op[0]->var_obj->name;
+		ClassInfo *claxxInfo = getState()->getClass(className);
+		if (claxxInfo == NULL)
+		{
+			getState()->throwException(newClassNotFoundException(className)->addRef());
+			return;
+		}
+
+		char *memberName = n1->opr_obj->op[1]->var_obj->name;
+		Function *t = claxxInfo->getFunction(memberName);
+		if (t == NULL)
+		{
+			char tmp[100] = { 0 };
+			sprintf(tmp, "no function %s in class %s.", memberName, className);
+			getState()->throwException(newNoClassMemberException(tmp)->addRef());
+			return;
+		}
+
+		ClassBridgeEnv *env = new ClassBridgeEnv(claxxInfo);
+		getState()->newEnv2(env);
+
+		// 根据语法解析文件得知， 第二个节点为参数节点
+		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
+		const char *remark = fileInfoString(n->fileinfo).c_str();
+		n->value = callFunc(t, args, remark);
+
+		doSuffixOperationArgs(args);
+		//m_exec_alloc.free(n1->value);
+		n1->value = NULL;
+
+		if (!n->state.in_func && !n->state.in_loop)
+		{
+			freeArgsList(args);
+		}
+
+		getState()->backEnv();
 	}
 
 	// 执行 try {}
@@ -2507,7 +2630,17 @@ namespace langX {
 				if (obj == NULL)
 				{
 					//printf("var %s=null \n", node->var_obj->name);
-					node->value = NULL;
+
+					// find function.
+					Function *func = getState()->getCurrentEnv()->getFunction(node->var_obj->name);
+					if (func != nullptr)
+					{
+						node->value = func;
+					}
+					else {
+						node->value = new NullObject();
+					}
+
 				}
 				else {
 					if (obj->getType() == NUMBER)
@@ -2596,6 +2729,7 @@ namespace langX {
 				return;
 			}
 
+			//函数的产生环境可能在类内部
 			func->setEmergeEnv(getState()->getCurrentEnv());
 			getState()->getCurrentEnv()->putFunction(func->getName(), func);
 			return;
@@ -2830,6 +2964,12 @@ namespace langX {
 			break;
 		case XIS:
 			__execXIS(node);
+			break;
+		case SCOPE:
+			__execSCOPE(node);
+			break;
+		case SCOPE_FUNC_CALL:
+			__execSCOPE_FUNC_CALL(node);
 			break;
 		default:
 			break;

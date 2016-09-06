@@ -8,6 +8,7 @@
 #include "../include/XNameSpace.h"
 #include "../include/YLlangX.h"
 #include "../include/Exception.h"
+#include "../include/Allocator.h"
 
 namespace langX {
 
@@ -354,13 +355,14 @@ namespace langX {
 
 	TryEnvironment::~TryEnvironment()
 	{
+		Allocator& allocator = getState()->getAllocator();
 		this->m_parent = NULL;
 		//printf("~Environment\n");
 		if (!m_objects_map.empty())
 		{
 			for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++) {
 				//a->second->decRefCount();
-				delete a->second;
+				allocator.free(a->second);
 			}
 
 			m_objects_map.clear();
@@ -597,13 +599,15 @@ namespace langX {
 
 	DefaultEnvironment::~DefaultEnvironment()
 	{
+		Allocator& allocator = getState()->getAllocator();
 		this->m_parent = NULL;
 		//printf("~Environment\n");
 		if (!m_objects_map.empty())
 		{
 			for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++) {
 				//a->second->decRefCount();
-				delete a->second;
+				//delete a->second;
+				allocator.free(a->second);
 			}
 
 			m_objects_map.clear();
@@ -777,6 +781,27 @@ namespace langX {
 
 	GlobalEnvironment::~GlobalEnvironment()
 	{
+		// 释放函数信息和类信息
+		if (!m_functions_map.empty())
+		{
+			for (auto a = m_functions_map.begin(); a != m_functions_map.end(); a++) {
+				//a->second->decRefCount();
+				delete a->second;
+			}
+
+			m_functions_map.clear();
+		}
+
+		if (!m_classes_map.empty())
+		{
+			for (auto a = m_classes_map.begin(); a != m_classes_map.end(); a++) {
+				//a->second->decRefCount();
+				delete a->second;
+			}
+
+			m_classes_map.clear();
+		}
+
 	}
 
 	void GlobalEnvironment::putObject(const char *, Object *)
@@ -874,7 +899,7 @@ namespace langX {
 
 	ScriptEnvironment::~ScriptEnvironment()
 	{
-
+		Allocator &allocator = getState()->getAllocator();
 		// 释放内存
 		this->m_parent = NULL;
 		//printf("~Environment\n");
@@ -882,7 +907,8 @@ namespace langX {
 		{
 			for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++) {
 				//a->second->decRefCount();
-				delete a->second;
+				//delete a->second;
+				allocator.free(a->second);
 			}
 
 			m_objects_map.clear();
