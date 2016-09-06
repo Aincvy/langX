@@ -51,7 +51,7 @@ namespace langX {
 		if (index < 0 || index >= m_length)
 		{
 			char tmp[100] = { 0 };
-			sprintf(tmp,"array index of bounds: %d" ,index);
+			sprintf(tmp, "array index of bounds: %d", index);
 			getState()->throwException(newIndexOutOfBoundsException(tmp)->addRef());
 			return;
 		}
@@ -65,7 +65,14 @@ namespace langX {
 
 		if (old->getType() == obj->getType())
 		{
-			old->update(obj);
+			if (old->getType() == FUNCTION)
+			{
+				this->m_array[index] = obj->clone();
+			}
+			else {
+				old->update(obj);
+			}
+
 		}
 		else {
 			this->m_array[index] = obj->clone();

@@ -358,6 +358,7 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 
 	Function *func = new Function(name, node);
 	func->setParamsList(params);
+	func->setEmergeEnv(NULL);
 	//  在执行他的时候再把它放入环境中
 	//getState()->getCurrentEnv()->putFunction(name, func);
 	free(name);
@@ -374,6 +375,7 @@ XNode *lambda(XParamsList *params, XNode *node) {
 
 	Function *func = new Function("", node);
 	func->setParamsList(params);
+	func->setEmergeEnv(NULL);
 
 	XNode * nodeF = (XNode*)calloc(1, sizeof(XNode) * 1);
 	nodeF->type = NODE_FUNCTION;
@@ -454,7 +456,7 @@ XNode * claxx(char *name, char *parent, XNode * node) {
 	return nodeC;
 }
 
-XObject * call(char *name, XArgsList* args, const char *remark)
+XObject * call(const char *name, XArgsList* args, const char *remark)
 {
 	Function *function = getState()->getCurrentEnv()->getFunction(name);
 	if (function == NULL)

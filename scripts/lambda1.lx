@@ -2,4 +2,11 @@ funa = ()=> { print("funa!\n"); } ;
 
 funa();
 
+a = a,b => { print("a is: " + a + "\n"); print("b is: " + b + "\n"); };
+a(10,15);
+
+asyncRead => (size,cb){ cb(size) ; }
+
+asyncRead(10 , size => { print("in callback. size is " + size + "\n");  } );
+
 print("Script End!\n");
