@@ -2085,7 +2085,7 @@ namespace langX {
 		{
 			if (n1->value->getType() == FUNCTION)
 			{
-				callFunc((Function*)n1->value, args, remark);
+				n->value = callFunc((Function*)n1->value, args, remark);
 				flag = false;
 			}
 			else if (n1->value->getType() == STRING)

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <iostream>
 
 #include "../include/RegFunctions.h"
 #include "../include/Function.h"
@@ -27,7 +28,12 @@ namespace langX {
 		{
 			String * str = (String*)obj;
 			str->simpleEscape();
-			printf(str->getValue() );
+			printf(str->getValue());
+			//printf("will print!\n");
+			//const char *v1 = str->getValue();
+			//printf("%s",v1 );
+			//fprintf(stdout, "%s", v1);
+			//std::cout << str->getStrValue();
 		}
 		else if (obj->getType() == NUMBER)
 		{

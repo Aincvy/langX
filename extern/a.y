@@ -55,15 +55,24 @@ char *namespaceNameCat(char *,char *);
 %nonassoc IFX
 %nonassoc ELSE
 
-%left FUNC_OP
 %left ','
 %right '=' ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ 
-%left AND_OP OR_OP
-%left LE_OP GE_OP EQ_OP NE_OP '>' '<'
-%left '+' '-' '%'
-%left '*' '/'
-%left '&' '|' '^' LEFT_SHIFT RIGHT_SHIFT
-%right '~'
+%left OR_OP
+%left AND_OP
+%left '|' 
+%left '^'
+%left '&' 
+%left EQ_OP NE_OP
+%left LE_OP GE_OP '>' '<'
+%left LEFT_SHIFT RIGHT_SHIFT
+%left '+' '-'
+%left '*' '/' '%'
+%right '~' 
+%left '.' '(' ')' '[' ']'
+%left FUNC_OP
+%nonassoc priority3
+%nonassoc priority2
+%nonassoc priority1
 %nonassoc UMINUS
 
 %start program
