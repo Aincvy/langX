@@ -1,6 +1,6 @@
 Class1 {
 
-  funa => { print("funa") ;}
+  funa => { print("funa!\n") ;}
 }
 
 a = Class1::funa ;

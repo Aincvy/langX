@@ -29,11 +29,13 @@ namespace langX {
 	void String::simpleEscape()
 	{
 		// TODO  \\n  变成 \n  两个字符
+
 		while (m_value.find("\\n") != std::string::npos)
 		{
 			// 存在换行符
 			m_value.replace(m_value.find("\\n") , 2, "\n");
 		}
+
 	}
 	bool String::isTrue() const
 	{
