@@ -2693,17 +2693,33 @@ namespace langX {
 			}
 			ClassInfo *cinfo = (ClassInfo*)node->ptr_u;
 
-			if (getState()->getCurrentEnv()->getClassSelf(cinfo->getName()) != NULL)
+			if (node->state.classAuto == false)
 			{
-				char tmp[100] = { 0 };
-				sprintf(tmp, "class %s already declared.", cinfo->getName());
-				getState()->throwException(newRedeclarationException(tmp)->addRef());
-				delete cinfo;
-				node->ptr_u = NULL;
-				return;
+				if (getState()->getCurrentEnv()->getClassSelf(cinfo->getName()) != NULL)
+				{
+					char tmp[100] = { 0 };
+					sprintf(tmp, "class %s already declared.", cinfo->getName());
+					getState()->throwException(newRedeclarationException(tmp)->addRef());
+					delete cinfo;
+					node->ptr_u = NULL;
+					return;
+				}
 			}
+			else {
+				//  自动填充
+				ClassInfo *c1 = getState()->getCurrentEnv()->getClass(cinfo->getName());
+				if (c1 != NULL)
+				{
+					c1->expand(cinfo);
+					delete cinfo;
+					node->ptr_u = NULL;
+					return;
+				}
 
+			}
+			
 			getState()->regClass(cinfo);
+			node->ptr_u = NULL;
 			return;
 		}
 		else if (node->type == NODE_FUNCTION)

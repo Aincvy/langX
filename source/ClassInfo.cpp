@@ -4,6 +4,9 @@
 #include "../include/Function.h"
 #include "../include/langXObject.h"
 #include "../include/ClassInfo.h"
+#include "../include/Allocator.h"
+
+extern langX::Allocator m_exec_alloc;
 
 namespace langX {
 
@@ -14,10 +17,27 @@ namespace langX {
 
 	langX::ClassInfo::~ClassInfo()
 	{
+		// 释放 member ， 函数回头再进行释放
+		for (auto i = this->m_members.begin(); i != this->m_members.end(); i++)
+		{
+			m_exec_alloc.free(i->second);
+		}
+		this->m_members.clear();
+
 	}
 
 	void ClassInfo::addMember(const char *name, Object *obj)
 	{
+		if (obj == NULL)
+		{
+			return;
+		}
+		auto i = this->m_members.find(name);
+		if (i != this->m_members.end())
+		{
+			// 存在旧值
+			m_exec_alloc.free(i->second);
+		}
 		this->m_members[name] = obj->clone();
 	}
 
@@ -135,6 +155,48 @@ namespace langX {
 			return this->m_parent->isInstanceOf(name);
 		}
 		return false;
+	}
+
+	void ClassInfo::expand(ClassInfo *c1)
+	{
+		if (c1 == NULL)
+		{
+			return;
+		}
+
+		std::map<std::string, Object*>& members = c1->getMembers();
+
+		for (auto i = members.begin(); i != members.end(); i++)
+		{
+			std::string str = i->first;
+			Object *obj = i->second;
+
+			auto abc = this->m_members.find(str);
+			if (abc != this->m_members.end())
+			{
+				// 存在旧值
+				m_exec_alloc.free(abc->second);
+			}
+
+			this->m_members[str] = obj->clone();
+		}
+
+		std::map<std::string, Function*>& funcs = c1->getFunctions();
+		for (auto i = funcs.begin(); i != funcs.end(); i++)
+		{
+			std::string str = i->first;
+			Function *obj = i->second;
+
+			auto abc = this->m_functions.find(str);
+			if (abc != this->m_functions.end())
+			{
+				// 存在旧值
+				delete (abc->second);
+			}
+
+			this->m_functions[str] = obj;
+		}
+
 	}
 
 
