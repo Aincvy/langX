@@ -52,7 +52,10 @@
 #define XNULL 308
 #define NONASSOC 309
 #define IFX 310
-#define UMINUS 311
+#define priority3 311
+#define priority2 312
+#define priority1 313
+#define UMINUS 314
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

@@ -49,6 +49,9 @@ namespace langX {
 		// 当前类是否是该类 OR 该类的子类
 		bool isInstanceOf(const char *) const;
 
+		// 扩展自身类
+		void expand(ClassInfo *);
+
 	private:
 		//  当前类的 字段map ...
 		//  key:  属性名,  value:  对象指针

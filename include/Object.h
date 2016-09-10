@@ -129,6 +129,9 @@ namespace langX {
 		bool isCaseNeedCon;
 		// 是否是后缀
 		bool isSuffix;
+
+		// 是否自动扩充前类
+		bool classAuto;
 	};
 
 	struct Node;

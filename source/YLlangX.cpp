@@ -88,6 +88,7 @@ void deal_state(NodeState * state) {
 	state->in_switch = false;
 	state->isCaseNeedCon = true;
 	state->isSuffix = false;
+	state->classAuto = false;
 }
 
 void deal_switch_info(SwitchInfo *si) {
@@ -421,7 +422,7 @@ XNode * xnull()
 	return node;
 }
 
-XNode * claxx(char *name, char *parent, XNode * node) {
+XNode * claxx(char *name, char *parent, XNode * node, bool flag) {
 
 	ClassInfo *pclass = NULL;
 	if (parent != NULL)
@@ -452,6 +453,7 @@ XNode * claxx(char *name, char *parent, XNode * node) {
 	deal_state(&nodeC->state);
 	deal_switch_info(&nodeC->switch_info);
 	nodeC->ptr_u = claxxInfo;
+	nodeC->state.classAuto = flag;
 
 	return nodeC;
 }
