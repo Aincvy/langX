@@ -36,14 +36,14 @@ char *namespaceNameCat(char *,char *);
 %token <iValue> TDOUBLE TBOOL
 %token <sValue> IDENTIFIER TSTRING
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
-%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL
+%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL REQUIRE REQUIRE_ONCE
 %token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
 %type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt bit_opr_factor
-%type <node> type_judge_stmt lambda_stmt static_member_stmt
+%type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt
 %type <params> param_list parameter lambda_args_stmt
 %type <args> args_list args_expr
 %type <sValue> extends_stmt namespace_name_stmt
@@ -70,9 +70,9 @@ char *namespaceNameCat(char *,char *);
 %right '~' 
 %left '.' '(' ')' '[' ']'
 %left FUNC_OP
-%nonassoc priority3
-%nonassoc priority2
-%nonassoc priority1
+%nonassoc PRIORITY3
+%nonassoc PRIORITY2
+%nonassoc PRIORITY1
 %nonassoc UMINUS
 
 %start program
@@ -91,7 +91,14 @@ statement
 	| declar_stmt    { $$ = $1; }
 	| con_ctl_stmt   { $$ = $1; }
 	| simple_stmt ';'   { $$ = $1; }
+	| require_stmt   { $$ = $1; }
 	| try_stmt       { $$ = $1; }
+	;
+
+// 需求语句
+require_stmt
+	: REQUIRE string_expr         { $$ = opr(REQUIRE , 1 , $2); }
+	| REQUIRE_ONCE string_expr    { $$ = opr(REQUIRE_ONCE , 1 , $2); }
 	;
 
 // try 语句

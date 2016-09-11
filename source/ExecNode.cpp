@@ -18,6 +18,10 @@
 #include "../include/StackTrace.h"
 #include "../include/NullObject.h"
 
+
+extern FILE* yyin;
+extern const char * parseFileName;
+
 namespace langX {
 	// 内存的 管理器
 	Allocator m_exec_alloc;
@@ -2583,6 +2587,33 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
+	// 执行包含其他文件
+	void __execREQUIRE(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		char *tmp = n->opr_obj->op[0]->con_obj->sValue;
+
+		char *filename = strndup(tmp + 1, strlen(tmp) - 2);
+
+		char tmpMsg[1024] = { 0 };
+		sprintf(tmpMsg, "require file %s", filename);
+		getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
+
+		const char *t1 = parseFileName;
+		FILE *fp = yyin;
+
+		getState()->doFile(filename);
+		free(filename);
+
+		yyin = fp;
+		parseFileName = t1;
+
+		// it's ok ?
+	}
+
 	/*
 	 * 执行节点，  节点的结果 将 放在  Node.value 上
 	 * 这是一个 Object 类型的指针    07-24
@@ -2986,6 +3017,9 @@ namespace langX {
 			break;
 		case SCOPE_FUNC_CALL:
 			__execSCOPE_FUNC_CALL(node);
+			break;
+		case REQUIRE:
+			__execREQUIRE(node);
 			break;
 		default:
 			break;

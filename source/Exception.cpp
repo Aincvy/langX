@@ -138,6 +138,10 @@ namespace langX {
 		redeclarationException->setParent(exception);
 		l->regClassToGlobal(redeclarationException);
 
+		// FileNotFoundException      文件未找到异常
+		ClassInfo *fileNotFoundException = new ClassInfo("FileNotFoundException");
+		fileNotFoundException->setParent(exception);
+		l->regClassToGlobal(fileNotFoundException);
 	}
 
 	langXObject * newException(const char * message)
@@ -210,6 +214,11 @@ namespace langX {
 	langXObject * newRedeclarationException(const char * message)
 	{
 		return  newException("RedeclarationException", message);
+	}
+
+	langXObject * newFileNotFoundException(const char * message)
+	{
+		return  newException("FileNotFoundException", message);
 	}
 
 }
