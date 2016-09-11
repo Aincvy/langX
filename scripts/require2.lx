@@ -1,0 +1,7 @@
+print("in 2.lx!\n");
+
+a = 10 ;
+b = 11 ;
+c = "hello,world!" ;
+
+print("end 2.lx!\n");

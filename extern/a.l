@@ -16,6 +16,13 @@ void comment(void);
 int column = 0; 
 void count(void);
 
+#define MAX_INCLUDE_DEPTH 45
+YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
+int include_stack_ptr = 0;
+
+// 切换缓冲区到 文件指针
+void pushBuffer(FILE *fp);
+
 %}
 
 %%
@@ -45,12 +52,14 @@ void count(void);
 "public" {count(); return XPUBLIC;}
 "set"  {count();  return XSET; }
 "is"   {count();  return XIS; }
+"require" {count(); return REQUIRE;}
+"require_once" { count(); return REQUIRE_ONCE; }
 "=>"   {count();  return FUNC_OP; }
 "++"   {count();  return INC_OP;}
 "--"   {count();  return DEC_OP;}
 
 \"(\\.|[^\\"\n])*\"   {count();  yylval.sValue = strdup(yytext); return TSTRING;}
-[a-zA-Z][a-zA-Z0-9]*  {count();  yylval.sValue=strdup(yytext); return IDENTIFIER;}
+[a-zA-Z][a-zA-Z0-9]*  {count(); /*printf("get a id: %s\n" ,yytext);*/ yylval.sValue=strdup(yytext); return IDENTIFIER;}
 
 0|([1-9][0-9]*)           {count();  yylval.intValue = atoi(yytext);  return XINTEGER; }
 (0|[1-9][0-9]*)\.[0-9]+ { count(); yylval.iValue = atof(yytext); return TDOUBLE;}
@@ -91,7 +100,39 @@ void count(void);
 [ \t]  {count(); }
 [\n]   {count(); yylineno++; }
 
+<<EOF>> { 
+    printf("read one file over!\n");
+	if ( --include_stack_ptr < 0 ) {
+		yyterminate();
+	}
+	else {
+		yy_delete_buffer( YY_CURRENT_BUFFER );
+		yy_switch_to_buffer(
+		  include_stack[include_stack_ptr] );
+	}
+}
+
 %%
+
+void pushBuffer(FILE *fp){
+    if(fp == NULL )
+	  return ;
+
+	if ( include_stack_ptr >= MAX_INCLUDE_DEPTH )
+	{
+		fprintf( stderr, "Includes nested too deeply" );
+		exit( 1 );
+	}
+	
+	include_stack[include_stack_ptr++] = YY_CURRENT_BUFFER;
+	yyin = fp;
+	
+	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
+	printf("ready to begin.\n");
+	BEGIN(INITIAL);
+	printf("begin over.\n");
+}
+
 
 void comment(void)
 {
@@ -118,5 +159,6 @@ void count(void)
 		else
 			column++;
 
-	/*ECHO; */
+	ECHO; 
+	printf("\n");
 }

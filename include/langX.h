@@ -80,6 +80,9 @@ namespace langX {
 		// 建立一个新的脚本环境
 		void newScriptEnv(const char *);
 
+		// 执行一个脚本  [并不会更改当前的脚本环境]  这个函数会在当前环境上执行别的脚本
+		void doFile(const char *);
+
 	private:
 		// 全局环境
 		GlobalEnvironment *m_global_env = nullptr;

@@ -1,0 +1,10 @@
+print("in 1.lx!\n");
+
+require "/root/projects/langX/scripts/require2.lx"
+
+print("a=" + a + "\n");
+print("b=" + b + "\n");
+print("c=" + c + "\n");
+
+
+print("end 1.lx!\n");

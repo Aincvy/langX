@@ -14,6 +14,9 @@
 #include "../include/Function.h"
 #include "../include/XNameSpace.h"
 
+// 切换缓冲区到 文件指针
+extern void pushBuffer(FILE *fp);
+
 // 释放环境内存
 void freeEnv(langX::Environment **env) {
 
@@ -454,6 +457,28 @@ namespace langX {
 		this->m_script_env->setDeep(this->m_current_deep);
 		this->m_script_env->setParent(this->m_current_env);
 		this->m_current_env = this->m_script_env;
+	}
+
+	void langXState::doFile(const char *filename)
+	{
+		if (filename == NULL)
+		{
+			return;
+		}
+
+		FILE *fp = fopen(filename,"r");
+		if (fp == NULL)
+		{
+			throwException(newFileNotFoundException(filename)->addRef());
+			return;
+		}
+		
+		printf("change to file %s!\n" , filename);
+		pushBuffer(fp);
+
+		//yyparse();
+		//fclose(fp);
+		//fp = NULL;
 	}
 
 }
