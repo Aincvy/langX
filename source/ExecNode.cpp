@@ -2598,18 +2598,52 @@ namespace langX {
 		char *filename = strndup(tmp + 1, strlen(tmp) - 2);
 
 		char tmpMsg[1024] = { 0 };
-		sprintf(tmpMsg, "require file %s", filename);
+		sprintf(tmpMsg, "require file %s  %s", filename,fileInfoString(n->fileinfo).c_str());
 		getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
 
-		const char *t1 = parseFileName;
+		getState()->pushDoingFile(parseFileName);
 
-		getState()->doFile(filename);
+		int i =getState()->doFile(filename);
 		free(filename);
 
+		if (i == 0)
+		{
+			parseFileName = filename;
+		}
 		//yyin = fp;
 		//parseFileName = t1;
 
 		// it's ok ?
+	}
+
+	void __execREQUIRE_ONCE(Node *n) {
+
+		if (n == NULL)
+		{
+			return;
+		}
+
+		char *tmp = n->opr_obj->op[0]->con_obj->sValue;
+
+		char *filename = strndup(tmp + 1, strlen(tmp) - 2);
+
+		if (!getState()->isDidScript(filename))
+		{
+			// 未执行过的文件
+			char tmpMsg[1024] = { 0 };
+			sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
+			getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
+
+			getState()->pushDoingFile(parseFileName);
+
+			if (getState()->doFile(filename) == 0)
+			{
+				parseFileName = filename;
+			}
+		}
+
+		free(filename);
+
 	}
 
 	/*
@@ -3018,6 +3052,9 @@ namespace langX {
 			break;
 		case REQUIRE:
 			__execREQUIRE(node);
+			break;
+		case  REQUIRE_ONCE:
+			__execREQUIRE_ONCE(node);
 			break;
 		default:
 			break;

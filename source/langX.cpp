@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <algorithm>
 #include "../include/ClassInfo.h"
 #include "../include/langX.h"
 #include "../include/Object.h"
@@ -459,26 +460,57 @@ namespace langX {
 		this->m_current_env = this->m_script_env;
 	}
 
-	void langXState::doFile(const char *filename)
+	int langXState::doFile(const char *filename)
 	{
 		if (filename == NULL)
 		{
-			return;
+			return -1;
 		}
 
 		FILE *fp = fopen(filename,"r");
 		if (fp == NULL)
 		{
 			throwException(newFileNotFoundException(filename)->addRef());
-			return;
+			return -1;
 		}
 		
-		//printf("change to file %s!\n" , filename);
+		m_didScripts.push_back(filename);
+		
 		pushBuffer(fp);
+		return 0;
+	}
 
-		//yyparse();
-		//fclose(fp);
-		//fp = NULL;
+	bool langXState::isDidScript(const char *f)
+	{
+		std::list<std::string>::iterator it = std::find(m_didScripts.begin(), m_didScripts.end(), f);
+
+		if (it == m_didScripts.end())
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	void langXState::addToDidScripts(const char *f)
+	{
+		this->m_didScripts.push_back(f);
+	}
+
+	void langXState::pushDoingFile(const char * f)
+	{
+		this->m_doing_queue.push(f);
+	}
+
+	const char* langXState::popDoingFile()
+	{
+		if (this->m_doing_queue.empty())
+		{
+			return NULL;
+		}
+		const char * x = this->m_doing_queue.back();
+		this->m_doing_queue.back();
+		return x;
 	}
 
 }

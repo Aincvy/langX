@@ -4,4 +4,6 @@ a = 10 ;
 b = 11 ;
 c = "hello,world!" ;
 
+printStackTrace();
+
 print("end 2.lx!\n");
