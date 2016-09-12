@@ -741,6 +741,21 @@ void popStateFrame()
 	state->getStackTrace().popFrame();
 }
 
+void addToDidScripts(const char * f)
+{
+	state->addToDidScripts(f);
+}
+
+void popDoingFiles()
+{
+	const char *p = state->popDoingFile();
+	
+	if (p != NULL)
+	{
+		parseFileName = p;
+	}
+}
+
 void execNode(XNode *n) {
 	langX::__execNode(n);
 }

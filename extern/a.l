@@ -113,6 +113,7 @@ void pushBuffer(FILE *fp);
 	}
 	
 	popStateFrame();
+	popDoingFiles();
 }
 
 %%
@@ -132,7 +133,6 @@ void pushBuffer(FILE *fp){
 	
 	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
 	BEGIN(INITIAL);
-	//printf("change buffer over.\n");
 }
 
 

@@ -1199,14 +1199,15 @@ case YY_STATE_EOF(INITIAL):
 	}
 	
 	popStateFrame();
+	popDoingFiles();
 }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 118 "a.l"
+#line 119 "a.l"
 ECHO;
 	YY_BREAK
-#line 1210 "lex.yy.c"
+#line 1211 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2198,7 +2199,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 118 "a.l"
+#line 119 "a.l"
 
 
 
@@ -2217,7 +2218,6 @@ void pushBuffer(FILE *fp){
 	
 	yy_switch_to_buffer(yy_create_buffer(yyin,YY_BUF_SIZE ) );
 	BEGIN(INITIAL);
-	//printf("change buffer over.\n");
 }
 
 

@@ -85,6 +85,11 @@ extern "C" {
 	void changeScriptEnv(const char *);
 
 	void popStateFrame();
+
+	// 添加脚本到 已经执行过的 脚本文件里面
+	void addToDidScripts(const char *);
+	// 
+	void popDoingFiles();
 }
 
 langX::Object* getValue(const char*);

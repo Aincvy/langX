@@ -2,6 +2,7 @@
 #include <map>
 #include <string>
 #include <list>
+#include <queue>
 #include "Object.h"
 #include "Function.h"
 #include "StackTrace.h"
@@ -81,7 +82,17 @@ namespace langX {
 		void newScriptEnv(const char *);
 
 		// 执行一个脚本  [并不会更改当前的脚本环境]  这个函数会在当前环境上执行别的脚本
-		void doFile(const char *);
+		// 返回 0 表示切换成功， 返回 -1 表示失败
+		int doFile(const char *);
+
+		// 是否执行过这个脚本
+		bool isDidScript(const char  *);
+		// 这个这个文件名到已执行过的脚本里面
+		void addToDidScripts(const char *);
+
+		void pushDoingFile(const char *);
+
+		const char* popDoingFile();
 
 	private:
 		// 全局环境
@@ -92,6 +103,10 @@ namespace langX {
 		StackTrace m_stacktrace;
 
 		std::map<std::string, XNameSpace*> m_namespace_map;
+		//  执行过文件列表
+		std::list<std::string> m_didScripts;
+		//  正在执行文件的队列
+		std::queue<const char*> m_doing_queue;
 
 		int m_current_deep = 0;
 
