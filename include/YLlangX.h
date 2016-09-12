@@ -83,6 +83,8 @@ extern "C" {
 
 	// 更改脚本环境
 	void changeScriptEnv(const char *);
+
+	void popStateFrame();
 }
 
 langX::Object* getValue(const char*);

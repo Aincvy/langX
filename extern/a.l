@@ -101,7 +101,7 @@ void pushBuffer(FILE *fp);
 [\n]   {count(); yylineno++; }
 
 <<EOF>> { 
-    printf("read one file over!\n");
+    //printf("read one file over!\n");
 	if ( --include_stack_ptr < 0 ) {
 		yyterminate();
 	}
@@ -109,7 +109,10 @@ void pushBuffer(FILE *fp);
 		yy_delete_buffer( YY_CURRENT_BUFFER );
 		yy_switch_to_buffer(
 		  include_stack[include_stack_ptr] );
+		
 	}
+	
+	popStateFrame();
 }
 
 %%
@@ -128,9 +131,8 @@ void pushBuffer(FILE *fp){
 	yyin = fp;
 	
 	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
-	printf("ready to begin.\n");
 	BEGIN(INITIAL);
-	printf("begin over.\n");
+	//printf("change buffer over.\n");
 }
 
 
@@ -159,6 +161,6 @@ void count(void)
 		else
 			column++;
 
-	ECHO; 
-	printf("\n");
+	//ECHO; 
+	//printf("\n");
 }

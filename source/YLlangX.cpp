@@ -736,6 +736,11 @@ void changeScriptEnv(const char * name)
 	state->newScriptEnv(name);
 }
 
+void popStateFrame()
+{
+	state->getStackTrace().popFrame();
+}
+
 void execNode(XNode *n) {
 	langX::__execNode(n);
 }

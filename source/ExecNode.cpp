@@ -19,7 +19,6 @@
 #include "../include/NullObject.h"
 
 
-extern FILE* yyin;
 extern const char * parseFileName;
 
 namespace langX {
@@ -2603,13 +2602,12 @@ namespace langX {
 		getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
 
 		const char *t1 = parseFileName;
-		FILE *fp = yyin;
 
 		getState()->doFile(filename);
 		free(filename);
 
-		yyin = fp;
-		parseFileName = t1;
+		//yyin = fp;
+		//parseFileName = t1;
 
 		// it's ok ?
 	}
