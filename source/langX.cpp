@@ -473,7 +473,7 @@ namespace langX {
 			return;
 		}
 		
-		printf("change to file %s!\n" , filename);
+		//printf("change to file %s!\n" , filename);
 		pushBuffer(fp);
 
 		//yyparse();
