@@ -2646,6 +2646,13 @@ namespace langX {
 
 	}
 
+	// 引入命名空间或者类
+	void __execREF(Node *n) {
+
+
+
+	}
+
 	/*
 	 * 执行节点，  节点的结果 将 放在  Node.value 上
 	 * 这是一个 Object 类型的指针    07-24
@@ -3055,6 +3062,9 @@ namespace langX {
 			break;
 		case  REQUIRE_ONCE:
 			__execREQUIRE_ONCE(node);
+			break;
+		case REF:
+			__execREF(node);
 			break;
 		default:
 			break;

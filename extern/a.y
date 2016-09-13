@@ -36,7 +36,7 @@ char *namespaceNameCat(char *,char *);
 %token <iValue> TDOUBLE TBOOL
 %token <sValue> IDENTIFIER TSTRING
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
-%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL REQUIRE REQUIRE_ONCE
+%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL REQUIRE REQUIRE_ONCE REF
 %token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
@@ -95,10 +95,11 @@ statement
 	| try_stmt       { $$ = $1; }
 	;
 
-// 需求语句
+// 需求语句 / ref 语句
 require_stmt
 	: REQUIRE string_expr         { $$ = opr(REQUIRE , 1 , $2); }
 	| REQUIRE_ONCE string_expr    { $$ = opr(REQUIRE_ONCE , 1 , $2); }
+	| REF namespace_name_stmt ';' { $$ = opr(REF , 1, string($2)); }
 	;
 
 // try 语句
