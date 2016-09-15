@@ -978,7 +978,7 @@ static YYSTACKDATA yystack;
 
 
 void yyerror(char *s) {
- fprintf(stderr, "%s on line %d,column %d. near by '%s' \n", s ,yyget_lineno(),column , yytext  );
+ fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , parseFileName, yyget_lineno(),column , yytext  );
 }
 
 char *namespaceNameCat(char *arg1,char *arg2){

@@ -1,0 +1,5 @@
+require "require4.lx"
+
+ref com.aa ;
+
+print("a=" + a  + "\n");

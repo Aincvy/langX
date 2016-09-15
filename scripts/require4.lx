@@ -1,0 +1,4 @@
+//require "require5.lx"
+set public = com.aa ;
+
+a = 66 ;

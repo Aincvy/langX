@@ -1,7 +1,6 @@
 print("in 1.lx!\n");
 
-require_once "/root/projects/langX/scripts/require2.lx"
-require_once "/root/projects/langX/scripts/require2.lx"
+require "require2.lx"
 
 print("a=" + a + "\n");
 print("b=" + b + "\n");

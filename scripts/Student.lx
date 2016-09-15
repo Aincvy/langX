@@ -1,0 +1,21 @@
+require "Student.h.lx"
+//  上面的那句 require 语句其实并没有什么卵用。 
+//  因为在切换命名空间的时候， require 就失效了。 这样写只是为了方便看
+
+// 不应该直接包含当前脚本。  如果直接包含当前脚本可能会出错
+
+set public = com.my.test;
+
+COM_MY_TEST_STUDENT = 1 ;
+
+
+Student {
+  score;
+  
+  getScore => {
+  //  Math 需要在执行环境内是存在的。。 
+    return Math::abs(score);
+  }
+  
+}
+

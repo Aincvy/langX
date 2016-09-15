@@ -110,6 +110,8 @@ namespace langX {
 
 		delete this->m_allocator;
 
+		backToDeep1Env();
+
 		while (this->m_current_env != NULL && this->m_current_env->getParent() != NULL)
 		{
 			backEnv();
@@ -117,10 +119,15 @@ namespace langX {
 
 		//  下面那条语句的当前环境就是  m_global_env  ，所以无需释放 m_global_env
 		freeEnv(&this->m_current_env);
-		//this->m_current_env = NULL;
-		//delete this->m_global_env;
-		//this->m_global_env = NULL;
+		
+		for (auto i = this->m_script_env_map.begin(); i != this->m_script_env_map.end(); i++)
+		{
+			delete (i->second);
+		}
+
+		this->m_script_env_map.clear();
 	}
+
 	void langXState::putObject(const char * name, Object *obj)
 	{
 		this->m_current_env->putObject(name, obj);
@@ -224,6 +231,27 @@ namespace langX {
 		}
 
 		return nullptr;
+	}
+
+	Environment * langXState::getEnvironment(int deep)
+	{
+		if (this->m_current_deep < deep)
+		{
+			return nullptr;
+		}
+
+		if (this->m_current_deep == deep)
+		{
+			return this->m_current_env;
+		}
+
+		Environment *env = this->m_current_env->getParent();
+		while (env != nullptr && env->getDeep() != deep)
+		{
+			env = env->getParent();
+		}
+
+		return env;
 	}
 
 	void langXState::reg3rd(const char *name, X3rdFuncWorker worker)
@@ -410,7 +438,7 @@ namespace langX {
 		return this->m_global_env->getClass(name);
 	}
 
-	XNameSpace * langXState::getNameSpace(const char *name)
+	XNameSpace * langXState::getNameSpaceOrCreate(const char *name)
 	{
 		if (this->m_namespace_map.find(name) != this->m_namespace_map.end())
 		{
@@ -422,6 +450,15 @@ namespace langX {
 		return space;
 	}
 
+	XNameSpace * langXState::getNameSpace(const char *name)
+	{
+		if (this->m_namespace_map.find(name) != this->m_namespace_map.end())
+		{
+			return this->m_namespace_map[name];
+		}
+		return nullptr;
+	}
+
 	void langXState::changeNameSpace(XNameSpace *s)
 	{
 		if (s == nullptr)
@@ -429,11 +466,9 @@ namespace langX {
 			return;
 		}
 
-		//  释放内存到 深度为1 的tryEnv
-		while (this->m_current_deep != 1) {
-			backEnv();
-		}
-		
+		//  释放内存到 深度为1 的 环境
+		backToDeep1Env();
+
 		this->m_script_env = new XNameSpaceEnvironment(s);
 		this->m_current_deep++;
 		this->m_script_env->setDeep(this->m_current_deep);
@@ -448,12 +483,13 @@ namespace langX {
 			return;
 		}
 
-		//  释放内存到 深度为1 的tryEnv
-		while (this->m_current_deep != 1) {
-			backEnv();
-		}
+		//  释放内存到 深度为1 的 环境
+		backToDeep1Env();
+		
 
-		this->m_script_env = new ScriptEnvironment(name);
+		ScriptEnvironment *env = new ScriptEnvironment(name);
+		this->m_script_env = env;
+		this->m_script_env_map[name] = env;
 		this->m_current_deep++;
 		this->m_script_env->setDeep(this->m_current_deep);
 		this->m_script_env->setParent(this->m_current_env);
@@ -476,6 +512,7 @@ namespace langX {
 		
 		m_didScripts.push_back(filename);
 		
+		this->pushScriptEnvToDoingStack();
 		pushBuffer(fp);
 		return 0;
 	}
@@ -499,18 +536,78 @@ namespace langX {
 
 	void langXState::pushDoingFile(const char * f)
 	{
-		this->m_doing_queue.push(f);
+		this->m_doing_files.push(f);
 	}
 
 	const char* langXState::popDoingFile()
 	{
-		if (this->m_doing_queue.empty())
+		if (this->m_doing_files.empty())
 		{
 			return NULL;
 		}
-		const char * x = this->m_doing_queue.back();
-		this->m_doing_queue.back();
+		const char * x = this->m_doing_files.top();
+		this->m_doing_files.pop();
 		return x;
+	}
+
+	const char * langXState::getParsingFile() const
+	{
+		return this->m_parsing_file;
+	}
+
+	void langXState::setParsingFile(const char *f)
+	{
+		this->m_parsing_file = f;
+	}
+
+	int langXState::pushScriptEnvToDoingStack()
+	{
+		if (this->m_script_env->getType() == TScriptEnvironment) {
+			this->m_doing_script_envs.push((ScriptEnvironment*)this->m_script_env);
+			return 0;
+		}
+
+		return -1;
+	}
+
+	int langXState::popScriptEnvToDoingStack()
+	{
+		if (this->m_doing_script_envs.empty())
+		{
+			return -1;
+		}
+
+		ScriptEnvironment *screnv = this->m_doing_script_envs.top();
+		if (this->m_script_env != screnv)
+		{
+			backToDeep1Env();
+			newEnv(screnv);
+			this->m_script_env = screnv;
+		}
+		
+		this->m_doing_script_envs.pop();
+
+		return 0;
+	}
+
+	void langXState::backToDeep1Env()
+	{
+		if (this->m_current_deep <= 1)
+		{
+			return;
+		}
+
+		while (this->m_current_deep != 2) {
+			backEnv();
+		}
+
+		if (this->m_current_env->getType() == TScriptEnvironment)
+		{
+			backEnv(false);
+		}
+		else {
+			backEnv();
+		}
 	}
 
 }

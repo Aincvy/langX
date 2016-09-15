@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sstream>
 #include "../include/ExecNode.h"
 #include "../include/YLlangX.h"
@@ -19,6 +20,7 @@
 #include "../include/NullObject.h"
 
 
+
 extern const char * parseFileName;
 
 namespace langX {
@@ -27,6 +29,7 @@ namespace langX {
 
 	// 将节点的值更新到环境中
 	void setValueToEnv2(const char*name, Object *val, Environment *env) {
+
 		if (val == NULL || name == NULL || env == NULL)
 		{
 			printf("setValueToEnv Node Args Error. \n");
@@ -2290,7 +2293,7 @@ namespace langX {
 				t = func;
 			}
 			else {
-				
+
 			}*/
 
 			char tmp[100] = { 0 };
@@ -2598,20 +2601,45 @@ namespace langX {
 		char *filename = strndup(tmp + 1, strlen(tmp) - 2);
 
 		char tmpMsg[1024] = { 0 };
-		sprintf(tmpMsg, "require file %s  %s", filename,fileInfoString(n->fileinfo).c_str());
+		sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
 		getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
+
+		//  把路径转换成绝对路径
+		if (filename[0] != '/')
+		{
+			//  非绝对路径
+			char tmpBuf[1024];
+			const char *t1 = getState()->getParsingFile();
+			if (t1 == NULL)
+			{
+				t1 = parseFileName;
+			}
+			if (realpath(t1, tmpBuf))
+			{
+				// ok 
+				std::string a(tmpBuf);
+				auto it = a.find_last_of('/');
+				if (it != std::string::npos)
+				{
+					// 找到了最后一个 /
+					a = a.substr(0, it + 1);
+					a += filename;
+					free(filename);
+					filename = strdup(a.c_str());
+				}
+			}
+		}
 
 		getState()->pushDoingFile(parseFileName);
 
-		int i =getState()->doFile(filename);
-		free(filename);
+		int i = getState()->doFile(filename);
+		//free(filename);
 
 		if (i == 0)
 		{
 			parseFileName = filename;
+			getState()->setParsingFile(filename);
 		}
-		//yyin = fp;
-		//parseFileName = t1;
 
 		// it's ok ?
 	}
@@ -2634,11 +2662,33 @@ namespace langX {
 			sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
 			getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
 
+			//  把路径转换成绝对路径
+			if (filename[0] != '/')
+			{
+				//  非绝对路径
+				char tmpBuf[1024];
+				if (realpath(parseFileName, tmpBuf))
+				{
+					// ok 
+					std::string a(tmpBuf);
+					auto it = a.find_last_of('/');
+					if (it != std::string::npos)
+					{
+						// 找到了最后一个 /
+						a = a.substr(0, it + 1);
+						a += filename;
+						free(filename);
+						filename = strdup(a.c_str());
+					}
+				}
+			}
+
 			getState()->pushDoingFile(parseFileName);
 
 			if (getState()->doFile(filename) == 0)
 			{
 				parseFileName = filename;
+				getState()->setParsingFile(filename);
 			}
 		}
 
@@ -2649,8 +2699,99 @@ namespace langX {
 	// 引入命名空间或者类
 	void __execREF(Node *n) {
 
+		//  深度为1 的环境为一个 脚本环境 或者命名空间环境。
+		Environment *env = getState()->getEnvironment(2);
+		if (env == nullptr)
+		{
+			// error.
+			getState()->throwException(newUnsupportedOperationException("cannot ref operation now!")->addRef());
+			return;
+		}
 
+		if (env->getType() != TScriptEnvironment)
+		{
+			getState()->throwException(newUnsupportedOperationException("cannot ref not inner a script! check you are is a namespace?")->addRef());
+			return;
+		}
 
+		ScriptEnvironment *scriptEnv = (ScriptEnvironment*)env;
+		char *namespaceName = n->opr_obj->op[0]->con_obj->sValue;
+
+		std::string str = std::string(namespaceName);
+		XNameSpace *space = NULL;
+		bool flag = true;
+
+		auto dotIndex = str.find_first_of(".");
+
+		while (dotIndex != std::string::npos)
+		{
+			std::string f = str.substr(0, dotIndex);
+			str = str.substr(dotIndex + 1);
+			dotIndex = str.find_first_of(".");
+
+			// f is namespace name
+			if (flag)
+			{
+				space = getState()->getNameSpace(f.c_str());
+				if (space == NULL)
+				{
+					break;
+				}
+
+				flag = false;
+			}
+			else {
+				space = space->getNameSpace(f.c_str());
+				if (space == NULL)
+				{
+					break;
+				}
+			}
+		}
+
+		if (flag)
+		{
+			space = getState()->getNameSpace(str.c_str());
+		}
+
+		if (space == NULL)
+		{
+			//  error.  cannot find the namespace.
+			char tmp[1024] = { 0 };
+			sprintf(tmp, "cannot find namespace %s.", namespaceName);
+			getState()->throwException(newException(tmp)->addRef());
+			return;
+		}
+
+		if (flag)
+		{
+			//  str 是用掉了已经
+			scriptEnv->addNameSpace(space);
+		}
+		else {
+
+			ClassInfo *c = space->getClass(str.c_str());
+			if (c != NULL)
+			{
+				// 添加类
+				scriptEnv->addClassInfo(c);
+			}
+			else {
+				space = space->getNameSpace(str.c_str());
+
+				if (space == NULL)
+				{
+					//  error.  cannot find the namespace.
+					char tmp[1024] = { 0 };
+					sprintf(tmp, "cannot find namespace %s.", namespaceName);
+					getState()->throwException(newException(tmp)->addRef());
+					return;
+				}
+				scriptEnv->addNameSpace(space);
+			}
+		}
+		
+		
 	}
 
 	/*
@@ -2787,7 +2928,7 @@ namespace langX {
 				}
 
 			}
-			
+
 			getState()->regClass(cinfo);
 			node->ptr_u = NULL;
 			return;
@@ -2875,7 +3016,7 @@ namespace langX {
 				// f is namespace name
 				if (space == NULL)
 				{
-					space = getState()->getNameSpace(f.c_str());
+					space = getState()->getNameSpaceOrCreate(f.c_str());
 				}
 				else {
 					space = space->getNameSpace2(f.c_str());
@@ -2884,7 +3025,7 @@ namespace langX {
 
 			if (space == NULL)
 			{
-				space = getState()->getNameSpace(str.c_str());
+				space = getState()->getNameSpaceOrCreate(str.c_str());
 			}
 			else {
 				space = space->getNameSpace2(str.c_str());

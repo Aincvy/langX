@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <algorithm>
 #include "../include/Environment.h"
 #include "../include/Object.h"
 #include "../include/ClassInfo.h"
@@ -950,6 +951,18 @@ namespace langX {
 
 		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
+			if (!this->m_namespaces.empty())
+			{
+				for (auto i = this->m_namespaces.begin(); i != this->m_namespaces.end(); i++)
+				{
+					Object *f = (*i)->getObject(name);
+					if (f != nullptr)
+					{
+						return f;
+					}
+				}
+			}
+
 			if (this->m_parent != NULL && !m_restrict)
 			{
 				return this->m_parent->getObject(name);
@@ -1029,6 +1042,10 @@ namespace langX {
 	{
 		if (this->m_classes_map.find(name) == this->m_classes_map.end())
 		{
+			if (this->m_ref_classes_map.find(name) != this->m_ref_classes_map.end())
+			{
+				return this->m_ref_classes_map.at(name);
+			}
 			if (!this->m_namespaces.empty())
 			{
 				for (auto i = this->m_namespaces.begin(); i != this->m_namespaces.end(); i++)
@@ -1061,7 +1078,29 @@ namespace langX {
 
 	void ScriptEnvironment::addNameSpace(XNameSpace *s)
 	{
-		this->m_namespaces.push_back(s);
+		if (s == NULL)
+		{
+			return;
+		}
+
+		auto it = std::find(this->m_namespaces.begin(), this->m_namespaces.end(), s);
+		if (it == this->m_namespaces.end())
+		{
+			this->m_namespaces.push_back(s);
+		}
+	}
+
+	void ScriptEnvironment::addClassInfo(ClassInfo *c)
+	{
+		if (c == NULL)
+		{
+			return;
+		}
+
+		if (this->m_ref_classes_map.find(c->getName()) == this->m_ref_classes_map.end())
+		{
+			this->m_ref_classes_map[c->getName()] = c;
+		}
 	}
 
 	const char * ScriptEnvironment::getName() const

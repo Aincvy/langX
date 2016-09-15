@@ -1,0 +1,6 @@
+require "Student.h.lx"
+
+ref com.my.test;
+
+s1 = new Student();
+s1.getScore();

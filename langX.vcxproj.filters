@@ -12,9 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Token.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\YLlangX.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -74,9 +71,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Token.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="extern\lex.yy.c">
       <Filter>extern</Filter>
     </ClCompile>

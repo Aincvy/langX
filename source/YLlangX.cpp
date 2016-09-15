@@ -754,6 +754,7 @@ void popDoingFiles()
 	{
 		parseFileName = p;
 	}
+	state->popScriptEnvToDoingStack();
 }
 
 void execNode(XNode *n) {
