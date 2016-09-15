@@ -183,6 +183,8 @@ namespace langX {
 
 		// 添加命名空间的引用
 		void addNameSpace(XNameSpace *);
+		// 添加类到引用列表中
+		void addClassInfo(ClassInfo *);
 
 		//  脚本的文件名
 		const char * getName() const;
@@ -197,6 +199,7 @@ namespace langX {
 		std::map<std::string, ClassInfo*> m_classes_map;
 		std::map<std::string, Object*> m_objects_map;
 		std::list< XNameSpace*> m_namespaces;
+		std::map<std::string, ClassInfo *> m_ref_classes_map;
 	};
 
 

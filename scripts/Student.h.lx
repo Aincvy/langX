@@ -1,0 +1,5 @@
+require_once "Math.lx"
+
+ref langX.core.Math;
+
+require_once "Student.lx"

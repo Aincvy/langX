@@ -88,7 +88,7 @@ extern "C" {
 
 	// 添加脚本到 已经执行过的 脚本文件里面
 	void addToDidScripts(const char *);
-	// 
+	// 弹出当前正在执行的脚本文件。。  当前正在执行的脚本文件解析结束的时候应该会执行这个
 	void popDoingFiles();
 }
 

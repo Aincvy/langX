@@ -60,7 +60,7 @@ void pushBuffer(FILE *fp);
 "--"   {count();  return DEC_OP;}
 
 \"(\\.|[^\\"\n])*\"   {count();  yylval.sValue = strdup(yytext); return TSTRING;}
-[a-zA-Z][a-zA-Z0-9]*  {count(); /*printf("get a id: %s\n" ,yytext);*/ yylval.sValue=strdup(yytext); return IDENTIFIER;}
+[$_a-zA-Z][$_a-zA-Z0-9]*  {count(); /*printf("get a id: %s\n" ,yytext);*/ yylval.sValue=strdup(yytext); return IDENTIFIER;}
 
 0|([1-9][0-9]*)           {count();  yylval.intValue = atoi(yytext);  return XINTEGER; }
 (0|[1-9][0-9]*)\.[0-9]+ { count(); yylval.iValue = atof(yytext); return TDOUBLE;}

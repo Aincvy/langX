@@ -2,7 +2,7 @@
 #include <map>
 #include <string>
 #include <list>
-#include <queue>
+#include <stack>
 #include "Object.h"
 #include "Function.h"
 #include "StackTrace.h"
@@ -16,7 +16,14 @@ namespace langX {
 	class langXObject;
 	class XNameSpace;
 	class GlobalEnvironment;
+	class ScriptEnvironment;
 
+	/*
+	  所有的脚本环境最后在释放内存。 
+	*/
+
+
+	// langX state
 	class langXState
 	{
 	public:
@@ -44,6 +51,8 @@ namespace langX {
 
 		// 获得最近的一个对象环境 (必定会返回一个 ObjectBridgeEnv!)
 		Environment *getNearestObjectEnv() const;
+		// 根据深度 获得环境 
+		Environment *getEnvironment(int deep);
 
 		// 注册一个第三方函数
 		void reg3rd(const char *, X3rdFuncWorker worker);
@@ -74,6 +83,9 @@ namespace langX {
 		ClassInfo *getClass(const char *) const;
 
 		// 获得一个命名空间， 如果该命名空间不存在， 则会添加一个进去
+		XNameSpace *getNameSpaceOrCreate(const char *);
+
+		// 获得命名空间
 		XNameSpace *getNameSpace(const char *);
 
 		void changeNameSpace(XNameSpace *);
@@ -94,6 +106,16 @@ namespace langX {
 
 		const char* popDoingFile();
 
+		// 获得正在解析文件的绝对路径
+		const char *getParsingFile() const;
+		// 设置正在解析文件的绝对路径
+		void setParsingFile(const char *);
+
+		// 将当前脚本环境压栈  ，执行成功 返回0 ，失败返回-1
+		int pushScriptEnvToDoingStack();
+		// 出栈一个正在执行的脚本环境 ， 执行成功返回 0，失败 返回-1 
+		int popScriptEnvToDoingStack();
+
 	private:
 		// 全局环境
 		GlobalEnvironment *m_global_env = nullptr;
@@ -105,10 +127,19 @@ namespace langX {
 		std::map<std::string, XNameSpace*> m_namespace_map;
 		//  执行过文件列表
 		std::list<std::string> m_didScripts;
-		//  正在执行文件的队列
-		std::queue<const char*> m_doing_queue;
+		//  正在执行文件的栈
+		std::stack<const char*> m_doing_files;
+		//  正在执行的脚本的环境的栈
+		std::stack<ScriptEnvironment*> m_doing_script_envs;
+		//  k:  脚本文件绝对路径，  v: 脚本环境
+		std::map<std::string, ScriptEnvironment*> m_script_env_map;
+
+		// 正在解析的文件的绝对路径
+		const char * m_parsing_file = NULL;
 
 		int m_current_deep = 0;
 
+		//  返回到 深度为1的 环境上
+		void backToDeep1Env();
 	};
 }
