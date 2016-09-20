@@ -534,11 +534,6 @@ namespace langX {
 		this->m_didScripts.push_back(f);
 	}
 
-	void langXState::pushDoingFile(const char * f)
-	{
-		this->m_doing_files.push(f);
-	}
-
 	const char* langXState::popDoingFile()
 	{
 		if (this->m_doing_files.empty())
@@ -553,11 +548,6 @@ namespace langX {
 	const char * langXState::getParsingFile() const
 	{
 		return this->m_parsing_file;
-	}
-
-	void langXState::setParsingFile(const char *f)
-	{
-		this->m_parsing_file = f;
 	}
 
 	int langXState::pushScriptEnvToDoingStack()
