@@ -102,14 +102,10 @@ namespace langX {
 		// 这个这个文件名到已执行过的脚本里面
 		void addToDidScripts(const char *);
 
-		void pushDoingFile(const char *);
-
 		const char* popDoingFile();
 
 		// 获得正在解析文件的绝对路径
-		const char *getParsingFile() const;
-		// 设置正在解析文件的绝对路径
-		void setParsingFile(const char *);
+		const char * getParsingFile() const;
 
 		// 将当前脚本环境压栈  ，执行成功 返回0 ，失败返回-1
 		int pushScriptEnvToDoingStack();
@@ -128,14 +124,15 @@ namespace langX {
 		//  执行过文件列表
 		std::list<std::string> m_didScripts;
 		//  正在执行文件的栈
-		std::stack<const char*> m_doing_files;
+		std::stack<char*> m_doing_files;
 		//  正在执行的脚本的环境的栈
 		std::stack<ScriptEnvironment*> m_doing_script_envs;
 		//  k:  脚本文件绝对路径，  v: 脚本环境
 		std::map<std::string, ScriptEnvironment*> m_script_env_map;
 
 		// 正在解析的文件的绝对路径
-		const char * m_parsing_file = NULL;
+		char * m_parsing_file = NULL;
+
 
 		int m_current_deep = 0;
 

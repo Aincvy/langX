@@ -103,6 +103,26 @@ void deal_fileinfo(NodeFileInfo *f) {
 	f->filename = parseFileName;
 }
 
+XNode *newNode() {
+
+	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	node->con_obj = NULL;
+	node->var_obj = NULL;
+	node->arr_obj = NULL;
+	node->opr_obj = NULL;
+
+	node->freeOnExeced = true;
+	deal_fileinfo(&node->fileinfo);
+	deal_state(&node->state);
+	deal_switch_info(&node->switch_info);
+	node->value = NULL;
+	node->postposition = NULL;
+	node->ptr_u = NULL;
+
+	return node;
+
+}
+
 std::string fileInfoString(const NodeFileInfo & f) {
 	std::stringstream ss;
 	ss << "at ";
@@ -163,16 +183,9 @@ bool getInException()
 
 XNode * string(char *v)
 {
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * node = newNode();
 	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
 
-	node->freeOnExeced = true;
-	deal_fileinfo(&node->fileinfo);
-	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
-	node->value = NULL;
-	node->postposition = NULL;
-	node->ptr_u = NULL;
 	node->type = NODE_CONSTANT_STRING;
 	// v 是已经申请过的内存 ， 直接赋值就OK
 	node->con_obj->sValue = v;
@@ -182,17 +195,9 @@ XNode * string(char *v)
 
 XNode * number(double a)
 {
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * node = newNode();
 	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
-
-	deal_fileinfo(&node->fileinfo);
-	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
 	node->type = NODE_CONSTANT_NUMBER;
-	node->value = NULL;
-	node->ptr_u = NULL;
-	node->postposition = NULL;
-	node->freeOnExeced = true;
 	node->con_obj->dValue = a;
 	node->con_obj->sValue = NULL;
 	//printf("createNumberNode: %.5f\n", a);
@@ -201,17 +206,9 @@ XNode * number(double a)
 
 XNode * var(char *name)
 {
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * node = newNode();
 	node->var_obj = (langX::Variable*) calloc(1, sizeof(langX::Variable) * 1);
-
-	deal_fileinfo(&node->fileinfo);
-	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
 	node->type = NODE_VARIABLE;
-	node->freeOnExeced = true;
-	node->value = NULL;
-	node->ptr_u = NULL;
-	node->postposition = NULL;
 	node->var_obj->name = name;
 
 	//printf("createVarNode: %s\n", name);
@@ -223,17 +220,9 @@ XNode * var(char *name)
 // 如果使用的变量， 则值放在 第三个参数lengthNode 上
 XNode *arr(char *name, int index, XNode *indexNode) {
 
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * node = newNode();
 	node->arr_obj = (langX::ArrayInfo*) calloc(1, sizeof(langX::ArrayInfo) * 1);
-
-	deal_fileinfo(&node->fileinfo);
-	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
 	node->type = NODE_ARRAY_ELE;
-	node->freeOnExeced = true;
-	node->value = NULL;
-	node->ptr_u = NULL;
-	node->postposition = NULL;
 
 	node->arr_obj->name = name;
 	node->arr_obj->index = index;
@@ -245,17 +234,9 @@ XNode *arr(char *name, int index, XNode *indexNode) {
 
 XNode * xint(int i)
 {
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * node = newNode();
 	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
-
-	deal_fileinfo(&node->fileinfo);
-	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
 	node->type = NODE_CONSTANT_INTEGER;
-	node->value = NULL;
-	node->ptr_u = NULL;
-	node->postposition = NULL;
-	node->freeOnExeced = true;
 	node->con_obj->iValue = i;
 	node->con_obj->sValue = NULL;
 	//printf("createNumberNode: %.5f\n", a);
@@ -267,15 +248,7 @@ XNode * changeNameSpace(char * name)
 	//printf("node will change space to: %s\n" ,name);
 	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
 	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
-
-	deal_fileinfo(&node->fileinfo);
-	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
 	node->type = NODE_CHANGE_NAMESPACE;
-	node->value = NULL;
-	node->ptr_u = NULL;
-	node->postposition = NULL;
-	node->freeOnExeced = true;
 	node->con_obj->sValue = name;
 	//printf("createNumberNode: %.5f\n", a);
 	return node;
@@ -285,18 +258,10 @@ XNode * opr(int opr, int npos, ...)
 {
 	va_list ap;
 
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * node = newNode();
 	node->opr_obj = (langX::Operator*) calloc(1, sizeof(langX::Operator) * 1);
 	node->opr_obj->op = (XNode**)calloc(1, sizeof(XNode*) * npos);
-
-	deal_fileinfo(&node->fileinfo);
-	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
-	node->value = NULL;
-	node->ptr_u = NULL;
-	node->postposition = NULL;
 	node->type = NODE_OPERATOR;
-	node->freeOnExeced = true;
 	node->opr_obj->opr = opr;
 	node->opr_obj->op_count = npos;
 
@@ -319,19 +284,12 @@ XNode * sopr(int opr, int npos, ...)
 	//printf("sopr: %d\n" ,opr);
 	va_list ap;
 
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * node = newNode();
 	node->opr_obj = (langX::Operator*) calloc(1, sizeof(langX::Operator) * 1);
 	node->opr_obj->op = (XNode**)calloc(1, sizeof(XNode*) * npos);
 
-	deal_fileinfo(&node->fileinfo);
-	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
 	node->state.isSuffix = true;
-	node->value = NULL;
-	node->ptr_u = NULL;
-	node->postposition = NULL;
 	node->type = NODE_OPERATOR;
-	node->freeOnExeced = true;
 	node->opr_obj->opr = opr;
 	node->opr_obj->op_count = npos;
 
@@ -363,11 +321,8 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	//  在执行他的时候再把它放入环境中
 	//getState()->getCurrentEnv()->putFunction(name, func);
 	free(name);
-	XNode * nodeF = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * nodeF = newNode();
 	nodeF->type = NODE_FUNCTION;
-	deal_fileinfo(&nodeF->fileinfo);
-	deal_state(&nodeF->state);
-	deal_switch_info(&nodeF->switch_info);
 	nodeF->value = func;
 	return nodeF;
 }
@@ -378,25 +333,16 @@ XNode *lambda(XParamsList *params, XNode *node) {
 	func->setParamsList(params);
 	func->setEmergeEnv(NULL);
 
-	XNode * nodeF = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * nodeF = newNode();
 	nodeF->type = NODE_FUNCTION;
-	deal_fileinfo(&nodeF->fileinfo);
-	deal_state(&nodeF->state);
-	deal_switch_info(&nodeF->switch_info);
 	nodeF->value = func;
 	return nodeF;
 }
 
 XNode * arrayNode(char *name, int length, XNode *lengthNode)
 {
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
-	deal_fileinfo(&node->fileinfo);
-	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
+	XNode * node = newNode();
 	node->type = NODE_ARRAY;
-	node->freeOnExeced = true;
-	node->value = NULL;
-	node->postposition = NULL;
 
 	XArrayNode *an = (XArrayNode*)calloc(1, sizeof(XArrayNode) * 1);
 	an->name = name;
@@ -409,15 +355,8 @@ XNode * arrayNode(char *name, int length, XNode *lengthNode)
 
 XNode * xnull()
 {
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
-
-	deal_fileinfo(&node->fileinfo);
-	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
+	XNode * node = newNode();
 	node->type = NODE_NULL;
-	node->freeOnExeced = true;
-	node->value = NULL;
-	node->postposition = NULL;
 
 	return node;
 }
@@ -447,11 +386,8 @@ XNode * claxx(char *name, char *parent, XNode * node, bool flag) {
 		state->backEnv();
 	}
 
-	XNode * nodeC = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * nodeC = newNode();
 	nodeC->type = NODE_CLASS;
-	deal_fileinfo(&nodeC->fileinfo);
-	deal_state(&nodeC->state);
-	deal_switch_info(&nodeC->switch_info);
 	nodeC->ptr_u = claxxInfo;
 	nodeC->state.classAuto = flag;
 
