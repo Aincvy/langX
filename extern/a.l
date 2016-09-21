@@ -114,7 +114,7 @@ void pushBuffer(FILE *fp);
 	}
 	
 	popStateFrame();
-	popDoingFiles();
+	fileEOF();
 }
 
 %%

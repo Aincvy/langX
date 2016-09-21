@@ -35,12 +35,9 @@ extern int yyget_lineno(void);
 extern int column; 
 extern char * yytext;
 
-/* 正在解析的文件 的文件名*/
-const char * parseFileName=NULL;
-
 char *namespaceNameCat(char *,char *);
 
-#line 26 "a.y"
+#line 23 "a.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -56,7 +53,7 @@ typedef union {
  XArgsList *args;    /* args value */
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 59 "y.tab.c"
+#line 56 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -974,11 +971,11 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 510 "a.y"
+#line 507 "a.y"
 
 
 void yyerror(char *s) {
- fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , parseFileName, yyget_lineno(),column , yytext  );
+ fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , yyget_lineno(),column , yytext  );
 }
 
 char *namespaceNameCat(char *arg1,char *arg2){
@@ -1000,25 +997,18 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 	
-	FILE *fp = fopen(argv[1],"r");
-	if(fp == NULL){
-		printf("file %s not found.\n" , argv[1]);
-		return 1;
-	}
-	
-	parseFileName = argv[1];
-	extern FILE* yyin; 
-	yyin=fp;
 	initLangX();
-	changeScriptEnv(parseFileName);
-    yyparse();
+	
+	for(int i = 1; i < argc; i++)
+		doFile(argv[i]);
+	
 	closeLangX();
 	fclose(fp);
 	
 	printf("parse over!\n");
 	return 0;
 }
-#line 1021 "y.tab.c"
+#line 1011 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -1225,790 +1215,790 @@ yyreduce:
     switch (yyn)
     {
 case 2:
-#line 86 "a.y"
+#line 83 "a.y"
 	{ execAndFreeNode(yystack.l_mark[0].node);}
 break;
 case 4:
-#line 90 "a.y"
+#line 87 "a.y"
 	{ yyval.node = opr(';' , 0 ); }
 break;
 case 5:
-#line 91 "a.y"
+#line 88 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 6:
-#line 92 "a.y"
+#line 89 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 7:
-#line 93 "a.y"
+#line 90 "a.y"
 	{ yyval.node = yystack.l_mark[-1].node; }
 break;
 case 8:
-#line 94 "a.y"
+#line 91 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 9:
-#line 95 "a.y"
+#line 92 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 10:
-#line 100 "a.y"
+#line 97 "a.y"
 	{ yyval.node = opr(REQUIRE , 1 , yystack.l_mark[0].node); }
 break;
 case 11:
-#line 101 "a.y"
+#line 98 "a.y"
 	{ yyval.node = opr(REQUIRE_ONCE , 1 , yystack.l_mark[0].node); }
 break;
 case 12:
-#line 102 "a.y"
+#line 99 "a.y"
 	{ yyval.node = opr(REF , 1, string(yystack.l_mark[-1].sValue)); }
 break;
 case 13:
-#line 107 "a.y"
+#line 104 "a.y"
 	{ yyval.node = opr(XTRY, 2,yystack.l_mark[-1].node,NULL); }
 break;
 case 14:
-#line 108 "a.y"
+#line 105 "a.y"
 	{ yyval.node = opr(XTRY, 2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 15:
-#line 112 "a.y"
+#line 109 "a.y"
 	{ yyval.node = opr(XCATCH, 2, yystack.l_mark[-4].node,yystack.l_mark[-1].node); }
 break;
 case 16:
-#line 117 "a.y"
+#line 114 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 17:
-#line 118 "a.y"
+#line 115 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 18:
-#line 119 "a.y"
+#line 116 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 19:
-#line 120 "a.y"
+#line 117 "a.y"
 	{ yyval.node = yystack.l_mark[-1].node; }
 break;
 case 20:
-#line 125 "a.y"
+#line 122 "a.y"
 	{ yyval.node = changeNameSpace(yystack.l_mark[0].sValue); }
 break;
 case 21:
-#line 129 "a.y"
+#line 126 "a.y"
 	{ yyval.sValue = yystack.l_mark[0].sValue ; }
 break;
 case 22:
-#line 130 "a.y"
+#line 127 "a.y"
 	{ yyval.sValue = namespaceNameCat(yystack.l_mark[-2].sValue,yystack.l_mark[0].sValue) ; }
 break;
 case 23:
-#line 135 "a.y"
+#line 132 "a.y"
 	{ /*if($2 != NULL) printf("parentName: %s\n",$2);*/ yyval.node = claxx(yystack.l_mark[-3].sValue , yystack.l_mark[-2].sValue, NULL,false); }
 break;
 case 24:
-#line 136 "a.y"
+#line 133 "a.y"
 	{ /*if($2 != NULL) printf("parentName: %s\n",$2);*/ yyval.node = claxx(yystack.l_mark[-4].sValue , yystack.l_mark[-3].sValue, yystack.l_mark[-1].node,false); }
 break;
 case 25:
-#line 137 "a.y"
+#line 134 "a.y"
 	{ /*if($2 != NULL) printf("parentName: %s\n",$2);*/ yyval.node = claxx(yystack.l_mark[-3].sValue , yystack.l_mark[-2].sValue, NULL,true); }
 break;
 case 26:
-#line 138 "a.y"
+#line 135 "a.y"
 	{ /*if($2 != NULL) printf("parentName: %s\n",$2);*/ yyval.node = claxx(yystack.l_mark[-4].sValue , yystack.l_mark[-3].sValue, yystack.l_mark[-1].node, true); }
 break;
 case 27:
-#line 143 "a.y"
+#line 140 "a.y"
 	{ yyval.sValue = NULL; }
 break;
 case 28:
-#line 144 "a.y"
+#line 141 "a.y"
 	{ yyval.sValue = yystack.l_mark[0].sValue; }
 break;
 case 29:
-#line 149 "a.y"
+#line 146 "a.y"
 	{ yyval.node = opr(CLAXX_BODY, 1, yystack.l_mark[0].node); }
 break;
 case 30:
-#line 150 "a.y"
+#line 147 "a.y"
 	{ yyval.node = opr(CLAXX_BODY, 2, yystack.l_mark[-1].node, yystack.l_mark[0].node); }
 break;
 case 31:
-#line 154 "a.y"
+#line 151 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 32:
-#line 155 "a.y"
+#line 152 "a.y"
 	{ yyval.node = yystack.l_mark[-1].node; }
 break;
 case 33:
-#line 156 "a.y"
+#line 153 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 34:
-#line 161 "a.y"
+#line 158 "a.y"
 	{ yyval.node = opr(THIS , 0 ); }
 break;
 case 35:
-#line 162 "a.y"
+#line 159 "a.y"
 	{  yyval.node = opr(THIS,1,yystack.l_mark[0].node); }
 break;
 case 36:
-#line 164 "a.y"
+#line 161 "a.y"
 	{ yyval.node = opr(THIS, 1 , opr(FUNC_CALL,2, yystack.l_mark[-3].node, argsNode(yystack.l_mark[-1].args) ) ); }
 break;
 case 37:
-#line 169 "a.y"
+#line 166 "a.y"
 	{  yyval.node = opr(THIS,1,yystack.l_mark[0].node); }
 break;
 case 38:
-#line 170 "a.y"
+#line 167 "a.y"
 	{  yyval.node = opr(THIS, 1, yystack.l_mark[0].node ); }
 break;
 case 39:
-#line 175 "a.y"
+#line 172 "a.y"
 	{ yyval.node = opr(CLAXX_MEMBER,2, yystack.l_mark[-2].node,yystack.l_mark[0].node ); }
 break;
 case 40:
-#line 176 "a.y"
+#line 173 "a.y"
 	{ yyval.node =  opr(CLAXX_MEMBER,2, yystack.l_mark[-2].node,yystack.l_mark[0].node );  }
 break;
 case 41:
-#line 177 "a.y"
+#line 174 "a.y"
 	{ yyval.node = opr( CLAXX_MEMBER ,2, opr(FUNC_CALL,2, var(yystack.l_mark[-5].sValue), argsNode(yystack.l_mark[-3].args) ) , yystack.l_mark[0].node); }
 break;
 case 42:
-#line 178 "a.y"
+#line 175 "a.y"
 	{ yyval.node = opr(CLAXX_MEMBER,2, yystack.l_mark[-2].node,yystack.l_mark[0].node ); }
 break;
 case 43:
-#line 183 "a.y"
+#line 180 "a.y"
 	{ yyval.node = opr(CLAXX_FUNC_CALL , 2, yystack.l_mark[-5].node, opr(FUNC_CALL,2, yystack.l_mark[-3].node, argsNode(yystack.l_mark[-1].args) ) );}
 break;
 case 44:
-#line 184 "a.y"
+#line 181 "a.y"
 	{ yyval.node = opr(CLAXX_FUNC_CALL ,2, opr(FUNC_CALL,2, var(yystack.l_mark[-8].sValue), argsNode(yystack.l_mark[-6].args) ) , opr(FUNC_CALL,2, yystack.l_mark[-3].node, argsNode(yystack.l_mark[-1].args) )); }
 break;
 case 45:
-#line 185 "a.y"
+#line 182 "a.y"
 	{ yyval.node = opr(CLAXX_FUNC_CALL,2,yystack.l_mark[-5].node,opr(FUNC_CALL,2, yystack.l_mark[-3].node, argsNode(yystack.l_mark[-1].args) ) ); }
 break;
 case 46:
-#line 186 "a.y"
+#line 183 "a.y"
 	{ yyval.node = opr(CLAXX_FUNC_CALL,2,yystack.l_mark[-5].node,opr(FUNC_CALL,2, yystack.l_mark[-3].node, argsNode(yystack.l_mark[-1].args) ) ); }
 break;
 case 47:
-#line 191 "a.y"
+#line 188 "a.y"
 	{ yyval.node = opr(SCOPE, 2 ,yystack.l_mark[-2].node,yystack.l_mark[0].node) ; }
 break;
 case 48:
-#line 196 "a.y"
+#line 193 "a.y"
 	{  yyval.node = NULL; }
 break;
 case 49:
-#line 197 "a.y"
+#line 194 "a.y"
 	{ yyval.node = NULL; }
 break;
 case 50:
-#line 198 "a.y"
+#line 195 "a.y"
 	{ yyval.node = NULL; }
 break;
 case 51:
-#line 203 "a.y"
+#line 200 "a.y"
 	{ yyval.node = func(yystack.l_mark[-5].sValue,yystack.l_mark[-3].params,yystack.l_mark[-1].node);}
 break;
 case 52:
-#line 208 "a.y"
+#line 205 "a.y"
 	{ yyval.node = lambda(yystack.l_mark[-5].params,yystack.l_mark[-1].node) ;}
 break;
 case 53:
-#line 209 "a.y"
+#line 206 "a.y"
 	{ yyval.node = lambda(params(NULL, yystack.l_mark[-4].sValue),yystack.l_mark[-1].node) ; }
 break;
 case 54:
-#line 210 "a.y"
+#line 207 "a.y"
 	{ yyval.node = lambda(yystack.l_mark[-4].params,yystack.l_mark[-1].node) ; }
 break;
 case 55:
-#line 214 "a.y"
+#line 211 "a.y"
 	{ yyval.params = params2(yystack.l_mark[-2].sValue,yystack.l_mark[0].sValue);  }
 break;
 case 56:
-#line 215 "a.y"
+#line 212 "a.y"
 	{ yyval.params = params(yystack.l_mark[-2].params,yystack.l_mark[0].sValue);  }
 break;
 case 57:
-#line 219 "a.y"
+#line 216 "a.y"
 	{ yyval.params = NULL; }
 break;
 case 58:
-#line 220 "a.y"
+#line 217 "a.y"
 	{ yyval.params = yystack.l_mark[-1].params; }
 break;
 case 59:
-#line 224 "a.y"
+#line 221 "a.y"
 	{ yyval.params = params(NULL, yystack.l_mark[0].sValue); }
 break;
 case 60:
-#line 225 "a.y"
+#line 222 "a.y"
 	{ yyval.params = params(yystack.l_mark[-2].params,yystack.l_mark[0].sValue); }
 break;
 case 61:
-#line 226 "a.y"
+#line 223 "a.y"
 	{ yyval.params = NULL; }
 break;
 case 62:
-#line 230 "a.y"
+#line 227 "a.y"
 	{ yyval.node = opr(';',2,yystack.l_mark[-1].node, yystack.l_mark[0].node); }
 break;
 case 63:
-#line 231 "a.y"
+#line 228 "a.y"
 	{ yyval.node = NULL; }
 break;
 case 64:
-#line 236 "a.y"
+#line 233 "a.y"
 	{ yyval.node = opr(VAR_DECLAR , 1, yystack.l_mark[-1].node ); }
 break;
 case 65:
-#line 237 "a.y"
+#line 234 "a.y"
 	{ yyval.node = opr(VAR_DECLAR , 2, yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 66:
-#line 238 "a.y"
+#line 235 "a.y"
 	{ yyval.node = opr(VAR_DECLAR , 1, arrayNode(yystack.l_mark[-4].sValue,yystack.l_mark[-2].intValue,NULL) ); }
 break;
 case 67:
-#line 239 "a.y"
+#line 236 "a.y"
 	{ yyval.node = opr(VAR_DECLAR , 2, arrayNode(yystack.l_mark[-5].sValue,yystack.l_mark[-3].intValue,NULL),yystack.l_mark[0].node); }
 break;
 case 68:
-#line 240 "a.y"
+#line 237 "a.y"
 	{  yyval.node = opr(VAR_DECLAR , 1, arrayNode(yystack.l_mark[-4].sValue,-1,var(yystack.l_mark[-2].sValue)) ); }
 break;
 case 69:
-#line 241 "a.y"
+#line 238 "a.y"
 	{  yyval.node = opr(VAR_DECLAR , 2, arrayNode(yystack.l_mark[-5].sValue,-1,var(yystack.l_mark[-3].sValue)),yystack.l_mark[0].node); }
 break;
 case 70:
-#line 246 "a.y"
+#line 243 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 71:
-#line 247 "a.y"
+#line 244 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 72:
-#line 252 "a.y"
+#line 249 "a.y"
 	{ yyval.node = opr(IF ,2,yystack.l_mark[-2].node,yystack.l_mark[0].node) ; }
 break;
 case 73:
-#line 253 "a.y"
+#line 250 "a.y"
 	{ yyval.node = opr(IF ,3,yystack.l_mark[-4].node,yystack.l_mark[-2].node,yystack.l_mark[0].node) ; }
 break;
 case 74:
-#line 254 "a.y"
+#line 251 "a.y"
 	{ yyval.node = opr(SWITCH, 2 , yystack.l_mark[-4].node,yystack.l_mark[-1].node); }
 break;
 case 75:
-#line 258 "a.y"
+#line 255 "a.y"
 	{ yyval.node = opr(CASE_LIST , 1 ,yystack.l_mark[0].node ); }
 break;
 case 76:
-#line 259 "a.y"
+#line 256 "a.y"
 	{ yyval.node = opr(CASE_LIST , 2 ,yystack.l_mark[-1].node, yystack.l_mark[0].node ); }
 break;
 case 77:
-#line 263 "a.y"
+#line 260 "a.y"
 	{ yyval.node = opr(CASE, 2 , yystack.l_mark[-2].node, yystack.l_mark[0].node); }
 break;
 case 78:
-#line 264 "a.y"
+#line 261 "a.y"
 	{ yyval.node = opr(DEFAULT , 1, yystack.l_mark[0].node); }
 break;
 case 79:
-#line 268 "a.y"
+#line 265 "a.y"
 	{ yyval.node = opr(WHILE , 2, yystack.l_mark[-2].node, yystack.l_mark[0].node ); }
 break;
 case 80:
-#line 269 "a.y"
+#line 266 "a.y"
 	{ yyval.node = opr(FOR,4,yystack.l_mark[-6].node,yystack.l_mark[-4].node,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 81:
-#line 274 "a.y"
+#line 271 "a.y"
 	{ yyval.node = NULL ; }
 break;
 case 82:
-#line 275 "a.y"
+#line 272 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 83:
-#line 276 "a.y"
+#line 273 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 84:
-#line 277 "a.y"
+#line 274 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 85:
-#line 282 "a.y"
+#line 279 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 86:
-#line 283 "a.y"
+#line 280 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 87:
-#line 284 "a.y"
+#line 281 "a.y"
 	{ yyval.node = opr(DELETE, 1 ,yystack.l_mark[-1].sValue ); }
 break;
 case 88:
-#line 285 "a.y"
+#line 282 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 89:
-#line 286 "a.y"
+#line 283 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 90:
-#line 287 "a.y"
+#line 284 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 91:
-#line 288 "a.y"
+#line 285 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 92:
-#line 294 "a.y"
+#line 291 "a.y"
 	{ yyval.node = opr(RESTRICT,0);}
 break;
 case 93:
-#line 295 "a.y"
+#line 292 "a.y"
 	{ yyval.node = opr(RESTRICT,1,yystack.l_mark[0].node); }
 break;
 case 94:
-#line 299 "a.y"
+#line 296 "a.y"
 	{ yyval.node = opr(BREAK, 0); }
 break;
 case 95:
-#line 300 "a.y"
+#line 297 "a.y"
 	{ yyval.node = opr(RETURN , 0); }
 break;
 case 96:
-#line 301 "a.y"
+#line 298 "a.y"
 	{ yyval.node = opr(RETURN , 1 ,yystack.l_mark[0].node);}
 break;
 case 97:
-#line 306 "a.y"
+#line 303 "a.y"
 	{ /*$$ = call($1,$3 );*/  yyval.node = opr(FUNC_CALL,2, var(yystack.l_mark[-3].sValue), argsNode(yystack.l_mark[-1].args) ); }
 break;
 case 98:
-#line 307 "a.y"
+#line 304 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 99:
-#line 308 "a.y"
+#line 305 "a.y"
 	{ yyval.node = opr(SCOPE_FUNC_CALL,2,yystack.l_mark[-3].node,argsNode(yystack.l_mark[-1].args)); }
 break;
 case 100:
-#line 312 "a.y"
+#line 309 "a.y"
 	{ yyval.args = NULL; }
 break;
 case 101:
-#line 313 "a.y"
+#line 310 "a.y"
 	{ yyval.args = yystack.l_mark[0].args; }
 break;
 case 102:
-#line 317 "a.y"
+#line 314 "a.y"
 	{ yyval.args = xArgs(NULL, yystack.l_mark[0].node); }
 break;
 case 103:
-#line 318 "a.y"
+#line 315 "a.y"
 	{ yyval.args = xArgs(yystack.l_mark[-2].args, yystack.l_mark[0].node); }
 break;
 case 104:
-#line 322 "a.y"
+#line 319 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 105:
-#line 323 "a.y"
+#line 320 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 106:
-#line 324 "a.y"
+#line 321 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 107:
-#line 325 "a.y"
+#line 322 "a.y"
 	{ /*printf("IDENTIFIER $1= %s\n" , $1);*/ yyval.node = yystack.l_mark[0].node; }
 break;
 case 108:
-#line 326 "a.y"
+#line 323 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 109:
-#line 327 "a.y"
+#line 324 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 110:
-#line 328 "a.y"
+#line 325 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 111:
-#line 329 "a.y"
+#line 326 "a.y"
 	{ yyval.node = yystack.l_mark[0].node;}
 break;
 case 112:
-#line 333 "a.y"
+#line 330 "a.y"
 	{ yyval.node = yystack.l_mark[-1].node;}
 break;
 case 113:
-#line 334 "a.y"
+#line 331 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 114:
-#line 340 "a.y"
+#line 337 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 115:
-#line 341 "a.y"
+#line 338 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 116:
-#line 346 "a.y"
+#line 343 "a.y"
 	{ yyval.node = yystack.l_mark[-1].node; }
 break;
 case 117:
-#line 352 "a.y"
+#line 349 "a.y"
 	{ yyval.node = opr('+',2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 118:
-#line 353 "a.y"
+#line 350 "a.y"
 	{ yyval.node = opr('-',2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 119:
-#line 354 "a.y"
+#line 351 "a.y"
 	{ yyval.node = opr('*',2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 120:
-#line 355 "a.y"
+#line 352 "a.y"
 	{ yyval.node = opr('/',2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 121:
-#line 356 "a.y"
+#line 353 "a.y"
 	{ yyval.node = opr('%',2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 122:
-#line 357 "a.y"
+#line 354 "a.y"
 	{ yyval.node = opr('&',2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 123:
-#line 358 "a.y"
+#line 355 "a.y"
 	{ yyval.node = opr('|',2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 124:
-#line 359 "a.y"
+#line 356 "a.y"
 	{ yyval.node = opr('^',2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 125:
-#line 360 "a.y"
+#line 357 "a.y"
 	{ /* printf("get a ~ opr.\n"); */ yyval.node = opr('~',1,yystack.l_mark[0].node); }
 break;
 case 126:
-#line 361 "a.y"
+#line 358 "a.y"
 	{ yyval.node = opr(LEFT_SHIFT,2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 127:
-#line 362 "a.y"
+#line 359 "a.y"
 	{ yyval.node = opr(RIGHT_SHIFT,2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 128:
-#line 367 "a.y"
+#line 364 "a.y"
 	{ yyval.node = xint(yystack.l_mark[0].intValue); }
 break;
 case 129:
-#line 368 "a.y"
+#line 365 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 130:
-#line 373 "a.y"
+#line 370 "a.y"
 	{ yyval.node = yystack.l_mark[0].node ; }
 break;
 case 131:
-#line 374 "a.y"
+#line 371 "a.y"
 	{ yyval.node = yystack.l_mark[0].node ; }
 break;
 case 132:
-#line 375 "a.y"
+#line 372 "a.y"
 	{ yyval.node = yystack.l_mark[0].node ; }
 break;
 case 133:
-#line 376 "a.y"
+#line 373 "a.y"
 	{ yyval.node = yystack.l_mark[0].node ; }
 break;
 case 134:
-#line 377 "a.y"
+#line 374 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 135:
-#line 378 "a.y"
+#line 375 "a.y"
 	{ yyval.node = yystack.l_mark[-1].node ; }
 break;
 case 136:
-#line 383 "a.y"
+#line 380 "a.y"
 	{ yyval.node = opr(NEW ,2, yystack.l_mark[-3].node , argsNode(yystack.l_mark[-1].args) ); }
 break;
 case 137:
-#line 387 "a.y"
+#line 384 "a.y"
 	{ yyval.node = var(yystack.l_mark[0].sValue); }
 break;
 case 138:
-#line 391 "a.y"
+#line 388 "a.y"
 	{ yyval.node = number(yystack.l_mark[0].iValue); }
 break;
 case 139:
-#line 395 "a.y"
+#line 392 "a.y"
 	{ yyval.node = number(yystack.l_mark[0].iValue); }
 break;
 case 140:
-#line 396 "a.y"
+#line 393 "a.y"
 	{ yyval.node = number(yystack.l_mark[0].intValue); }
 break;
 case 141:
-#line 400 "a.y"
+#line 397 "a.y"
 	{ yyval.node = opr(UMINUS, 1, yystack.l_mark[0].node ); }
 break;
 case 142:
-#line 404 "a.y"
+#line 401 "a.y"
 	{ yyval.node = string(yystack.l_mark[0].sValue); }
 break;
 case 143:
-#line 408 "a.y"
+#line 405 "a.y"
 	{ yyval.node = xnull();}
 break;
 case 144:
-#line 413 "a.y"
+#line 410 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 145:
-#line 414 "a.y"
+#line 411 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 146:
-#line 415 "a.y"
+#line 412 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 147:
-#line 416 "a.y"
+#line 413 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 148:
-#line 417 "a.y"
+#line 414 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 149:
-#line 422 "a.y"
+#line 419 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 150:
-#line 423 "a.y"
+#line 420 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 151:
-#line 424 "a.y"
+#line 421 "a.y"
 	{ yyval.node = opr('>',2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 152:
-#line 425 "a.y"
+#line 422 "a.y"
 	{ yyval.node = opr('<',2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 153:
-#line 426 "a.y"
+#line 423 "a.y"
 	{ yyval.node = opr( LE_OP,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 154:
-#line 427 "a.y"
+#line 424 "a.y"
 	{ yyval.node = opr( GE_OP,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 155:
-#line 428 "a.y"
+#line 425 "a.y"
 	{ yyval.node = opr( EQ_OP,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 156:
-#line 429 "a.y"
+#line 426 "a.y"
 	{ yyval.node = opr( NE_OP,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 157:
-#line 430 "a.y"
+#line 427 "a.y"
 	{ yyval.node = opr(AND_OP,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 158:
-#line 431 "a.y"
+#line 428 "a.y"
 	{ yyval.node = opr(OR_OP,2,yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 159:
-#line 436 "a.y"
+#line 433 "a.y"
 	{ yyval.node = opr(XIS ,2 , yystack.l_mark[-2].node,yystack.l_mark[0].node); }
 break;
 case 160:
-#line 441 "a.y"
+#line 438 "a.y"
 	{ yyval.node = opr(INC_OP,1, yystack.l_mark[0].node ); }
 break;
 case 161:
-#line 442 "a.y"
+#line 439 "a.y"
 	{ yyval.node = opr(DEC_OP,1, yystack.l_mark[0].node ); }
 break;
 case 162:
-#line 443 "a.y"
+#line 440 "a.y"
 	{ yyval.node = sopr(INC_OP,1, yystack.l_mark[-1].node ); }
 break;
 case 163:
-#line 444 "a.y"
+#line 441 "a.y"
 	{ yyval.node = sopr(DEC_OP,1, yystack.l_mark[-1].node ); }
 break;
 case 164:
-#line 449 "a.y"
+#line 446 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 165:
-#line 450 "a.y"
+#line 447 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 166:
-#line 451 "a.y"
+#line 448 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 167:
-#line 452 "a.y"
+#line 449 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 168:
-#line 453 "a.y"
+#line 450 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 169:
-#line 454 "a.y"
+#line 451 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 170:
-#line 455 "a.y"
+#line 452 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 171:
-#line 456 "a.y"
+#line 453 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 172:
-#line 457 "a.y"
+#line 454 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 173:
-#line 458 "a.y"
+#line 455 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 174:
-#line 459 "a.y"
+#line 456 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 175:
-#line 460 "a.y"
+#line 457 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 176:
-#line 461 "a.y"
+#line 458 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 177:
-#line 462 "a.y"
+#line 459 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 178:
-#line 463 "a.y"
+#line 460 "a.y"
 	{ yyval.node =yystack.l_mark[0].node ;}
 break;
 case 179:
-#line 468 "a.y"
+#line 465 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 180:
-#line 469 "a.y"
+#line 466 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 181:
-#line 470 "a.y"
+#line 467 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 182:
-#line 471 "a.y"
+#line 468 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 183:
-#line 472 "a.y"
+#line 469 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 184:
-#line 477 "a.y"
+#line 474 "a.y"
 	{ yyval.node = opr('=',2, yystack.l_mark[-2].node,yystack.l_mark[0].node ); }
 break;
 case 185:
-#line 478 "a.y"
+#line 475 "a.y"
 	{ yyval.node = opr('=',2, yystack.l_mark[-2].node, yystack.l_mark[0].node ); }
 break;
 case 186:
-#line 482 "a.y"
+#line 479 "a.y"
 	{ yyval.node = opr('=',2, yystack.l_mark[-2].node,yystack.l_mark[0].node ); }
 break;
 case 187:
-#line 483 "a.y"
+#line 480 "a.y"
 	{ yyval.node = opr('=',2, yystack.l_mark[-2].node,yystack.l_mark[0].node ); }
 break;
 case 188:
-#line 488 "a.y"
+#line 485 "a.y"
 	{ yyval.node = arr(yystack.l_mark[-3].sValue, yystack.l_mark[-1].intValue, NULL); }
 break;
 case 189:
-#line 489 "a.y"
+#line 486 "a.y"
 	{ yyval.node = arr(yystack.l_mark[-3].sValue, -1, var(yystack.l_mark[-1].sValue)) ; }
 break;
 case 190:
-#line 495 "a.y"
+#line 492 "a.y"
 	{ yyval.node = opr('=',2, yystack.l_mark[-2].node,yystack.l_mark[0].node );  }
 break;
 case 191:
-#line 500 "a.y"
+#line 497 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 192:
-#line 501 "a.y"
+#line 498 "a.y"
 	{ yyval.node = yystack.l_mark[0].node ;}
 break;
 case 193:
-#line 502 "a.y"
+#line 499 "a.y"
 	{ yyval.node = yystack.l_mark[0].node; }
 break;
 case 194:
-#line 503 "a.y"
+#line 500 "a.y"
 	{ yyval.node = opr(ADD_EQ,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 195:
-#line 504 "a.y"
+#line 501 "a.y"
 	{ yyval.node = opr(SUB_EQ,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 196:
-#line 505 "a.y"
+#line 502 "a.y"
 	{ yyval.node = opr(MUL_EQ,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 197:
-#line 506 "a.y"
+#line 503 "a.y"
 	{ yyval.node = opr(DIV_EQ,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
 case 198:
-#line 507 "a.y"
+#line 504 "a.y"
 	{ yyval.node = opr(MOD_EQ,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
-#line 2011 "y.tab.c"
+#line 2001 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
