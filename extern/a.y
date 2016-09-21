@@ -16,9 +16,6 @@ extern int yyget_lineno(void);
 extern int column; 
 extern char * yytext;
 
-// 正在解析的文件 的文件名
-const char * parseFileName=NULL;
-
 char *namespaceNameCat(char *,char *);
 
 %}
@@ -510,7 +507,7 @@ assign_stmt
 %%
 
 void yyerror(char *s) {
- fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , parseFileName, yyget_lineno(),column , yytext  );
+ fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , yyget_lineno(),column , yytext  );
 }
 
 char *namespaceNameCat(char *arg1,char *arg2){
@@ -532,20 +529,12 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 	
-	FILE *fp = fopen(argv[1],"r");
-	if(fp == NULL){
-		printf("file %s not found.\n" , argv[1]);
-		return 1;
-	}
-	
-	parseFileName = argv[1];
-	extern FILE* yyin; 
-	yyin=fp;
 	initLangX();
-	changeScriptEnv(parseFileName);
-    yyparse();
+	
+	for(int i = 1; i < argc; i++)
+		doFile(argv[i]);
+	
 	closeLangX();
-	fclose(fp);
 	
 	printf("parse over!\n");
 	return 0;

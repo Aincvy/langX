@@ -17,7 +17,6 @@
 #include "../extern/y.tab.h"
 
 extern int yyget_lineno(void);
-extern const char * parseFileName;
 
 using namespace langX;
 
@@ -100,7 +99,7 @@ void deal_switch_info(SwitchInfo *si) {
 
 void deal_fileinfo(NodeFileInfo *f) {
 	f->lineno = yyget_lineno();
-	f->filename = parseFileName;
+	f->filename = state->getParsingFile();
 }
 
 XNode *newNode() {
@@ -667,30 +666,24 @@ void freeNode(XNode * n) {
 	}
 }
 
-void changeScriptEnv(const char * name)
-{
-	state->newScriptEnv(name);
-}
-
 void popStateFrame()
 {
 	state->getStackTrace().popFrame();
 }
 
-void addToDidScripts(const char * f)
+void fileEOF()
 {
-	state->addToDidScripts(f);
+	state->fileEOF();
 }
 
-void popDoingFiles()
+const char* getParsingFilename()
 {
-	const char *p = state->popDoingFile();
-	
-	if (p != NULL)
-	{
-		parseFileName = p;
-	}
-	state->popScriptEnvToDoingStack();
+	return state->getParsingFile();
+}
+
+void doFile(const char *f)
+{
+	state->doFile(f);
 }
 
 void execNode(XNode *n) {

@@ -90,27 +90,26 @@ namespace langX {
 
 		void changeNameSpace(XNameSpace *);
 
-		// 建立一个新的脚本环境
-		void newScriptEnv(const char *);
+		// 切换到指定的脚本环境上 [只切换环境]
+		void newScriptEnv(ScriptEnvironment *);
 
-		// 执行一个脚本  [并不会更改当前的脚本环境]  这个函数会在当前环境上执行别的脚本
+		// 执行一个脚本  该脚本会切换到指定文件的环境（如果之前有存在，则会切换到那个环境， 没有就new一个）
 		// 返回 0 表示切换成功， 返回 -1 表示失败
 		int doFile(const char *);
+
+		// 包含一个文件  当前脚本上执行
+		int requireFile(const char *);
 
 		// 是否执行过这个脚本
 		bool isDidScript(const char  *);
 		// 这个这个文件名到已执行过的脚本里面
 		void addToDidScripts(const char *);
 
-		const char* popDoingFile();
-
 		// 获得正在解析文件的绝对路径
 		const char * getParsingFile() const;
 
-		// 将当前脚本环境压栈  ，执行成功 返回0 ，失败返回-1
-		int pushScriptEnvToDoingStack();
-		// 出栈一个正在执行的脚本环境 ， 执行成功返回 0，失败 返回-1 
-		int popScriptEnvToDoingStack();
+		// 碰到了一个文件的 eof 符号
+		void fileEOF();
 
 	private:
 		// 全局环境
@@ -133,6 +132,7 @@ namespace langX {
 		// 正在解析的文件的绝对路径
 		char * m_parsing_file = NULL;
 
+		bool m_yy_parsing = false;
 
 		int m_current_deep = 0;
 

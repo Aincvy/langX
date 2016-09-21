@@ -1204,7 +1204,7 @@ case YY_STATE_EOF(INITIAL):
 	}
 	
 	popStateFrame();
-	popDoingFiles();
+	fileEOF();
 }
 	YY_BREAK
 case 70:

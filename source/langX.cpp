@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <algorithm>
+#include <string.h>
 #include "../include/ClassInfo.h"
 #include "../include/langX.h"
 #include "../include/Object.h"
@@ -17,6 +18,7 @@
 
 // 切换缓冲区到 文件指针
 extern void pushBuffer(FILE *fp);
+extern int yyparse(void);
 
 // 释放环境内存
 void freeEnv(langX::Environment **env) {
@@ -476,24 +478,26 @@ namespace langX {
 		this->m_current_env = this->m_script_env;
 	}
 
-	void langXState::newScriptEnv(const char * name)
+	void langXState::newScriptEnv(ScriptEnvironment *env)
 	{
-		if (name == NULL)
+		if (env == NULL)
 		{
+			return;
+		}
+
+		if (this->m_script_env == env) {
 			return;
 		}
 
 		//  释放内存到 深度为1 的 环境
 		backToDeep1Env();
-		
 
-		ScriptEnvironment *env = new ScriptEnvironment(name);
 		this->m_script_env = env;
-		this->m_script_env_map[name] = env;
 		this->m_current_deep++;
 		this->m_script_env->setDeep(this->m_current_deep);
 		this->m_script_env->setParent(this->m_current_env);
 		this->m_current_env = this->m_script_env;
+
 	}
 
 	int langXState::doFile(const char *filename)
@@ -510,10 +514,74 @@ namespace langX {
 			return -1;
 		}
 		
-		m_didScripts.push_back(filename);
+		if (this->m_parsing_file != NULL)
+		{
+			this->m_doing_files.push(this->m_parsing_file);
+			this->m_parsing_file = NULL;
+		}
+
+		auto a = std::find(m_didScripts.begin(), m_didScripts.end(), filename);
+		if (a == m_didScripts.end())
+		{
+			m_didScripts.push_back(filename);
+		}
+
+		this->m_parsing_file = strdup(filename);
 		
-		this->pushScriptEnvToDoingStack();
+		char tmp[1024] = {0};
+		realpath(filename, tmp);
+		if (this->m_script_env_map.find(tmp) == this->m_script_env_map.end())
+		{
+			ScriptEnvironment * env = new ScriptEnvironment(tmp);
+			this->m_script_env_map[tmp] = env;
+			newScriptEnv(env);
+		}
+		else {
+			newScriptEnv(this->m_script_env_map.at(tmp));
+		}
+
 		pushBuffer(fp);
+
+		if (!m_yy_parsing)
+		{
+			yyparse();
+			m_yy_parsing = true;
+		}
+
+		return 0;
+	}
+
+	int langXState::requireFile(const char *filename)
+	{
+
+		if (filename == NULL)
+		{
+			return -1;
+		}
+
+		FILE *fp = fopen(filename, "r");
+		if (fp == NULL)
+		{
+			throwException(newFileNotFoundException(filename)->addRef());
+			return -1;
+		}
+
+		if (this->m_parsing_file != NULL)
+		{
+			this->m_doing_files.push(this->m_parsing_file);
+			this->m_parsing_file = NULL;
+		}
+
+		this->m_parsing_file = strdup(filename);
+
+		pushBuffer(fp);
+
+		if (!m_yy_parsing)
+		{
+			yyparse();
+			m_yy_parsing = true;
+		}
+
 		return 0;
 	}
 
@@ -534,51 +602,27 @@ namespace langX {
 		this->m_didScripts.push_back(f);
 	}
 
-	const char* langXState::popDoingFile()
-	{
-		if (this->m_doing_files.empty())
-		{
-			return NULL;
-		}
-		const char * x = this->m_doing_files.top();
-		this->m_doing_files.pop();
-		return x;
-	}
-
 	const char * langXState::getParsingFile() const
 	{
 		return this->m_parsing_file;
 	}
 
-	int langXState::pushScriptEnvToDoingStack()
+	void langXState::fileEOF()
 	{
-		if (this->m_script_env->getType() == TScriptEnvironment) {
-			this->m_doing_script_envs.push((ScriptEnvironment*)this->m_script_env);
-			return 0;
-		}
-
-		return -1;
-	}
-
-	int langXState::popScriptEnvToDoingStack()
-	{
-		if (this->m_doing_script_envs.empty())
-		{
-			return -1;
-		}
-
-		ScriptEnvironment *screnv = this->m_doing_script_envs.top();
-		if (this->m_script_env != screnv)
-		{
-			backToDeep1Env();
-			newEnv(screnv);
-			this->m_script_env = screnv;
-		}
+		free(this->m_parsing_file);
+		this->m_parsing_file = NULL;
 		
-		this->m_doing_script_envs.pop();
+		if (this->m_doing_files.empty())
+		{
+			return;
+		}
 
-		return 0;
+		char * p = this->m_doing_files.top();
+		this->m_doing_files.pop();
+		this->m_parsing_file = p;
+		newScriptEnv(this->m_script_env_map[p]);
 	}
+
 
 	void langXState::backToDeep1Env()
 	{

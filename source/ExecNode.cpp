@@ -20,9 +20,6 @@
 #include "../include/NullObject.h"
 
 
-
-extern const char * parseFileName;
-
 namespace langX {
 	// 内存的 管理器
 	Allocator m_exec_alloc;
@@ -2610,10 +2607,6 @@ namespace langX {
 			//  非绝对路径
 			char tmpBuf[1024];
 			const char *t1 = getState()->getParsingFile();
-			if (t1 == NULL)
-			{
-				t1 = parseFileName;
-			}
 			if (realpath(t1, tmpBuf))
 			{
 				// ok 
@@ -2630,16 +2623,8 @@ namespace langX {
 			}
 		}
 
-		getState()->pushDoingFile(parseFileName);
 
-		int i = getState()->doFile(filename);
-		//free(filename);
-
-		if (i == 0)
-		{
-			parseFileName = filename;
-			getState()->setParsingFile(filename);
-		}
+		getState()->requireFile(filename);
 
 		// it's ok ?
 	}
@@ -2667,7 +2652,7 @@ namespace langX {
 			{
 				//  非绝对路径
 				char tmpBuf[1024];
-				if (realpath(parseFileName, tmpBuf))
+				if (realpath(getState()->getParsingFile(), tmpBuf))
 				{
 					// ok 
 					std::string a(tmpBuf);
@@ -2683,13 +2668,7 @@ namespace langX {
 				}
 			}
 
-			getState()->pushDoingFile(parseFileName);
-
-			if (getState()->doFile(filename) == 0)
-			{
-				parseFileName = filename;
-				getState()->setParsingFile(filename);
-			}
+			getState()->requireFile(filename);
 		}
 
 		free(filename);

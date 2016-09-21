@@ -81,15 +81,15 @@ extern "C" {
 	// 释放一个节点的内存
 	void freeNode(XNode *);
 
-	// 更改脚本环境
-	void changeScriptEnv(const char *);
-
 	void popStateFrame();
 
-	// 添加脚本到 已经执行过的 脚本文件里面
-	void addToDidScripts(const char *);
-	// 弹出当前正在执行的脚本文件。。  当前正在执行的脚本文件解析结束的时候应该会执行这个
-	void popDoingFiles();
+	// 当lex 碰到文件结束符的时候应该调用这个方法
+	void fileEOF();
+
+	const char* getParsingFilename();
+
+	// 执行文件
+	void doFile(const char *);
 }
 
 langX::Object* getValue(const char*);
