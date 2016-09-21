@@ -102,7 +102,8 @@ void pushBuffer(FILE *fp);
 [\n]   {count(); yylineno++; }
 
 <<EOF>> { 
-    //printf("read one file over!\n");
+
+    printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
 	if ( --include_stack_ptr < 0 ) {
 		yyterminate();
 	}
@@ -113,6 +114,7 @@ void pushBuffer(FILE *fp);
 		
 	}
 	
+	printf("end of file: %s\n" , getParsingFilename() );
 	popStateFrame();
 	fileEOF();
 }
@@ -120,6 +122,9 @@ void pushBuffer(FILE *fp);
 %%
 
 void pushBuffer(FILE *fp){
+	
+	printf("pushBuffer %d\n" , include_stack_ptr);
+	
     if(fp == NULL )
 	  return ;
 
