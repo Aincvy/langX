@@ -526,10 +526,11 @@ namespace langX {
 			m_didScripts.push_back(filename);
 		}
 
-		this->m_parsing_file = strdup(filename);
-		
-		char tmp[1024] = {0};
+		char tmp[1024] = { 0 };
 		realpath(filename, tmp);
+
+		this->m_parsing_file = strdup(tmp);
+		
 		if (this->m_script_env_map.find(tmp) == this->m_script_env_map.end())
 		{
 			ScriptEnvironment * env = new ScriptEnvironment(tmp);
@@ -540,12 +541,14 @@ namespace langX {
 			newScriptEnv(this->m_script_env_map.at(tmp));
 		}
 
+		printf("push file %s to lex buffer!\n" , tmp);
+
 		pushBuffer(fp);
 
 		if (!m_yy_parsing)
 		{
-			yyparse();
 			m_yy_parsing = true;
+			yyparse();
 		}
 
 		return 0;
@@ -578,8 +581,8 @@ namespace langX {
 
 		if (!m_yy_parsing)
 		{
-			yyparse();
 			m_yy_parsing = true;
+			yyparse();
 		}
 
 		return 0;
