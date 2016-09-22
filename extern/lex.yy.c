@@ -572,7 +572,7 @@ void count(void);
 
 #define MAX_INCLUDE_DEPTH 45
 YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
-int include_stack_ptr = 0;
+int include_stack_ptr = -1;
 
 // 切换缓冲区到 文件指针
 void pushBuffer(FILE *fp);
@@ -1193,26 +1193,30 @@ YY_RULE_SETUP
 case YY_STATE_EOF(INITIAL):
 #line 104 "a.l"
 { 
-    //printf("read one file over!\n");
-	if ( --include_stack_ptr < 0 ) {
-		yyterminate();
-	}
-	else {
-		yy_delete_buffer(YY_CURRENT_BUFFER );
-		yy_switch_to_buffer(include_stack[include_stack_ptr] );
-		
+	
+    printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
+	
+	if(include_stack_ptr >= 0 ){
+	  // 包含文件栈 存在其他缓冲区
+	  yy_delete_buffer(YY_CURRENT_BUFFER );
+	  yy_switch_to_buffer(include_stack[include_stack_ptr] );
+	  
+	  // 删除栈顶元素
+	  include_stack[include_stack_ptr] = NULL ;
+	  include_stack_ptr-- ;
 	}
 	
+	printf("end of file: %s\n" , getParsingFilename() );
 	popStateFrame();
 	fileEOF();
 }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 120 "a.l"
+#line 124 "a.l"
 ECHO;
 	YY_BREAK
-#line 1216 "lex.yy.c"
+#line 1220 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2204,23 +2208,27 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 120 "a.l"
+#line 124 "a.l"
 
 
 
 void pushBuffer(FILE *fp){
+	
+	printf("pushBuffer %d\n" , include_stack_ptr);
+	
     if(fp == NULL )
 	  return ;
 
-	if ( include_stack_ptr >= MAX_INCLUDE_DEPTH )
-	{
-		fprintf( stderr, "Includes nested too deeply" );
-		exit( 1 );
+	if(!YY_CURRENT_BUFFER ){
+		if ( include_stack_ptr >= MAX_INCLUDE_DEPTH )
+		{
+			fprintf( stderr, "Includes nested too deeply" );
+			exit( 1 );
+		}
+		include_stack[++include_stack_ptr] = YY_CURRENT_BUFFER;
 	}
 	
-	include_stack[include_stack_ptr++] = YY_CURRENT_BUFFER;
-	yyin = fp;
-	
+	yyin = fp;	
 	yy_switch_to_buffer(yy_create_buffer(yyin,YY_BUF_SIZE ) );
 	BEGIN(INITIAL);
 }
