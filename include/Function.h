@@ -4,7 +4,9 @@ namespace langX {
 	class Object;
 	class ClassInfo;
 
-	class Function : public Object
+
+	/* 0924  现在函数不在继承自Object . 而是添加一个新的 类型 FunctionRef 继承自Object */
+	class Function 
 	{
 	public:
 		Function();
@@ -26,12 +28,6 @@ namespace langX {
 		
 		Object *call() const;
 
-		bool isTrue() const;
-		ObjectType getType() const;
-		/* 函数返回一个自己的指针 */
-		Object* clone() const;
-		void update(Object *);
-
 		// 是否是第三方函数
 		virtual bool is3rd() const;
 		// 当前函数是否有名字
@@ -40,12 +36,11 @@ namespace langX {
 	private:
 		// 内部函数执行的根节点
 		Node * m_node_root = nullptr;
-		char * m_name;
+		char * m_name = nullptr;
 		ParamsList * m_params_list = nullptr;
 		// 当前函数是属于哪个类
 		ClassInfo *m_class_info = nullptr;
 
-		void finalize();
 	};
 
 
@@ -75,6 +70,47 @@ namespace langX {
 	private:
 		X3rdFuncWorker m_worker;
 		langXState *m_state;
+	};
+
+
+	/* langX Object.  表示一个函数引用 */
+	class FunctionRef : public Object
+	{
+	public:
+		FunctionRef(Function *);
+		~FunctionRef();
+
+
+		bool isTrue() const;
+		ObjectType getType() const;
+		/* 函数返回一个自己的指针 */
+		Object* clone() const;
+		void update(Object *);
+
+		// 获得引用是哪个函数
+		Function * getRefFunction();
+
+
+		//  函数的对象
+		Object *getObj() const;
+		void setObj(Object *);
+
+		// 函数的类信息
+		ClassInfo *getClaxx() const;
+		void setClaxx(ClassInfo *);
+
+	private:
+
+		void finalize();
+
+		// 引用的是哪个函数
+		Function *m_func = nullptr;
+
+		//  对象函数引用。 比如  b=a.func ; 的时候， 这个m_func_obj 就指向了 a 的那个langXObject
+		Object *m_func_obj = nullptr;
+		//  类函数引用。  比如 b=a::func ;  的时候， 这个 m_func_claxx 就指向了 a 的类型
+		ClassInfo *m_func_claxx = nullptr;
+
 	};
 
 }

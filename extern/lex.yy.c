@@ -1204,6 +1204,9 @@ case YY_STATE_EOF(INITIAL):
 	  // 删除栈顶元素
 	  include_stack[include_stack_ptr] = NULL ;
 	  include_stack_ptr-- ;
+	  printf("remove stack top buffer to current.\n");
+	}else{
+	  yyterminate();
 	}
 	
 	printf("end of file: %s\n" , getParsingFilename() );
@@ -1213,10 +1216,10 @@ case YY_STATE_EOF(INITIAL):
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 124 "a.l"
+#line 127 "a.l"
 ECHO;
 	YY_BREAK
-#line 1220 "lex.yy.c"
+#line 1223 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2208,7 +2211,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 124 "a.l"
+#line 127 "a.l"
 
 
 
@@ -2226,6 +2229,7 @@ void pushBuffer(FILE *fp){
 			exit( 1 );
 		}
 		include_stack[++include_stack_ptr] = YY_CURRENT_BUFFER;
+		printf("add current buffer to stack.\n");
 	}
 	
 	yyin = fp;	

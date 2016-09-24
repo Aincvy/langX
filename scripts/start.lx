@@ -1,6 +1,15 @@
+print("----------- Start.lx Start --------------------\n");
+
 require "Student.h.lx"
 
 ref com.my.test;
 
 s1 = new Student();
-s1.getScore();
+s1.score = -25 ;
+print("score: " + s1.getScore() + "\n");
+s1.score = 11 ;
+print("score: " + s1.getScore() + "\n");
+print("read score: " + s1.score + "\n");
+
+
+print("----------- Start.lx End --------------------\n");

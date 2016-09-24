@@ -25,10 +25,7 @@ namespace langX {
 		{
 			return NULL; 
 		}
-		if (obj->getType() == FUNCTION )
-		{
-			return  obj;
-		}
+
 		Object *ret = allocate(obj->getType());
 		if (ret == NULL)
 		{
@@ -66,6 +63,10 @@ namespace langX {
 		{
 			return new XArrayRef(NULL);
 		}
+		else if (t == ObjectType::FUNCTION)
+		{
+			return new FunctionRef(NULL);
+		}
 
 		return NULL;
 	}
@@ -92,7 +93,7 @@ namespace langX {
 		}
 		else if (obj->getType() == FUNCTION)
 		{
-			// do nothing in free funtion.
+			delete (FunctionRef*) obj;
 		}
 		else if (obj->getType() == XARRAY)
 		{
@@ -134,6 +135,16 @@ namespace langX {
 			return;
 		}
 		delete str;
+	}
+
+	FunctionRef * Allocator::allocateFunctionRef(Function *f) const
+	{
+		return new FunctionRef(f);
+	}
+
+	void Allocator::freeFunctionRef(FunctionRef *f) const
+	{
+		delete f;
 	}
 
 

@@ -2,7 +2,6 @@
 #include <map>
 #include <string>
 #include <list>
-#include <stack>
 #include "Object.h"
 #include "Function.h"
 #include "StackTrace.h"
@@ -123,9 +122,7 @@ namespace langX {
 		//  执行过文件列表
 		std::list<std::string> m_didScripts;
 		//  正在执行文件的栈
-		std::stack<char*> m_doing_files;
-		//  正在执行的脚本的环境的栈
-		std::stack<ScriptEnvironment*> m_doing_script_envs;
+		std::list<char*> m_doing_files;
 		//  k:  脚本文件绝对路径，  v: 脚本环境
 		std::map<std::string, ScriptEnvironment*> m_script_env_map;
 

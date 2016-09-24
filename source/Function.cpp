@@ -158,25 +158,6 @@ namespace langX {
 		return nullptr;
 	}
 
-	bool Function::isTrue() const
-	{
-		return true;
-	}
-
-	ObjectType Function::getType() const
-	{
-		return FUNCTION;
-	}
-
-	Object * Function::clone() const
-	{
-		return const_cast<Function*>(this);
-	}
-
-	void Function::update(Object *)
-	{
-		// do nothing
-	}
 
 	bool Function::is3rd() const
 	{
@@ -241,5 +222,88 @@ namespace langX {
 		return m_worker(this,args);
 	}
 
+
+	FunctionRef::FunctionRef(Function * f)
+	{
+		this->m_func = f;
+	}
+
+	FunctionRef::~FunctionRef()
+	{
+	}
+
+	bool FunctionRef::isTrue() const
+	{
+		if (this->m_func == NULL)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	ObjectType FunctionRef::getType() const
+	{
+		return FUNCTION;
+	}
+
+	Object * FunctionRef::clone() const
+	{
+		FunctionRef * r = new FunctionRef(this->m_func);
+		if (this->m_func_claxx != NULL)
+		{
+			r->setClaxx(this->m_func_claxx);
+		}
+		else if (this->m_func_obj != NULL)
+		{
+			r->setObj(this->m_func_obj);
+		}
+		r->setEmergeEnv(getEmergeEnv());
+
+		return r;
+	}
+
+	void FunctionRef::update(Object * a)
+	{
+		if (a->getType() != FUNCTION)
+		{
+			return;
+		}
+
+		FunctionRef *f = (FunctionRef*)a;
+		this->m_func = f->getRefFunction();
+		if (f->getClaxx() != NULL)
+		{
+			this->m_func_claxx = f->getClaxx();
+		}
+		else if (f->getObj() != NULL)
+		{
+			this->m_func_obj = f->getObj();
+		}
+	}
+
+	Function * FunctionRef::getRefFunction()
+	{
+		return this->m_func;
+	}
+
+	Object * FunctionRef::getObj() const
+	{
+		return this->m_func_obj;
+	}
+
+	void FunctionRef::setObj(Object *a)
+	{
+		this->m_func_obj = a;
+	}
+
+	ClassInfo * FunctionRef::getClaxx() const
+	{
+		return this->m_func_claxx;
+	}
+
+	void FunctionRef::setClaxx(ClassInfo *a)
+	{
+		this->m_func_claxx = a;
+	}
 
 }

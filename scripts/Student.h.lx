@@ -1,5 +1,9 @@
+print("----------- Student.h.lx Start --------------------\n");
+
 require_once "Math.lx"
 
 ref langX.core.Math;
 
 require_once "Student.lx"
+
+print("----------- Student.h.lx End --------------------\n");
