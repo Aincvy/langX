@@ -1,4 +1,6 @@
-require "Student.h.lx"
+print("----------- Student.lx Start --------------------\n");
+
+//require "Student.h.lx"
 //  上面的那句 require 语句其实并没有什么卵用。 
 //  因为在切换命名空间的时候， require 就失效了。 这样写只是为了方便看
 
@@ -19,3 +21,4 @@ Student {
   
 }
 
+print("----------- Student.lx End --------------------\n");

@@ -18,7 +18,12 @@ void count(void);
 
 #define MAX_INCLUDE_DEPTH 45
 YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
+//  这个数值永远指向栈顶
 int include_stack_ptr = -1;
+//  文件深度 默认是0 ，解析文件1 ，将会变成1 
+//           如果文件1包含文件2， 那么解析文件2的时候，文件深度就为2
+//           退回到文件1的时候， 文件深度就会变成1
+int fileDeep = 0 ;
 
 // 切换缓冲区到 文件指针
 void pushBuffer(FILE *fp);
@@ -103,9 +108,9 @@ void pushBuffer(FILE *fp);
 
 <<EOF>> { 
 	
-    printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
+    //printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
 	
-	if(include_stack_ptr >= 0 ){
+	if(fileDeep-- > 1){
 	  // 包含文件栈 存在其他缓冲区
 	  yy_delete_buffer( YY_CURRENT_BUFFER );
 	  yy_switch_to_buffer(
@@ -114,11 +119,12 @@ void pushBuffer(FILE *fp);
 	  // 删除栈顶元素
 	  include_stack[include_stack_ptr] = NULL ;
 	  include_stack_ptr-- ;
+	  //printf("remove stack top buffer to current.\n");
 	}else{
 	  yyterminate();
 	}
 	
-	printf("end of file: %s\n" , getParsingFilename() );
+	//printf("end of file: %s\n" , getParsingFilename() );
 	popStateFrame();
 	fileEOF();
 }
@@ -127,18 +133,19 @@ void pushBuffer(FILE *fp);
 
 void pushBuffer(FILE *fp){
 	
-	printf("pushBuffer %d\n" , include_stack_ptr);
+	//printf("pushBuffer %d\n" , include_stack_ptr);
 	
     if(fp == NULL )
 	  return ;
 
-	if(!YY_CURRENT_BUFFER ){
+	if(++fileDeep > 1) {
 		if ( include_stack_ptr >= MAX_INCLUDE_DEPTH )
 		{
 			fprintf( stderr, "Includes nested too deeply" );
 			exit( 1 );
 		}
 		include_stack[++include_stack_ptr] = YY_CURRENT_BUFFER;
+		//printf("add current buffer to stack.\n");
 	}
 	
 	yyin = fp;	

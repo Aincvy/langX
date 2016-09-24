@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <algorithm>
 #include <string.h>
+#include <iterator>
 #include "../include/ClassInfo.h"
 #include "../include/langX.h"
 #include "../include/Object.h"
@@ -516,7 +517,7 @@ namespace langX {
 		
 		if (this->m_parsing_file != NULL)
 		{
-			this->m_doing_files.push(this->m_parsing_file);
+			this->m_doing_files.push_front(this->m_parsing_file);
 			this->m_parsing_file = NULL;
 		}
 
@@ -541,7 +542,7 @@ namespace langX {
 			newScriptEnv(this->m_script_env_map.at(tmp));
 		}
 
-		printf("push file %s to lex buffer!\n" , tmp);
+		//printf("push file %s to lex buffer!\n" , tmp);
 
 		pushBuffer(fp);
 
@@ -571,11 +572,13 @@ namespace langX {
 
 		if (this->m_parsing_file != NULL)
 		{
-			this->m_doing_files.push(this->m_parsing_file);
+			this->m_doing_files.push_front(this->m_parsing_file);
 			this->m_parsing_file = NULL;
 		}
 
 		this->m_parsing_file = strdup(filename);
+		
+		//printf("require file %s !\n", filename);
 
 		pushBuffer(fp);
 
@@ -612,6 +615,8 @@ namespace langX {
 
 	void langXState::fileEOF()
 	{
+
+		//printf("file %s eof!\n", m_parsing_file);
 		free(this->m_parsing_file);
 		this->m_parsing_file = NULL;
 		
@@ -620,9 +625,28 @@ namespace langX {
 			return;
 		}
 
-		char * p = this->m_doing_files.top();
-		this->m_doing_files.pop();
+		
+		char * p = this->m_doing_files.front();
+		this->m_doing_files.erase(this->m_doing_files.begin());
 		this->m_parsing_file = p;
+
+		int index = 0;
+		while (this->m_script_env_map.find(p) == this->m_script_env_map.end())
+		{
+			//  脚本空间无法找到该变量 ，继续向下搜索
+			if (index >= this->m_doing_files.size())
+			{
+				return;
+			}
+
+			auto tmpIt = this->m_doing_files.begin();
+			advance(tmpIt, index);
+			p = (*tmpIt);
+
+			index++;
+		}
+
+		//printf("change file to %s. change script env to file: %s \n", m_parsing_file , p );
 		newScriptEnv(this->m_script_env_map[p]);
 	}
 

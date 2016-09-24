@@ -5,6 +5,8 @@ namespace langX {
 	enum ObjectType;
 	class Number;
 	class String;
+	class FunctionRef;
+	class Function;
 
 	class Allocator
 	{
@@ -24,6 +26,9 @@ namespace langX {
 		String *allocateString() const;
 		String *allocateString(const char *) const;
 		void freeString(String *);
+
+		FunctionRef *allocateFunctionRef(Function *) const;
+		void freeFunctionRef(FunctionRef *) const;
 
 	private:
 

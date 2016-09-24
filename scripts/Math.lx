@@ -1,3 +1,5 @@
+print("----------- Math.lx Start --------------------\n");
+
 set public = langX.core;
 
 Math {
@@ -8,3 +10,5 @@ Math {
 	return x ;
   }
 }
+
+print("----------- Math.lx End --------------------\n");

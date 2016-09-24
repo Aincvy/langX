@@ -838,7 +838,9 @@ namespace langX {
 				Function *func = getState()->getCurrentEnv()->getFunction(right->var_obj->name);
 				if (func != nullptr)
 				{
-					right->value = func;
+					FunctionRef * f = m_exec_alloc.allocateFunctionRef(func);
+					f->setEmergeEnv(getState()->getCurrentEnv());
+					right->value = f;
 				}
 			}
 
@@ -1164,6 +1166,13 @@ namespace langX {
 			a->state.in_func = n->state.in_func;
 			a->state.in_loop = n->state.in_loop;
 			__execNode(a);
+
+			if (getState()->getCurrentEnv()->isDead())
+			{
+				freeSubNodes(n);
+				return;
+			}
+
 			n->value = a->value->clone();
 
 			freeSubNodes(n);
@@ -2438,14 +2447,16 @@ namespace langX {
 		Object *t = claxxInfo->getMember(memberName);
 		if (t == NULL)
 		{
-			t = claxxInfo->getFunction(memberName);
-			if (t == NULL)
+			Function * tf = claxxInfo->getFunction(memberName);
+			if (tf == NULL)
 			{
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no member %s in class %s.", memberName, className);
 				getState()->throwException(newNoClassMemberException(tmp)->addRef());
 				return;
 			}
+
+			t = m_exec_alloc.allocateFunctionRef(tf);
 		}
 
 		n->value = t->clone();
@@ -2825,7 +2836,7 @@ namespace langX {
 					Function *func = getState()->getCurrentEnv()->getFunction(node->var_obj->name);
 					if (func != nullptr)
 					{
-						node->value = func;
+						node->value = m_exec_alloc.allocateFunctionRef(func);
 					}
 					else {
 						node->value = new NullObject();
@@ -2936,7 +2947,7 @@ namespace langX {
 			}
 
 			//函数的产生环境可能在类内部
-			func->setEmergeEnv(getState()->getCurrentEnv());
+			//func->setEmergeEnv(getState()->getCurrentEnv());
 			getState()->getCurrentEnv()->putFunction(func->getName(), func);
 			return;
 		}
