@@ -3,7 +3,8 @@
 namespace langX {
 	class Object;
 	class ClassInfo;
-
+	class Environment;
+	class langXObject;
 
 	/* 0924  现在函数不在继承自Object . 而是添加一个新的 类型 FunctionRef 继承自Object */
 	class Function 
@@ -92,12 +93,15 @@ namespace langX {
 
 
 		//  函数的对象
-		Object *getObj() const;
-		void setObj(Object *);
+		langXObject *getObj() const;
+		void setObj(langXObject *);
 
 		// 函数的类信息
 		ClassInfo *getClaxx() const;
 		void setClaxx(ClassInfo *);
+
+		// 如果这个函数来自一个 对象， 则会返回一个对象环境， 如果来自类， 则返回类桥接环境
+		Environment *getFunctionEnv();
 
 	private:
 
@@ -107,7 +111,7 @@ namespace langX {
 		Function *m_func = nullptr;
 
 		//  对象函数引用。 比如  b=a.func ; 的时候， 这个m_func_obj 就指向了 a 的那个langXObject
-		Object *m_func_obj = nullptr;
+		langXObject *m_func_obj = nullptr;
 		//  类函数引用。  比如 b=a::func ;  的时候， 这个 m_func_claxx 就指向了 a 的类型
 		ClassInfo *m_func_claxx = nullptr;
 

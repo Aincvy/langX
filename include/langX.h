@@ -42,7 +42,7 @@ namespace langX {
 		/* 将环境退回一级，如果当前只有一级环境，则什么也不做 
 		  如果退回上级环境， 当前环境内的所有变量的内存都将会被释放. 当前环境也会被释放 */
 		void backEnv();
-		//  是否对当前环境的指针进行 delete 操作
+		//  是否对当前环境的指针进行 delete 操作 .  参数为false 的时候， 不进行delete 操作
 		void backEnv(bool);
 
 		Environment *getCurrentEnv() const;
