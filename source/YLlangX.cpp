@@ -316,13 +316,12 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 
 	Function *func = new Function(name, node);
 	func->setParamsList(params);
-	func->setEmergeEnv(NULL);
 	//  在执行他的时候再把它放入环境中
 	//getState()->getCurrentEnv()->putFunction(name, func);
 	free(name);
 	XNode * nodeF = newNode();
 	nodeF->type = NODE_FUNCTION;
-	nodeF->value = func;
+	nodeF->ptr_u = func;
 	return nodeF;
 }
 
@@ -330,11 +329,10 @@ XNode *lambda(XParamsList *params, XNode *node) {
 
 	Function *func = new Function("", node);
 	func->setParamsList(params);
-	func->setEmergeEnv(NULL);
 
 	XNode * nodeF = newNode();
 	nodeF->type = NODE_FUNCTION;
-	nodeF->value = func;
+	nodeF->ptr_u = func;
 	return nodeF;
 }
 
@@ -379,10 +377,10 @@ XNode * claxx(char *name, char *parent, XNode * node, bool flag) {
 
 	if (node != NULL)
 	{
-		ClassBridgeEnv *env = new ClassBridgeEnv(claxxInfo);
+		ClassBridgeEnv *env = claxxInfo->getClassEnv();
 		state->newEnv(env);
 		__execNode(node);
-		state->backEnv();
+		state->backEnv(false);
 	}
 
 	XNode * nodeC = newNode();
@@ -606,6 +604,19 @@ void freeNode(XNode * n) {
 		n->value = NULL;
 	}
 
+	if (n->var_obj != NULL)
+	{
+		if (n->var_obj->name != NULL)
+		{
+			free(n->var_obj->name);
+			n->var_obj->name = NULL;
+		}
+
+		free(n->var_obj);
+		n->var_obj = NULL;
+		free(n);
+	}
+
 	//printf("free node\n");
 	if (n->type == NODE_CONSTANT_NUMBER || n->type == NODE_CONSTANT_INTEGER || n->type == NODE_CHANGE_NAMESPACE)
 	{
@@ -624,18 +635,6 @@ void freeNode(XNode * n) {
 			free(n->con_obj->sValue);
 		}
 		free(n->con_obj);
-		free(n);
-	}
-	else if (n->type == NODE_VARIABLE)
-	{
-		//printf("00000\n");
-		if (n->var_obj->name != NULL)
-		{
-			free(n->var_obj->name);
-			n->var_obj->name = NULL;
-		}
-
-		free(n->var_obj);
 		free(n);
 	}
 	else if (n->type == NODE_OPERATOR)

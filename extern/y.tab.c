@@ -1003,12 +1003,11 @@ int main(int argc, char *argv[]){
 		doFile(argv[i]);
 	
 	closeLangX();
-	fclose(fp);
 	
 	printf("parse over!\n");
 	return 0;
 }
-#line 1011 "y.tab.c"
+#line 1010 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -1998,7 +1997,7 @@ case 198:
 #line 504 "a.y"
 	{ yyval.node = opr(MOD_EQ,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
-#line 2001 "y.tab.c"
+#line 2000 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

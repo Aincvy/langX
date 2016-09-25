@@ -14,6 +14,7 @@ namespace langX {
 	class Object;
 	class Function;
 	class langXObject;
+	class ClassBridgeEnv;
 
 	class ClassInfo 
 	{
@@ -52,6 +53,9 @@ namespace langX {
 		// 扩展自身类
 		void expand(ClassInfo *);
 
+		// 获得这个类的桥接环境
+		ClassBridgeEnv *getClassEnv();
+
 	private:
 		//  当前类的 字段map ...
 		//  key:  属性名,  value:  对象指针
@@ -60,6 +64,9 @@ namespace langX {
 
 		// 当前类叫什么名字
 		std::string m_name;
+
+		//  当前类的桥接环境
+		ClassBridgeEnv *m_classEnv;
 
 		// 父类
 		ClassInfo *m_parent = nullptr;

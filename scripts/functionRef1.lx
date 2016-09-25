@@ -1,0 +1,22 @@
+Class1{
+  x = 15 ;
+  
+  cb => {
+    x = 20 ;
+  }
+}
+
+c1 = new Class1();
+b = c1.cb;
+
+print("pre: " + c1.x + "\n");
+b();
+print("next: " + c1.x + "\n");
+
+print("test class now.\n");
+b = Class1::cb;
+c = Class1::x ;
+print("pre: " + c + "\n");
+b();
+c = Class1::x ;
+print("next: " + c + "\n");

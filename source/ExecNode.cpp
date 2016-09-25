@@ -792,6 +792,7 @@ namespace langX {
 			{
 				__execNode(left);
 				objectRef = (langXObjectRef *)left->ptr_u;
+				left->ptr_u = NULL;
 			}
 			else if (left->opr_obj->opr == THIS)
 			{
@@ -854,29 +855,20 @@ namespace langX {
 		ObjectType rightType = right->value->getType();
 		if (objectRef == NULL && arrayInfo == NULL)
 		{
-			if (rightType == FUNCTION)
-			{
-				left->value = right->value;
-				right->value = NULL;
-
-				// 更新值到 Environment 
-				setValueToEnv2(left->var_obj->name, left->value, getState()->getCurrentEnv());
+			checkVarValue(left, rightType);
+			if (getState()->getCurrentEnv()->isDead()) {
+				return;
 			}
-			else {
-				checkVarValue(left, rightType);
-				if (getState()->getCurrentEnv()->isDead()) {
-					return;
-				}
-				left->value->update(right->value);
+			left->value->update(right->value);
 
-				// 释放右值的内存 
-				m_exec_alloc.free(right->value);
-				right->value = NULL;
+			// 释放右值的内存 
+			m_exec_alloc.free(right->value);
+			right->value = NULL;
 
 
-				// 更新值到 Environment 
-				setValueToEnv2(left->var_obj->name, left->value, left->value->getEmergeEnv());
-			}
+			// 更新值到 Environment 
+			setValueToEnv2(left->var_obj->name, left->value, left->value->getEmergeEnv());
+
 
 			n->value = m_exec_alloc.copy(left->value);
 			// 左值是指向 Environment 内的内存的复制， 需要释放
@@ -937,16 +929,19 @@ namespace langX {
 
 			m_exec_alloc.free(right->value);
 			right->value = NULL;
+
+			delete objectRef;
+			objectRef = NULL;
 		}
 
-		if (left->type == NODE_OPERATOR && left->opr_obj->opr == THIS) {
-			if (left->var_obj != NULL)
-			{
-				free(left->var_obj);
-				left->var_obj = NULL;
-			}
+		//if (left->type == NODE_OPERATOR && left->opr_obj->opr == THIS) {
+		//	if (left->var_obj != NULL)
+		//	{
+		//		free(left->var_obj);
+		//		left->var_obj = NULL;
+		//	}
 
-		}
+		//}
 
 		doSuffixOperation(n);
 	}
@@ -1167,7 +1162,7 @@ namespace langX {
 			a->state.in_loop = n->state.in_loop;
 			__execNode(a);
 
-			if (getState()->getCurrentEnv()->isDead())
+			if (getState()->getCurrentEnv()->isDead() || a->value == NULL)
 			{
 				freeSubNodes(n);
 				return;
@@ -2097,7 +2092,17 @@ namespace langX {
 		{
 			if (n1->value->getType() == FUNCTION)
 			{
-				n->value = callFunc((Function*)n1->value, args, remark);
+				FunctionRef *f = (FunctionRef*)n1->value;
+				Environment *env = f->getFunctionEnv();
+				if (env != NULL)
+				{
+					getState()->newEnv(env);
+				}
+				n->value = callFunc(f->getRefFunction(), args, remark);
+				if (env != NULL)
+				{
+					getState()->backEnv();
+				}
 				flag = false;
 			}
 			else if (n1->value->getType() == STRING)
@@ -2293,22 +2298,29 @@ namespace langX {
 		if (t == NULL)
 		{
 			// check 函数  回头再check 
-			/*Function *func = objectRef->getFunction(memberName);
+			Function *func = objectRef->getFunction(memberName);
 			if (func != nullptr)
 			{
-				t = func;
+				FunctionRef *fr = m_exec_alloc.allocateFunctionRef(func);
+				fr->setObj(objectRef->getRefObject());
+				fr->setEmergeEnv(getState()->getCurrentEnv());
+				t = fr;
 			}
 			else {
+				char tmp[100] = { 0 };
+				sprintf(tmp, "no member %s in class %s.", memberName, objectRef->getClassInfo()->getName());
+				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+				freeSubNodes(n);
+				return;
+			}
 
-			}*/
-
-			char tmp[100] = { 0 };
-			sprintf(tmp, "no member %s in class %s.", memberName, objectRef->getClassInfo()->getName());
-			getState()->throwException(newNoClassMemberException(tmp)->addRef());
-			freeSubNodes(n);
-			return;
 		}
 		n->value = t->clone();
+		if (n->ptr_u != NULL)
+		{
+			delete ((langXObjectRef*)n->ptr_u);
+			n->ptr_u = NULL;
+		}
 		n->ptr_u = objectRef->clone();
 
 		freeSubNodes(n);
@@ -2391,17 +2403,32 @@ namespace langX {
 
 		langXObject *thisObj = objEnv->getEnvObject();
 		Node *n1 = n->opr_obj->op[0];
+
+		// 如果重复调用这个节点，则释放之前产生的内存 ， 以防内存泄漏
+		if (n->var_obj != NULL)
+		{
+			if (n->var_obj->name != NULL)
+			{
+				free(n->var_obj->name);
+				n->var_obj->name = NULL;
+			}
+
+			free(n->var_obj);
+			n->var_obj = NULL;
+		}
+
 		//  产生变量的名字
 		n->var_obj = (Variable*)calloc(1, sizeof(Variable));
 		if (n1->type == NODE_VARIABLE)
 		{
-			n->var_obj->name = n1->var_obj->name;
+			n->var_obj->name = strdup(n1->var_obj->name);
 			if (!thisObj->hasMember(n->var_obj->name))
 			{
 				// 没有那个成员
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no class member %s in class %s!", n->var_obj->name, thisObj->getClassName());
 				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+				free(n->var_obj->name);
 				free(n->var_obj);
 				n->var_obj = NULL;
 				return;
@@ -2410,7 +2437,7 @@ namespace langX {
 		else if (n1->type == NODE_OPERATOR)
 		{
 			// 语法解释器并没有实现这部分， 所以暂时先不管。
-			n->var_obj->name = n1->opr_obj->op[1]->var_obj->name;
+			n->var_obj->name = strdup(n1->opr_obj->op[1]->var_obj->name);
 		}
 
 		__execNode(n1);
@@ -2456,7 +2483,10 @@ namespace langX {
 				return;
 			}
 
-			t = m_exec_alloc.allocateFunctionRef(tf);
+			FunctionRef *fr = m_exec_alloc.allocateFunctionRef(tf);
+			fr->setClaxx(claxxInfo);
+			fr->setEmergeEnv(getState()->getCurrentEnv());
+			t = fr;
 		}
 
 		n->value = t->clone();
@@ -2491,7 +2521,7 @@ namespace langX {
 		}
 
 		ClassBridgeEnv *env = new ClassBridgeEnv(claxxInfo);
-		getState()->newEnv2(env);
+		getState()->newEnv(env);
 
 		// 根据语法解析文件得知， 第二个节点为参数节点
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
@@ -2780,8 +2810,8 @@ namespace langX {
 				scriptEnv->addNameSpace(space);
 			}
 		}
-		
-		
+
+
 	}
 
 	/*
@@ -2926,11 +2956,11 @@ namespace langX {
 		else if (node->type == NODE_FUNCTION)
 		{
 			// 函数
-			if (node->value == NULL)
+			if (node->ptr_u == NULL)
 			{
 				return;
 			}
-			Function *func = (Function*)node->value;
+			Function *func = (Function*)node->ptr_u;
 			if (!func->hasName())
 			{
 				// 匿名函数

@@ -8,6 +8,7 @@
 #include "../include/Allocator.h"
 #include "../include/YLlangX.h"
 #include "../include/ClassInfo.h"
+#include "../include/Environment.h"
 
 
 langX::Allocator m_exec_alloc;
@@ -173,14 +174,6 @@ namespace langX {
 		return true;
 	}
 
-	void Function::finalize()
-	{
-		delete this;
-	}
-
-
-
-
 
 	X3rdFunction::X3rdFunction()
 	{
@@ -286,12 +279,12 @@ namespace langX {
 		return this->m_func;
 	}
 
-	Object * FunctionRef::getObj() const
+	langXObject * FunctionRef::getObj() const
 	{
 		return this->m_func_obj;
 	}
 
-	void FunctionRef::setObj(Object *a)
+	void FunctionRef::setObj(langXObject *a)
 	{
 		this->m_func_obj = a;
 	}
@@ -304,6 +297,24 @@ namespace langX {
 	void FunctionRef::setClaxx(ClassInfo *a)
 	{
 		this->m_func_claxx = a;
+	}
+
+	Environment * FunctionRef::getFunctionEnv()
+	{
+		if (this->m_func_claxx != NULL)
+		{
+			return new ClassBridgeEnv(this->m_func_claxx);
+		}
+		else if (this->m_func_obj != NULL)
+		{
+			return new ObjectBridgeEnv(this->m_func_obj);
+		}
+		return nullptr;
+	}
+
+	void FunctionRef::finalize()
+	{
+
 	}
 
 }

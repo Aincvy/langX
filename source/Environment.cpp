@@ -170,11 +170,21 @@ namespace langX {
 
 	Object * ClassBridgeEnv::getObject(const std::string &name)
 	{
-		if (this->m_class == NULL)
+		Object *obj = NULL;
+		if (this->m_class != NULL)
 		{
-			return NULL;
+			obj = this->m_class->getMember(name.c_str());
 		}
-		return this->m_class->getMember(name.c_str());
+
+		if (obj == NULL)
+		{
+			if (!this->m_restrict && this->m_parent != NULL)
+			{
+				return this->m_parent->getObject(name);
+			}
+		}
+
+		return obj;
 	}
 
 	Object * ClassBridgeEnv::getObjectSelf(const char *) const
@@ -778,6 +788,8 @@ namespace langX {
 
 	GlobalEnvironment::GlobalEnvironment()
 	{
+		//  公共环境 ， 算为死亡环境
+		setDead(true);
 	}
 
 	GlobalEnvironment::~GlobalEnvironment()

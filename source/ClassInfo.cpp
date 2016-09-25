@@ -5,6 +5,7 @@
 #include "../include/langXObject.h"
 #include "../include/ClassInfo.h"
 #include "../include/Allocator.h"
+#include "../include/Environment.h"
 
 extern langX::Allocator m_exec_alloc;
 
@@ -13,6 +14,7 @@ namespace langX {
 	langX::ClassInfo::ClassInfo(const char*name)
 	{
 		this->m_name = std::string(name);
+		this->m_classEnv = new ClassBridgeEnv(this);
 	}
 
 	langX::ClassInfo::~ClassInfo()
@@ -24,6 +26,7 @@ namespace langX {
 		}
 		this->m_members.clear();
 
+		delete this->m_classEnv;
 	}
 
 	void ClassInfo::addMember(const char *name, Object *obj)
@@ -197,6 +200,11 @@ namespace langX {
 			this->m_functions[str] = obj;
 		}
 
+	}
+
+	ClassBridgeEnv * ClassInfo::getClassEnv()
+	{
+		return this->m_classEnv;
 	}
 
 
