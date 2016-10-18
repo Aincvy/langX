@@ -430,6 +430,10 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 					_3rdArgs.args[i] = NULL;
 					continue;
 				}
+
+				// 释放这个参数节点的值先
+				getState()->getAllocator().free(args->args[i]->value);
+
 				execNode(args->args[i]);
 
 				if (getState()->getCurrentEnv()->isDead())
@@ -474,6 +478,10 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 
 			if (args->args[i] != NULL)
 			{
+				// 释放这个参数节点的值先
+				getState()->getAllocator().free(args->args[i]->value);
+				args->args[i]->value = NULL;
+
 				execNode(args->args[i]);
 
 				if (getState()->getCurrentEnv()->isDead())
@@ -481,8 +489,14 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 					return NULL;
 				}
 
+				ObjectType t = NULLOBJECT;
+				if (args->args[i]->value)
+				{
+					t = args->args[i]->value->getType();
+				}
+
 				env->putObject(params->args[i], args->args[i]->value->clone());
-				//printf("put object: %s\n", params->args[i]);
+				//printf("put param %s object: %d.on env: %p. number value: %f. \n", params->args[i] , t ,env, t == NUMBER ? ((Number*)args->args[i]->value)->getDoubleValue() : -1 );
 			}
 		}
 
