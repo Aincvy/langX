@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <vector>
 #include <string>
 
 namespace langX {
@@ -41,11 +42,13 @@ namespace langX {
 		const char * getClassName() const;
 
 		// 只是自增一个自己的引用次数
-		void justAddRef();
+		void justAddRef(langXObjectRef *);
 		// 生成一个引用， 引用到这个对象身上
 		langXObjectRef * addRef();
-		//  减少一个引用
+		//  减少一个引用计数
 		void subRef();
+		//  减少一个引用计数
+		void subRef(langXObjectRef *);
 		//  获得当前对象的引用次数
 		int getRefCount() const;
 
@@ -62,6 +65,9 @@ namespace langX {
 		Environment *getObjectEnvironment() const;
 
 	private:
+
+		// 引用的那些引用
+		std::vector<langXObjectRef*> m_refs;
 
 		std::map<std::string, Object*> m_members;
 		ClassInfo *m_class_info;

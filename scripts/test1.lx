@@ -1,0 +1,13 @@
+//  ²âÊÔ -a 
+a = 1 ;
+b = -a ;
+print("b=" + b + "\n");
+
+funa => {
+	c = 120  ;
+	return -c;
+}
+
+print("funa=" + funa() + "\n");
+
+print("script end.");

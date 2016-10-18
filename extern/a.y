@@ -395,6 +395,7 @@ double_expr
 
 uminus_expr
 	: '-' double_or_ps_expr %prec UMINUS { $$ = opr(UMINUS, 1, $2 ); }
+	| '-' id_expr %prec UMINUS           { $$ = opr(UMINUS, 1, $2 ); }
 	;
 
 string_expr

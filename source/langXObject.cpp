@@ -51,6 +51,15 @@ namespace langX {
 			this->m_my_env = NULL;
 		}
 
+		// 清理引用
+		for (auto i = this->m_refs.begin(); i != this->m_refs.end(); i++)
+		{
+			langXObjectRef *r = (*i);
+
+			delete r;
+		}
+		this->m_refs.clear();
+
 		// 干掉父类对象
 		if (this->m_parent != NULL)
 		{
@@ -144,20 +153,43 @@ namespace langX {
 		return this->m_class_info->getName();
 	}
 
-	void langXObject::justAddRef()
+	void langXObject::justAddRef(langXObjectRef *r)
 	{
 		this->m_ref_count++;
+		if (r)
+		{
+			this->m_refs.push_back(r);
+		}
 	}
 
 	langXObjectRef * langXObject::addRef()
 	{
 		this->m_ref_count++;
-		return new langXObjectRef(this);
+		langXObjectRef *r = new langXObjectRef(this);
+		this->m_refs.push_back(r);
+		return r;
 	}
 
 	void langXObject::subRef()
 	{
 		this->m_ref_count--;
+	}
+
+	void langXObject::subRef(langXObjectRef *r)
+	{
+		if (!r)
+		{
+			return;
+		}
+
+		for (auto i = m_refs.begin(); i != m_refs.end(); i++)
+		{
+			if ((*i) == r)
+			{
+				m_refs.erase(i++);
+				break;
+			}
+		}
 	}
 
 	int langXObject::getRefCount() const
