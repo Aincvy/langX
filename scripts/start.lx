@@ -8,7 +8,9 @@ s1 = new Student();
 s1.score = -25 ;
 print("score: " + s1.getScore() + "\n");
 s1.score = 11 ;
-print("score: " + s1.getScore() + "\n");
+print("0read score: " + s1.score + "\n");
+c = s1.getScore();
+print("score: " + c + "\n");
 print("read score: " + s1.score + "\n");
 
 

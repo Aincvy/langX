@@ -170,6 +170,8 @@ namespace langX {
 
 	Object * ClassBridgeEnv::getObject(const std::string &name)
 	{
+		//printf("getObject on env-p: %p\n" ,this );
+
 		Object *obj = NULL;
 		if (this->m_class != NULL)
 		{
@@ -270,6 +272,7 @@ namespace langX {
 
 	Object * ObjectBridgeEnv::getObject(const std::string &name)
 	{
+		//printf("getObject on env-p: %p\n", this);
 		if (this->m_object == NULL)
 		{
 			if (this->m_parent != NULL && !m_restrict)
@@ -428,6 +431,8 @@ namespace langX {
 
 	Object * TryEnvironment::getObject(const std::string &name)
 	{
+		//printf("getObject on env-p: %p\n", this);
+
 		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
 			if (this->m_parent != nullptr)
@@ -510,6 +515,8 @@ namespace langX {
 
 	Object * EnvironmentBridgeEnv::getObject(const std::string &name)
 	{
+		//printf("getObject on env-p: %p\n", this);
+
 		Object *o = this->m_env->getObject(name);
 		if (o == NULL)
 		{
@@ -637,6 +644,7 @@ namespace langX {
 
 	Object * DefaultEnvironment::getObject(const std::string &name)
 	{
+		//printf("getObject on env-p: %p\n", this);
 
 		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
@@ -712,6 +720,8 @@ namespace langX {
 
 	Object * XNameSpaceEnvironment::getObject(const std::string &name)
 	{
+		//printf("getObject on env-p: %p\n", this);
+
 		return this->m_space->getObject(name);
 	}
 
@@ -827,6 +837,8 @@ namespace langX {
 
 	Object * GlobalEnvironment::getObject(const std::string &)
 	{
+		//printf("getObject on GlobalEnvironment env-p: %p\n", this);
+
 		return nullptr;
 	}
 
@@ -960,6 +972,7 @@ namespace langX {
 
 	Object * ScriptEnvironment::getObject(const std::string &name)
 	{
+		//printf("getObject on ScriptEnvironment env-p: %p\n", this);
 
 		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
