@@ -89,14 +89,14 @@ namespace langX {
 
 		if (this->m_object_ref != NULL)
 		{
-			this->m_object_ref->subRef();
+			this->m_object_ref->subRef(this);
 			this->m_object_ref = NULL;
 		}
 
 		if (obj->getType() == OBJECT)
 		{
 			this->m_object_ref = ((langXObjectRef*)obj)->getRefObject();
-			this->m_object_ref->justAddRef();
+			this->m_object_ref->justAddRef(this);
 		}
 
 	}
