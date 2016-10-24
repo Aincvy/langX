@@ -495,7 +495,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 					t = args->args[i]->value->getType();
 				}
 
-				env->putObject(params->args[i], args->args[i]->value->clone());
+				env->putObject(params->args[i], args->args[i]->value);
 				//printf("put param %s object: %d.on env: %p. number value: %f. \n", params->args[i] , t ,env, t == NUMBER ? ((Number*)args->args[i]->value)->getDoubleValue() : -1 );
 			}
 		}

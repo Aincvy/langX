@@ -406,7 +406,7 @@ namespace langX {
 
 			// É¾³ý¶ÔÏó
 			delete obj->getRefObject();
-			//delete obj;
+			delete obj;
 			obj = NULL;
 		}
 

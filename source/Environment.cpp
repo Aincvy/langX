@@ -156,6 +156,8 @@ namespace langX {
 		{
 			return;
 		}
+
+		//  因为class 内部会自动copy . 所以不需要再环境这边再次copy了
 		this->m_class->addMember(name, obj);
 	}
 
@@ -165,6 +167,8 @@ namespace langX {
 		{
 			return;
 		}
+
+		//  因为class 内部会自动copy . 所以不需要再环境这边再次copy了
 		this->m_class->addMember(name.c_str(), obj);
 	}
 
@@ -426,6 +430,13 @@ namespace langX {
 
 	void TryEnvironment::putObject(const std::string &name, Object *obj)
 	{
+		if (obj) {
+			obj = obj->clone();
+		}
+		else {
+			obj = getState()->getAllocator().allocate(NULLOBJECT);
+		}
+
 		this->m_objects_map[name] = obj;
 	}
 
@@ -505,11 +516,14 @@ namespace langX {
 
 	void EnvironmentBridgeEnv::putObject(const char *name, Object *obj)
 	{
+		
+		//  这是环境桥接环境， 不需要复制。 目标环境应该会进行复制的
 		this->m_env->putObject(name, obj);
 	}
 
 	void EnvironmentBridgeEnv::putObject(const std::string &name, Object *obj)
 	{
+		//  这是环境桥接环境， 不需要复制。 目标环境应该会进行复制的
 		this->m_env->putObject(name, obj);
 	}
 
@@ -639,6 +653,13 @@ namespace langX {
 
 	void DefaultEnvironment::putObject(const std::string &name, Object *obj)
 	{
+		if (obj) {
+			obj = obj->clone();
+		}
+		else {
+			obj = getState()->getAllocator().allocate(NULLOBJECT);
+		}
+
 		this->m_objects_map[name] = obj;
 	}
 
@@ -715,6 +736,7 @@ namespace langX {
 
 	void XNameSpaceEnvironment::putObject(const std::string &name, Object *obj)
 	{
+		// 因为是命名空间的桥接环境。 命名空间内部再实现的时候会copy 。 所以这里不进行copy 
 		this->m_space->putObject(name, obj);
 	}
 
@@ -967,6 +989,13 @@ namespace langX {
 
 	void ScriptEnvironment::putObject(const std::string &name, Object *obj)
 	{
+		if (obj) {
+			obj = obj->clone();
+		}
+		else {
+			obj = getState()->getAllocator().allocate(NULLOBJECT);
+		}
+
 		this->m_objects_map[name] = obj;
 	}
 
