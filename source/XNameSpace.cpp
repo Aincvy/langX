@@ -1,6 +1,9 @@
 #include "../include/XNameSpace.h"
 #include "../include/Object.h"
 #include "../include/ClassInfo.h"
+#include "../include/langX.h"
+#include "../include/YLlangX.h"
+#include "../include/Allocator.h"
 
 namespace langX {
 
@@ -38,6 +41,13 @@ namespace langX {
 
 	void XNameSpace::putObject(const std::string &name, Object *obj)
 	{
+		if (obj) {
+			obj = obj->clone();
+		}
+		else {
+			obj = getState()->getAllocator().allocate(NULLOBJECT);
+		}
+
 		this->m_objects_map[name] = obj;
 	}
 

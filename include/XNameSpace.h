@@ -16,7 +16,9 @@ namespace langX {
 
 		const char * getName() const;
 
+		//  放入一个对象的copy 到 指定的key 上
 		void putObject(const char*, Object*);
+		//  放入一个对象的copy 到 指定的key 上
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
 		// 只从自己的环境中寻找对象

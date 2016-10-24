@@ -36,7 +36,7 @@ namespace langX {
 		Object *obj = env->getObject(name);
 		if (obj == NULL)
 		{
-			env->putObject(name, val->clone());
+			env->putObject(name, val);
 		}
 		else {
 			if (obj->getType() != val->getType())
@@ -275,7 +275,7 @@ namespace langX {
 				Object *t = m_exec_alloc.allocate(rightType);
 				t->setEmergeEnv(obj->getEmergeEnv());
 				obj->getEmergeEnv()->putObject(left->var_obj->name, t);
-				left->value = t->clone();
+				left->value = t;
 			}
 
 			return;
@@ -311,7 +311,7 @@ namespace langX {
 			}
 		}
 
-		left->value = obj->clone();
+		left->value = obj;
 	}
 
 	/* 检测一下节点是否存在 值， 如果不存在， 则运算他 */
