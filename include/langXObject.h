@@ -64,6 +64,9 @@ namespace langX {
 		// 获得类的环境
 		Environment *getObjectEnvironment() const;
 
+		// 获得引用记数小于等于0的时间
+		long getZeroRefTime() const;
+
 	private:
 
 		// 引用的那些引用
@@ -74,7 +77,8 @@ namespace langX {
 		// 当前对象的环境
 		ObjectBridgeEnv *m_my_env;
 		int  m_ref_count = 0;
-
+		// 引用变成0，及负数的时间
+		long m_zero_ref_time = 0;
 		// 父类的对象
 		langXObject *m_parent = nullptr;
 	};

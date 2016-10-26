@@ -8,6 +8,7 @@
 #include "../include/NullObject.h"
 #include "../include/Function.h"
 #include "../include/ClassInfo.h"
+#include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 #include "../include/XArray.h"
 
@@ -145,6 +146,21 @@ namespace langX {
 	void Allocator::freeFunctionRef(FunctionRef *f) const
 	{
 		delete f;
+	}
+
+	langXObject * Allocator::newObject(ClassInfo *c)
+	{
+		langXObject *p = new langXObject(c);
+		this->m_objects.push_back(p);
+		return p;
+	}
+
+	void Allocator::gc()
+	{
+	}
+
+	void Allocator::checkGC()
+	{
 	}
 
 
