@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 
 namespace langX {
 	class Object;
@@ -7,7 +8,10 @@ namespace langX {
 	class String;
 	class FunctionRef;
 	class Function;
+	class langXObject;
+	class ClassInfo;
 
+	// 主要用来申请一个对象
 	class Allocator
 	{
 	public:
@@ -30,8 +34,16 @@ namespace langX {
 		FunctionRef *allocateFunctionRef(Function *) const;
 		void freeFunctionRef(FunctionRef *) const;
 
-	private:
+		langXObject * newObject(ClassInfo *) ;
 
+		// 垃圾回收
+		void gc();
+
+		// 检测垃圾回收
+		void checkGC();
+
+	private:
+		std::list<langXObject*> m_objects;
 	};
 
 }

@@ -108,7 +108,9 @@ namespace langX {
 		DefaultEnvironment();
 		~DefaultEnvironment();
 
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const char*, Object*);
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
 		// 只从自己的环境中寻找对象
@@ -133,7 +135,9 @@ namespace langX {
 		GlobalEnvironment();
 		~GlobalEnvironment();
 
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const char*, Object*) ;
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*) ;
 		Object* getObject(const std::string &) ;
 		// 只从自己的环境中寻找对象
@@ -166,8 +170,9 @@ namespace langX {
 		ScriptEnvironment(const char *);
 		~ScriptEnvironment();
 
-
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const char*, Object*);
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
 		// 只从自己的环境中寻找对象
@@ -214,7 +219,9 @@ namespace langX {
 
 		const char * getName() const;
 
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const char*, Object*) ;
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
 		// 只从自己的环境中寻找对象
@@ -249,7 +256,9 @@ namespace langX {
 		ClassBridgeEnv(ClassInfo *);
 		~ClassBridgeEnv();
 
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const char*, Object*);
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
 		Object* getObjectSelf(const char *) const;
@@ -276,7 +285,9 @@ namespace langX {
 		ObjectBridgeEnv(langXObject *);
 		~ObjectBridgeEnv();
 
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const char*, Object*);
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
 		Object* getObjectSelf(const char *) const;
@@ -318,7 +329,9 @@ namespace langX {
 		void setCatchNode(Node *);
 		Node *getCatchNode() const;
 
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const char*, Object*);
+		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*) ;
 		Object* getObject(const std::string &) ;
 		// 只从自己的环境中寻找对象

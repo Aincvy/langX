@@ -6,6 +6,7 @@
 #include "../include/ClassInfo.h"
 #include "../include/Allocator.h"
 #include "../include/Environment.h"
+#include "../include/YLlangX.h"
 
 extern langX::Allocator m_exec_alloc;
 
@@ -133,7 +134,7 @@ namespace langX {
 
 	langXObject * ClassInfo::newObject()
 	{
-		return new langXObject(this);
+		return getState()->getAllocator().newObject(this);
 	}
 
 	std::map<std::string, Object*>& ClassInfo::getMembers()

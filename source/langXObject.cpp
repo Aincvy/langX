@@ -7,6 +7,7 @@
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 #include "../include/Environment.h"
+#include "../include/Utils.h"
 
 namespace langX {
 
@@ -160,6 +161,7 @@ namespace langX {
 		{
 			this->m_refs.push_back(r);
 		}
+		this->m_zero_ref_time = 0;
 	}
 
 	langXObjectRef * langXObject::addRef()
@@ -167,11 +169,16 @@ namespace langX {
 		this->m_ref_count++;
 		langXObjectRef *r = new langXObjectRef(this);
 		this->m_refs.push_back(r);
+		this->m_zero_ref_time = 0;
 		return r;
 	}
 
 	void langXObject::subRef()
 	{
+		if (-- this->m_ref_count <= 0)
+		{
+			this->m_zero_ref_time = getTime();
+		}
 		this->m_ref_count--;
 	}
 
@@ -190,6 +197,7 @@ namespace langX {
 				break;
 			}
 		}
+		subRef();
 	}
 
 	int langXObject::getRefCount() const
@@ -229,6 +237,11 @@ namespace langX {
 	Environment * langXObject::getObjectEnvironment() const
 	{
 		return this->m_my_env;
+	}
+
+	long langXObject::getZeroRefTime() const
+	{
+		return this->m_zero_ref_time;
 	}
 
 
