@@ -262,6 +262,7 @@ namespace langX {
 		{
 			return;
 		}
+		// setMember 的时候 内部会进行克隆
 		this->m_object->setMember(name, obj);
 	}
 
@@ -271,6 +272,7 @@ namespace langX {
 		{
 			return;
 		}
+		// setMember 的时候 内部会进行克隆
 		this->m_object->setMember(name.c_str(), obj);
 	}
 
@@ -307,7 +309,7 @@ namespace langX {
 	void ObjectBridgeEnv::putFunction(const char *name, Function *f)
 	{
 		char tmp[200] = { 0 };
-		sprintf(tmp,"cannot put function %s into a object!", name);
+		sprintf(tmp, "cannot put function %s into a object!", name);
 		getState()->throwException(newUnsupportedOperationException(tmp)->addRef());
 
 		delete f;
@@ -425,19 +427,31 @@ namespace langX {
 
 	void TryEnvironment::putObject(const char *name, Object *obj)
 	{
-		putObject(std::string(name),obj);
+		putObject(std::string(name), obj);
 	}
 
 	void TryEnvironment::putObject(const std::string &name, Object *obj)
 	{
+		auto it = this->m_objects_map.find(name);
+
 		if (obj) {
 			obj = obj->clone();
 		}
 		else {
 			obj = getState()->getAllocator().allocate(NULLOBJECT);
 		}
+		obj->setName(name);
 
-		this->m_objects_map[name] = obj;
+		if (it != this->m_objects_map.end())
+		{
+			// 删除 原来的值
+			getState()->getAllocator().free(it->second);
+			// 替换新值
+			it->second = obj;
+		}
+		else {
+			this->m_objects_map[name] = obj;
+		}
 	}
 
 	Object * TryEnvironment::getObject(const std::string &name)
@@ -516,7 +530,7 @@ namespace langX {
 
 	void EnvironmentBridgeEnv::putObject(const char *name, Object *obj)
 	{
-		
+
 		//  这是环境桥接环境， 不需要复制。 目标环境应该会进行复制的
 		this->m_env->putObject(name, obj);
 	}
@@ -653,14 +667,27 @@ namespace langX {
 
 	void DefaultEnvironment::putObject(const std::string &name, Object *obj)
 	{
+		auto it = this->m_objects_map.find(name);
+
 		if (obj) {
 			obj = obj->clone();
 		}
 		else {
 			obj = getState()->getAllocator().allocate(NULLOBJECT);
 		}
+		obj->setName(name);
 
-		this->m_objects_map[name] = obj;
+		if (it != this->m_objects_map.end())
+		{
+			// 删除 原来的值
+			getState()->getAllocator().free(it->second);
+			// 替换新值
+			it->second = obj;
+		}
+		else {
+			this->m_objects_map[name] = obj;
+		}
+
 	}
 
 	Object * DefaultEnvironment::getObject(const std::string &name)
@@ -989,14 +1016,26 @@ namespace langX {
 
 	void ScriptEnvironment::putObject(const std::string &name, Object *obj)
 	{
+		auto it = this->m_objects_map.find(name);
+
 		if (obj) {
 			obj = obj->clone();
 		}
 		else {
 			obj = getState()->getAllocator().allocate(NULLOBJECT);
 		}
+		obj->setName(name);
 
-		this->m_objects_map[name] = obj;
+		if (it != this->m_objects_map.end())
+		{
+			// 删除 原来的值
+			getState()->getAllocator().free(it->second);
+			// 替换新值
+			it->second = obj;
+		}
+		else {
+			this->m_objects_map[name] = obj;
+		}
 	}
 
 	Object * ScriptEnvironment::getObject(const std::string &name)

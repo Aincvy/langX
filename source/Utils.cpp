@@ -2,6 +2,7 @@
 #include <time.h>
 #else
 #include <sys/time.h>  
+#include <stdio.h>
 #endif // WIN32
 
 

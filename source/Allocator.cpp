@@ -11,6 +11,7 @@
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 #include "../include/XArray.h"
+#include "../include/DestroyedObject.h"
 
 namespace langX {
 	Allocator::Allocator()
@@ -68,6 +69,9 @@ namespace langX {
 		{
 			return new FunctionRef(NULL);
 		}
+		else if (t == ObjectType::DESTROYEDOBJECT) {
+			return new DestroyedObject();
+		}
 
 		return NULL;
 	}
@@ -99,6 +103,10 @@ namespace langX {
 		else if (obj->getType() == XARRAY)
 		{
 			delete (XArrayRef *) obj;
+		}
+		else if(obj->getType() == DESTROYEDOBJECT)
+		{
+			delete (DestroyedObject*)obj;
 		}
 	}
 	
@@ -150,17 +158,44 @@ namespace langX {
 
 	langXObject * Allocator::newObject(ClassInfo *c)
 	{
+		checkGC();
+
+		//printf("new object. now object count: %d\n" , this->m_a_count);
 		langXObject *p = new langXObject(c);
 		this->m_objects.push_back(p);
+		this->m_a_count++;
+		
 		return p;
 	}
 
 	void Allocator::gc()
 	{
+		printf("gc start \n");
+
+		int count = 0;
+		for (auto i = this->m_objects.begin(); i != this->m_objects.end(); i++)
+		{
+			langXObject *obj = (*i);
+			if (obj->getRefCount() <= 0)
+			{
+				delete obj;
+				this->m_objects.erase(i++);
+				count++;
+			}
+		}
+
+		this->m_a_count -= count;
+		printf("free %d object(s)\n" , count);
 	}
 
 	void Allocator::checkGC()
 	{
+
+		if (this->m_a_count >= GC_OBJECT_COUNT)
+		{
+			gc();
+		}
+		
 	}
 
 

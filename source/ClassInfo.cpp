@@ -42,7 +42,9 @@ namespace langX {
 			// ´æÔÚ¾ÉÖµ
 			m_exec_alloc.free(i->second);
 		}
-		this->m_members[name] = obj->clone();
+		Object *t = obj->clone();
+		t->setName(name);
+		this->m_members[name] = t;
 	}
 
 	bool ClassInfo::hasMember(const char *name) const

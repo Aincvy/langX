@@ -8,6 +8,7 @@
 #include "../include/langXObjectRef.h"
 #include "../include/Environment.h"
 #include "../include/Utils.h"
+#include "../include/DestroyedObject.h"
 
 namespace langX {
 
@@ -32,6 +33,7 @@ namespace langX {
 			Object *obj = i->second->clone();
 			//  类的字段值 为对象专有， 产生环境也是对象的环境
 			obj->setEmergeEnv(this->m_my_env);
+			obj->setName(i->first);
 			this->m_members[i->first] = obj;
 		}
 
@@ -53,11 +55,14 @@ namespace langX {
 		}
 
 		// 清理引用
+		DestroyedObject destoryObj;
 		for (auto i = this->m_refs.begin(); i != this->m_refs.end(); i++)
 		{
 			langXObjectRef *r = (*i);
+			r->getEmergeEnv()->putObject(r->getName(), &destoryObj);
 
 			delete r;
+			r = NULL;
 		}
 		this->m_refs.clear();
 
@@ -96,7 +101,9 @@ namespace langX {
 		else {
 			getState()->getAllocator().free(a);
 			a = NULL;
-			this->m_members.find(name)->second = obj->clone();
+			a = obj->clone();
+			a->setName(name);
+			this->m_members.find(name)->second = a;
 		}
 	}
 

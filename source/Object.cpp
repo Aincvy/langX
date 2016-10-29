@@ -42,4 +42,14 @@ namespace langX {
 		this->m_emerge_env = env;
 	}
 
+	const char * Object::getName() const
+	{
+		return this->m_name.c_str();
+	}
+
+	void Object::setName(std::string name)
+	{
+		this->m_name = name;
+	}
+
 }

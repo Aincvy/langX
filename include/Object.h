@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 /*
 *   创建时间：  2016-07-07
@@ -53,6 +54,10 @@ namespace langX {
 		/* 克隆当前对象， 返回出一个新的对象 */
 		virtual Object* clone() const = 0;
 
+		// 获得这个对象在他产生环境的名字
+		const char * getName() const;
+		// 设置这个对象在他产生环境中的名字
+		void setName(std::string );
 
 		/* 把自己Update 成目标的值
 		   这个函数不应该， 也不会update 所在的环境   */
@@ -68,6 +73,9 @@ namespace langX {
 
 		// 这个object 出现的环境 ， 根的位置
 		Environment *m_emerge_env = nullptr;
+
+		// 这个对象在出现环境中的名字
+		std::string m_name;
 
 		bool m_is_local = false;
 		bool m_is_private = false;

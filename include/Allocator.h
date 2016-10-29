@@ -44,6 +44,12 @@ namespace langX {
 
 	private:
 		std::list<langXObject*> m_objects;
+
+		// 对象的申请次数
+		int m_a_count = 0;
+
+		// 申请的对象数量到达这个就进行gc 
+		const int GC_OBJECT_COUNT = 1500;
 	};
 
 }
