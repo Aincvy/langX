@@ -48,6 +48,7 @@ namespace langX {
 			obj = getState()->getAllocator().allocate(NULLOBJECT);
 		}
 
+		obj->setName(name);
 		this->m_objects_map[name] = obj;
 	}
 

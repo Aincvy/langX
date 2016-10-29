@@ -3,13 +3,13 @@
 
 namespace langX {
 
-	/* @date  2016-10-18 Ìí¼Ó
-	   @desc  ±»»ØÊÕµÄÏµÍ³¶ÔÏó£¬ ËûµÄÒýÓÃ¶¼»á±ä³ÉÕâ¸ö¶ÔÏó¡£  Èç¹û ¶ÔÏóa ±»ÓÃ»§ÊÖ¶¯½øÐÐÁËdelete ²Ù×÷¡£ ÄÇÃ´ ËùÓÐÖ¸ÏòaµÄÒýÓÃ¶¼»á±ä³ÉÕâ¸ö¶ÔÏó
+	/* @date  2016-10-18 æ·»åŠ 
+	   @desc  è¢«å›žæ”¶çš„ç³»ç»Ÿå¯¹è±¡ï¼Œ ä»–çš„å¼•ç”¨éƒ½ä¼šå˜æˆè¿™ä¸ªå¯¹è±¡ã€‚  å¦‚æžœ å¯¹è±¡a è¢«ç”¨æˆ·æ‰‹åŠ¨è¿›è¡Œäº†delete æ“ä½œã€‚ é‚£ä¹ˆ æ‰€æœ‰æŒ‡å‘açš„å¼•ç”¨éƒ½ä¼šå˜æˆè¿™ä¸ªå¯¹è±¡
 	*/
 
 	class Object;
 
-	//  ±»Ïú»ÙµÄ¶ÔÏó 
+	//  è¢«é”€æ¯çš„å¯¹è±¡ 
 	class DestroyedObject : public Object
 	{
 	public:
@@ -17,22 +17,22 @@ namespace langX {
 		~DestroyedObject();
 
 
-		/* µ±Ç°Öµ¿ÉÒÔ±íÊ¾ÎªÕæÃ´£¿  null,0,false ¶¼²»»á±íÊ¾ÎªÕæ  */
+		/* å½“å‰å€¼å¯ä»¥è¡¨ç¤ºä¸ºçœŸä¹ˆï¼Ÿ  null,0,false éƒ½ä¸ä¼šè¡¨ç¤ºä¸ºçœŸ  */
 		bool isTrue() const ;
-		/* »ñµÃµ±Ç°¶ÔÏóµÄÀàÐÍ  */
+		/* èŽ·å¾—å½“å‰å¯¹è±¡çš„ç±»åž‹  */
 		ObjectType getType() const ;
-		/* ¿ËÂ¡µ±Ç°¶ÔÏó£¬ ·µ»Ø³öÒ»¸öÐÂµÄ¶ÔÏó */
+		/* å…‹éš†å½“å‰å¯¹è±¡ï¼Œ è¿”å›žå‡ºä¸€ä¸ªæ–°çš„å¯¹è±¡ */
 		Object* clone() const ;
 
 
-		/* °Ñ×Ô¼ºUpdate ³ÉÄ¿±êµÄÖµ
-		Õâ¸öº¯Êý²»Ó¦¸Ã£¬ Ò²²»»áupdate ËùÔÚµÄ»·¾³   */
+		/* æŠŠè‡ªå·±Update æˆç›®æ ‡çš„å€¼
+		è¿™ä¸ªå‡½æ•°ä¸åº”è¯¥ï¼Œ ä¹Ÿä¸ä¼šupdate æ‰€åœ¨çš„çŽ¯å¢ƒ   */
 		void update(Object *) ;
 
 
 	private:
 
-		// Ïú»Ù×ÔÉí
+		// é”€æ¯è‡ªèº«
 		void finalize();
 
 	};

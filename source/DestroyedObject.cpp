@@ -3,7 +3,7 @@
 
 namespace langX {
 
-
+	// 被销毁的对象。  没什么好实现的内容。。 
 
 	DestroyedObject::DestroyedObject()
 	{
@@ -30,6 +30,7 @@ namespace langX {
 
 	void DestroyedObject::update(Object *)
 	{
+
 	}
 
 	void DestroyedObject::finalize()

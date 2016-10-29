@@ -72,6 +72,9 @@
     <ClInclude Include="include\Utils.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\DestroyedObject.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="extern\lex.yy.c">
@@ -135,6 +138,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\Utils.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DestroyedObject.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

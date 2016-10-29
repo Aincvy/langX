@@ -1,0 +1,12 @@
+Class1 {
+  a,b;
+}
+
+a = null ;
+
+for( i = 0; i < 1600; i++ ){
+  a = new Class1();
+}
+
+print("script gctest1 over.\n");
+// ²âÊÔÏÂgc 

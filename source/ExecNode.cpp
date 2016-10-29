@@ -309,6 +309,9 @@ namespace langX {
 				// 赋值到新值
 				obj = t;
 			}
+			else {
+				obj = obj->clone();
+			}
 		}
 
 		left->value = obj;

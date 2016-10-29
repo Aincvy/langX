@@ -14,7 +14,7 @@ namespace langX {
 	{
 		if (this->m_object_ref != nullptr)
 		{
-			this->m_object_ref->subRef();
+			this->m_object_ref->subRef(this);
 		}
 	}
 	langXObject * langXObjectRef::getRefObject()

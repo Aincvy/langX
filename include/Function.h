@@ -42,6 +42,12 @@ namespace langX {
 		// 当前函数是属于哪个类
 		ClassInfo *m_class_info = nullptr;
 
+		// 私有函数?
+		bool m_private = false;
+		// 本地函数? 
+		bool m_local = false;
+		// 共有函数 ?
+		bool m_public = true;
 	};
 
 
