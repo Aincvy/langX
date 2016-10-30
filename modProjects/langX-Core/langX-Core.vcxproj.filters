@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{7b3f2a3c-086a-47b9-ae03-591acd809d6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{691b7e07-1e72-4f96-a50c-b9b158f9cbf7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\CoreModule.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\CoreModule.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

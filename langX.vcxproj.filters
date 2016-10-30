@@ -75,6 +75,9 @@
     <ClInclude Include="include\DestroyedObject.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\X3rdModule.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="extern\lex.yy.c">
@@ -143,6 +146,9 @@
     <ClCompile Include="source\DestroyedObject.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\X3rdModule.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="extern\a.l">
@@ -152,5 +158,6 @@
       <Filter>extern</Filter>
     </None>
     <None Include="makefile" />
+    <None Include="copyModProjects.sh" />
   </ItemGroup>
 </Project>

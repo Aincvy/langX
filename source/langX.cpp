@@ -16,12 +16,20 @@
 #include "../include/Exception.h"
 #include "../include/Function.h"
 #include "../include/XNameSpace.h"
+#include "../include/X3rdModule.h"
 
-// ÇÐ»»»º³åÇøµ½ ÎÄ¼þÖ¸Õë
+#ifdef WIN32
+//  win32 åº“
+#else
+// linux åº“
+#include <dlfcn.h>
+#endif // WIN32
+
+// åˆ‡æ¢ç¼“å†²åŒºåˆ° æ–‡ä»¶æŒ‡é’ˆ
 extern void pushBuffer(FILE *fp);
 extern int yyparse(void);
 
-// ÊÍ·Å»·¾³ÄÚ´æ
+// é‡Šæ”¾çŽ¯å¢ƒå†…å­˜
 void freeEnv(langX::Environment **env) {
 
 	if (env == NULL || (*env) == NULL)
@@ -120,9 +128,9 @@ namespace langX {
 			backEnv();
 		}
 
-		//  ÏÂÃæÄÇÌõÓï¾äµÄµ±Ç°»·¾³¾ÍÊÇ  m_global_env  £¬ËùÒÔÎÞÐèÊÍ·Å m_global_env
+		//  ä¸‹é¢é‚£æ¡è¯­å¥çš„å½“å‰çŽ¯å¢ƒå°±æ˜¯  m_global_env  ï¼Œæ‰€ä»¥æ— éœ€é‡Šæ”¾ m_global_env
 		freeEnv(&this->m_current_env);
-		
+
 		for (auto i = this->m_script_env_map.begin(); i != this->m_script_env_map.end(); i++)
 		{
 			delete (i->second);
@@ -197,7 +205,7 @@ namespace langX {
 		}
 		if (flag)
 		{
-			//  ×ÓÀà
+			//  å­ç±»
 			freeEnv(&this->m_current_env);
 			//this->m_current_env = NULL;
 		}
@@ -307,7 +315,7 @@ namespace langX {
 	{
 		StrackTraceFrameArray array1 = this->m_stacktrace.frames();
 
-		// ²»´òÓ¡×Ô¼ºÕâ¸öº¯Êý
+		// ä¸æ‰“å°è‡ªå·±è¿™ä¸ªå‡½æ•°
 		for (int i = array1.length - 2; i >= 0; i--)
 		{
 			printf("%s\n", array1.frame[i]->getInfo());
@@ -318,9 +326,9 @@ namespace langX {
 
 	void langXState::throwException(langXObjectRef *obj)
 	{
-		// ¶ª³öÒ»¸öÒì³£
+		// ä¸¢å‡ºä¸€ä¸ªå¼‚å¸¸
 
-		// ÕÒµ½try»·¾³
+		// æ‰¾åˆ°tryçŽ¯å¢ƒ
 		TryEnvironment *tryEnv = NULL;
 		Environment *env = this->m_current_env;
 		while (1)
@@ -342,11 +350,11 @@ namespace langX {
 				break;
 			}
 
-			// ÒòÎª¶ª³öÁËÒì³££¬ ËùÒÔµ½ try »·¾³Ö®Ç°µÄËùÓÐ»·¾³¶¼»á±ä³ÉËÀÍö»·¾³
+			// å› ä¸ºä¸¢å‡ºäº†å¼‚å¸¸ï¼Œ æ‰€ä»¥åˆ° try çŽ¯å¢ƒä¹‹å‰çš„æ‰€æœ‰çŽ¯å¢ƒéƒ½ä¼šå˜æˆæ­»äº¡çŽ¯å¢ƒ
 			//env->setDead(true);
 			Environment *p = env->getParent();
 
-			// ÍË»ØÒ»¼¶»·¾³ £¬Ö±µ½ÍË»Øtry »·¾³
+			// é€€å›žä¸€çº§çŽ¯å¢ƒ ï¼Œç›´åˆ°é€€å›žtry çŽ¯å¢ƒ
 			backEnv();
 
 			env = p;
@@ -358,7 +366,7 @@ namespace langX {
 			return;
 		}
 
-		//  ÍË³ötry »·¾³
+		//  é€€å‡ºtry çŽ¯å¢ƒ
 		backEnv(false);
 
 		// check call back first.
@@ -367,27 +375,27 @@ namespace langX {
 		{
 			c(obj);
 
-			// ÐÂ½¨Ò»¸ö»·¾³£¬²¢ÉèÖÃµ±Ç°»·¾³Îª dead »·¾³
+			// æ–°å»ºä¸€ä¸ªçŽ¯å¢ƒï¼Œå¹¶è®¾ç½®å½“å‰çŽ¯å¢ƒä¸º dead çŽ¯å¢ƒ
 			newEnv();
 			this->m_current_env->setDead(true);
 
-			// É¾³ý¶ÔÏó
+			// åˆ é™¤å¯¹è±¡
 			delete obj->getRefObject();
 			delete obj;
 			obj = NULL;
 		}
 		else {
 			setInException(true);
-			// ½«Òì³£¸³Öµ
-			// ½øÈëcatch »·¾³
+			// å°†å¼‚å¸¸èµ‹å€¼
+			// è¿›å…¥catch çŽ¯å¢ƒ
 			env = newEnv();
 			Node *cNode = tryEnv->getCatchNode();
 			env->putObject(cNode->opr_obj->op[0]->var_obj->name, obj);
 
-			// Ö´ÐÐ catch ¿éµÄÓï¾ä
+			// æ‰§è¡Œ catch å—çš„è¯­å¥
 			__execNode(cNode->opr_obj->op[1]);
 
-			// ½«»·¾³back µ½env
+			// å°†çŽ¯å¢ƒback åˆ°env
 			while (env != this->m_current_env)
 			{
 				if (this->m_current_env == NULL)
@@ -398,19 +406,19 @@ namespace langX {
 				backEnv();
 			}
 
-			// Ö÷¶¯½øÐÐ try-catch ²Ù×÷µÄÊ±ºò £¬ try Ö´ÐÐºó»áÊÍ·ÅÒ»¸ö»·¾³£¬ËùÒÔµ±Ç°»·¾³±£Áô
-			// ½«µ±Ç°»·¾³ÉèÖÃÎªËÀÍö»·¾³£¬ ÕâÑù¾Í¿ÉÒÔºöÂÔ try ÄÚµÄÊ£Óà²Ù×÷ÁË£¿
+			// ä¸»åŠ¨è¿›è¡Œ try-catch æ“ä½œçš„æ—¶å€™ ï¼Œ try æ‰§è¡ŒåŽä¼šé‡Šæ”¾ä¸€ä¸ªçŽ¯å¢ƒï¼Œæ‰€ä»¥å½“å‰çŽ¯å¢ƒä¿ç•™
+			// å°†å½“å‰çŽ¯å¢ƒè®¾ç½®ä¸ºæ­»äº¡çŽ¯å¢ƒï¼Œ è¿™æ ·å°±å¯ä»¥å¿½ç•¥ try å†…çš„å‰©ä½™æ“ä½œäº†ï¼Ÿ
 			env->setDead(true);
 
 			setInException(false);
 
-			// É¾³ý¶ÔÏó
+			// åˆ é™¤å¯¹è±¡
 			delete obj->getRefObject();
 			delete obj;
 			obj = NULL;
 		}
 
-		// Ïú»Ùtry »·¾³
+		// é”€æ¯try çŽ¯å¢ƒ
 		delete tryEnv;
 		tryEnv = NULL;
 	}
@@ -469,7 +477,7 @@ namespace langX {
 			return;
 		}
 
-		//  ÊÍ·ÅÄÚ´æµ½ Éî¶ÈÎª1 µÄ »·¾³
+		//  é‡Šæ”¾å†…å­˜åˆ° æ·±åº¦ä¸º1 çš„ çŽ¯å¢ƒ
 		backToDeep1Env();
 
 		this->m_script_env = new XNameSpaceEnvironment(s);
@@ -490,7 +498,7 @@ namespace langX {
 			return;
 		}
 
-		//  ÊÍ·ÅÄÚ´æµ½ Éî¶ÈÎª1 µÄ »·¾³
+		//  é‡Šæ”¾å†…å­˜åˆ° æ·±åº¦ä¸º1 çš„ çŽ¯å¢ƒ
 		backToDeep1Env();
 
 		this->m_script_env = env;
@@ -508,13 +516,13 @@ namespace langX {
 			return -1;
 		}
 
-		FILE *fp = fopen(filename,"r");
+		FILE *fp = fopen(filename, "r");
 		if (fp == NULL)
 		{
 			throwException(newFileNotFoundException(filename)->addRef());
 			return -1;
 		}
-		
+
 		if (this->m_parsing_file != NULL)
 		{
 			this->m_doing_files.push_front(this->m_parsing_file);
@@ -531,7 +539,7 @@ namespace langX {
 		realpath(filename, tmp);
 
 		this->m_parsing_file = strdup(tmp);
-		
+
 		if (this->m_script_env_map.find(tmp) == this->m_script_env_map.end())
 		{
 			ScriptEnvironment * env = new ScriptEnvironment(tmp);
@@ -577,7 +585,7 @@ namespace langX {
 		}
 
 		this->m_parsing_file = strdup(filename);
-		
+
 		//printf("require file %s !\n", filename);
 
 		pushBuffer(fp);
@@ -619,13 +627,13 @@ namespace langX {
 		//printf("file %s eof!\n", m_parsing_file);
 		free(this->m_parsing_file);
 		this->m_parsing_file = NULL;
-		
+
 		if (this->m_doing_files.empty())
 		{
 			return;
 		}
 
-		
+
 		char * p = this->m_doing_files.front();
 		this->m_doing_files.erase(this->m_doing_files.begin());
 		this->m_parsing_file = p;
@@ -633,7 +641,7 @@ namespace langX {
 		int index = 0;
 		while (this->m_script_env_map.find(p) == this->m_script_env_map.end())
 		{
-			//  ½Å±¾¿Õ¼äÎÞ·¨ÕÒµ½¸Ã±äÁ¿ £¬¼ÌÐøÏòÏÂËÑË÷
+			//  è„šæœ¬ç©ºé—´æ— æ³•æ‰¾åˆ°è¯¥å˜é‡ ï¼Œç»§ç»­å‘ä¸‹æœç´¢
 			if (index >= this->m_doing_files.size())
 			{
 				return;
@@ -648,6 +656,38 @@ namespace langX {
 
 		//printf("change file to %s. change script env to file: %s \n", m_parsing_file , p );
 		newScriptEnv(this->m_script_env_map[p]);
+	}
+
+	int langXState::loadModule(const char * path)
+	{
+#ifdef WIN32
+		// WIN32å®žçŽ°
+		return -1;
+#else
+		void *soObj = dlopen(path, RTLD_LAZY);
+		if (soObj == NULL) {
+			return -1;
+		}
+
+		LoadModuleFunPtr fptr = (LoadModuleFunPtr)dlsym(soObj, "loadModule");
+		if (fptr == NULL) {
+			return -1;
+		}
+
+		X3rdModule * mod = NULL;
+		fptr(mod);
+
+		if (mod == NULL) {
+			return -1;
+		}
+
+		int ret = mod->init(this);
+
+		dlclose(soObj);
+
+		return ret;
+#endif
+
 	}
 
 

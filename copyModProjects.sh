@@ -1,0 +1,1 @@
+cp -fR ../langX-Core modProjects/

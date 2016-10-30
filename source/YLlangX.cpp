@@ -33,6 +33,8 @@ void initLangX()
 
 		regFunctions(state);
 		regExceptions();
+
+		state->loadModule("mod/core.so");
 	}
 }
 
