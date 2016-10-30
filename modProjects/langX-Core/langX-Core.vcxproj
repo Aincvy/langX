@@ -27,64 +27,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="extern\y.tab.h" />
-    <ClInclude Include="include\Allocator.h" />
-    <ClInclude Include="include\ClassInfo.h" />
-    <ClInclude Include="include\DestroyedObject.h" />
-    <ClInclude Include="include\Environment.h" />
-    <ClInclude Include="include\ExecNode.h" />
-    <ClInclude Include="include\Exception.h" />
-    <ClInclude Include="include\Function.h" />
-    <ClInclude Include="include\langX.h" />
-    <ClInclude Include="include\langXObject.h" />
-    <ClInclude Include="include\langXObjectRef.h" />
-    <ClInclude Include="include\NullObject.h" />
-    <ClInclude Include="include\Number.h" />
-    <ClInclude Include="include\Object.h" />
-    <ClInclude Include="include\RegFunctions.h" />
-    <ClInclude Include="include\StackTrace.h" />
-    <ClInclude Include="include\String.h" />
-    <ClInclude Include="include\Utils.h" />
-    <ClInclude Include="include\X3rdModule.h" />
-    <ClInclude Include="include\XArray.h" />
-    <ClInclude Include="include\XNameSpace.h" />
-    <ClInclude Include="include\YLlangX.h" />
+    <ClCompile Include="makefile" />
+    <ClCompile Include="source\CoreModule.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="extern\lex.yy.c" />
-    <ClCompile Include="extern\y.tab.c" />
-    <ClCompile Include="source\Allocator.cpp" />
-    <ClCompile Include="source\ClassInfo.cpp" />
-    <ClCompile Include="source\DestroyedObject.cpp" />
-    <ClCompile Include="source\Environment.cpp" />
-    <ClCompile Include="source\ExecNode.cpp" />
-    <ClCompile Include="source\Exception.cpp" />
-    <ClCompile Include="source\Function.cpp" />
-    <ClCompile Include="source\langX.cpp" />
-    <ClCompile Include="source\langXObject.cpp" />
-    <ClCompile Include="source\langXObjectRef.cpp" />
-    <ClCompile Include="source\NullObject.cpp" />
-    <ClCompile Include="source\Number.cpp" />
-    <ClCompile Include="source\Object.cpp" />
-    <ClCompile Include="source\RegFunctions.cpp" />
-    <ClCompile Include="source\StackTrace.cpp" />
-    <ClCompile Include="source\String.cpp" />
-    <ClCompile Include="source\Utils.cpp" />
-    <ClCompile Include="source\X3rdModule.cpp" />
-    <ClCompile Include="source\XArray.cpp" />
-    <ClCompile Include="source\XNameSpace.cpp" />
-    <ClCompile Include="source\YLlangX.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="copyModProjects.sh" />
-    <None Include="extern\a.l" />
-    <None Include="extern\a.y" />
-    <None Include="makefile" />
+    <ClInclude Include="include\CoreModule.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{d44b07e4-99fa-4485-ba6f-1b9bf41172c1}</ProjectGuid>
+    <ProjectGuid>{1f0052a7-8248-49a4-bd51-ac64d0ab88b3}</ProjectGuid>
     <Keyword>Linux</Keyword>
-    <RootNamespace>langX</RootNamespace>
+    <RootNamespace>langX_Core</RootNamespace>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <ApplicationType>Linux</ApplicationType>
     <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
@@ -115,17 +67,6 @@
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <IncludePath>$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Link>
-      <AdditionalOptions>-ll %(AdditionalOptions)</AdditionalOptions>
-    </Link>
-    <ClCompile>
-      <AdditionalOptions>-D "WIN32" %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

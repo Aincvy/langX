@@ -1,0 +1,7 @@
+﻿  Validating architecture
+  Validating sources
+  Copying sources remotely to '192.168.40.130'
+  Starting remote build
+  Compiling sources
+  makefile
+C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Application Type\Linux\1.0\Linux.Common.targets(171,5): error : g++ exited with code 1, please see the Output Window - Build output for more details.

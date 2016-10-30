@@ -110,6 +110,9 @@ namespace langX {
 		// 碰到了一个文件的 eof 符号
 		void fileEOF();
 
+		// 加载一个模块 ,成功返回 0 ， 失败返回 -1
+		int loadModule(const char *path);
+
 	private:
 		// 全局环境
 		GlobalEnvironment *m_global_env = nullptr;
