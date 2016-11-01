@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include "../include/CoreModule.h"
+#include "../include/RegCoreModule.h"
 
 
 namespace langX {
+
 	CoreModule::CoreModule()
 	{
 	}
@@ -12,6 +14,7 @@ namespace langX {
 	int CoreModule::init(langXState *state)
 	{
 		printf("init langX-Core 库\n");
+		regIterator(state);
 		return 0;
 	}
 	int CoreModule::unload(langXState *state)

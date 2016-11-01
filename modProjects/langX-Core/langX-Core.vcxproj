@@ -29,9 +29,11 @@
   <ItemGroup>
     <ClCompile Include="makefile" />
     <ClCompile Include="source\CoreModule.cpp" />
+    <ClCompile Include="source\Iterator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreModule.h" />
+    <ClInclude Include="include\RegCoreModule.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1f0052a7-8248-49a4-bd51-ac64d0ab88b3}</ProjectGuid>
@@ -58,6 +60,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <RemoteRootDir>~/projects/langX/modProjects</RemoteRootDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>

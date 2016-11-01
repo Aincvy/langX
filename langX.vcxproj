@@ -74,6 +74,7 @@
     <ClCompile Include="source\XArray.cpp" />
     <ClCompile Include="source\XNameSpace.cpp" />
     <ClCompile Include="source\YLlangX.cpp" />
+    <ClCompile Include="Readme" />
   </ItemGroup>
   <ItemGroup>
     <None Include="copyModProjects.sh" />

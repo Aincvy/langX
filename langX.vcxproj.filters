@@ -10,6 +10,9 @@
     <Filter Include="extern">
       <UniqueIdentifier>{ab11a9ab-0a86-4e41-badf-df4d9603d3e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="modProjects">
+      <UniqueIdentifier>{1fe623f2-8eb8-4d54-ab11-9b7e8c9448ce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\YLlangX.h">
@@ -148,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="source\X3rdModule.cpp">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="Readme">
+      <Filter>modProjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
