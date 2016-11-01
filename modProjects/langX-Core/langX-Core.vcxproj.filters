@@ -13,9 +13,15 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="makefile" />
+    <ClCompile Include="source\Iterator.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreModule.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RegCoreModule.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
