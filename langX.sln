@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX", "langX.vcxproj", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX-Core", "modProjects\langX-Core\langX-Core.vcxproj", "{1F0052A7-8248-49A4-BD51-AC64D0AB88B3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX-Mysql", "modProjects\langX-Mysql\langX-Mysql.vcxproj", "{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -41,6 +43,18 @@ Global
 		{1F0052A7-8248-49A4-BD51-AC64D0AB88B3}.Release|x64.Build.0 = Release|x64
 		{1F0052A7-8248-49A4-BD51-AC64D0AB88B3}.Release|x86.ActiveCfg = Release|x86
 		{1F0052A7-8248-49A4-BD51-AC64D0AB88B3}.Release|x86.Build.0 = Release|x86
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Debug|ARM.ActiveCfg = Debug|ARM
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Debug|ARM.Build.0 = Debug|ARM
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Debug|x64.ActiveCfg = Debug|x64
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Debug|x64.Build.0 = Debug|x64
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Debug|x86.ActiveCfg = Debug|x86
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Debug|x86.Build.0 = Debug|x86
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Release|ARM.ActiveCfg = Release|ARM
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Release|ARM.Build.0 = Release|ARM
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Release|x64.ActiveCfg = Release|x64
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Release|x64.Build.0 = Release|x64
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Release|x86.ActiveCfg = Release|x86
+		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
