@@ -251,6 +251,16 @@ namespace langX {
 		return this->m_zero_ref_time;
 	}
 
+	void langXObject::set3rdObj(void *p)
+	{
+		this->m_3rdObj = p;
+	}
+
+	void * langXObject::get3rdObj() const
+	{
+		return this->m_3rdObj;
+	}
+
 
 
 }

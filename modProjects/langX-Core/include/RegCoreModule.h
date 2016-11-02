@@ -1,10 +1,28 @@
 #pragma once
 
 #include "../../../include/langX.h"
+#include "../../../include/XNameSpace.h"
 
 namespace langX {
 
 	// 注册 Iterator 类
-	int regIterator(langXState *state);
+	int regIterator(langXState *state , XNameSpace* space);
+	
+	// 注册 List 类
+	int regList(langXState *state, XNameSpace* space);
 
+	// 注册 Map 类
+	int regMap(langXState *state, XNameSpace* space);
+
+	// 注册 Set类
+	int regSet(langXState *state, XNameSpace* space);
+
+	// 
+	int regQueue(langXState *state, XNameSpace* space);
+
+	// 
+	int regStack(langXState *state, XNameSpace* space);
+
+	//  core 库的东西 ，上面都是core.util 里面的东西
+	int regDeafult(langXState *state, XNameSpace* space);
 }

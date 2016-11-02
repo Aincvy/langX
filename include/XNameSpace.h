@@ -28,6 +28,7 @@ namespace langX {
 		void putFunction(const std::string &, Function*);
 		Function* getFunction(const std::string &);
 
+		void putClass(ClassInfo *);
 		void putClass(const char *, ClassInfo *);
 		ClassInfo *getClass(const char *);
 

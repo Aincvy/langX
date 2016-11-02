@@ -16,6 +16,24 @@
     <ClCompile Include="source\Iterator.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\List.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Map.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Set.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Queue.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Stack.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Default.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreModule.h">

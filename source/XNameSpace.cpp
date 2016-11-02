@@ -92,6 +92,16 @@ namespace langX {
 		return this->m_functions_map[name];
 	}
 
+	void XNameSpace::putClass(ClassInfo * claxx)
+	{
+		if (!claxx)
+		{
+			return;
+		}
+
+		this->m_classes_map[claxx->getName()] = claxx;
+	}
+
 	void XNameSpace::putClass(const char *name, ClassInfo *claxx)
 	{
 		if (claxx == NULL)

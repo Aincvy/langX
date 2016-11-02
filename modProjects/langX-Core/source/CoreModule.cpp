@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "../include/CoreModule.h"
 #include "../include/RegCoreModule.h"
+#include "../../../include/XNameSpace.h"
 
 
 namespace langX {
@@ -14,7 +15,16 @@ namespace langX {
 	int CoreModule::init(langXState *state)
 	{
 		printf("init langX-Core 库\n");
-		regIterator(state);
+		XNameSpace *space = state->getNameSpaceOrCreate("langX.core.util");
+		regIterator(state, space);
+		regList(state, space);
+		regMap(state, space);
+		regSet(state, space);
+		regQueue(state, space);
+		regStack(state, space);
+
+		space = state->getNameSpaceOrCreate("langX.core");
+		regDeafult(state, space);
 		return 0;
 	}
 	int CoreModule::unload(langXState *state)
