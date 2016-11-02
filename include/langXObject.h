@@ -67,6 +67,12 @@ namespace langX {
 		// 获得引用记数小于等于0的时间
 		long getZeroRefTime() const;
 
+		// 设置第三方对象
+		void set3rdObj(void *);
+
+		// 获得第三方对象
+		void * get3rdObj() const; 
+
 	private:
 
 		// 引用的那些引用
@@ -81,6 +87,9 @@ namespace langX {
 		long m_zero_ref_time = 0;
 		// 父类的对象
 		langXObject *m_parent = nullptr;
+
+		// 引用的第三方对象
+		void *m_3rdObj; 
 	};
 
 }

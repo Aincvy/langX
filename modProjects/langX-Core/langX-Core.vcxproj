@@ -29,7 +29,13 @@
   <ItemGroup>
     <ClCompile Include="makefile" />
     <ClCompile Include="source\CoreModule.cpp" />
+    <ClCompile Include="source\Default.cpp" />
     <ClCompile Include="source\Iterator.cpp" />
+    <ClCompile Include="source\List.cpp" />
+    <ClCompile Include="source\Map.cpp" />
+    <ClCompile Include="source\Queue.cpp" />
+    <ClCompile Include="source\Set.cpp" />
+    <ClCompile Include="source\Stack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreModule.h" />
