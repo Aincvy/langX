@@ -449,7 +449,7 @@ namespace langX {
 		return this->m_global_env->getClass(name);
 	}
 
-	XNameSpace * langXState::getNameSpaceOrCreate(const char *name)
+	XNameSpace * langXState::singleGetNameSpaceOrCreate(const char *name)
 	{
 		if (this->m_namespace_map.find(name) != this->m_namespace_map.end())
 		{
@@ -461,13 +461,91 @@ namespace langX {
 		return space;
 	}
 
-	XNameSpace * langXState::getNameSpace(const char *name)
+	XNameSpace * langXState::singleGetNameSpace(const char *name)
 	{
 		if (this->m_namespace_map.find(name) != this->m_namespace_map.end())
 		{
 			return this->m_namespace_map[name];
 		}
 		return nullptr;
+	}
+
+	XNameSpace * langXState::getNameSpace(const char *name)
+	{
+		std::string str = std::string(name);
+		XNameSpace *space = NULL;
+
+		auto dotIndex = str.find_first_of(".");
+
+		while (dotIndex != std::string::npos)
+		{
+			std::string f = str.substr(0, dotIndex);
+			str = str.substr(dotIndex + 1);
+			dotIndex = str.find_first_of(".");
+
+			// f is namespace name
+			if (space == NULL)
+			{
+				space = singleGetNameSpace(f.c_str());	
+			}
+			else {
+				space = space->getNameSpace(f.c_str());
+			}
+
+			if (space == NULL)
+			{
+				return NULL;
+			}
+		}
+
+		if (space == NULL)
+		{
+			space = singleGetNameSpace(str.c_str());
+		}
+		else {
+			space = space->getNameSpace(str.c_str());
+		}
+
+		return space;
+	}
+
+	XNameSpace * langXState::getNameSpaceOrCreate(const char *name)
+	{
+		std::string str = std::string(name);
+		XNameSpace *space = NULL;
+
+		auto dotIndex = str.find_first_of(".");
+
+		while (dotIndex != std::string::npos)
+		{
+			std::string f = str.substr(0, dotIndex);
+			str = str.substr(dotIndex + 1);
+			dotIndex = str.find_first_of(".");
+
+			// f is namespace name
+			if (space == NULL)
+			{
+				space = singleGetNameSpaceOrCreate(f.c_str());
+			}
+			else {
+				space = space->getNameSpace2(f.c_str());
+			}
+
+			if (space == NULL)
+			{
+				return NULL;
+			}
+		}
+
+		if (space == NULL)
+		{
+			space = singleGetNameSpaceOrCreate(str.c_str());
+		}
+		else {
+			space = space->getNameSpace2(str.c_str());
+		}
+
+		return space;
 	}
 
 	void langXState::changeNameSpace(XNameSpace *s)
@@ -683,7 +761,7 @@ namespace langX {
 
 		int ret = mod->init(this);
 
-		dlclose(soObj);
+		//dlclose(soObj);
 
 		return ret;
 #endif

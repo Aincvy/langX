@@ -255,7 +255,7 @@ namespace langX {
 		// 实参索引, 一般表示 数量了
 		int index;
 
-		XArrayRef *arrayRef;
-		langXObject * object;
+		XArrayRef *arrayRef = nullptr;
+		langXObject * object = nullptr;
 	};
 }

@@ -81,11 +81,17 @@ namespace langX {
 		// 获得类信息。  会先搜索当前脚本环境， 如果不存在， 则去搜索全局环境
 		ClassInfo *getClass(const char *) const;
 
-		// 获得一个命名空间， 如果该命名空间不存在， 则会添加一个进去
-		XNameSpace *getNameSpaceOrCreate(const char *);
+		// 获得一个命名空间[单一]， 如果该命名空间不存在， 则会添加一个进去 不能使用 a.b.c 这样的名字。。 因为不会解析出来
+		XNameSpace *singleGetNameSpaceOrCreate(const char *);
 
-		// 获得命名空间
+		// 获得命名空间[单一]   不能使用 a.b.c 这样的名字。。 因为不会解析出来
+		XNameSpace *singleGetNameSpace(const char *);
+
+		// 获得命名空间， 支持 a.b.c
 		XNameSpace *getNameSpace(const char *);
+
+		// 获得一个命名空间，如果该命名空间不存在， 则会添加一个进去  支持 a.b.c
+		XNameSpace *getNameSpaceOrCreate(const char *);
 
 		void changeNameSpace(XNameSpace *);
 
