@@ -152,7 +152,7 @@
     <ClCompile Include="source\X3rdModule.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="Readme">
+    <ClCompile Include="modProjects\Readme">
       <Filter>modProjects</Filter>
     </ClCompile>
   </ItemGroup>
