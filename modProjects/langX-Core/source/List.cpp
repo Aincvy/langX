@@ -12,13 +12,13 @@ namespace langX{
 	Object * langX_List_List(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Exception_Exception error! NO OBJ!\n");
+			printf("langX_List_List error! NO OBJ!\n");
 			return nullptr;
 		}
 
 		std::list<Object*> * list = new std::list<Object*>();
-		
 		args.object->set3rdObj(list);
+
 		return nullptr;
 	}
 
@@ -26,7 +26,7 @@ namespace langX{
 	Object * langX_List_List_Dtor(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Exception_Exception error! NO OBJ!\n");
+			printf("langX_List_List_Dtor error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -48,7 +48,7 @@ namespace langX{
 
 		if (args.object == nullptr)
 		{
-			printf("langX_Exception_Exception error! NO OBJ!\n");
+			printf("langX_List_Add error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -76,7 +76,7 @@ namespace langX{
 	Object * langX_List_Size(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Exception_Exception error! NO OBJ!\n");
+			printf("langX_List_Size error! NO OBJ!\n");
 			return nullptr;
 		}
 

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+#include <stdio.h>
 #include "../include/Object.h"
 #include "../include/ExecNode.h"
 #include "../include/langX.h"
@@ -212,6 +213,12 @@ namespace langX {
 
 	Object * X3rdFunction::call(const X3rdArgs & args)
 	{
+		if (!m_worker)
+		{
+			// error function. 
+			printf("error function: %s!\n" , this->getName());
+			return nullptr;
+		}
 		return m_worker(this,args);
 	}
 

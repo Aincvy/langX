@@ -13,6 +13,9 @@
     <Filter Include="modProjects">
       <UniqueIdentifier>{1fe623f2-8eb8-4d54-ab11-9b7e8c9448ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mod">
+      <UniqueIdentifier>{823ac97a-16c0-4385-a4dd-20497aa04ebd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\YLlangX.h">
@@ -165,5 +168,8 @@
     </None>
     <None Include="makefile" />
     <None Include="copyModProjects.sh" />
+    <None Include="mod\Readme">
+      <Filter>mod</Filter>
+    </None>
   </ItemGroup>
 </Project>

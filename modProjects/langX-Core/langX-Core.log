@@ -16,7 +16,6 @@ F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(17,1): error : expecte
 F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(17,19): error : ‘$’ does not name a type
 F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(18,2): error : ‘g’ does not name a type
 F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(18,16): error : expected unqualified-id before ‘-’ token
-F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(19,1): error : expected unqualified-id before ‘.’ token
 F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(19,17): error : ‘$’ does not name a type
 F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(20,2): error : ‘g’ does not name a type
 F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(20,16): error : expected unqualified-id before ‘-’ token

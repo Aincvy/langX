@@ -2155,7 +2155,7 @@ namespace langX {
 		}
 		langXObjectRef * objectRef = object->addRef();
 		objectRef->setEmergeEnv(getState()->getCurrentEnv());
-		Environment *env = objectRef->getRefObject()->getObjectEnvironment();
+		Environment *env = object->getObjectEnvironment();
 
 		//objectRef->setMembersEmergeEnv(env);
 		//getState()->addEnvToList(env);
@@ -2755,7 +2755,7 @@ namespace langX {
 			// f is namespace name
 			if (flag)
 			{
-				space = getState()->getNameSpace(f.c_str());
+				space = getState()->singleGetNameSpace(f.c_str());
 				if (space == NULL)
 				{
 					break;
@@ -2774,7 +2774,7 @@ namespace langX {
 
 		if (flag)
 		{
-			space = getState()->getNameSpace(str.c_str());
+			space = getState()->singleGetNameSpace(str.c_str());
 		}
 
 		if (space == NULL)
@@ -3039,7 +3039,7 @@ namespace langX {
 				// f is namespace name
 				if (space == NULL)
 				{
-					space = getState()->getNameSpaceOrCreate(f.c_str());
+					space = getState()->singleGetNameSpace(f.c_str());
 				}
 				else {
 					space = space->getNameSpace2(f.c_str());
@@ -3048,7 +3048,7 @@ namespace langX {
 
 			if (space == NULL)
 			{
-				space = getState()->getNameSpaceOrCreate(str.c_str());
+				space = getState()->singleGetNameSpace(str.c_str());
 			}
 			else {
 				space = space->getNameSpace2(str.c_str());
