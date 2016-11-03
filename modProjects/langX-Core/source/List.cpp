@@ -22,7 +22,7 @@ namespace langX{
 		return nullptr;
 	}
 
-	// Îö¹¹º¯Êý
+	// æžæž„å‡½æ•°
 	Object * langX_List_List_Dtor(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
@@ -57,7 +57,7 @@ namespace langX{
 		Object *a = args.args[0];
 		if (a != nullptr)
 		{
-			list->push_back(a);
+			list->push_back(a->clone());
 		}
 
 		return nullptr;
@@ -69,6 +69,32 @@ namespace langX{
 	}
 
 	Object * langX_List_Get(X3rdFunction *func, const X3rdArgs &args) {
+
+		if (args.object == nullptr)
+		{
+			printf("langX_List_Get error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		std::list<Object*> * list = (std::list<Object*> *)args.object->get3rdObj();
+		Object *a = args.args[0];
+		if (a != nullptr)
+		{
+			if (a->getType() == ObjectType::NUMBER)
+			{
+				int index = ((Number*)a)->getIntValue();
+				if (index < list->size())
+				{
+					//  è¿”å›žå€¼çš„ copy
+					auto i = list->begin();
+					for (int a = 0; a < index; a++)
+					{
+						i++;
+					}
+					return getState()->getAllocator().copy(*i);
+				}
+			}
+		}
 
 		return nullptr;
 	}
