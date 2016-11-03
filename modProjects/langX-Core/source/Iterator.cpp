@@ -21,7 +21,7 @@ namespace langX {
 	}
 
 
-	// ×¢²á Iterator Ààs
+	// æ³¨å†Œ Iterator ç±»s
 	int regIterator(langXState *state, XNameSpace * space) {
 
 		ClassInfo *iterator = new ClassInfo("Iterator");

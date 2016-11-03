@@ -1,8 +1,8 @@
 ref langX.core.util;
 
 list = new List();
-list.add(1);
-list.add(2);
-list.add(3);
+list.add("first");
+list.add("second");
+list.add("third");
 
-print("list size: " + list.size() + "\n");
+print("element 1: " + list.get(0) + "\n");

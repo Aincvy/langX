@@ -761,6 +761,7 @@ namespace langX {
 
 		int ret = mod->init(this);
 
+		// TODO  等待 langX 卸载的时候 在卸载动态库
 		//dlclose(soObj);
 
 		return ret;
