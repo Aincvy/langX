@@ -2,20 +2,20 @@
 
 TARGET = ../../mod/core.so
 
-OBJ = source/CoreModule.o ../../source/X3rdModule.o
+OBJ = source/CoreModule.o source/Default.o source/Iterator.o source/List.o source/Map.o source/Queue.o source/Set.o source/Stack.o
 
-HEADER = include/CoreModule.h ../../include/X3rdModule.h
+HEADER = include/CoreModule.h include/RegCoreModule.h 
 
-SRC = source/CoreModule.cpp ../../source/X3rdModule.cpp
+SRC = source/CoreModule.cpp source/Default.cpp source/Iterator.cpp source/List.cpp source/Map.cpp source/Queue.cpp source/Set.cpp source/Stack.cpp
 
-DFLAGS = 
+DFLAGS = -llangX
 
 CFLAGS = -std=c++11 -g -ggdb -fPIC
 
 ${TARGET} : ${OBJ}
 	g++ ${CFLAGS} ${OBJ} -shared -o ${TARGET} ${DFLAGS}
 .cpp.o: ${HEADER} ${SRC}
-	g++ ${CFLAGS} -c -o $@ $< ${DFLAGS}
+	g++ ${CFLAGS} -c -o $@ $< 
 .c.o: ${HEADER} ${SRC}
 	g++ ${CFLAGS} -c -o $@ $< 
 clean:
