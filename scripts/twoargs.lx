@@ -1,0 +1,9 @@
+Class1{
+funtest => (a,b){
+
+}
+}
+
+a = new Class1();
+a.funtest(0,"1234" );
+print("over");

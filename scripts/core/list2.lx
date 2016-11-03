@@ -1,0 +1,15 @@
+ref langX.core.util;
+
+list = new List();
+list.add("first");
+list.add("second");
+list.add("third");
+
+print("element 1: " + list.get(0) + "\n");
+
+list.remove(0);
+print("element 1: " + list.get(0) + "\n");
+print("size: " + list.size() + "\n");
+
+list.set2(0,"1234" );
+print("element 1: " + list.get(0) + "\n");
