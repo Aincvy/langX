@@ -34,6 +34,9 @@
     <ClCompile Include="source\Default.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\Vector.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreModule.h">

@@ -36,6 +36,7 @@
     <ClCompile Include="source\Queue.cpp" />
     <ClCompile Include="source\Set.cpp" />
     <ClCompile Include="source\Stack.cpp" />
+    <ClCompile Include="source\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreModule.h" />
