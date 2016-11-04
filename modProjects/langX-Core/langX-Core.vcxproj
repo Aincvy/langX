@@ -33,6 +33,7 @@
     <ClCompile Include="source\Iterator.cpp" />
     <ClCompile Include="source\List.cpp" />
     <ClCompile Include="source\Map.cpp" />
+    <ClCompile Include="source\Math.cpp" />
     <ClCompile Include="source\Queue.cpp" />
     <ClCompile Include="source\Set.cpp" />
     <ClCompile Include="source\Stack.cpp" />
@@ -41,6 +42,7 @@
   <ItemGroup>
     <ClInclude Include="include\CoreModule.h" />
     <ClInclude Include="include\RegCoreModule.h" />
+    <ClInclude Include="include\RegDefaultClasses.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1f0052a7-8248-49a4-bd51-ac64d0ab88b3}</ProjectGuid>
