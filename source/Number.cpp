@@ -54,6 +54,7 @@ namespace langX {
 	{
 		Number *obj = new Number(this->m_value);
 		obj->setEmergeEnv(getEmergeEnv());
+		obj->setCharacteristic(characteristic());
 		return obj;
 	}
 	void Number::update(Object *right)

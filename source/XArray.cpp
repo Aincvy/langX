@@ -170,6 +170,7 @@ namespace langX {
 		}
 		Object * obj = this->m_array->addRef();
 		obj->setEmergeEnv(this->getEmergeEnv());
+		obj->setCharacteristic(characteristic());
 		return obj;
 	}
 

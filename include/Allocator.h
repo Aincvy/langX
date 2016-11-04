@@ -18,6 +18,7 @@ namespace langX {
 		Allocator();
 		~Allocator();
 
+		// 复制一个参数对象，  和clone操作差不多
 		Object *copy(Object *) const;
 
 		Object *allocate(ObjectType) const;

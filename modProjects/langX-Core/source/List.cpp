@@ -1,4 +1,6 @@
 #include <list>
+#include <string.h>
+
 #include "../include/RegCoreModule.h"
 #include "../../../include/ClassInfo.h"
 #include "../../../include/YLlangX.h"
@@ -90,7 +92,16 @@ namespace langX {
 				}
 			}
 			else {
-				// 暂不支持 直接remove 对象
+				const char * str = a->characteristic();
+				for (auto i = list->begin(); i != list->end(); i++)
+				{
+					if (strcmp(str,(*i)->characteristic()) == 0)
+					{
+						// 相等
+						list->erase(i++);
+						break;
+					}
+				}
 			}
 		}
 

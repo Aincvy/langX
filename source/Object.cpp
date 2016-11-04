@@ -1,10 +1,20 @@
 #include <string>
 #include "../include/Object.h"
+#include "../include/Utils.h"
+
+#include <stdio.h>
 
 namespace langX {
+
 	Object::Object()
 	{
 		this->m_ref_count = 0;
+		
+		char t[100];
+		randomCharacteristic(t, 100, this, 8);
+		this->m_characteristic = std::string(t);
+
+		printf("new object: %s\n" , t);
 	}
 	Object::~Object()
 	{
@@ -50,6 +60,16 @@ namespace langX {
 	void Object::setName(std::string name)
 	{
 		this->m_name = name;
+	}
+
+	const char * Object::characteristic() const
+	{
+		return this->m_characteristic.c_str();
+	}
+
+	void Object::setCharacteristic(const char *a)
+	{
+		this->m_characteristic = std::string(a);
 	}
 
 }

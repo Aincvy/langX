@@ -258,6 +258,7 @@ namespace langX {
 			r->setObj(this->m_func_obj);
 		}
 		r->setEmergeEnv(getEmergeEnv());
+		r->setCharacteristic(characteristic());
 
 		return r;
 	}
