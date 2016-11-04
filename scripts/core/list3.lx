@@ -1,0 +1,11 @@
+ref langX.core.util;
+
+a = "first" ;
+list = new List();
+list.add(a);
+list.add("second");
+list.add("third");
+
+list.remove(a);
+
+print("first: " + list.get(0) + "\n");

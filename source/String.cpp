@@ -49,6 +49,7 @@ namespace langX {
 	{
 		String *str = new String(this->m_value.c_str());
 		str->setEmergeEnv(getEmergeEnv());
+		str->setCharacteristic(characteristic());
 		return str;
 	}
 	void String::update(Object *right)

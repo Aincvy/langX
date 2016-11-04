@@ -1,0 +1,5 @@
+ref langX.core;
+
+a = 4;
+b = Math::sqrt(a);
+print("b: " + b + "\n");
