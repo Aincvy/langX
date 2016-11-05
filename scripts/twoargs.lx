@@ -2,8 +2,20 @@ Class1{
 funtest => (a,b){
 
 }
+
+put => (a,b){}
+
 }
+
+put => (a,b){}
+
+put(1,2);
+put(1,"2");
+put("1",2);
+put(a);
 
 a = new Class1();
 a.funtest(0,"1234" );
+key1 = 1;
+a.put(key1 ,"1234" );
 print("over");

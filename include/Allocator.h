@@ -11,14 +11,14 @@ namespace langX {
 	class langXObject;
 	class ClassInfo;
 
-	// Ö÷ÒªÓÃÀ´ÉêÇëÒ»¸ö¶ÔÏó
+	// ä¸»è¦ç”¨æ¥ç”³è¯·ä¸€ä¸ªå¯¹è±¡
 	class Allocator
 	{
 	public:
 		Allocator();
 		~Allocator();
 
-		// ¸´ÖÆÒ»¸ö²ÎÊı¶ÔÏó£¬  ºÍclone²Ù×÷²î²»¶à
+		// å¤åˆ¶ä¸€ä¸ªå‚æ•°å¯¹è±¡ï¼Œ  å’Œcloneæ“ä½œå·®ä¸å¤š
 		Object *copy(Object *) const;
 
 		Object *allocate(ObjectType) const;
@@ -37,19 +37,19 @@ namespace langX {
 
 		langXObject * newObject(ClassInfo *) ;
 
-		// À¬»ø»ØÊÕ
+		// åƒåœ¾å›æ”¶
 		void gc();
 
-		// ¼ì²âÀ¬»ø»ØÊÕ
+		// æ£€æµ‹åƒåœ¾å›æ”¶
 		void checkGC();
 
 	private:
 		std::list<langXObject*> m_objects;
 
-		// ¶ÔÏóµÄÉêÇë´ÎÊı
+		// å¯¹è±¡çš„ç”³è¯·æ¬¡æ•°
 		int m_a_count = 0;
 
-		// ÉêÇëµÄ¶ÔÏóÊıÁ¿µ½´ïÕâ¸ö¾Í½øĞĞgc 
+		// ç”³è¯·çš„å¯¹è±¡æ•°é‡åˆ°è¾¾è¿™ä¸ªå°±è¿›è¡Œgc 
 		const int GC_OBJECT_COUNT = 1500;
 	};
 

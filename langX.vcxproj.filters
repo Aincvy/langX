@@ -167,7 +167,6 @@
       <Filter>extern</Filter>
     </None>
     <None Include="makefile" />
-    <None Include="copyModProjects.sh" />
     <None Include="mod\Readme">
       <Filter>mod</Filter>
     </None>
