@@ -3,3 +3,28 @@ ref langX.core;
 a = 4;
 b = Math::sqrt(a);
 print("b: " + b + "\n");
+
+a = -4;
+b = Math::abs(a);
+print("b: " + b + "\n");
+
+a = 45;
+b = Math::cos(a);
+print("b: " + b + "\n");
+
+a = 45;
+b = Math::sin(a);
+print("b: " + b + "\n");
+
+a = 45;
+b = Math::tan(a);
+print("b: " + b + "\n");
+
+b = Math::PI;
+print("b: " + b + "\n");
+
+a = 6;
+b = Math::pow(a,2);
+print("b: " + b + "\n");
+
+print("over");

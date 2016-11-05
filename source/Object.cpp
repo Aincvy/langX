@@ -2,8 +2,6 @@
 #include "../include/Object.h"
 #include "../include/Utils.h"
 
-#include <stdio.h>
-
 namespace langX {
 
 	Object::Object()
@@ -13,9 +11,8 @@ namespace langX {
 		char t[100];
 		randomCharacteristic(t, 100, this, 8);
 		this->m_characteristic = std::string(t);
-
-		printf("new object: %s\n" , t);
 	}
+
 	Object::~Object()
 	{
 	}

@@ -11,5 +11,6 @@ list.remove(0);
 print("element 1: " + list.get(0) + "\n");
 print("size: " + list.size() + "\n");
 
+// set 是关键字， 弄不成函数名。。
 list.set2(0,"1234" );
 print("element 1: " + list.get(0) + "\n");

@@ -316,10 +316,10 @@ args_expr
 	;
 
 args_expr_collection
-	: lambda_stmt   { $$ = $1; }
+	: lambda_stmt   %prec PRIORITY1 { $$ = $1; }
 	| t_bool_expr   { $$ = $1; }
 	| double_expr   { $$ = $1; }
-	| id_expr       { /*printf("IDENTIFIER $1= %s\n" , $1);*/ $$ = $1; }
+	| IDENTIFIER    %prec PRIORITY3 { /*printf("IDENTIFIER $1= %s\n" , $1);*/ $$ = var($1); }
 	| string_expr   { $$ = $1; }
 	| uminus_expr   { $$ = $1; }
 	| call_statement { $$ = $1; }
@@ -381,7 +381,7 @@ new_expr
 	;
 
 id_expr
-	: IDENTIFIER   %prec NONASSOC { $$ = var($1); }
+	: IDENTIFIER { $$ = var($1); }
 	;
 
 t_bool_expr

@@ -77,7 +77,6 @@
     <ClCompile Include="source\YLlangX.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="copyModProjects.sh" />
     <None Include="extern\a.l" />
     <None Include="extern\a.y" />
     <None Include="makefile" />
