@@ -8,4 +8,26 @@
       <UniqueIdentifier>{6a161ae2-7f76-40de-9026-213fcfbfd937}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\MysqlModule.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RegMysqlModule.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\MysqlModule.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MysqlClient.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DataTable.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DataRow.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>
