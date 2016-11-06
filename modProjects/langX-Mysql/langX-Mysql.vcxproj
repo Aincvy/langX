@@ -26,6 +26,16 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\MysqlModule.h" />
+    <ClInclude Include="include\RegMysqlModule.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\DataRow.cpp" />
+    <ClCompile Include="source\DataTable.cpp" />
+    <ClCompile Include="source\MysqlClient.cpp" />
+    <ClCompile Include="source\MysqlModule.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{cfbe5fe4-d4b4-4bda-8f9f-8031a7f91d72}</ProjectGuid>
     <Keyword>Linux</Keyword>
