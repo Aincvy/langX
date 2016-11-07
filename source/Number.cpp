@@ -37,6 +37,11 @@ namespace langX {
 		return this->m_value;
 	}
 
+	void Number::setValue(double a) 
+	{
+		this->m_value = a;
+	}
+
 	bool Number::isTrue() const
 	{
 		if (this->m_value == (double)0)
