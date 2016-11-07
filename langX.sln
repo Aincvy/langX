@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX", "langX.vcxproj", "{D44B07E4-99FA-4485-BA6F-1B9BF41172C1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX-Core", "modProjects\langX-Core\langX-Core.vcxproj", "{1F0052A7-8248-49A4-BD51-AC64D0AB88B3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX-Mysql", "modProjects\langX-Mysql\langX-Mysql.vcxproj", "{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX-libevent", "modProjects\langX-libevent\langX-libevent.vcxproj", "{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,18 @@ Global
 		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Release|x64.Build.0 = Release|x64
 		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Release|x86.ActiveCfg = Release|x86
 		{CFBE5FE4-D4B4-4BDA-8F9F-8031A7F91D72}.Release|x86.Build.0 = Release|x86
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Debug|ARM.ActiveCfg = Debug|ARM
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Debug|ARM.Build.0 = Debug|ARM
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Debug|x64.ActiveCfg = Debug|x64
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Debug|x64.Build.0 = Debug|x64
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Debug|x86.ActiveCfg = Debug|x86
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Debug|x86.Build.0 = Debug|x86
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Release|ARM.ActiveCfg = Release|ARM
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Release|ARM.Build.0 = Release|ARM
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Release|x64.ActiveCfg = Release|x64
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Release|x64.Build.0 = Release|x64
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Release|x86.ActiveCfg = Release|x86
+		{3CC69958-0208-48E0-8A3B-FB70AD4FCC4B}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

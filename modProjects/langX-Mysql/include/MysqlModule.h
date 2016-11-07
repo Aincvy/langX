@@ -15,7 +15,7 @@ namespace langX {
 		// 初始化 core模块
 		int init(langXState *);
 
-		// 卸载c ore模块
+		// 卸载 core模块
 		int unload(langXState *);
 
 	private:
