@@ -31,6 +31,7 @@
     <ClInclude Include="include\RegMysqlModule.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="makefile" />
     <ClCompile Include="source\DataRow.cpp" />
     <ClCompile Include="source\DataTable.cpp" />
     <ClCompile Include="source\MysqlClient.cpp" />

@@ -29,5 +29,6 @@
     <ClCompile Include="source\DataRow.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="makefile" />
   </ItemGroup>
 </Project>
