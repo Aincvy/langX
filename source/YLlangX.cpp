@@ -35,6 +35,7 @@ void initLangX()
 		regExceptions();
 
 		state->loadModule("mod/core.so");
+		state->loadModule("mod/mysql.so");
 	}
 }
 
@@ -423,6 +424,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 		// 第三方函数 
 		X3rdFunction *x3rdfunc = (X3rdFunction*)function;
 		X3rdArgs _3rdArgs;
+		memset(&_3rdArgs, 0, sizeof(X3rdArgs));
 		if (args != NULL)
 		{
 			for (int i = 0; i < args->index; i++)

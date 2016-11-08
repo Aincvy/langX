@@ -1,0 +1,39 @@
+ref langX.mysql;
+
+mysql = new MysqlClient();
+mysql.connect("localhost","root","NWQ5ODI5Yj","mydb");
+
+a = mysql.isConnected;
+if (a){
+  print("连接数据库成功!\n");
+  
+  a = mysql.execQuery("select * from test");
+  if (a){
+      print("查询数据成功!\n");
+	  
+	  rowNum = a.rowNum;
+	  print("共有: " + rowNum + "行\n");
+	  for ( i = 0 ; i < rowNum ; i++){
+	    row = a.get(i);
+		str = "第" + i + "行: " ;
+		colNum = row.colNum;
+		for ( j = 0 ; j < colNum; j++){
+		  print("j: " + j + "\n");
+		  v1 = row.get(j);
+		  print(v1 + "\n");
+		  str = str + row.get(j) ;
+		  str = str + ",";
+		}
+		
+		print(str + "\n");
+	  }
+	  
+	  print("输出结束\n");
+  }else{
+      print("查询数据失败!\n");
+  }
+  
+}else{
+  print("连接数据库失败!\n");
+}
+mysql.close();

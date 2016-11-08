@@ -4,12 +4,14 @@
 #include <mysql.h>
 #endif
 
+#include <vector>
 #include <stdlib.h>
 #include "../include/RegMysqlModule.h"
 #include "../../../include/ClassInfo.h"
 #include "../../../include/YLlangX.h"
 #include "../../../include/Object.h"
 #include "../../../include/langXObject.h"
+#include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
 #include "../../../include/String.h"
@@ -17,7 +19,7 @@
 
 namespace langX {
 
-	const const char * isConnectedStr = "isConnected";
+	const char * const isConnectedStr = "isConnected";
 
 	void closeMysql(langXObject *object) {
 		if (!object)
@@ -30,14 +32,12 @@ namespace langX {
 		if (mysql)
 		{
 			mysql_close(mysql);
-			free(mysql);
 			object->set3rdObj(nullptr);
 		}
 	}
 
 	MYSQL *initMysql() {
-		MYSQL *mysql = (MYSQL*)calloc(1, sizeof(MYSQL));
-		mysql_init(mysql);
+		MYSQL *mysql = mysql_init(NULL);
 
 		return mysql;
 	}
@@ -114,7 +114,7 @@ namespace langX {
 		}
 		else {
 			// 失败
-			free(mysql);
+			mysql_close(mysql);
 			args.object->set3rdObj(nullptr);
 			return getState()->getAllocator().allocateNumber(0);
 		}
@@ -128,8 +128,6 @@ namespace langX {
 			printf("langX_MysqlClient_Reconnect error! NO OBJ!\n");
 			return nullptr;
 		}
-
-
 
 		return nullptr;
 	}
@@ -164,6 +162,26 @@ namespace langX {
 
 		return getState()->getAllocator().allocateNumber(0);
 	}
+
+	Object * langX_MysqlClient_LastAffectedRows(X3rdFunction *func, const X3rdArgs &args) {
+		// 设置字符集
+		if (args.object == nullptr)
+		{
+			printf("langX_MysqlClient_LastAffectedRows error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		if (!args.object->getMember(isConnectedStr)->isTrue())
+		{
+			return getState()->getAllocator().allocateNumber(0);
+		}
+
+		MYSQL *mysql = (MYSQL*)args.object->get3rdObj();
+		
+		double a = mysql_affected_rows(mysql);
+		return getState()->getAllocator().allocateNumber(a);
+	}
+
 
 	Object * langX_MysqlClient_Option(X3rdFunction *func, const X3rdArgs &args) {
 		// 设置 mysql 选项
@@ -254,9 +272,55 @@ namespace langX {
 			return getState()->getAllocator().allocateNumber(1);
 		}
 
-		
+		MYSQL *mysql = (MYSQL*)args.object->get3rdObj();
+		Object *a = args.args[0];
+		if (a && a->getType() == STRING)
+		{
+			if (mysql_query(mysql, ((String*)a)->getValue()) == 0)
+			{
+				// 查询成功
+				MYSQL_RES *res_ptr = mysql_store_result(mysql);
+				if (res_ptr)
+				{
+					double rowNum = mysql_num_rows(res_ptr);
+					double colNum = mysql_num_fields(res_ptr);
+					MYSQL_ROW row;
 
-		return nullptr;
+					XNameSpace *space = getState()->getNameSpace("langX.mysql");
+					langXObject * dataTable = space->getClass("DataTable")->newObject();
+					dataTable->callConstructor(nullptr, "in langX_MysqlClient_ExecQuery");
+					((Number*)dataTable->getMember("rowNum"))->setValue(rowNum);
+					((Number*)dataTable->getMember("isEmpty"))->setValue(rowNum <= 0 ? 1 : 0 );
+					std::vector<langXObjectRef*> *tableVec = (std::vector<langXObjectRef*> *) dataTable->get3rdObj();
+
+					while ( row = mysql_fetch_row(res_ptr))
+					{
+						langXObject *dataRow = space->getClass("DataRow")->newObject();
+						dataRow->callConstructor(nullptr, "in langX_MysqlClient_ExecQuery");
+						tableVec->push_back(dataRow->addRef());
+						std::vector<Object*> *rowVec = (std::vector<Object*> *) dataRow->get3rdObj();
+						((Number*)dataRow->getMember("colNum"))->setValue(colNum);
+
+;						int j = (int)colNum;
+						for (int i = 0; i < j; i++)
+						{
+							String *str = getState()->getAllocator().allocateString(row[i]);
+							rowVec->push_back(str);
+						}
+					}
+
+					mysql_free_result(res_ptr);
+					res_ptr = NULL;
+
+					return dataTable->addRef();
+				}
+
+				mysql_free_result(res_ptr);
+				res_ptr = NULL;
+			}
+		}
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 	Object * langX_MysqlClient_ExecUpdate(X3rdFunction *func, const X3rdArgs &args) {
@@ -266,9 +330,24 @@ namespace langX {
 			return nullptr;
 		}
 
+		if (!args.object->getMember(isConnectedStr)->isTrue())
+		{
+			return getState()->getAllocator().allocateNumber(0);
+		}
+
 		MYSQL *mysql = (MYSQL*)args.object->get3rdObj();
 
-		return nullptr;
+		Object *a = args.args[0];
+
+		if (a && a->getType() == STRING)
+		{
+			if (mysql_query(mysql, ((String*)a)->getValue()) == 0)
+			{
+				return getState()->getAllocator().allocateNumber(1);
+			}
+		}
+
+		return getState()->getAllocator().allocateNumber(0);
 	}
 
 
@@ -276,12 +355,12 @@ namespace langX {
 
 		ClassInfo *mysqlClient = new ClassInfo("MysqlClient");
 		mysqlClient->addMember(isConnectedStr, getState()->getAllocator().allocateNumber(0));
-		mysqlClient->addMember("affectedRows", getState()->getAllocator().allocateNumber(0));
 		mysqlClient->addFunction("MysqlClient", create3rdFunc("MysqlClient", langX_MysqlClient_MysqlClient));
 		mysqlClient->addFunction("~MysqlClient", create3rdFunc("~MysqlClient", langX_MysqlClient_MysqlClient));
 		mysqlClient->addFunction("connect", create3rdFunc("connect", langX_MysqlClient_Connect));
 		mysqlClient->addFunction("reconnect", create3rdFunc("reconnect", langX_MysqlClient_Reconnect));
 		mysqlClient->addFunction("characterSet", create3rdFunc("characterSet", langX_MysqlClient_CharacterSet));
+		mysqlClient->addFunction("lastAffectedRows", create3rdFunc("lastAffectedRows", langX_MysqlClient_LastAffectedRows));
 		mysqlClient->addFunction("option", create3rdFunc("option", langX_MysqlClient_Option));
 		mysqlClient->addFunction("lastErrorMsg", create3rdFunc("lastErrorMsg", langX_MysqlClient_LastErrorMsg));
 		mysqlClient->addFunction("selectDB", create3rdFunc("selectDB", langX_MysqlClient_SelectDB));
