@@ -436,7 +436,10 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 				}
 
 				// 释放这个参数节点的值先
+
 				getState()->getAllocator().free(args->args[i]->value);
+				args->args[i]->value = NULL;
+				//freeSubNodes(args->args[i]);
 
 				execNode(args->args[i]);
 

@@ -18,9 +18,6 @@ if (a){
 		str = "第" + i + "行: " ;
 		colNum = row.colNum;
 		for ( j = 0 ; j < colNum; j++){
-		  print("j: " + j + "\n");
-		  v1 = row.get(j);
-		  print(v1 + "\n");
 		  str = str + row.get(j) ;
 		  str = str + ",";
 		}
