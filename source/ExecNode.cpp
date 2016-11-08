@@ -1789,6 +1789,7 @@ namespace langX {
 			run->state.in_loop = true;
 			__execNode(run);
 			recursiveFreeNodeValue(run);
+			freeSubNodes(run);
 			if (run->state.isBreak)
 			{
 				break;
@@ -2155,7 +2156,7 @@ namespace langX {
 		}
 		langXObjectRef * objectRef = object->addRef();
 		objectRef->setEmergeEnv(getState()->getCurrentEnv());
-		Environment *env = object->getObjectEnvironment();
+		
 
 		//objectRef->setMembersEmergeEnv(env);
 		//getState()->addEnvToList(env);
@@ -2163,22 +2164,12 @@ namespace langX {
 		Node *argNode = n->opr_obj->op[1];
 		if (argNode != NULL)
 		{
-			Function *func = objectRef->getConstructor();
-			if (func != NULL)
+			XArgsList *args = (XArgsList *)argNode->ptr_u;
+			object->callConstructor(args, fileInfoString(n->fileinfo).c_str());
+
+			if (getState()->getCurrentEnv()->isDead())
 			{
-				XArgsList *args = (XArgsList *)argNode->ptr_u;
-
-				getState()->newEnv2(env);
-				getState()->getStackTrace().newFrame(claxxInfo, func, "<__init>");
-				callFunc(func, args, fileInfoString(n->fileinfo).c_str());
-
-				if (getState()->getCurrentEnv()->isDead())
-				{
-					return;
-				}
-				getState()->getStackTrace().popFrame();
-				getState()->backEnv();
-
+				return;
 			}
 		}
 

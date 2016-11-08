@@ -217,6 +217,23 @@ namespace langX {
 		return getFunction(this->m_class_info->getName());
 	}
 
+	void langXObject::callConstructor(ArgsList *args, const char *remark)
+	{
+		Function *func = getConstructor();
+		if (func)
+		{
+
+			Environment *env = getObjectEnvironment();
+
+			getState()->newEnv2(env);
+			getState()->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
+			callFunc(func, args,remark);
+
+			getState()->getStackTrace().popFrame();
+			getState()->backEnv();
+		}
+	}
+
 	Object * langXObject::callFunction(const char *name) const
 	{
 		Function * func = getFunction(name);
