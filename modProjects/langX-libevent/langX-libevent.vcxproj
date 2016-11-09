@@ -27,9 +27,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\BytesDecoder.h" />
+    <ClInclude Include="include\BytesEncoder.h" />
+    <ClInclude Include="include\DefaultBytesDecoder.h" />
+    <ClInclude Include="include\DefaultBytesEncoder.h" />
+    <ClInclude Include="include\DefaultNetPacket.h" />
     <ClInclude Include="include\libeventModule.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\BytesDecoder.cpp" />
+    <ClCompile Include="source\BytesEncoder.cpp" />
+    <ClCompile Include="source\DefaultBytesDecoder.cpp" />
+    <ClCompile Include="source\DefaultBytesEncoder.cpp" />
+    <ClCompile Include="source\DefaultNetPacket.cpp" />
     <ClCompile Include="source\libeventModule.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
