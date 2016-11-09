@@ -1,0 +1,46 @@
+ref langX.libevent;
+
+CLOSE_CMD = 1 ;
+PING_CMD = 2 ;
+FIND_CMD = 3 ;
+DISCONNECT_CMD = 4 ;
+
+acceptCB => (server,client){
+  // accept 客户端的回调
+  print("accept client.\n");
+}
+
+readCB => (server,client,bytebuf){
+  // 客户端上有数据可读
+  cmd = bytebuf.readInt();
+  if (cmd == CLOSE_CMD){
+    server.close();
+    return ;
+  } else if (cmd == FIND_CMD ){
+    print("find cmd.\n") ;
+	client.getStream().write("hello.");
+	return ;
+  } else if (cdm == DISCONNECT_CMD) {
+    client.close();
+    return ;
+  }
+  
+}
+
+writeCB => (server,client){
+  // 写入完成应该是
+}
+
+clientCloseCB => (server,client){
+  //  客户端关闭连接的回调
+}
+
+serverCloseCB => (server){
+  // server关闭的回调
+  print("Server closed.\n");
+}
+
+server = new Server();
+server.listen(6006);
+server.onAccept(acceptCB).onRead(readCB).onWrite(writeCB).onClientClose(clientCloseCB).onServerClose(serverCloseCB);
+server.serv();
