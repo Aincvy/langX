@@ -12,9 +12,39 @@
     <ClInclude Include="include\libeventModule.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\BytesEncoder.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BytesDecoder.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DefaultBytesEncoder.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DefaultBytesDecoder.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DefaultNetPacket.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\libeventModule.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BytesDecoder.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DefaultBytesDecoder.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BytesEncoder.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DefaultBytesEncoder.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DefaultNetPacket.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
