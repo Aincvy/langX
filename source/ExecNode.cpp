@@ -401,7 +401,17 @@ namespace langX {
 				}
 				else if (left->getType() == OBJECT)
 				{
-					ss << "object";
+					//ss << "object";
+					langXObjectRef *ref1 = (langXObjectRef*)left;
+					Function *func1=  ref1->getFunction("toString");
+					if (func1 == nullptr)
+					{
+						ss << "|[" << left->characteristic();
+					}
+					else {
+						// 待定
+
+					}
 				}
 				else {
 					printf("error type in do add opr! \n");
@@ -427,7 +437,16 @@ namespace langX {
 					}
 					else if (right->getType() == OBJECT)
 					{
-						ss << "object";
+						langXObjectRef *ref1 = (langXObjectRef*)left;
+						Function *func1 = ref1->getFunction("toString");
+						if (func1 == nullptr)
+						{
+							ss << "|[" << left->characteristic();
+						}
+						else {
+							// 待定
+
+						}
 					}
 					else {
 						printf("error type in do add opr! \n");
