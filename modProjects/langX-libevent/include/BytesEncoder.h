@@ -2,16 +2,14 @@
 
 namespace langX {
 
-	class DefaultNetPacket;
-
 	class BytesEncoder
 	{
 	public:
 		BytesEncoder();
 		~BytesEncoder();
 
-		//  ±àÂë £¬ µÚ¶ş¸ö²ÎÊıÎª³¤¶È
-		virtual char * encord(DefaultNetPacket *, int *) = 0;
+		//  ç¼–ç  ï¼Œ ç¬¬äºŒä¸ªå‚æ•°ä¸ºé•¿åº¦
+		virtual char * encord(void *, int *) = 0;
 
 	private:
 

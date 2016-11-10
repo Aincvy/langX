@@ -9,7 +9,7 @@ namespace langX {
 		DefaultBytesEncoder();
 		~DefaultBytesEncoder();
 
-		char * encord(DefaultNetPacket *, int *);
+		char * encord(void *, int *);
 
 	private:
 

@@ -12,10 +12,10 @@ namespace langX {
 		MysqlModule();
 		~MysqlModule();
 
-		// 初始化 core模块
+		// 初始化 mysql模块
 		int init(langXState *);
 
-		// 卸载 core模块
+		// 卸载 mysql模块
 		int unload(langXState *);
 
 	private:

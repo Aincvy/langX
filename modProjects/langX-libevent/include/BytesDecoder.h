@@ -2,7 +2,6 @@
 
 namespace langX {
 
-	class DefaultNetPacket;
 
 	class BytesDecoder
 	{
@@ -11,7 +10,7 @@ namespace langX {
 		~BytesDecoder();
 
 		//
-		virtual DefaultNetPacket* decode(char *, int) = 0;
+		virtual void* decode(char *, int) = 0;
 
 	private:
 
