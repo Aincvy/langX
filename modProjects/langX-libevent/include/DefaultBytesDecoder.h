@@ -10,7 +10,7 @@ namespace langX {
 		~DefaultBytesDecoder();
 
 
-		DefaultNetPacket* decode(char *, int);
+		void* decode(char *, int);
 
 	private:
 
