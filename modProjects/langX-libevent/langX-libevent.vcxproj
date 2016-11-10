@@ -33,6 +33,7 @@
     <ClInclude Include="include\DefaultBytesEncoder.h" />
     <ClInclude Include="include\DefaultNetPacket.h" />
     <ClInclude Include="include\libeventModule.h" />
+    <ClInclude Include="include\ReglibeventModule.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\BytesDecoder.cpp" />
@@ -40,7 +41,10 @@
     <ClCompile Include="source\DefaultBytesDecoder.cpp" />
     <ClCompile Include="source\DefaultBytesEncoder.cpp" />
     <ClCompile Include="source\DefaultNetPacket.cpp" />
+    <ClCompile Include="source\DefaultNetPacketX.cpp" />
     <ClCompile Include="source\libeventModule.cpp" />
+    <ClCompile Include="source\TcpClient.cpp" />
+    <ClCompile Include="source\TcpServer.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3cc69958-0208-48e0-8a3b-fb70ad4fcc4b}</ProjectGuid>

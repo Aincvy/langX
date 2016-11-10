@@ -27,6 +27,9 @@
     <ClInclude Include="include\DefaultNetPacket.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\ReglibeventModule.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\libeventModule.cpp">
@@ -45,6 +48,15 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\DefaultNetPacket.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TcpServer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TcpClient.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DefaultNetPacketX.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
