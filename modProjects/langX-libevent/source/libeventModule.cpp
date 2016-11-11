@@ -17,6 +17,8 @@ namespace langX {
 	int libeventModule::init(langXState *state)
 	{
 		// 初始化 libevent 库
+		initServerSupportTools();
+
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.libevent");
 		regTcpServer(state, space);
 		regTcpClient(state, space);

@@ -320,6 +320,22 @@ namespace langX {
 		return nullptr;
 	}
 
+	Object * FunctionRef::call(ArgsList * argsList, const char * remark)
+	{
+		Environment *env = getFunctionEnv();
+		if (env != NULL)
+		{
+			getState()->newEnv(env);
+		}
+		Object *ret = callFunc(getRefFunction(), argsList, remark);
+		if (env != NULL)
+		{
+			getState()->backEnv();
+		}
+
+		return ret;
+	}
+
 	void FunctionRef::finalize()
 	{
 

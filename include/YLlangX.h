@@ -117,3 +117,5 @@ void setInException(bool);
 // 获得当前结点是否在异常执行节点中
 bool getInException();
 
+
+

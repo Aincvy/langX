@@ -7,6 +7,7 @@ namespace langX {
 	public:
 		DefaultNetPacket();
 		~DefaultNetPacket();
+		DefaultNetPacket(char *, int);
 
 		int readInt();
 		double readDouble();
@@ -17,7 +18,16 @@ namespace langX {
 		void writeDouble(double);
 		void writeString(const char *, int);
 
+		int getSize() const;
+
+		int getPos() const;
+		void setPos(int);
+
 	private:
+
+		char *m_buffer = nullptr;
+		int m_size = 0;
+		int m_pos = 0;
 
 	};
 }

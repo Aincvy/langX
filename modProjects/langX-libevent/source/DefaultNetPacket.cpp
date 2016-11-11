@@ -12,6 +12,10 @@ namespace langX {
 	{
 	}
 
+	DefaultNetPacket::DefaultNetPacket(char *buf, int size)
+	{
+	}
+
 	int DefaultNetPacket::readInt()
 	{
 		return 0;
@@ -37,6 +41,21 @@ namespace langX {
 
 	void DefaultNetPacket::writeString(const char *, int)
 	{
+	}
+
+	int DefaultNetPacket::getSize() const
+	{
+		return this->m_size;
+	}
+
+	int DefaultNetPacket::getPos() const
+	{
+		return this->m_pos;
+	}
+
+	void DefaultNetPacket::setPos(int a)
+	{
+		this->m_pos = a;
 	}
 
 }

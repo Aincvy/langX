@@ -3,7 +3,7 @@
 
 namespace langX {
 
-	class DefaultBytesEncoder : BytesEncoder
+	class DefaultBytesEncoder : public BytesEncoder
 	{
 	public:
 		DefaultBytesEncoder();
