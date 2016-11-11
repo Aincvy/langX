@@ -7,7 +7,7 @@ namespace langX {
 	{
 	public:
 		BytesDecoder();
-		~BytesDecoder();
+		virtual ~BytesDecoder();
 
 		//
 		virtual void* decode(char *, int) = 0;

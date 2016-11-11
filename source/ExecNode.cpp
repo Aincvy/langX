@@ -2116,16 +2116,7 @@ namespace langX {
 			if (n1->value->getType() == FUNCTION)
 			{
 				FunctionRef *f = (FunctionRef*)n1->value;
-				Environment *env = f->getFunctionEnv();
-				if (env != NULL)
-				{
-					getState()->newEnv(env);
-				}
-				n->value = callFunc(f->getRefFunction(), args, remark);
-				if (env != NULL)
-				{
-					getState()->backEnv();
-				}
+				n->value = f->call(args,remark );
 				flag = false;
 			}
 			else if (n1->value->getType() == STRING)

@@ -109,6 +109,8 @@ namespace langX {
 		// 如果这个函数来自一个 对象， 则会返回一个对象环境， 如果来自类， 则返回类桥接环境
 		Environment *getFunctionEnv();
 
+		Object *call(ArgsList *argsList, const char *remark);
+
 	private:
 
 		void finalize();
