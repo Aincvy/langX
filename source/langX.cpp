@@ -486,7 +486,7 @@ namespace langX {
 			// f is namespace name
 			if (space == NULL)
 			{
-				space = singleGetNameSpace(f.c_str());	
+				space = singleGetNameSpace(f.c_str());
 			}
 			else {
 				space = space->getNameSpace(f.c_str());
@@ -744,6 +744,7 @@ namespace langX {
 #else
 		void *soObj = dlopen(path, RTLD_LAZY);
 		if (soObj == NULL) {
+			printf("dlopen err:%s.\n", dlerror());
 			return -1;
 		}
 

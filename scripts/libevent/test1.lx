@@ -12,6 +12,7 @@ acceptCB => (server,client){
 
 readCB => (server,client,bytebuf){
   // 客户端上有数据可读
+  /*
   cmd = bytebuf.readInt();
   if (cmd == CLOSE_CMD){
     server.close();
@@ -24,7 +25,8 @@ readCB => (server,client,bytebuf){
     client.close();
     return ;
   }
-  
+  */
+  print("get msg: " + bytebuf + "\n");
 }
 
 writeCB => (server,client){
@@ -40,7 +42,7 @@ serverCloseCB => (server){
   print("Server closed.\n");
 }
 
-server = new Server();
+server = new TcpServer();
 server.listen(6006);
 server.onAccept(acceptCB).onRead(readCB).onWrite(writeCB).onClientClose(clientCloseCB).onServerClose(serverCloseCB);
 server.serv();

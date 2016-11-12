@@ -61,4 +61,12 @@ namespace langX {
 		langX::FunctionRef *serverclosecb;
 	};
 
+	// TcpClient 的一些参数
+	struct TcpClientArgs
+	{
+		struct bufferevent *bev;
+		langX::langXObject *serverObject;
+		langX::langXObject *clientObject;
+	};
+
 }

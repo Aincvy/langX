@@ -36,6 +36,7 @@ void initLangX()
 
 		state->loadModule("mod/core.so");
 		state->loadModule("mod/mysql.so");
+		state->loadModule("mod/mod_libevent.so");
 	}
 }
 

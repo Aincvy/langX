@@ -17,6 +17,13 @@ namespace langX {
 			return nullptr;
 		}
 
+		TcpClientArgs *clientArgs = (TcpClientArgs*)args.object->get3rdObj();
+		if (clientArgs != nullptr)
+		{
+			free(clientArgs);
+			args.object->set3rdObj(nullptr);
+		}
+
 		return nullptr;
 	}
 
@@ -66,6 +73,7 @@ namespace langX {
 		info->addFunction("close", create3rdFunc("close", langX_TcpClient_close));
 		info->addFunction("~TcpClient", create3rdFunc("~TcpClient", langX_TcpClient_TcpClient_Dtor));
 		info->addFunction("TcpClient", create3rdFunc("TcpClient", langX_TcpClient_TcpClient));
+		space->putClass(info);
 
 		return 0;
 	}

@@ -46,6 +46,9 @@
     <ClCompile Include="source\TcpClient.cpp" />
     <ClCompile Include="source\TcpServer.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="makefile" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3cc69958-0208-48e0-8a3b-fb70ad4fcc4b}</ProjectGuid>
     <Keyword>Linux</Keyword>
@@ -71,6 +74,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <RemoteRootDir>~/projects/langX/modProjects</RemoteRootDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
