@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "../include/libeventModule.h"
 #include "../include/ReglibeventModule.h"
 #include "../../../include/XNameSpace.h"
@@ -17,6 +19,7 @@ namespace langX {
 	int libeventModule::init(langXState *state)
 	{
 		// 初始化 libevent 库
+		printf("初始化libevent库");
 		initServerSupportTools();
 
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.libevent");
@@ -32,4 +35,11 @@ namespace langX {
 		return 0;
 	}
 
+}
+
+int loadModule(langX::X3rdModule *& mod)
+{
+	mod = new langX::libeventModule();
+
+	return 0;
 }

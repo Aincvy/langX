@@ -111,6 +111,10 @@ namespace langX {
 
 		Object *call(ArgsList *argsList, const char *remark);
 
+		//  参数为1 参数数组， 参数2为数组的元素个数 参数3为 备注
+		//  此函数内部实现会对参数进行 克隆然后再使用
+		Object *call(Object* [] ,int , const char *remark);
+
 	private:
 
 		void finalize();

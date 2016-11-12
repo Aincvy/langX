@@ -78,7 +78,7 @@ namespace langX {
 	}
 
 	Function::Function(const char *name, Node *node)
-	{	
+	{
 		setName(name);
 		this->m_node_root = node;
 	}
@@ -168,7 +168,7 @@ namespace langX {
 
 	bool Function::hasName() const
 	{
-		if (strcmp(this->m_name,"") == 0)
+		if (strcmp(this->m_name, "") == 0)
 		{
 			return false;
 		}
@@ -216,10 +216,10 @@ namespace langX {
 		if (!m_worker)
 		{
 			// error function. 
-			printf("error function: %s!\n" , this->getName());
+			printf("error function: %s!\n", this->getName());
 			return nullptr;
 		}
-		return m_worker(this,args);
+		return m_worker(this, args);
 	}
 
 
@@ -333,6 +333,91 @@ namespace langX {
 			getState()->backEnv();
 		}
 
+		return ret;
+	}
+
+	Object * FunctionRef::call(Object* args[], int len, const char * remark)
+	{
+		Environment *env = getFunctionEnv();
+		Function *function = this->m_func;
+		Object * ret = NULL;
+
+		if (env != NULL)
+		{
+			getState()->newEnv(env);
+			getState()->getStackTrace().newFrame(function->getClassInfo(), function, remark);
+		}
+
+		if (function->is3rd())
+		{
+			// 第三方函数 
+			X3rdFunction *x3rdfunc = (X3rdFunction*)function;
+			X3rdArgs _3rdArgs;
+			memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+			if (args != NULL)
+			{
+				for (int i = 0; i < len; i++)
+				{
+					if (args[i] == NULL)
+					{
+						_3rdArgs.args[i] = NULL;
+						continue;
+					}
+
+					_3rdArgs.args[i] = args[i]->clone();
+				}
+				_3rdArgs.index = len;
+			}
+			Environment *currEnv1 = getState()->getCurrentEnv();
+			if (currEnv1->isObjectEnvironment())
+			{
+				if (currEnv1->isEnvEnvironment())
+				{
+					_3rdArgs.object = ((ObjectBridgeEnv*)((EnvironmentBridgeEnv*)currEnv1)->getBridgeEnv())->getEnvObject();
+				}
+				else {
+					_3rdArgs.object = ((ObjectBridgeEnv*)currEnv1)->getEnvObject();
+				}
+
+
+			}
+
+			ret = x3rdfunc->call(_3rdArgs);
+		}
+		else {
+			
+			if (args != NULL)
+			{
+				XParamsList *params = function->getParamsList();
+				for (int i = 0; i < len; i++)
+				{
+					if (i >= params->index)
+					{
+						break;
+					}
+
+					Object *t = nullptr;
+					if (args[i] != NULL)
+					{
+						t = getState()->getAllocator().allocate(NULLOBJECT);
+					}
+					else {
+						t = args[i]->clone();
+					}
+					env->putObject(params->args[i], t);
+				}
+			}
+
+			ret = function->call();
+		}
+
+		
+
+		if (env != NULL)
+		{
+			getState()->backEnv();
+			getState()->getStackTrace().popFrame();
+		}
 		return ret;
 	}
 

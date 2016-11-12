@@ -14,6 +14,7 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+#include "../../../include/String.h"
 
 #ifdef WIN32
 #include "../../../lib/libevent-2.0.21-stable/include/event2/buffer.h"
@@ -38,12 +39,37 @@ namespace langX {
 
 
 	static void
+		conn_readcb(struct bufferevent *bev, void *user_data)
+	{
+		// 读的回调
+		char msg[4096] = { 0 };
+		size_t len = bufferevent_read(bev, msg, sizeof(msg) - 1);
+
+		printf("get msg in readcb: %s\n",msg);
+
+		TcpClientArgs *clientArgs = (TcpClientArgs*)user_data;
+		TcpServerArgs *arg = (TcpServerArgs*)clientArgs->serverObject->get3rdObj();
+
+		String astr(msg);
+		if (arg->readcb)
+		{
+			// server,client,data
+			Object *arglist[3] = { 0 };
+			arglist[0] = arg->xobject->addRef();
+			arglist[1] = clientArgs->clientObject->addRef();
+			arglist[2] = &astr;
+			arg->acceptcb->call(arglist, 3, "in libevent conn_readcb");
+		}
+
+	}
+
+	static void
 		conn_writecb(struct bufferevent *bev, void *user_data)
 	{
 		struct evbuffer *output = bufferevent_get_output(bev);
 		if (evbuffer_get_length(output) == 0) {
-			printf("flushed answer\n");
-			bufferevent_free(bev);
+			printf("flushed over\n");
+			//bufferevent_free(bev);
 		}
 	}
 
@@ -63,13 +89,13 @@ namespace langX {
 	}
 
 
-	/* When a new connection is received, the provided callback function is invoked. 
-	   The listener argument is the connection listener that received the connection. 
-	   The sock argument is the new socket itself. 
-	   The addr and len arguments are the address from which 
-	   the connection was received and the length of that address respectively. 
-	   The ptr argument is the user-supplied pointer that 
-	     was passed to evconnlistener_new(). */
+	/* When a new connection is received, the provided callback function is invoked.
+	   The listener argument is the connection listener that received the connection.
+	   The sock argument is the new socket itself.
+	   The addr and len arguments are the address from which
+	   the connection was received and the length of that address respectively.
+	   The ptr argument is the user-supplied pointer that
+		 was passed to evconnlistener_new(). */
 	static void
 		listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
 			struct sockaddr *sa, int socklen, void *user_data)
@@ -84,9 +110,26 @@ namespace langX {
 			event_base_loopbreak(base);
 			return;
 		}
-		bufferevent_setcb(bev, NULL, conn_writecb, conn_eventcb, NULL);
-		bufferevent_enable(bev, EV_WRITE);
-		bufferevent_disable(bev, EV_READ);
+
+		// 调用 onaccept 回调
+		langXObject * clientObject = getState()->getNameSpace("langX.libevent")->getClass("TcpClient")->newObject();
+		TcpClientArgs *clientArgs = (TcpClientArgs*)calloc(1, sizeof(TcpClientArgs));
+		clientArgs->bev = bev;
+		clientArgs->clientObject = clientObject;
+		clientArgs->serverObject = arg->xobject;
+		clientObject->set3rdObj(clientArgs);
+
+		if (arg->acceptcb != nullptr)
+		{
+			// server,client
+			Object *arglist[2] = { 0 };
+			arglist[0] = arg->xobject->addRef();
+			arglist[1] = clientObject->addRef();
+			arg->acceptcb->call(arglist, 2, "in libevent listener_cb");
+		}
+
+		bufferevent_setcb(bev, conn_readcb, conn_writecb, conn_eventcb, clientArgs);
+		bufferevent_enable(bev, EV_WRITE | EV_READ);
 
 	}
 
@@ -120,7 +163,7 @@ namespace langX {
 			printf("langX_TcpServer_TcpServer_Dtor error! NO OBJ!\n");
 			return nullptr;
 		}
-		
+
 		TcpServerArgs *arg = (TcpServerArgs*)args.object->get3rdObj();
 		closeTcpServer(arg);
 		free(arg);
@@ -166,7 +209,7 @@ namespace langX {
 			// not listen.
 			return getState()->getAllocator().allocateNumber(0);
 		}
-		
+
 		event_base_dispatch(arg->base);
 
 		return getState()->getAllocator().allocateNumber(1);
@@ -188,6 +231,7 @@ namespace langX {
 		}
 
 		int port = ((Number*)a)->getIntValue();
+		((Number*)args.object->getMember("listenPort"))->setValue(port);
 
 		TcpServerArgs *arg = (TcpServerArgs*)args.object->get3rdObj();
 		arg->sin.sin_family = AF_INET;
@@ -222,10 +266,11 @@ namespace langX {
 		{
 			FunctionRef * b = (FunctionRef*)a;
 			arg->serverclosecb = b;
-			return getState()->getAllocator().allocateNumber(1);
+			//return getState()->getAllocator().allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		//return getState()->getAllocator().allocateNumber(0);
+		return args.object->addRef();
 	}
 
 
@@ -244,10 +289,11 @@ namespace langX {
 		{
 			FunctionRef * b = (FunctionRef*)a;
 			arg->clientclosecb = b;
-			return getState()->getAllocator().allocateNumber(1);
+			//return getState()->getAllocator().allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		//return getState()->getAllocator().allocateNumber(0);
+		return args.object->addRef();
 	}
 
 
@@ -266,10 +312,11 @@ namespace langX {
 		{
 			FunctionRef * b = (FunctionRef*)a;
 			arg->writecb = b;
-			return getState()->getAllocator().allocateNumber(1);
+			//return getState()->getAllocator().allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		//return getState()->getAllocator().allocateNumber(0);
+		return args.object->addRef();
 	}
 
 
@@ -288,10 +335,11 @@ namespace langX {
 		{
 			FunctionRef * b = (FunctionRef*)a;
 			arg->readcb = b;
-			return getState()->getAllocator().allocateNumber(1);
+			//return getState()->getAllocator().allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		//return getState()->getAllocator().allocateNumber(0);
+		return args.object->addRef();
 
 	}
 
@@ -311,12 +359,13 @@ namespace langX {
 		{
 			FunctionRef * b = (FunctionRef*)a;
 			arg->acceptcb = b;
-			return getState()->getAllocator().allocateNumber(1);
+			//return getState()->getAllocator().allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		//return getState()->getAllocator().allocateNumber(0);
+		return args.object->addRef();
 	}
-	
+
 	Object * langX_TcpServer_close(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
@@ -349,6 +398,7 @@ namespace langX {
 		info->addFunction("onRead", create3rdFunc("onRead", langX_TcpServer_onRead));
 		info->addFunction("onAccept", create3rdFunc("onAccept", langX_TcpServer_onAccept));
 
+		space->putClass(info);
 
 		return 0;
 	}
