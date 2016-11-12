@@ -1,4 +1,5 @@
 #include "../include/DefaultBytesDecoder.h"
+#include "../../../include/langXObject.h"
 
 namespace langX {
 
@@ -10,7 +11,8 @@ namespace langX {
 	DefaultBytesDecoder::~DefaultBytesDecoder()
 	{
 	}
-	void * DefaultBytesDecoder::decode(char *, int)
+
+	langXObject * DefaultBytesDecoder::decode(char *, int)
 	{
 		return nullptr;
 	}
