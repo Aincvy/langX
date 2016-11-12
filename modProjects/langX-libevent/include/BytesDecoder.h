@@ -2,6 +2,7 @@
 
 namespace langX {
 
+	class langXObject;
 
 	class BytesDecoder
 	{
@@ -10,7 +11,7 @@ namespace langX {
 		virtual ~BytesDecoder();
 
 		//
-		virtual void* decode(char *, int) = 0;
+		virtual langXObject* decode(char *, int) = 0;
 
 	private:
 
