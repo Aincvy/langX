@@ -61,6 +61,11 @@ namespace langX {
 		this->m_value = ((String*)right)->getValue();
 	}
 
+	int String::size()
+	{
+		return this->m_value.size();
+	}
+
 	void String::finalize()
 	{
 		delete this;

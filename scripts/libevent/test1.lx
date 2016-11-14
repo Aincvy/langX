@@ -27,6 +27,8 @@ readCB => (server,client,bytebuf){
   }
   */
   print("get msg: " + bytebuf + "\n");
+  ret = client.write("0.0, -heihei!");
+  print("send over, ret: " + ret + "\n");
 }
 
 writeCB => (server,client){
