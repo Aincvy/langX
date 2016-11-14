@@ -2870,6 +2870,7 @@ namespace langX {
 					Function *func = getState()->getCurrentEnv()->getFunction(node->var_obj->name);
 					if (func != nullptr)
 					{
+						
 						node->value = m_exec_alloc.allocateFunctionRef(func);
 					}
 					else {

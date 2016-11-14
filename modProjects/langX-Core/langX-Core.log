@@ -1,7 +1,22 @@
 ﻿  Validating architecture
   Validating sources
-  Copying sources remotely to '192.168.40.130'
+  Copying sources remotely to '120.27.200.228'
   Starting remote build
-  Compiling sources
+  Compiling sources:
   makefile
-C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Application Type\Linux\1.0\Linux.Common.targets(171,5): error : g++ exited with code 1, please see the Output Window - Build output for more details.
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(18,23): error : stray ‘@’ in program
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(20,23): error : stray ‘@’ in program
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(1,1): error : expected unqualified-id before ‘.’ token
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(15,11): error : expected unqualified-id before ‘:’ token
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(16,2): error : ‘g’ does not name a type
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(16,16): error : ‘$’ does not name a type
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(16,23): error : expected unqualified-id before ‘-’ token
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(16,44): error : ‘$’ does not name a type
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(17,1): error : expected unqualified-id before ‘.’ token
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(17,19): error : ‘$’ does not name a type
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(18,2): error : ‘g’ does not name a type
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(18,16): error : expected unqualified-id before ‘-’ token
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(19,17): error : ‘$’ does not name a type
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(20,2): error : ‘g’ does not name a type
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(20,16): error : expected unqualified-id before ‘-’ token
+F:\hideDragon\langX\langX\modProjects\langX-Core\makefile(22,15): error : ‘$’ does not name a type

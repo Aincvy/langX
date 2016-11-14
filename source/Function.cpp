@@ -10,6 +10,7 @@
 #include "../include/YLlangX.h"
 #include "../include/ClassInfo.h"
 #include "../include/Environment.h"
+#include "../include/NullObject.h"
 
 
 langX::Allocator m_exec_alloc;
@@ -342,11 +343,7 @@ namespace langX {
 		Function *function = this->m_func;
 		Object * ret = NULL;
 
-		if (env != NULL)
-		{
-			getState()->newEnv(env);
-			getState()->getStackTrace().newFrame(function->getClassInfo(), function, remark);
-		}
+		getState()->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
 		if (function->is3rd())
 		{
@@ -386,6 +383,14 @@ namespace langX {
 		}
 		else {
 			
+			if (env == nullptr)
+			{
+				env = getState()->newEnv();
+			}
+			else {
+				getState()->newEnv(env);
+			}
+
 			if (args != NULL)
 			{
 				XParamsList *params = function->getParamsList();
@@ -396,28 +401,27 @@ namespace langX {
 						break;
 					}
 
-					Object *t = nullptr;
-					if (args[i] != NULL)
+					if (args[i])
 					{
-						t = getState()->getAllocator().allocate(NULLOBJECT);
+						env->putObject(params->args[i], args[i]);
 					}
 					else {
-						t = args[i]->clone();
+						NullObject nullobj;
+						env->putObject(params->args[i], &nullobj);
 					}
-					env->putObject(params->args[i], t);
 				}
 			}
 
 			ret = function->call();
+			//printf("call function %s over in function ref." ,this->m_func->getName());
+			if (env != NULL)
+			{
+				getState()->backEnv();
+			}
 		}
-
 		
+		getState()->getStackTrace().popFrame();
 
-		if (env != NULL)
-		{
-			getState()->backEnv();
-			getState()->getStackTrace().popFrame();
-		}
 		return ret;
 	}
 
