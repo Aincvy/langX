@@ -7,6 +7,15 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+#include "../../../include/String.h"
+
+#ifdef WIN32
+#include "../../../lib/libevent-2.0.21-stable/include/event2/bufferevent.h"
+#else
+#include <event2/bufferevent.h>
+#endif
+
+#include <string.h>
 
 namespace langX {
 
@@ -46,7 +55,27 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		TcpClientArgs *clientArgs = (TcpClientArgs*)args.object->get3rdObj();
+		if (clientArgs == nullptr)
+		{
+			printf("clientArgs == nullptr ! \n");
+			return getState()->getAllocator().allocateNumber(-1);
+		}
+
+		Object *a = args.args[0];
+		if (a && a->getType() == STRING)
+		{
+			String *str = (String*)a;
+			int i = bufferevent_write(clientArgs->bev, str->getValue(), str->size());
+
+			/*char reply_msg[4096] = "I have recvieced the msg: ";
+			strcat(reply_msg + strlen(reply_msg), "123");
+			int i =bufferevent_write(clientArgs->bev, reply_msg, strlen(reply_msg));*/
+
+			return getState()->getAllocator().allocateNumber(i);
+		}
+		
+		return getState()->getAllocator().allocateNumber(-1);
 	}
 
 

@@ -132,7 +132,7 @@ namespace langX {
 		}
 
 		bufferevent_setcb(bev, conn_readcb, conn_writecb, conn_eventcb, clientArgs);
-		bufferevent_enable(bev, EV_WRITE | EV_READ);
+		bufferevent_enable(bev, EV_PERSIST | EV_READ);
 
 	}
 

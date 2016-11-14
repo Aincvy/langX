@@ -34,6 +34,9 @@ namespace langX {
 
 		void update(Object *);
 
+		// 获得这个字符串的长度
+		int size();
+
 	private:
 		std::string m_value;
 
