@@ -14,6 +14,7 @@
 #include "../include/StackTrace.h"
 #include "../include/Exception.h"
 #include "../include/langXObject.h"
+#include "../include/NullObject.h"
 #include "../extern/y.tab.h"
 
 extern int yyget_lineno(void);
@@ -497,13 +498,16 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 					return NULL;
 				}
 
-				ObjectType t = NULLOBJECT;
 				if (args->args[i]->value)
 				{
-					t = args->args[i]->value->getType();
+					env->putObject(params->args[i], args->args[i]->value);
+				}
+				else {
+					NullObject nullobj;
+					env->putObject(params->args[i], &nullobj);
 				}
 
-				env->putObject(params->args[i], args->args[i]->value);
+				
 				//printf("put param %s object: %d.on env: %p. number value: %f. \n", params->args[i] , t ,env, t == NUMBER ? ((Number*)args->args[i]->value)->getDoubleValue() : -1 );
 			}
 		}

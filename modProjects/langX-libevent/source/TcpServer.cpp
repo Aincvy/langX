@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "../include/ReglibeventModule.h"
 #include "../include/BytesDecoder.h"
@@ -45,7 +46,7 @@ namespace langX {
 		char msg[4096] = { 0 };
 		size_t len = bufferevent_read(bev, msg, sizeof(msg) - 1);
 
-		printf("get msg in readcb: %s\n",msg);
+		//printf("get msg in readcb: %s\n",msg);
 
 		TcpClientArgs *clientArgs = (TcpClientArgs*)user_data;
 		TcpServerArgs *arg = (TcpServerArgs*)clientArgs->serverObject->get3rdObj();
@@ -58,7 +59,8 @@ namespace langX {
 			arglist[0] = arg->xobject->addRef();
 			arglist[1] = clientArgs->clientObject->addRef();
 			arglist[2] = &astr;
-			arg->acceptcb->call(arglist, 3, "in libevent conn_readcb");
+			arg->readcb->call(arglist, 3, "in libevent conn_readcb");
+			//printf("call readcb cb\n");
 		}
 
 	}
@@ -68,7 +70,7 @@ namespace langX {
 	{
 		struct evbuffer *output = bufferevent_get_output(bev);
 		if (evbuffer_get_length(output) == 0) {
-			printf("flushed over\n");
+			//printf("flushed over\n");
 			//bufferevent_free(bev);
 		}
 	}
@@ -126,6 +128,7 @@ namespace langX {
 			arglist[0] = arg->xobject->addRef();
 			arglist[1] = clientObject->addRef();
 			arg->acceptcb->call(arglist, 2, "in libevent listener_cb");
+			//printf("call acceptcb cb\n");
 		}
 
 		bufferevent_setcb(bev, conn_readcb, conn_writecb, conn_eventcb, clientArgs);
@@ -265,7 +268,7 @@ namespace langX {
 		if (a && a->getType() == FUNCTION)
 		{
 			FunctionRef * b = (FunctionRef*)a;
-			arg->serverclosecb = b;
+			arg->serverclosecb = (FunctionRef *)b->clone();
 			//return getState()->getAllocator().allocateNumber(1);
 		}
 
@@ -288,7 +291,7 @@ namespace langX {
 		if (a && a->getType() == FUNCTION)
 		{
 			FunctionRef * b = (FunctionRef*)a;
-			arg->clientclosecb = b;
+			arg->clientclosecb = (FunctionRef *)b->clone();
 			//return getState()->getAllocator().allocateNumber(1);
 		}
 
@@ -311,7 +314,7 @@ namespace langX {
 		if (a && a->getType() == FUNCTION)
 		{
 			FunctionRef * b = (FunctionRef*)a;
-			arg->writecb = b;
+			arg->writecb = (FunctionRef *)b->clone();
 			//return getState()->getAllocator().allocateNumber(1);
 		}
 
@@ -334,7 +337,7 @@ namespace langX {
 		if (a && a->getType() == FUNCTION)
 		{
 			FunctionRef * b = (FunctionRef*)a;
-			arg->readcb = b;
+			arg->readcb = (FunctionRef *)b->clone();
 			//return getState()->getAllocator().allocateNumber(1);
 		}
 
@@ -358,7 +361,7 @@ namespace langX {
 		if (a && a->getType() == FUNCTION)
 		{
 			FunctionRef * b = (FunctionRef*)a;
-			arg->acceptcb = b;
+			arg->acceptcb = (FunctionRef *)b->clone();
 			//return getState()->getAllocator().allocateNumber(1);
 		}
 
