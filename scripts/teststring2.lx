@@ -1,0 +1,25 @@
+str ="1qasdq0sd9,9qasd,d66" ;
+
+a = str.upperCase();
+print("upperCase: " + a + "\n");
+
+a = a.lowerCase();
+print("lowerCase: " + a + "\n");
+
+a = str.replace("qasd", "2");
+print("replace: " + a + "\n");
+
+a = str.replaceFirst("qasd", "2");
+print("replaceFirst: " + a + "\n");
+
+a = str.subString(5);
+print("subString: " + a + "\n");
+
+a = str.subString(5,3);
+print("subString: " + a + "\n");
+
+a = str.split(",");
+print("split length: " + a.length + "\n");
+for( i = 0 ; i < a.length ; i++){
+  print("index " + i + ",element: " + a[i] + "\n");
+}

@@ -1,0 +1,7 @@
+str = "abc4fqqe" ;
+print("str len: " + str.length + "\n");
+print("str len: " + str.length() + "\n");
+
+print("str contains 4fq: " + str.contains("4fq5") + "\n");
+
+print("over\n");

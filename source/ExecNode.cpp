@@ -18,6 +18,7 @@
 #include "../include/XNameSpace.h"
 #include "../include/StackTrace.h"
 #include "../include/NullObject.h"
+#include "../include/InnerFunction.h"
 
 
 namespace langX {
@@ -403,7 +404,7 @@ namespace langX {
 				{
 					//ss << "object";
 					langXObjectRef *ref1 = (langXObjectRef*)left;
-					Function *func1=  ref1->getFunction("toString");
+					Function *func1 = ref1->getFunction("toString");
 					if (func1 == nullptr)
 					{
 						ss << "|[" << left->characteristic();
@@ -2116,7 +2117,7 @@ namespace langX {
 			if (n1->value->getType() == FUNCTION)
 			{
 				FunctionRef *f = (FunctionRef*)n1->value;
-				n->value = f->call(args,remark );
+				n->value = f->call(args, remark);
 				flag = false;
 			}
 			else if (n1->value->getType() == STRING)
@@ -2166,7 +2167,7 @@ namespace langX {
 		}
 		langXObjectRef * objectRef = object->addRef();
 		objectRef->setEmergeEnv(getState()->getCurrentEnv());
-		
+
 
 		//objectRef->setMembersEmergeEnv(env);
 		//getState()->addEnvToList(env);
@@ -2288,6 +2289,23 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+		else if (n1->value->getType() == STRING) {
+
+			String * str = (String*)n1->value;
+			if (strcmp(memberName, "length") == 0)
+			{
+				// string.length.
+				n->value = m_exec_alloc.allocateNumber(str->size());
+			}
+			else {
+				char tmp[100] = { 0 };
+				sprintf(tmp, "no member %s in string.", memberName);
+				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+			}
+
+			freeSubNodes(n);
+			return;
+		}
 
 		if (n1->value->getType() != OBJECT)
 		{
@@ -2334,10 +2352,23 @@ namespace langX {
 		Node *n1 = n->opr_obj->op[0];
 		__execNode(n1);
 
-		if (n1->value == NULL || n1->value->getType() != OBJECT)
+		if (n1->value == NULL)
 		{
 			getState()->throwException(newTypeErrorException("left value is not class object !")->addRef());
-			//printf("left value %s is not class object !\n", n1->var_obj->name);
+			freeSubNodes(n);
+			return;
+		}
+
+		if (n1->value->getType() == STRING)
+		{
+			// 
+			n->value = callInnerFunc(n1->value, n->opr_obj->op[1]);
+			return;
+		}
+
+		if (n1->value->getType() != OBJECT)
+		{
+			getState()->throwException(newTypeErrorException("left value is not class object !")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -2870,7 +2901,7 @@ namespace langX {
 					Function *func = getState()->getCurrentEnv()->getFunction(node->var_obj->name);
 					if (func != nullptr)
 					{
-						
+
 						node->value = m_exec_alloc.allocateFunctionRef(func);
 					}
 					else {

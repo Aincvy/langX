@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include <string>
+#include <vector>
 
 namespace langX {
 
@@ -36,6 +37,33 @@ namespace langX {
 
 		// 获得这个字符串的长度
 		int size();
+
+		// 是否包含某字符串
+		bool contains(const char *);
+
+		// 是否为空字符串
+		bool isEmpty() const;
+
+		// 转换成大写
+		std::string upperCase() const;
+
+		// 转换成小写
+		std::string lowerCase() const;
+
+		// find return index, else return -1
+		int indexOf(const char *);
+
+		std::string subStr(int begin);
+
+		std::string subStr(int begin, int len);
+
+		// 把参数1 替换成 参数2 ,当前字符串不变
+		std::string replace(const char *, const char *);
+
+		std::string replaceFirst(const char *, const char *);
+
+		// 分割字符串
+		std::vector<std::string> split(const char *);
 
 	private:
 		std::string m_value;
