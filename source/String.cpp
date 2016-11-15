@@ -1,4 +1,7 @@
 #include <string>
+#include <algorithm>
+#include <string.h>
+
 #include "../include/String.h"
 
 namespace langX {
@@ -35,7 +38,6 @@ namespace langX {
 			// 存在换行符
 			m_value.replace(m_value.find("\\n") , 2, "\n");
 		}
-
 	}
 	bool String::isTrue() const
 	{
@@ -65,6 +67,112 @@ namespace langX {
 	{
 		return this->m_value.size();
 	}
+
+	bool String::contains(const char *b)
+	{
+		auto a = this->m_value.find(b);
+		if (a == std::string::npos)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	bool String::isEmpty() const
+	{
+		
+		return this->m_value.empty();
+	}
+
+	std::string String::upperCase() const
+	{
+		std::string a(this->m_value);
+
+		std::transform(a.begin(), a.end(), a.begin(), ::toupper);
+
+		return a;
+	}
+
+	std::string String::lowerCase() const
+	{
+		std::string a(this->m_value);
+
+		std::transform(a.begin(), a.end(), a.begin(), ::tolower);
+
+		return a;
+	}
+
+	int String::indexOf(const char *str)
+	{
+
+		int i = this->m_value.find_first_of(str);
+		if (i == std::string::npos)
+		{
+			return -1;
+		}
+		return i;
+	}
+
+	std::string String::subStr(int begin)
+	{
+		return this->m_value.substr(begin);
+	}
+
+	std::string String::subStr(int begin, int len)
+	{
+		return this->m_value.substr(begin, len);
+	}
+
+	std::string String::replace(const char *a, const char *b)
+	{
+		std::string str(this->m_value);
+		auto i = str.find(a);
+		int len = strlen(a);
+		while (i != std::string::npos)
+		{
+			str.replace(i , len,b);
+
+			i = str.find(a);
+		}
+		return str;
+	}
+
+	std::string String::replaceFirst(const char *a, const char *b)
+	{
+		std::string str(this->m_value);
+		auto i = str.find(a);
+		int len = strlen(a);
+		if (i != std::string::npos)
+		{
+			str.replace(i, len, b);
+		}
+		return str;
+	}
+
+	std::vector<std::string> String::split(const char *delim)
+	{
+		std::string s = this->m_value;
+
+		std::vector<std::string> elems;
+		size_t pos = 0;
+		size_t len = s.length();
+		size_t delim_len = strlen(delim);
+		if (delim_len == 0) return elems;
+		while (pos < len)
+		{
+			int find_pos = s.find(delim, pos);
+			if (find_pos < 0)
+			{
+				elems.push_back(s.substr(pos, len - pos));
+				break;
+			}
+			elems.push_back(s.substr(pos, find_pos - pos));
+			pos = find_pos + delim_len;
+		}
+		return elems;
+	}
+
+
 
 	void String::finalize()
 	{

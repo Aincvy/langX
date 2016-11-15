@@ -19,7 +19,7 @@ namespace langX {
 	int libeventModule::init(langXState *state)
 	{
 		// 初始化 libevent 库
-		printf("初始化libevent库");
+		printf("初始化libevent库 \n");
 		initServerSupportTools();
 
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.libevent");

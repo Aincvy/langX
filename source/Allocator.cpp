@@ -147,6 +147,11 @@ namespace langX {
 		delete str;
 	}
 
+	XArray * Allocator::allocateArray(int size)
+	{
+		return new XArray(size);
+	}
+
 	FunctionRef * Allocator::allocateFunctionRef(Function *f) const
 	{
 		return new FunctionRef(f);

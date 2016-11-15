@@ -10,6 +10,7 @@ namespace langX {
 	class Function;
 	class langXObject;
 	class ClassInfo;
+	class XArray;
 
 	// 主要用来申请一个对象
 	class Allocator
@@ -31,6 +32,9 @@ namespace langX {
 		String *allocateString() const;
 		String *allocateString(const char *) const;
 		void freeString(String *);
+
+		// 申请一个数组
+		XArray *allocateArray(int size);
 
 		FunctionRef *allocateFunctionRef(Function *) const;
 		void freeFunctionRef(FunctionRef *) const;

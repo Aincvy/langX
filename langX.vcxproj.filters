@@ -84,6 +84,9 @@
     <ClInclude Include="include\X3rdModule.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\InnerFunction.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="extern\lex.yy.c">
@@ -157,6 +160,9 @@
     </ClCompile>
     <ClCompile Include="modProjects\Readme">
       <Filter>modProjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\InnerFunction.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
