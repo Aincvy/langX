@@ -1,0 +1,11 @@
+Class1{
+  name;
+
+  toString => () {
+	return "Class1: " + name ;
+  }
+}
+
+c1 = new Class1();
+c1.name="Jhon";
+print("c1: " + c1 + "\n");

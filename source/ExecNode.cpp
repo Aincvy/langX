@@ -446,7 +446,15 @@ namespace langX {
 						}
 						else {
 							// 待定
-
+							FunctionRef aref(func1);
+							aref.setObj(ref1->getRefObject());
+							Object *retObj = aref.call(nullptr, "");
+							if (retObj->getType() == STRING)
+							{
+								ss << ((String*)retObj)->getValue();
+							}
+							getState()->getAllocator().free(retObj);
+							retObj = nullptr;
 						}
 					}
 					else {
