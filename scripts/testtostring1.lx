@@ -1,9 +1,9 @@
 Class1{
   name;
 
-  toString => () {
+  /*toString => () {
 	return "Class1: " + name ;
-  }
+  }*/
 }
 
 c1 = new Class1();

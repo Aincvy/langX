@@ -410,8 +410,16 @@ namespace langX {
 						ss << "|[" << left->characteristic();
 					}
 					else {
-						// 待定
-
+						// 
+						FunctionRef aref(func1);
+						aref.setObj(ref1->getRefObject());
+						Object *retObj = aref.call(nullptr, "");
+						if (retObj->getType() == STRING)
+						{
+							ss << ((String*)retObj)->getValue();
+						}
+						getState()->getAllocator().free(retObj);
+						retObj = nullptr;
 					}
 				}
 				else {
@@ -438,14 +446,14 @@ namespace langX {
 					}
 					else if (right->getType() == OBJECT)
 					{
-						langXObjectRef *ref1 = (langXObjectRef*)left;
+						langXObjectRef *ref1 = (langXObjectRef*)right;
 						Function *func1 = ref1->getFunction("toString");
 						if (func1 == nullptr)
 						{
-							ss << "|[" << left->characteristic();
+							ss << "|[" << right->characteristic();
 						}
 						else {
-							// 待定
+							// 
 							FunctionRef aref(func1);
 							aref.setObj(ref1->getRefObject());
 							Object *retObj = aref.call(nullptr, "");
