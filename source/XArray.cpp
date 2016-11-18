@@ -166,7 +166,10 @@ namespace langX {
 	{
 		if (this->m_array == nullptr)
 		{
-			return nullptr;
+			Object *ret = new XArrayRef(nullptr);
+			ret->setEmergeEnv(this->getEmergeEnv());
+			ret->setCharacteristic(characteristic());
+			return ret;
 		}
 		Object * obj = this->m_array->addRef();
 		obj->setEmergeEnv(this->getEmergeEnv());
