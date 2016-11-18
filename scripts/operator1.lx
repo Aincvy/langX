@@ -1,0 +1,44 @@
+Class1 {
+
+  operator+ => (right){
+    print("operator+ " + right + "\n");
+  }
+
+  operator- => (right){
+    print("operator- " + right + "\n");
+  }
+  
+  operator* => (right){
+    print("operator* " + right + "\n");
+  }
+  
+  operator/ => (right){
+    print("operator/ " + right + "\n");
+  }
+  
+  operator. => (right){
+    print("operator. " + right + "\n");
+  }
+  
+  operator[] => (right){
+    print("operator[] " + right + "\n");
+  }
+  
+  operator++ => (right){
+    print("operator++ " + right + "\n");
+  }
+  
+  operator-- => (right){
+    print("operator-- " + right + "\n");
+  }
+}
+
+c = new Class1();
+r1 = c + 1;
+r1 = c - 2;
+r1 = c * 3;
+r1 = c / 4;
+r1 = c.a5;
+r1 = c[6];
+r1 = c++;
+r1 = c--;
