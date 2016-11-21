@@ -1,0 +1,9 @@
+Class1 {
+
+  operator+ => (right){
+    print("operator+ " + right + "\n");
+  }
+}
+
+c = new Class1();
+r1 = c + 1;
