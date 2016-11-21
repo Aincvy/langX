@@ -8,6 +8,7 @@
 #include "../include/Environment.h"
 #include "../include/XArray.h"
 #include "../extern/y.tab.h"
+#include "../include/langXObjectRef.h"
 
 #include <string.h>
 #include <string>
@@ -16,6 +17,21 @@
 
 namespace langX {
 
+
+	Object * callFunction(Object *obj, Function *func, X3rdArgs *args) {
+		if (obj == nullptr || obj->getType() != OBJECT || func == nullptr)
+		{
+			return nullptr;
+		}
+
+		langXObjectRef *ref1 = (langXObjectRef*)obj;
+
+		FunctionRef aref(func);
+		aref.setObj(ref1->getRefObject());
+		Object *retObj = aref.call(args->args, args->index, "");
+
+		return retObj;
+	}
 
 	Object * callInnerFunc(Object *obj, Node * n) {
 		// n 应该是一个函数调用节点

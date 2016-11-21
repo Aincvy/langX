@@ -379,7 +379,23 @@ namespace langX {
 		{
 			n->value = m_exec_alloc.allocateNumber(((Number*)left)->getDoubleValue() + ((Number*)right)->getDoubleValue());
 		}
-		else if ((left != NULL && left->getType() == STRING) || (right != NULL  && right->getType() == STRING))
+		else if (left != NULL && left->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)left;
+			Function *func1 = ref1->getFunction("operator+");
+			if (func1)
+			{
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.args[0] = right;
+				_3rdArgs.index = 1;
+				n->value = callFunction(left, func1, &_3rdArgs);
+
+				freeSubNodes(n);
+				return;
+			}
+		}
+		
+		if ((left != NULL && left->getType() == STRING) || (right != NULL  && right->getType() == STRING))
 		{
 			// 字符串拼接 
 			std::stringstream ss;

@@ -7,4 +7,6 @@ namespace langX {
 
 	//  生成一个随机的特性值
 	void randomCharacteristic(char *,int ,void *, int randomLen);
+
+
 }
