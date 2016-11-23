@@ -515,6 +515,24 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		Object * left = n1->value;
+		Object * right = n2->value;
+		if (left != NULL && left->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)left;
+			Function *func1 = ref1->getFunction("operator-");
+			if (func1)
+			{
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.args[0] = right;
+				_3rdArgs.index = 1;
+				n->value = callFunction(left, func1, &_3rdArgs);
+
+				freeSubNodes(n);
+				return;
+			}
+		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
 			getState()->throwException(newArithmeticException("type error on opr '-'!")->addRef());
@@ -544,6 +562,25 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		Object * left = n1->value;
+		Object * right = n2->value;
+		if (left != NULL && left->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)left;
+			Function *func1 = ref1->getFunction("operator*");
+			if (func1)
+			{
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.args[0] = right;
+				_3rdArgs.index = 1;
+				n->value = callFunction(left, func1, &_3rdArgs);
+
+				freeSubNodes(n);
+				return;
+			}
+		}
+
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
 			getState()->throwException(newArithmeticException("type error on opr '*'!")->addRef());
@@ -574,6 +611,25 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		Object * left = n1->value;
+		Object * right = n2->value;
+		if (left != NULL && left->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)left;
+			Function *func1 = ref1->getFunction("operator/");
+			if (func1)
+			{
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.args[0] = right;
+				_3rdArgs.index = 1;
+				n->value = callFunction(left, func1, &_3rdArgs);
+
+				freeSubNodes(n);
+				return;
+			}
+		}
+
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
 			getState()->throwException(newArithmeticException("type error on opr '/'!")->addRef());
@@ -749,12 +805,33 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		Object * left = n1->value;
+		Object * right = n2->value;
+		if (left != NULL && left->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)left;
+			Function *func1 = ref1->getFunction("operator<<");
+			if (func1)
+			{
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.args[0] = right;
+				_3rdArgs.index = 1;
+				n->value = callFunction(left, func1, &_3rdArgs);
+
+				freeSubNodes(n);
+				return;
+			}
+		}
+
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
 			getState()->throwException(newArithmeticException("type error on opr '<<'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
+
+
 
 		int i1 = ((Number*)n1->value)->getIntValue();
 		int i2 = ((Number*)n2->value)->getIntValue();
@@ -783,6 +860,25 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		Object * left = n1->value;
+		Object * right = n2->value;
+		if (left != NULL && left->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)left;
+			Function *func1 = ref1->getFunction("operator>>");
+			if (func1)
+			{
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.args[0] = right;
+				_3rdArgs.index = 1;
+				n->value = callFunction(left, func1, &_3rdArgs);
+
+				freeSubNodes(n);
+				return;
+			}
+		}
+
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
 			getState()->throwException(newArithmeticException("type error on opr '>>'!")->addRef());
@@ -818,6 +914,25 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		Object * left = n1->value;
+		Object * right = n2->value;
+		if (left != NULL && left->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)left;
+			Function *func1 = ref1->getFunction("operator%");
+			if (func1)
+			{
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.args[0] = right;
+				_3rdArgs.index = 1;
+				n->value = callFunction(left, func1, &_3rdArgs);
+
+				freeSubNodes(n);
+				return;
+			}
+		}
+
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
 			getState()->throwException(newArithmeticException("type error on opr '%'!")->addRef());
@@ -1254,6 +1369,29 @@ namespace langX {
 			return;
 		}
 
+		Object * left = n1->value;
+		if (left != NULL && left->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)left;
+			Function *func1 = ref1->getFunction("operator++");
+			if (func1)
+			{
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.index = 0;
+				n->value = callFunction(left, func1, &_3rdArgs);
+
+				freeSubNodes(n);
+				return;
+			}
+		}
+
+		if (n1->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
 		if (!n->state.isSuffix)
 		{
 			// 前缀自增
@@ -1293,6 +1431,29 @@ namespace langX {
 		if (n1->value == NULL)
 		{
 			getState()->throwException(newArithmeticException("value is null on opr '--'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		Object * left = n1->value;
+		if (left != NULL && left->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)left;
+			Function *func1 = ref1->getFunction("operator--");
+			if (func1)
+			{
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.index = 0;
+				n->value = callFunction(left, func1, &_3rdArgs);
+
+				freeSubNodes(n);
+				return;
+			}
+		}
+
+		if (n1->value->getType() != NUMBER)
+		{
+			getState()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -2348,6 +2509,21 @@ namespace langX {
 		}
 
 		langXObjectRef* objectRef = (langXObjectRef*)n1->value;
+
+		Function *func1 = objectRef->getFunction("operator.");
+		if (func1)
+		{
+			X3rdArgs _3rdArgs;
+			memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+			String astr(memberName);
+			_3rdArgs.args[0] = &astr;
+			_3rdArgs.index = 1;
+			n->value = callFunction(objectRef, func1, &_3rdArgs);
+
+			freeSubNodes(n);
+			return;
+		}
+
 		Object *t = objectRef->getMember(memberName);
 		if (t == NULL)
 		{
@@ -3058,14 +3234,13 @@ namespace langX {
 		{
 			ArrayInfo * arrayInfo = node->arr_obj;
 			Object *obj = getValue(arrayInfo->name);
-			if (obj == NULL || obj->getType() != XARRAY)
+			if (obj == NULL )
 			{
 				//printf("left value is not array with array operator!\n");
 				getState()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
 				return;
 			}
 
-			XArrayRef *ref = (XArrayRef*)obj;
 			int index = arrayInfo->index;
 			if (arrayInfo->indexNode != NULL)
 			{
@@ -3083,6 +3258,32 @@ namespace langX {
 				m_exec_alloc.free(t->value);
 				t->value = NULL;
 			}
+
+			if (obj->getType() == OBJECT) {
+				langXObjectRef * ref1 = (langXObjectRef*)obj;
+				Function *func1 = ref1->getFunction("operator/");
+				if (func1)
+				{
+					X3rdArgs _3rdArgs;
+					Number num1(index);
+					memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+					_3rdArgs.args[0] = &num1;
+					_3rdArgs.index = 1;
+					node->value = callFunction(obj, func1, &_3rdArgs);
+
+					//freeSubNodes(n);
+					return;
+				}
+			}
+
+			if (obj->getType() == XARRAY)
+			{
+				getState()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
+				return;
+			}
+
+			XArrayRef *ref = (XArrayRef*)obj;
+			
 			node->value = ref->at(index)->clone();
 			return;
 		}
