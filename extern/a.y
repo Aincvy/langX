@@ -29,9 +29,9 @@ char *namespaceNameCat(char *,char *);
  XArgsList *args;    /* args value */
 };
 
-%token <intValue> XINTEGER
+%token <intValue> XINTEGER 
 %token <iValue> TDOUBLE TBOOL
-%token <sValue> IDENTIFIER TSTRING
+%token <sValue> IDENTIFIER TSTRING OPERATOR_X__
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL REQUIRE REQUIRE_ONCE REF
 %token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
@@ -198,6 +198,7 @@ class_func_serial_stmt
 // 函数声明语句
 func_declar_stmt
 	: IDENTIFIER FUNC_OP param_list '{' expr_list '}' { $$ = func($1,$3,$5);}
+	| OPERATOR_X__ FUNC_OP param_list '{' expr_list '}' { $$ = func($1,$3,$5);}
 	;
 
 // lambda 表达式

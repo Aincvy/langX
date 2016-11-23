@@ -339,7 +339,7 @@ namespace langX {
 
 	Object * FunctionRef::call(Object* args[], int len, const char * remark)
 	{
-		Environment *env = getFunctionEnv();
+		//Environment *env = getFunctionEnv();
 		Function *function = this->m_func;
 		Object * ret = NULL;
 
@@ -365,7 +365,8 @@ namespace langX {
 				}
 				_3rdArgs.index = len;
 			}
-			Environment *currEnv1 = getState()->getCurrentEnv();
+			//Environment *currEnv1 = getState()->getCurrentEnv();
+			Environment *currEnv1 = getFunctionEnv();
 			if (currEnv1->isObjectEnvironment())
 			{
 				if (currEnv1->isEnvEnvironment())
@@ -383,13 +384,7 @@ namespace langX {
 		}
 		else {
 			
-			if (env == nullptr)
-			{
-				env = getState()->newEnv();
-			}
-			else {
-				getState()->newEnv(env);
-			}
+			Environment * env = getState()->newEnv();
 
 			if (args != NULL)
 			{
@@ -420,6 +415,7 @@ namespace langX {
 			}
 		}
 		
+
 		getState()->getStackTrace().popFrame();
 
 		return ret;
