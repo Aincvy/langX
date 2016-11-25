@@ -26,6 +26,12 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\PythonModule.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\PythonModule.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{dfc215d8-66f8-46ea-8c07-1a251075cabb}</ProjectGuid>
     <Keyword>Linux</Keyword>
