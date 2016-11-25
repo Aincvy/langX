@@ -1714,6 +1714,9 @@ namespace langX {
 			return;
 		}
 
+		Object * left = n1->value;
+		Object * right = n2->value;
+
 		if (n1->value->getType() == NUMBER && n2->value->getType() == NUMBER)
 		{
 			double a = ((Number*)n1->value)->getDoubleValue();
@@ -1741,6 +1744,21 @@ namespace langX {
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 		}
+		else if (left != NULL && left->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)left;
+			Function *func1 = ref1->getFunction("operator==");
+			if (func1)
+			{
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.args[0] = right;
+				_3rdArgs.index = 1;
+				n->value = callFunction(left, func1, &_3rdArgs);
+
+				freeSubNodes(n);
+				return;
+			}
+		}
 		else {
 			//printf("类型不同，无法比较");
 			getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
@@ -1765,10 +1783,14 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '=='!")->addRef());
+			getState()->throwException(newArithmeticException("value is null on opr '!='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
+
+
+		Object * left = n1->value;
+		Object * right = n2->value;
 
 		if (n1->value->getType() == NUMBER && n2->value->getType() == NUMBER)
 		{
@@ -1795,6 +1817,21 @@ namespace langX {
 			}
 			else {
 				n->value = m_exec_alloc.allocateNumber(0);
+			}
+		}
+		else if (left != NULL && left->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)left;
+			Function *func1 = ref1->getFunction("operator!=");
+			if (func1)
+			{
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.args[0] = right;
+				_3rdArgs.index = 1;
+				n->value = callFunction(left, func1, &_3rdArgs);
+
+				freeSubNodes(n);
+				return;
 			}
 		}
 		else {
