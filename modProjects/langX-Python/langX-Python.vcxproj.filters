@@ -20,5 +20,14 @@
     <ClCompile Include="source\PythonModule.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\PythonLib.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PythonHook.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="makefile" />
   </ItemGroup>
 </Project>

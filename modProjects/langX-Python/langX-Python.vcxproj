@@ -26,12 +26,22 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalOptions>-D "WIN32" %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\PythonModule.h" />
     <ClInclude Include="include\RegPythonModule.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\PythonHook.cpp" />
+    <ClCompile Include="source\PythonLib.cpp" />
     <ClCompile Include="source\PythonModule.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="makefile" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{dfc215d8-66f8-46ea-8c07-1a251075cabb}</ProjectGuid>
@@ -58,6 +68,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <RemoteRootDir>~/projects/langX/modProjects</RemoteRootDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>

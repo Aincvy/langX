@@ -1,0 +1,10 @@
+ref langX.python ;
+
+PythonLib::load();
+
+py = new PythonHook();
+py.doSString("print(\"Hello, World!\");");
+
+PythonLib::unload();
+
+print("test over!\n");

@@ -1,0 +1,7 @@
+﻿  Validating architecture
+  Validating sources
+  Copying sources remotely to '120.27.200.228'
+  Starting remote build
+  Compiling sources:
+  PythonHook.cpp
+F:\hideDragon\langX\langX\modProjects\langX-Python\source\PythonHook.cpp(14,54): error : ../../../lib/Python-3.5.2/Include/Python.h: No such file or directory
