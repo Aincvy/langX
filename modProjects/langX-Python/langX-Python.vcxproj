@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\PythonModule.h" />
+    <ClInclude Include="include\RegPythonModule.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\PythonModule.cpp" />
