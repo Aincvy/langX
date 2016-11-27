@@ -12,6 +12,9 @@
     <ClInclude Include="include\PythonModule.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\RegPythonModule.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\PythonModule.cpp">
