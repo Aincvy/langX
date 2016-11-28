@@ -76,6 +76,8 @@ namespace langX {
 		if (a && a->getType() == STRING)
 		{
 			String *str = (String*)a;
+			str->simpleEscape();
+
 			PyRun_SimpleString(str->getValue());
 		}
 
