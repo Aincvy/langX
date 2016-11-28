@@ -26,6 +26,15 @@
     <ClCompile Include="source\PythonHook.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\PyException.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PyObjectType.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PyObject.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="makefile" />
