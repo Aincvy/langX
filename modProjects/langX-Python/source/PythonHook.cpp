@@ -1,4 +1,4 @@
-﻿#include "../include/RegPythonModule.h"
+#include "../include/RegPythonModule.h"
 
 #include "../../../include/ClassInfo.h"
 #include "../../../include/YLlangX.h"
@@ -119,7 +119,7 @@ namespace langX {
 		info->addFunction("doSString", create3rdFunc("doSString", langX_PythonHook_doSString));
 		info->addFunction("~PythonHook", create3rdFunc("~PythonHook", langX_PythonHook_PythonHook_Dtor));
 		info->addFunction("PythonHook", create3rdFunc("PythonHook", langX_PythonHook_PythonHook));
-
+		space->putClass(info);
 
 		return 0;
 	}

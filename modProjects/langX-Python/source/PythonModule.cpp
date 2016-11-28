@@ -20,7 +20,7 @@ namespace langX {
 
 	int PythonModule::init(langXState *state)
 	{
-		printf("init langX-Mysql ¿â\n");
+		printf("init langX-Python åº“\n");
 
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.python");
 

@@ -1,4 +1,4 @@
-﻿#include "../include/RegPythonModule.h"
+#include "../include/RegPythonModule.h"
 
 
 #include "../../../include/ClassInfo.h"
@@ -19,46 +19,8 @@
 
 namespace langX {
 
-	struct PythonLibInfo
-	{
-		//  是否已经完成了 加载
-		bool loaded;
-	};
-
-	void initPythonLib(langXObject *obj) {
-		if (obj == nullptr)
-		{
-			return;
-		}
-
-		struct PythonLibInfo *info = (struct PythonLibInfo*)calloc(1, sizeof(struct PythonLibInfo));
-		info->loaded = false;
-		obj->set3rdObj(info);
-	}
-
-	void freePythonLib(langXObject *obj) {
-		if (obj == nullptr)
-		{
-			return;
-
-		}
-
-		struct PythonLibInfo *info = (struct PythonLibInfo*) obj->get3rdObj();
-		free(info);
-
-		obj->set3rdObj(nullptr);
-	}
-
-
 	Object * langX_PythonLib_unload(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonLib_unload error! NO OBJ!\n");
-			return nullptr;
-		}
 
-		struct PythonLibInfo *info = (struct PythonLibInfo*) args.object->get3rdObj();
-		info->loaded = false;
 		Py_Finalize();
 
 		return nullptr;
@@ -67,14 +29,8 @@ namespace langX {
 
 
 	Object * langX_PythonLib_isLoad(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonLib_isLoad error! NO OBJ!\n");
-			return nullptr;
-		}
 
-		struct PythonLibInfo *info = (struct PythonLibInfo*) args.object->get3rdObj();
-		if (info->loaded)
+		if (Py_IsInitialized())
 		{
 			return getState()->getAllocator().allocateNumber(1);
 		}
@@ -86,20 +42,16 @@ namespace langX {
 
 
 	Object * langX_PythonLib_load(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonLib_load error! NO OBJ!\n");
-			return nullptr;
-		}
 
-		struct PythonLibInfo *info = (struct PythonLibInfo*) args.object->get3rdObj();
-		info->loaded = false;
+		if (Py_IsInitialized())
+		{
+			return getState()->getAllocator().allocateNumber(1);
+		}
 
 		Py_Initialize();
 		
 		if (Py_IsInitialized())
 		{
-			info->loaded = true;
 			return getState()->getAllocator().allocateNumber(1);
 		}
 
@@ -109,13 +61,6 @@ namespace langX {
 
 
 	Object * langX_PythonLib_PythonLib_Dtor(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonLib_PythonLib_Dtor error! NO OBJ!\n");
-			return nullptr;
-		}
-
-		freePythonLib(args.object);
 
 		return nullptr;
 	}
@@ -123,13 +68,6 @@ namespace langX {
 
 
 	Object * langX_PythonLib_PythonLib(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonLib_PythonLib error! NO OBJ!\n");
-			return nullptr;
-		}
-
-		initPythonLib(args.object);
 
 		return nullptr;
 	}
@@ -144,6 +82,7 @@ namespace langX {
 		info->addFunction("load", create3rdFunc("load", langX_PythonLib_load));
 		info->addFunction("~PythonLib", create3rdFunc("~PythonLib", langX_PythonLib_PythonLib_Dtor));
 		info->addFunction("PythonLib", create3rdFunc("PythonLib", langX_PythonLib_PythonLib));
+		space->putClass(info);
 
 		return 0;
 	}
