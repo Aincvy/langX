@@ -36,6 +36,9 @@
     <ClInclude Include="include\RegPythonModule.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\PyException.cpp" />
+    <ClCompile Include="source\PyObject.cpp" />
+    <ClCompile Include="source\PyObjectType.cpp" />
     <ClCompile Include="source\PythonHook.cpp" />
     <ClCompile Include="source\PythonLib.cpp" />
     <ClCompile Include="source\PythonModule.cpp" />

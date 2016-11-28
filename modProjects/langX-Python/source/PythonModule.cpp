@@ -26,6 +26,7 @@ namespace langX {
 
 		regPythonLib(state, space);
 		regPythonHook(state, space);
+		regPyException(state, space);
 
 		return 0;
 	}

@@ -13,4 +13,11 @@ namespace langX {
 
 	int regPythonHook(langXState *state, XNameSpace* space);
 
+	int regPyException(langXState *state, XNameSpace* space);
+
+
+	int regPyObjectType(langXState *state, XNameSpace* space);
+
+	int regPyObject(langXState *state, XNameSpace* space);
+
 }
