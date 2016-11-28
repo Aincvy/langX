@@ -38,6 +38,25 @@ namespace langX {
 			// 存在换行符
 			m_value.replace(m_value.find("\\n") , 2, "\n");
 		}
+
+		while (m_value.find("\\\"") != std::string::npos)
+		{
+			// 存在 双引号
+			m_value.replace(m_value.find("\\\""), 2, "\"");
+		}
+
+		while (m_value.find("\\\'") != std::string::npos)
+		{
+			// 存在 单引号
+			m_value.replace(m_value.find("\\\'"), 2, "\'");
+		}
+
+		while (m_value.find("\\\t") != std::string::npos)
+		{
+			// 存在 制表符
+			m_value.replace(m_value.find("\\\t"), 2, "\t");
+		}
+
 	}
 	bool String::isTrue() const
 	{
