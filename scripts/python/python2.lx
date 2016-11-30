@@ -1,0 +1,25 @@
+ref langX.python ;
+
+PythonLib::load();
+
+py = new PythonHook();
+py.doSString("import sys");
+py.doSString("sys.path.append('/root/projects/langX/scripts/python/')");
+
+pModule = py.importModule("pytest1");
+pFunc = pModule.get("add");
+
+pArgs = py.newTuple(2);
+pArgs.setItem(0,3);
+pArgs.setItem(1,4);
+pFunc.callMethod(pArgs);
+
+pFunc = pModule.get("foo");
+pArgs = py.newTuple(1);
+pArgs.setItem(0,2);
+pFunc.callMethod(pArgs);
+
+
+PythonLib::unload();
+
+print("file over!\n");

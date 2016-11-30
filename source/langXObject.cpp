@@ -74,6 +74,10 @@ namespace langX {
 		}
 	}
 
+	bool langXObject::typeCheck(const char *name) const{
+		return m_class_info->isInstanceOf(name);
+	}
+
 	void langXObject::setMember(const char *name, Object *obj)
 	{
 		setMember(name, obj, false);

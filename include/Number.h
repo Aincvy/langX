@@ -24,6 +24,9 @@ namespace langX {
 		Object* clone() const;
 		void update(Object *);
 
+		// 判断当前值是否是一个int , 判断方式比较简单
+		bool isInteger();
+
 		operator int() const;
 		operator double() const;
 		Number operator+ (const Number&);
