@@ -1,5 +1,7 @@
 #include "../include/PythonModule.h"
+#include "../include/RegPythonModule.h"
 
+#include "../../../include/Function.h"
 #include "../../../include/Exception.h"
 #include "../../../include/XNameSpace.h"
 #include "../../../include/ClassInfo.h"
@@ -9,6 +11,9 @@
 #include "../../../include/Function.h"
 #include "../../../include/YLlangX.h"
 #include "../../../include/langXObject.h"
+#include "../../../include/String.h"
+
+static langX::ClassInfo *pyExceptionClasxx;
 
 namespace langX {
 
@@ -46,7 +51,17 @@ namespace langX {
 		pyException->addFunction("PyException", create3rdFunc("PyException", langX_PyException_PyException));
 		space->putClass(pyException);
 
+		pyExceptionClasxx = pyException;
+
 		return 0;
+	}
+
+	langXObject * newPyException(const char * message) {
+
+		langXObject *obj = pyExceptionClasxx->newObject();
+		obj->setMember("message", new String(message));
+		return obj;
+
 	}
 
 }

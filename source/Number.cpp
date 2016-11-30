@@ -27,6 +27,10 @@ namespace langX {
 		this->m_value = a;
 	}
 
+	bool Number::isInteger() {
+		return this->m_value == (int) this->m_value;
+	}
+
 	int Number::getIntValue() const
 	{
 		return (int)this->m_value;

@@ -2,11 +2,11 @@
 
 TARGET = ../../mod/python3_x.so
 
-OBJ = source/PythonHook.o source/PythonLib.o source/PythonModule.o 
+OBJ = source/PythonHook.o source/PythonLib.o source/PythonModule.o source/PyException.cpp source/PyObject.cpp source/PyObjectType.cpp
 
 HEADER = include/PythonModule.h include/RegPythonModule.h 
 
-SRC = source/PythonHook.cpp source/PythonLib.cpp source/PythonModule.cpp 
+SRC = source/PythonHook.cpp source/PythonLib.cpp source/PythonModule.cpp source/PyException.o source/PyObject.o source/PyObjectType.o
 
 DFLAGS = -llangX -lpython3
 

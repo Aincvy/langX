@@ -10,6 +10,7 @@ namespace langX {
 	class langXObjectRef;
 	class ObjectBridgeEnv;
 	class Environment;
+	class Function;
 
 	/*
 	 * langXObject  与object 独立分开
@@ -19,6 +20,9 @@ namespace langX {
 	public:
 		langXObject(ClassInfo *);
 		~langXObject();
+
+		// 判断这个对象是否是指定的类型
+		bool typeCheck(const char *) const;
 
 		//  设置 arg1 的值为 arg2 ，如果arg1的类型和arg2的类型不一样， 会释放arg1的内存
 		//  更新arg1 为arg2 或者 设置arg1 为 arg2 的一个副本

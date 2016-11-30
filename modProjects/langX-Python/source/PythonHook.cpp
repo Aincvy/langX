@@ -1,5 +1,7 @@
 #include "../include/RegPythonModule.h"
+#include "../include/PythonModule.h"
 
+#include "../../../include/Function.h"
 #include "../../../include/ClassInfo.h"
 #include "../../../include/YLlangX.h"
 #include "../../../include/Object.h"
@@ -16,8 +18,9 @@
 #include <python3.5m/Python.h>
 #endif
 
-namespace langX {
+extern langX::ClassInfo *claxxPyObj;
 
+namespace langX {
 
 	Object * langX_PythonHook_call(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
@@ -25,7 +28,7 @@ namespace langX {
 			printf("langX_PythonHook_call error! NO OBJ!\n");
 			return nullptr;
 		}
-	
+
 
 
 		return nullptr;
@@ -67,10 +70,14 @@ namespace langX {
 			String *str = (String*)a;
 			str->simpleEscape();
 
-			PyImport_ImportModule(str->getValue());
+			PyObject *ret = PyImport_ImportModule(str->getValue());
+			langXObject *aobj = claxxPyObj->newObject();
+			XClassPyObject * bobj = createXClassPyObject();
+			bobj->type = PyObjectType::Module;
+			bobj->pyObj = ret;
+			aobj->set3rdObj(bobj);
+			return aobj->addRef();
 		}
-		
-		
 
 		return nullptr;
 	}
@@ -118,6 +125,38 @@ namespace langX {
 		return nullptr;
 	}
 
+	Object * langX_PythonHook_newDict(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_PythonHook_newDict error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		PyObject *ret = PyDict_New();
+		return createLangXObjectPyObj(ret, PyObjectType::Dict)->addRef();
+
+	}
+
+
+
+	Object * langX_PythonHook_newTuple(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_PythonHook_newTuple error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		Object *a = args.args[0];
+		if (a && a->getType() == NUMBER)
+		{
+			Number *num = (Number*)a;
+			PyObject *ret = PyTuple_New(num->getIntValue());
+			return createLangXObjectPyObj(ret, PyObjectType::Tuple)->addRef();
+		}
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
+	}
+
 
 
 	int regPythonHook(langXState *state, XNameSpace* space) {
@@ -130,6 +169,8 @@ namespace langX {
 		info->addFunction("doSString", create3rdFunc("doSString", langX_PythonHook_doSString));
 		info->addFunction("~PythonHook", create3rdFunc("~PythonHook", langX_PythonHook_PythonHook_Dtor));
 		info->addFunction("PythonHook", create3rdFunc("PythonHook", langX_PythonHook_PythonHook));
+		info->addFunction("newDict", create3rdFunc("newDict", langX_PythonHook_newDict));
+		info->addFunction("newTuple", create3rdFunc("newTuple", langX_PythonHook_newTuple));
 		space->putClass(info);
 
 		return 0;
