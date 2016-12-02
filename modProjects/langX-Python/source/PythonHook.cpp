@@ -22,41 +22,6 @@ extern langX::ClassInfo *claxxPyObj;
 
 namespace langX {
 
-	Object * langX_PythonHook_call(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonHook_call error! NO OBJ!\n");
-			return nullptr;
-		}
-
-
-
-		return nullptr;
-	}
-
-
-	Object * langX_PythonHook_operator_square_brackets(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonHook_operator[] error! NO OBJ!\n");
-			return nullptr;
-		}
-
-		return nullptr;
-	}
-
-
-	Object * langX_PythonHook_get(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonHook_get error! NO OBJ!\n");
-			return nullptr;
-		}
-
-		return nullptr;
-	}
-
-
 	Object * langX_PythonHook_importModule(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
@@ -162,9 +127,6 @@ namespace langX {
 	int regPythonHook(langXState *state, XNameSpace* space) {
 
 		ClassInfo *info = new ClassInfo("PythonHook");
-		info->addFunction("call", create3rdFunc("call", langX_PythonHook_call));
-		info->addFunction("operator[]", create3rdFunc("operator[]", langX_PythonHook_operator_square_brackets));
-		info->addFunction("get", create3rdFunc("get", langX_PythonHook_get));
 		info->addFunction("importModule", create3rdFunc("import", langX_PythonHook_importModule));
 		info->addFunction("doSString", create3rdFunc("doSString", langX_PythonHook_doSString));
 		info->addFunction("~PythonHook", create3rdFunc("~PythonHook", langX_PythonHook_PythonHook_Dtor));
