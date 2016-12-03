@@ -7,7 +7,9 @@ namespace langX {
 
 	NullObject::NullObject()
 	{
+		setCharacteristic("no_pointer_to_anything");
 	}
+
 	NullObject::~NullObject()
 	{
 	}

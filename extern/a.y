@@ -325,6 +325,8 @@ args_expr_collection
 	| uminus_expr   { $$ = $1; }
 	| call_statement { $$ = $1; }
 	| arithmetic_stmt { $$ = $1;}
+	| array_ele_stmt  { $$ = $1;}
+	| class_member_stmt { $$ = $1; }
 	;
 
 block
@@ -371,7 +373,6 @@ arithmetic_stmt_factor
 	: assign_stmt_value_eq    { $$ = $1 ; }
 	| string_expr             { $$ = $1 ; }
 	| arithmetic_stmt         { $$ = $1 ; }
-	| class_member_stmt       { $$ = $1 ; }
 	| array_ele_stmt          { $$ = $1; }
 	| '(' arithmetic_stmt ')' { $$ = $2 ; }
 	;
@@ -469,6 +470,7 @@ assign_stmt_value_eq
 	| call_statement    { $$ = $1; }
 	| id_expr       { $$ = $1; }
 	| self_inc_dec_stmt { $$ = $1; }
+	| class_member_stmt { $$ = $1; }
 	;
 
 // 赋值
