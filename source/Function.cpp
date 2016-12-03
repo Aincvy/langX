@@ -365,25 +365,20 @@ namespace langX {
 				}
 				_3rdArgs.index = len;
 			}
-			//Environment *currEnv1 = getState()->getCurrentEnv();
-			Environment *currEnv1 = getFunctionEnv();
-			if (currEnv1->isObjectEnvironment())
-			{
-				if (currEnv1->isEnvEnvironment())
-				{
-					_3rdArgs.object = ((ObjectBridgeEnv*)((EnvironmentBridgeEnv*)currEnv1)->getBridgeEnv())->getEnvObject();
-				}
-				else {
-					_3rdArgs.object = ((ObjectBridgeEnv*)currEnv1)->getEnvObject();
-				}
-
-
-			}
+			
+			_3rdArgs.object = this->m_func_obj;
 
 			ret = x3rdfunc->call(_3rdArgs);
 		}
 		else {
-			
+			// 当前引用指向的那个环境
+			Environment *tEnv = getFunctionEnv();
+			if (tEnv != nullptr)
+			{
+				getState()->newEnv(tEnv);
+			}
+
+			// 函数执行的环境
 			Environment * env = getState()->newEnv();
 
 			if (args != NULL)
@@ -413,6 +408,11 @@ namespace langX {
 			{
 				getState()->backEnv();
 			}
+			if (tEnv != NULL)
+			{
+				getState()->backEnv();
+			}
+
 		}
 		
 

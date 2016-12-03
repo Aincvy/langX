@@ -37,6 +37,9 @@ namespace langX {
 			this->m_members[i->first] = obj;
 		}
 
+		char t[100];
+		randomCharacteristic(t, 100, this, 8);
+		this->m_characteristic = std::string(t);
 	}
 
 	langXObject::~langXObject()
@@ -170,6 +173,7 @@ namespace langX {
 		this->m_ref_count++;
 		if (r)
 		{
+			r->setCharacteristic(this->m_characteristic.c_str());
 			this->m_refs.push_back(r);
 		}
 		this->m_zero_ref_time = 0;
@@ -179,6 +183,7 @@ namespace langX {
 	{
 		this->m_ref_count++;
 		langXObjectRef *r = new langXObjectRef(this);
+		r->setCharacteristic(this->m_characteristic.c_str());
 		this->m_refs.push_back(r);
 		this->m_zero_ref_time = 0;
 		return r;
@@ -200,6 +205,7 @@ namespace langX {
 			return;
 		}
 
+		r->setCharacteristic("no_pointer_to_anything");
 		for (auto i = m_refs.begin(); i != m_refs.end(); i++)
 		{
 			if ((*i) == r)
@@ -280,6 +286,11 @@ namespace langX {
 	void * langXObject::get3rdObj() const
 	{
 		return this->m_3rdObj;
+	}
+
+	const char * langXObject::characteristic() const
+	{
+		return nullptr;
 	}
 
 

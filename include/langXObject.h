@@ -79,6 +79,9 @@ namespace langX {
 		// 获得第三方对象
 		void * get3rdObj() const; 
 
+		// 返回这个对象的特性字符串
+		const char * characteristic() const;
+
 	private:
 
 		// 引用的那些引用
@@ -96,6 +99,9 @@ namespace langX {
 
 		// 引用的第三方对象
 		void *m_3rdObj; 
+
+		// 这个对象的特性字符串
+		std::string m_characteristic;
 	};
 
 }

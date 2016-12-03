@@ -474,7 +474,16 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 		return ret1;
 	}
 
-	Environment * env = getState()->newEnv();
+	// 如果当前环境是一个对象环境， 则暂存他
+	Environment *abcEnv = NULL;
+	Environment *currEnv1 = getState()->getCurrentEnv();
+	if (currEnv1->isObjectEnvironment())
+	{
+		abcEnv = currEnv1;
+		getState()->backEnv(false);
+	}
+
+	Environment * env = new DefaultEnvironment();
 	Object * ret = NULL;
 	if (args != NULL)
 	{
@@ -513,12 +522,17 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 			}
 		}
 
-		ret = function->call();
+	}
 
+	if (abcEnv != NULL)
+	{
+		getState()->newEnv(abcEnv);
+		abcEnv = NULL;
 	}
-	else {
-		ret = function->call();
-	}
+
+	getState()->newEnv(env);
+	ret = function->call();
+
 	getState()->getStackTrace().popFrame();
 	if (getState()->getCurrentEnv()->isDead())
 	{

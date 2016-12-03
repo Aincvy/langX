@@ -394,7 +394,7 @@ namespace langX {
 				return;
 			}
 		}
-		
+
 		if ((left != NULL && left->getType() == STRING) || (right != NULL  && right->getType() == STRING))
 		{
 			// 字符串拼接 
@@ -1717,7 +1717,17 @@ namespace langX {
 		Object * left = n1->value;
 		Object * right = n2->value;
 
-		if (n1->value->getType() == NUMBER && n2->value->getType() == NUMBER)
+		if (left->getType() == NULLOBJECT )
+		{
+			if (right->getType() == NULLOBJECT)
+			{
+				n->value = m_exec_alloc.allocateNumber(1);
+			}else{
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
+			
+		}
+		else if (n1->value->getType() == NUMBER && n2->value->getType() == NUMBER)
 		{
 			double a = ((Number*)n1->value)->getDoubleValue();
 			double b = ((Number*)n2->value)->getDoubleValue();
@@ -1758,6 +1768,25 @@ namespace langX {
 				freeSubNodes(n);
 				return;
 			}
+
+			// check 描述字符串
+			if (right && right->getType() == OBJECT)
+			{
+				langXObjectRef * ref2 = (langXObjectRef*)right;
+				if (strcmp(ref1->characteristic(), ref2->characteristic()) == 0)
+				{
+					n->value = m_exec_alloc.allocateNumber(1);
+				}
+				else {
+					n->value = m_exec_alloc.allocateNumber(0);
+				}
+
+			}
+			else {
+				getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
+
 		}
 		else {
 			//printf("类型不同，无法比较");
@@ -1792,6 +1821,17 @@ namespace langX {
 		Object * left = n1->value;
 		Object * right = n2->value;
 
+		if (left->getType() == NULLOBJECT)
+		{
+			if (right->getType() == NULLOBJECT)
+			{
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
+			else {
+				n->value = m_exec_alloc.allocateNumber(1);
+			}
+
+		}else
 		if (n1->value->getType() == NUMBER && n2->value->getType() == NUMBER)
 		{
 			double a = ((Number*)n1->value)->getDoubleValue();
@@ -1832,6 +1872,24 @@ namespace langX {
 
 				freeSubNodes(n);
 				return;
+			}
+
+			// check 描述字符串
+			if (right && right->getType() == OBJECT)
+			{
+				langXObjectRef * ref2 = (langXObjectRef*)right;
+				if (strcmp(ref1->characteristic(), ref2->characteristic()) == 0)
+				{
+					n->value = m_exec_alloc.allocateNumber(1);
+				}
+				else {
+					n->value = m_exec_alloc.allocateNumber(0);
+				}
+
+			}
+			else {
+				getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+				n->value = m_exec_alloc.allocateNumber(0);
 			}
 		}
 		else {
@@ -3271,7 +3329,7 @@ namespace langX {
 		{
 			ArrayInfo * arrayInfo = node->arr_obj;
 			Object *obj = getValue(arrayInfo->name);
-			if (obj == NULL )
+			if (obj == NULL)
 			{
 				//printf("left value is not array with array operator!\n");
 				getState()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
@@ -3313,14 +3371,14 @@ namespace langX {
 				}
 			}
 
-			if (obj->getType() == XARRAY)
+			if (obj->getType() != XARRAY)
 			{
 				getState()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
 				return;
 			}
 
 			XArrayRef *ref = (XArrayRef*)obj;
-			
+
 			node->value = ref->at(index)->clone();
 			return;
 		}
