@@ -19,6 +19,9 @@ pArgs = py.newTuple(1);
 pArgs.setItem(0,2);
 pFunc.callMethod(pArgs);
 
+pFunc = pModule.get("update");
+pFunc.callMethod();
+
 
 PythonLib::unload();
 
