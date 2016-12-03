@@ -129,19 +129,27 @@ namespace langX {
 		}
 
 		Object *a = args.args[0];
-		if (a && a->getType() == OBJECT)
+		if (a )
 		{
-			langXObjectRef *ref1 = (langXObjectRef*)a;
-			langXObject *obj = ref1->getRefObject();
-			if (!obj->typeCheck("PyObject"))
+			if (a->getType() == OBJECT)
 			{
-				return nullptr;
+				langXObjectRef *ref1 = (langXObjectRef*)a;
+				langXObject *obj = ref1->getRefObject();
+				if (!obj->typeCheck("PyObject"))
+				{
+					return nullptr;
+				}
+
+				XClassPyObject *argPyObj = (XClassPyObject *)obj->get3rdObj();
+				PyObject *ret = PyEval_CallObject(pyObj->pyObj, argPyObj->pyObj);
+				return createLangXObjectPyObj(ret, PyObjectType::Unknown)->addRef();
 			}
-			
-			XClassPyObject *argPyObj = (XClassPyObject *)obj->get3rdObj();
-			PyObject *ret = PyEval_CallObject(pyObj->pyObj, argPyObj->pyObj);
+		}
+		else {
+			PyObject *ret = PyEval_CallObject(pyObj->pyObj, NULL);
 			return createLangXObjectPyObj(ret, PyObjectType::Unknown)->addRef();
 		}
+
 
 		return nullptr;
 	}
