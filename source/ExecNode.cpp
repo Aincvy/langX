@@ -1782,6 +1782,10 @@ namespace langX {
 				}
 
 			}
+			else if (right->getType() == NULLOBJECT)
+			{
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
 			else {
 				getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
 				n->value = m_exec_alloc.allocateNumber(0);
@@ -1880,12 +1884,16 @@ namespace langX {
 				langXObjectRef * ref2 = (langXObjectRef*)right;
 				if (strcmp(ref1->characteristic(), ref2->characteristic()) == 0)
 				{
-					n->value = m_exec_alloc.allocateNumber(1);
-				}
-				else {
 					n->value = m_exec_alloc.allocateNumber(0);
 				}
+				else {
+					n->value = m_exec_alloc.allocateNumber(1);
+				}
 
+			}
+			else if (right->getType() == NULLOBJECT)
+			{
+				n->value = m_exec_alloc.allocateNumber(1);
 			}
 			else {
 				getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
@@ -2096,7 +2104,6 @@ namespace langX {
 			}
 			run->state.in_loop = true;
 			__execNode(run);
-			recursiveFreeNodeValue(run);
 			freeSubNodes(run);
 			if (run->state.isBreak)
 			{
@@ -2114,6 +2121,8 @@ namespace langX {
 				}
 				break;
 			}
+
+			recursiveFreeNodeValue(run);
 
 			// 如果当前环境为一个死亡环境， 则直接返回
 			// TODO 清理内存

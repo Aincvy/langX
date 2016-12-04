@@ -2,7 +2,7 @@
 len = 10 ;
 a[len] ;
 
-for (i = 0 ; i < len ; i++ ){
+for (i = 0 ; i < a.length ; i++ ){
   a[i] = len - i;
 }
 
