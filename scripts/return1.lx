@@ -1,0 +1,30 @@
+ref langX.core.util;
+
+list = new List();
+a  = 1 ;
+b = 2 ;
+c = 3 ;
+list.add(a);
+list.add(b);
+list.add(c);
+list.add(4);
+list.add(5);
+list.add(6);
+list.add(7);
+list.add(8);
+
+findItemInList => (x){
+	for ( i = 0 ; i < list.size() ; i++ ){
+		t = list.get(i);
+		if ( t == x ){
+			print("find item: " + x + "\n");
+			return t ;
+		}
+	}
+	
+	print("do not find the item!\n");
+	return -1 ;
+}
+
+ret = findItemInList(a);
+print("find ret: " + ret + "\n");
