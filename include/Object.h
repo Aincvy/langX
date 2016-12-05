@@ -41,6 +41,13 @@ namespace langX {
 		bool isPrivate() const;
 		// 当前变量是否是一个 public 变量
 		bool isPublic() const;
+		// 当前变量是否是一个 const 变量
+		bool isConst() const;
+
+		// 设置此变量的常量属性
+		void setConst(bool);
+		// 设置
+		void setLocal(bool);
 
 		// 获得这个object 产生的环境
 		Environment *getEmergeEnv() const;
@@ -89,6 +96,7 @@ namespace langX {
 		bool m_is_local = false;
 		bool m_is_private = false;
 		bool m_is_public = false;
+		bool m_is_const = false;
 	};
 
 	struct Variable
@@ -142,6 +150,8 @@ namespace langX {
 		bool isBreak;
 		// 是否在 return 状态
 		bool isReturn;
+		// 是否执行了 continue 
+		bool isContinue;
 		// 在case 的时候是否需要计算case 的条件
 		bool isCaseNeedCon;
 		// 是否是后缀

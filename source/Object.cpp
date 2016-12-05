@@ -39,6 +39,21 @@ namespace langX {
 		return this->m_is_public;
 	}
 
+	bool Object::isConst() const
+	{
+		return this->m_is_const;
+	}
+
+	void Object::setConst(bool flag)
+	{
+		this->m_is_const = flag;
+	}
+
+	void Object::setLocal(bool flag)
+	{
+		this->m_is_local = flag;
+	}
+
 	Environment * Object::getEmergeEnv() const
 	{
 		return this->m_emerge_env;
