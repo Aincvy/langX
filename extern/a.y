@@ -33,14 +33,14 @@ char *namespaceNameCat(char *,char *);
 %token <iValue> TDOUBLE TBOOL
 %token <sValue> IDENTIFIER TSTRING OPERATOR_X__
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
-%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL REQUIRE REQUIRE_ONCE REF
-%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
+%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL REQUIRE REQUIRE_ONCE REF XCONTINUE XCONST XLOCAL 
+%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL 
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
 %type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt bit_opr_factor
-%type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt
+%type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt adorn_var_declar_stmt
 %type <params> param_list parameter lambda_args_stmt
 %type <args> args_list args_expr
 %type <sValue> extends_stmt namespace_name_stmt
@@ -115,7 +115,15 @@ declar_stmt
 	| var_declar_stmt    { $$ = $1; }
 	| class_declar_stmt  { $$ = $1; }
 	| namespace_declar_stmt ';' { $$ = $1; }
+	| adorn_var_declar_stmt { $$ = $1; }   
 	;
+
+//  带修饰的 变量声明语句
+adorn_var_declar_stmt
+	: XCONST var_declar_stmt { $$ = opr(XCONST , $2); }
+	| XLOCAL var_declar_stmt { $$ = opr(XLOCAL , $2); }
+	;
+
 
 // 命名空间的声明语句
 namespace_declar_stmt
@@ -279,12 +287,12 @@ for_1_stmt
 simple_stmt
 	: assign_stmt   { $$ = $1; }
 	| call_statement { $$ = $1; }
-	| DELETE IDENTIFIER ';' { $$ = opr(DELETE, 1 ,$2 ); }
+	| DELETE IDENTIFIER { $$ = opr(DELETE, 1 ,$2 ); }
 	| interrupt_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
 	| class_func_serial_stmt { $$ = $1; }
 	| restrict_stmt  { $$ = $1; }
-//	| THIS '.' id_expr '(' args_list ')' { $$ = opr(THIS, 1 , opr(FUNC_CALL,2, $3, argsNode($5) ) ); }
+	| XCONTINUE { $$ = opr(XCONTINUE , 0 ); }
 	;
 
 //  限定语句， 限定环境

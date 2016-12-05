@@ -60,6 +60,9 @@ void pushBuffer(FILE *fp);
 "require" {count(); return REQUIRE;}
 "require_once" { count(); return REQUIRE_ONCE; }
 "ref"  {count();  return REF ;}
+"continue" { count(); return XCONTINUE; }
+"const" { count(); return XCONST; }
+"local" { count(); return XLOCAL; }
 "=>"   {count();  return FUNC_OP; }
 "++"   {count();  return INC_OP;}
 "--"   {count();  return DEC_OP;}
