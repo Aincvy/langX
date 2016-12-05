@@ -3161,6 +3161,28 @@ namespace langX {
 
 	}
 
+	//  常量限制
+	void __execCONST(Node *n) {
+		if (!n) {
+			return;
+		}
+	}
+
+	//  local 限制
+	void __execLOCAL(Node *n) {
+		if (!n) {
+			return;
+		}
+	}
+
+	//  continue 关键字
+	void __execCONTINUE(Node *n) {
+		if (!n) {
+			return;
+		}
+	}
+
+
 	/*
 	 * 执行节点，  节点的结果 将 放在  Node.value 上
 	 * 这是一个 Object 类型的指针    07-24
@@ -3599,6 +3621,15 @@ namespace langX {
 			break;
 		case REF:
 			__execREF(node);
+			break;
+		case XCONST:
+			__execCONST(node);
+			break ;
+		case XCONTINUE :
+			__execCONTINUE(node);
+			break;
+		case XLOCAL:
+			__execLOCAL(node);
 			break;
 		default:
 			break;
