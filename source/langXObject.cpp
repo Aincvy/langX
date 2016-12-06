@@ -58,16 +58,28 @@ namespace langX {
 		}
 
 		// 清理引用
-		DestroyedObject destoryObj;
-		for (auto i = this->m_refs.begin(); i != this->m_refs.end(); i++)
+		if (!getState()->isDisposing())
 		{
-			langXObjectRef *r = (*i);
-			r->getEmergeEnv()->putObject(r->getName(), &destoryObj);
+			DestroyedObject destoryObj;
 
-			delete r;
-			r = NULL;
+			for (auto i = 0 ; i < this->m_refs.size(); i++)
+			{
+				langXObjectRef *r = this->m_refs.at(i);
+				if (!r)
+				{
+					continue;
+				}
+				Environment* env= r->getEmergeEnv();
+				if (env)
+				{
+					env->putObject(r->getName(), &destoryObj);
+				}
+
+				delete r;
+				r = NULL;
+			}
+			this->m_refs.clear();
 		}
-		this->m_refs.clear();
 
 		// 干掉父类对象
 		if (this->m_parent != NULL)

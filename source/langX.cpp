@@ -106,12 +106,15 @@ namespace langX {
 		this->m_current_env = tryEnv;
 		this->m_current_deep = 1;
 		this->m_allocator = new Allocator();
+		this->m_disposing = false;
 
 		this->m_stacktrace.newFrame(NULL, NULL, "<startFrame>");
 	}
 
 	langXState::~langXState()
 	{
+		this->m_disposing = true;
+
 		for (std::map<std::string, XNameSpace*>::iterator i = this->m_namespace_map.begin(); i != this->m_namespace_map.end(); i++)
 		{
 			XNameSpace *p = i->second;
@@ -137,6 +140,21 @@ namespace langX {
 		}
 
 		this->m_script_env_map.clear();
+
+		// 清理加载的动态库
+		for (auto it = this->m_load_libs.begin(); it != this->m_load_libs.end(); it++)
+		{
+			it->second->unload(this);
+			
+#ifdef WIN32
+			// WIN32实现
+			
+#else
+			dlclose(it->first);
+#endif
+		}
+
+		this->m_load_libs.clear();
 	}
 
 	void langXState::putObject(const char * name, Object *obj)
@@ -764,10 +782,17 @@ namespace langX {
 
 		// TODO  等待 langX 卸载的时候 在卸载动态库
 		//dlclose(soObj);
+		this->m_load_libs[soObj] = mod;
 
 		return ret;
 #endif
 
+	}
+
+	bool langXState::isDisposing() const
+	{
+		
+		return this->m_disposing;
 	}
 
 
