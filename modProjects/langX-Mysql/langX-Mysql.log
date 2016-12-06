@@ -1,24 +1,3 @@
 ﻿  Validating architecture
   Validating sources
   Copying sources remotely to '120.27.200.228'
-  Starting remote build
-  Compiling sources:
-  makefile
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(21,23): error : stray ‘@’ in program
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(23,23): error : stray ‘@’ in program
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(1,1): error : expected unqualified-id before ‘.’ token
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(14,34): error : expected unqualified-id before ‘-’ token
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(18,1): error : ‘$’ does not name a type
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(18,11): error : expected unqualified-id before ‘:’ token
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(19,2): error : ‘g’ does not name a type
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(19,16): error : ‘$’ does not name a type
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(19,23): error : expected unqualified-id before ‘-’ token
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(19,44): error : ‘$’ does not name a type
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(20,1): error : expected unqualified-id before ‘.’ token
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(20,19): error : ‘$’ does not name a type
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(21,2): error : ‘g’ does not name a type
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(21,16): error : expected unqualified-id before ‘-’ token
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(22,17): error : ‘$’ does not name a type
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(23,2): error : ‘g’ does not name a type
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(23,16): error : expected unqualified-id before ‘-’ token
-F:\hideDragon\langX\langX\modProjects\langX-Mysql\makefile(25,15): error : ‘$’ does not name a type

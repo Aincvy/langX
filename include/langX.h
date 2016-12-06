@@ -16,6 +16,7 @@ namespace langX {
 	class XNameSpace;
 	class GlobalEnvironment;
 	class ScriptEnvironment;
+	class X3rdModule;
 
 	/*
 	  所有的脚本环境最后在释放内存。 
@@ -119,6 +120,9 @@ namespace langX {
 		// 加载一个模块 ,成功返回 0 ， 失败返回 -1
 		int loadModule(const char *path);
 
+		// 是否正在销毁中
+		bool isDisposing() const;
+
 	private:
 		// 全局环境
 		GlobalEnvironment *m_global_env = nullptr;
@@ -134,6 +138,8 @@ namespace langX {
 		std::list<char*> m_doing_files;
 		//  k:  脚本文件绝对路径，  v: 脚本环境
 		std::map<std::string, ScriptEnvironment*> m_script_env_map;
+		// 加载完成的动态库
+		std::map<void*, X3rdModule*> m_load_libs;
 
 		// 正在解析的文件的绝对路径
 		char * m_parsing_file = NULL;
@@ -141,6 +147,8 @@ namespace langX {
 		bool m_yy_parsing = false;
 
 		int m_current_deep = 0;
+
+		bool m_disposing = false;
 
 		//  返回到 深度为1的 环境上
 		void backToDeep1Env();
