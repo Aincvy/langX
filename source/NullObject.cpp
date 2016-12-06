@@ -26,6 +26,8 @@ namespace langX {
 		NullObject *obj = new NullObject();
 		obj->setEmergeEnv(getEmergeEnv());
 		obj->setCharacteristic(characteristic());
+		obj->setConst(this->isConst());
+		obj->setLocal(this->isLocal());
 		return obj;
 	}
 	void NullObject::update(Object *)

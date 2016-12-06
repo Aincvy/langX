@@ -64,10 +64,14 @@ namespace langX {
 		Number *obj = new Number(this->m_value);
 		obj->setEmergeEnv(getEmergeEnv());
 		obj->setCharacteristic(characteristic());
+		obj->setConst(this->isConst());
+		obj->setLocal(this->isLocal());
 		return obj;
 	}
 	void Number::update(Object *right)
 	{
+
+
 		if (right == NULL || right->getType() != NUMBER)
 		{
 			return;

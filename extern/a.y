@@ -120,8 +120,8 @@ declar_stmt
 
 //  带修饰的 变量声明语句
 adorn_var_declar_stmt
-	: XCONST var_declar_stmt { $$ = opr(XCONST , $2); }
-	| XLOCAL var_declar_stmt { $$ = opr(XLOCAL , $2); }
+	: XCONST var_declar_stmt { $$ = opr(XCONST , 1,$2); }
+	| XLOCAL var_declar_stmt { $$ = opr(XLOCAL , 1,$2); }
 	;
 
 

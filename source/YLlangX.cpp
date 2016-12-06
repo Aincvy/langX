@@ -94,6 +94,7 @@ void deal_state(NodeState * state) {
 	state->isCaseNeedCon = true;
 	state->isSuffix = false;
 	state->classAuto = false;
+	state->isContinue = false;
 }
 
 void deal_switch_info(SwitchInfo *si) {

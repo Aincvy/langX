@@ -79,10 +79,19 @@ namespace langX {
 			run->state.isSuffix = flag;
 
 			__execNode(run);
-			if (run->state.isBreak || run->state.isReturn)
+			if (run->state.isBreak)
 			{
 				n->state.isBreak = run->state.isBreak;
+				return;
+			}
+			if (run->state.isReturn)
+			{
 				n->state.isReturn = run->state.isReturn;
+				return;
+			}
+			if (run->state.isContinue)
+			{
+				n->state.isContinue = run->state.isContinue;
 				return;
 			}
 		}
@@ -183,6 +192,27 @@ namespace langX {
 		}
 
 	}
+
+	// 递归使某个节点以及其子节点的 isContinue 的状态 为false
+	void setStateIsContinueToFalse(Node *n) {
+
+		if (n == NULL)
+		{
+			return;
+		}
+
+		n->state.isContinue = false;
+
+		if (n->type == NODE_OPERATOR)
+		{
+			for (int i = 0; i < n->opr_obj->op_count; i++)
+			{
+				setStateIsContinueToFalse(n->opr_obj->op[i]);
+			}
+		}
+
+	}
+
 
 	//递归释放节点值的内存, 如果节点是 一个获得数组元素的节点， 同样释放 indexNode 节点的值内存
 	void recursiveFreeNodeValue(Node *n) {
@@ -1029,6 +1059,15 @@ namespace langX {
 			if (getState()->getCurrentEnv()->isDead()) {
 				return;
 			}
+
+			if (left->value->isConst())
+			{
+				char tmp[1024] = { 0 };
+				sprintf(tmp, "cannot change %s value, because it is a const value.", left->value->getName());
+				getState()->throwException(newUnsupportedOperationException(tmp)->addRef());
+				return;
+			}
+
 			left->value->update(right->value);
 
 			// 释放右值的内存 
@@ -1093,6 +1132,14 @@ namespace langX {
 
 			}
 			else {
+				if (left->value != NULL && left->value->isConst())
+				{
+					char tmp[1024] = { 0 };
+					sprintf(tmp, "cannot change %s value, because it is a const value.", left->value->getName());
+					getState()->throwException(newUnsupportedOperationException(tmp)->addRef());
+					return;
+				}
+
 				objectRef->setMember(name, right->value);
 				n->value = m_exec_alloc.copy(right->value);
 			}
@@ -1504,6 +1551,11 @@ namespace langX {
 				return;
 			}
 
+			if (run->state.isContinue)
+			{
+				n->state.isContinue = true;
+				break;
+			}
 			if (run->state.isBreak)
 			{
 				n->state.isBreak = true;
@@ -1979,6 +2031,7 @@ namespace langX {
 			if (a != NULL)
 			{
 				__execNode(a);
+				n->state.isContinue = a->state.isContinue;
 				n->state.isBreak = a->state.isBreak;
 				n->state.isReturn = a->state.isReturn;
 
@@ -1999,6 +2052,7 @@ namespace langX {
 				if (a != NULL)
 				{
 					__execNode(a);
+					n->state.isContinue = a->state.isContinue;
 					n->state.isBreak = a->state.isBreak;
 					n->state.isReturn = a->state.isReturn;
 					if (a->value == NULL)
@@ -2042,6 +2096,7 @@ namespace langX {
 				return;
 			}
 			__execNode(run);
+			//n->state.isContinue = run->state.isContinue;
 			if (run->state.isBreak)
 			{
 				break;
@@ -2105,6 +2160,7 @@ namespace langX {
 			run->state.in_loop = true;
 			__execNode(run);
 			freeSubNodes(run);
+			//n->state.isContinue = run->state.isContinue;
 			if (run->state.isBreak)
 			{
 				break;
@@ -2123,6 +2179,7 @@ namespace langX {
 			}
 
 			recursiveFreeNodeValue(run);
+			setStateIsContinueToFalse(run);
 
 			// 如果当前环境为一个死亡环境， 则直接返回
 			// TODO 清理内存
@@ -2199,7 +2256,8 @@ namespace langX {
 			}
 			n->state.isCaseNeedCon = t->state.isCaseNeedCon;
 
-			if (t->state.isBreak)
+			n->state.isContinue = t->state.isContinue;
+			if (t->state.isBreak || t->state.isContinue)
 			{
 				break;
 			}
@@ -2265,10 +2323,15 @@ namespace langX {
 				flag = false;
 			}
 			n->state.isCaseNeedCon = t->state.isCaseNeedCon;
-
+			
 			if (t->state.isBreak)
 			{
 				n->state.isBreak = true;
+				break;
+			}
+			if (t->state.isContinue)
+			{
+				n->state.isContinue = t->state.isContinue;
 				break;
 			}
 			if (t->state.isReturn)
@@ -2317,6 +2380,7 @@ namespace langX {
 				__execNode(t);
 
 				n->state.isBreak = t->state.isBreak;
+				n->state.isContinue = t->state.isContinue;
 				if (t->state.isReturn)
 				{
 					n->state.isReturn = true;
@@ -2629,8 +2693,10 @@ namespace langX {
 		}
 
 		Object *t = objectRef->getMember(memberName);
-		if (t == NULL)
+		if (t == NULL || (t!=NULL && t->isLocal()))
 		{
+			// 变量未找到， 或者变量是一个local 
+
 			// check 函数  回头再check 
 			Function *func = objectRef->getFunction(memberName);
 			if (func != nullptr)
@@ -2819,7 +2885,7 @@ namespace langX {
 
 		char *memberName = n->opr_obj->op[1]->var_obj->name;
 		Object *t = claxxInfo->getMember(memberName);
-		if (t == NULL)
+		if (t == NULL || (t!=NULL &&t->isLocal()))
 		{
 			Function * tf = claxxInfo->getFunction(memberName);
 			if (tf == NULL)
@@ -3166,6 +3232,48 @@ namespace langX {
 		if (!n) {
 			return;
 		}
+
+		// 
+
+		Object *obj = m_exec_alloc.allocate(NULLOBJECT);
+		obj->setEmergeEnv(getState()->getCurrentEnv());
+		obj->setConst(true);
+		for (int i = 0; i < n->opr_obj->op_count; i++)
+		{
+			Node *t = n->opr_obj->op[i];
+			if (t == NULL)
+			{
+				continue;
+			}
+			if ( t->type != NODE_VARIABLE)
+			{
+				if (t->type == NODE_OPERATOR && t->opr_obj->opr == XCONST)
+				{
+					__execCONST(t);
+				}
+				else 
+				{
+					// 抛出异常
+					getState()->throwException(newUnsupportedOperationException("invalid const stmt.")->addRef());
+					return;
+				}
+				continue;
+			}
+
+			char *name = t->var_obj->name;
+			Object *tmp = getState()->getCurrentEnv()->getObjectSelf(name);
+			if (tmp == NULL)
+			{
+				setValueToEnv(name, obj);
+			}
+			else {
+				tmp->setConst(!tmp->isConst());
+			}
+			
+		}
+
+		m_exec_alloc.free(obj);
+
 	}
 
 	//  local 限制
@@ -3173,6 +3281,46 @@ namespace langX {
 		if (!n) {
 			return;
 		}
+
+		Object *obj = m_exec_alloc.allocate(NULLOBJECT);
+		obj->setEmergeEnv(getState()->getCurrentEnv());
+		obj->setLocal(true);
+		for (int i = 0; i < n->opr_obj->op_count; i++)
+		{
+			Node *t = n->opr_obj->op[i];
+			if (t == NULL)
+			{
+				continue;
+			}
+			if (t->type != NODE_VARIABLE)
+			{
+				if (t->type == NODE_OPERATOR && t->opr_obj->opr == XLOCAL)
+				{
+					__execLOCAL(t);
+				}
+				else
+				{
+					// 抛出异常
+					getState()->throwException(newUnsupportedOperationException("invalid local stmt.")->addRef());
+					return;
+				}
+				continue;
+			}
+
+			char *name = t->var_obj->name;
+			Object *tmp = getState()->getCurrentEnv()->getObjectSelf(name);
+			if (tmp == NULL)
+			{
+				setValueToEnv(name, obj);
+			}
+			else {
+				tmp->setLocal(!tmp->isLocal());
+			}
+
+		}
+
+		m_exec_alloc.free(obj);
+
 	}
 
 	//  continue 关键字
@@ -3180,6 +3328,15 @@ namespace langX {
 		if (!n) {
 			return;
 		}
+
+		if (!n->state.in_loop )
+		{
+			getState()->throwException(newUnsupportedOperationException("invalid continue stmt.")->addRef());
+			//printf("无效的BREAK 语句 ");
+			return;
+		}
+
+		n->state.isContinue = true;
 	}
 
 
@@ -3205,7 +3362,7 @@ namespace langX {
 			return;
 		}
 
-		if (node->state.isBreak || node->state.isReturn)
+		if (node->state.isBreak || node->state.isReturn || node->state.isContinue)
 		{
 			//  节点中断
 			return;

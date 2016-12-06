@@ -260,12 +260,15 @@ namespace langX {
 		}
 		r->setEmergeEnv(getEmergeEnv());
 		r->setCharacteristic(characteristic());
+		r->setLocal(this->isLocal());
+		r->setConst(this->isConst());
 
 		return r;
 	}
 
 	void FunctionRef::update(Object * a)
 	{
+
 		if (a->getType() != FUNCTION)
 		{
 			return;

@@ -174,6 +174,8 @@ namespace langX {
 		Object * obj = this->m_array->addRef();
 		obj->setEmergeEnv(this->getEmergeEnv());
 		obj->setCharacteristic(characteristic());
+		obj->setConst(this->isConst());
+		obj->setLocal(this->isLocal());
 		return obj;
 	}
 
