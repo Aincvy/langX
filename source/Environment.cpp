@@ -25,6 +25,11 @@ namespace langX {
 
 	}
 
+	Object * Environment::getObject(const std::string &, bool)
+	{
+		return nullptr;
+	}
+
 	void Environment::putFunction(const char *name, Function *obj)
 	{
 		//putFunction(std::string(name), obj);
@@ -176,26 +181,45 @@ namespace langX {
 	{
 		//printf("getObject on env-p: %p\n" ,this );
 
+		return this->getObject(name, true);
+	}
+
+	Object * ClassBridgeEnv::getObject(const std::string &name, bool)
+	{
 		Object *obj = NULL;
 		if (this->m_class != NULL)
 		{
 			obj = this->m_class->getMember(name.c_str());
+			if (obj != NULL && obj->isLocal())
+			{
+				obj = NULL;
+			}
 		}
 
 		if (obj == NULL)
 		{
 			if (!this->m_restrict && this->m_parent != NULL)
 			{
-				return this->m_parent->getObject(name);
+				return this->m_parent->getObject(name, false);
 			}
 		}
 
 		return obj;
 	}
 
-	Object * ClassBridgeEnv::getObjectSelf(const char *) const
+	Object * ClassBridgeEnv::getObjectSelf(const char * name) const
 	{
-		return nullptr;
+		Object *obj = NULL;
+		if (this->m_class != NULL)
+		{
+			obj = this->m_class->getMember(name);
+			if (obj != NULL && obj->isLocal())
+			{
+				obj = NULL;
+			}
+		}
+
+		return obj;
 	}
 
 	void ClassBridgeEnv::putFunction(const char *name, Function *func)
@@ -279,19 +303,24 @@ namespace langX {
 	Object * ObjectBridgeEnv::getObject(const std::string &name)
 	{
 		//printf("getObject on env-p: %p\n", this);
+		return this->getObject(name, true);
+	}
+
+	Object * ObjectBridgeEnv::getObject(const std::string &name, bool fistLevel)
+	{
 		if (this->m_object == NULL)
 		{
 			if (this->m_parent != NULL && !m_restrict)
 			{
-				return this->m_parent->getObject(name);
+				return this->m_parent->getObject(name,false);
 			}
 		}
 		Object * r = this->m_object->getMember(name.c_str());
-		if (r == NULL)
+		if (r == NULL || (r != NULL && r->isLocal()))
 		{
 			if (this->m_parent != NULL && !m_restrict)
 			{
-				return this->m_parent->getObject(name);
+				return this->m_parent->getObject(name,false);
 			}
 		}
 		return r;
@@ -458,16 +487,36 @@ namespace langX {
 	{
 		//printf("getObject on env-p: %p\n", this);
 
-		if (this->m_objects_map.find(name) == this->m_objects_map.end())
+		return this->getObject(name,true);
+	}
+
+	Object * TryEnvironment::getObject(const std::string &name, bool firstLevel)
+	{
+		auto index = this->m_objects_map.find(name);
+		bool flag = false;
+		if (index == this->m_objects_map.end())
 		{
-			if (this->m_parent != nullptr)
+			flag = true;
+		}
+		else {
+			if (!firstLevel && index->second->isLocal())
 			{
-				return this->m_parent->getObject(name);
+				flag = true;
+			}
+		}
+
+		if (flag)
+		{
+			if (this->m_parent != NULL && !m_restrict)
+			{
+				return this->m_parent->getObject(name,false);
 			}
 			return NULL;
 		}
 
-		return this->m_objects_map.at(name);
+		return index->second;
+
+		return nullptr;
 	}
 
 	Object * TryEnvironment::getObjectSelf(const char *name) const
@@ -551,6 +600,19 @@ namespace langX {
 			if (this->getParent() != NULL)
 			{
 				return this->getParent()->getObject(name);
+			}
+		}
+		return o;
+	}
+
+	Object * EnvironmentBridgeEnv::getObject(const std::string & name, bool firstLevel)
+	{
+		Object *o = this->m_env->getObject(name , firstLevel);
+		if (o == NULL)
+		{
+			if (this->getParent() != NULL && !this->m_restrict)
+			{
+				return this->getParent()->getObject(name,false);
 			}
 		}
 		return o;
@@ -692,19 +754,38 @@ namespace langX {
 
 	Object * DefaultEnvironment::getObject(const std::string &name)
 	{
-		//printf("getObject on env-p: %p\n", this);
+		return this->getObject(name, true);
+	}
 
-		if (this->m_objects_map.find(name) == this->m_objects_map.end())
+	Object * DefaultEnvironment::getObject(const std::string &name, bool firstLevel)
+	{
+		auto index = this->m_objects_map.find(name);
+		bool flag = false;
+		if (index == this->m_objects_map.end())
+		{
+			flag = true;
+		}
+		else {
+			if (!firstLevel && index->second->isLocal())
+			{
+				flag = true;
+			}
+		}
+
+		if (flag)
 		{
 			if (this->m_parent != NULL && !m_restrict)
 			{
-				return this->m_parent->getObject(name);
+				return this->m_parent->getObject(name,false);
 			}
 			return NULL;
 		}
 
-		return this->m_objects_map[name];
+		return index->second;
+
 	}
+
+
 
 	Object * DefaultEnvironment::getObjectSelf(const char *name) const
 	{
@@ -771,6 +852,11 @@ namespace langX {
 	{
 		//printf("getObject on env-p: %p\n", this);
 
+		return this->m_space->getObject(name);
+	}
+
+	Object * XNameSpaceEnvironment::getObject(const std::string & name, bool)
+	{
 		return this->m_space->getObject(name);
 	}
 
@@ -888,6 +974,11 @@ namespace langX {
 	{
 		//printf("getObject on GlobalEnvironment env-p: %p\n", this);
 
+		return nullptr;
+	}
+
+	Object * GlobalEnvironment::getObject(const std::string &, bool)
+	{
 		return nullptr;
 	}
 
@@ -1042,14 +1133,32 @@ namespace langX {
 	{
 		//printf("getObject on ScriptEnvironment env-p: %p\n", this);
 
-		if (this->m_objects_map.find(name) == this->m_objects_map.end())
+		return this->getObject(name, true);
+	}
+
+	Object * ScriptEnvironment::getObject(const std::string & name, bool firstLevel)
+	{
+		auto index = this->m_objects_map.find(name);
+		bool flag = false;
+		if (index == this->m_objects_map.end())
+		{
+			flag = true;
+		}
+		else {
+			if (!firstLevel && index->second->isLocal())
+			{
+				flag = true;
+			}
+		}
+
+		if (flag)
 		{
 			if (!this->m_namespaces.empty())
 			{
 				for (auto i = this->m_namespaces.begin(); i != this->m_namespaces.end(); i++)
 				{
 					Object *f = (*i)->getObject(name);
-					if (f != nullptr)
+					if (f != nullptr && !f->isLocal())
 					{
 						return f;
 					}
@@ -1058,12 +1167,13 @@ namespace langX {
 
 			if (this->m_parent != NULL && !m_restrict)
 			{
-				return this->m_parent->getObject(name);
+				return this->m_parent->getObject(name,false);
 			}
 			return NULL;
 		}
 
-		return this->m_objects_map[name];
+		return index->second;
+
 	}
 
 	Object * ScriptEnvironment::getObjectSelf(const char *name) const

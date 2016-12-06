@@ -36,6 +36,8 @@ namespace langX {
 
 		ret->setEmergeEnv(obj->getEmergeEnv());
 		ret->setCharacteristic(obj->characteristic());
+		ret->setLocal(obj->isLocal());
+		ret->setConst(obj->isConst());
 		ret->update(obj);
 		return ret;
 	}

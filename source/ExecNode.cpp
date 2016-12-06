@@ -305,6 +305,8 @@ namespace langX {
 				Object *obj = left->value;
 				Object *t = m_exec_alloc.allocate(rightType);
 				t->setEmergeEnv(obj->getEmergeEnv());
+				t->setConst(obj->isConst());
+				t->setLocal(obj->isLocal());
 				obj->getEmergeEnv()->putObject(left->var_obj->name, t);
 				left->value = t;
 			}
@@ -329,6 +331,9 @@ namespace langX {
 			if (obj->getType() != rightType)
 			{
 				Object *t = m_exec_alloc.allocate(rightType);
+				// 变量的常量和local属性也不应该变化
+				t->setLocal(obj->isLocal());
+				t->setConst(obj->isConst());
 				// 变量的产生环境不变
 				t->setEmergeEnv(obj->getEmergeEnv());
 				obj->getEmergeEnv()->putObject(left->var_obj->name, t);
@@ -446,6 +451,10 @@ namespace langX {
 				{
 					ss << "null";
 				}
+				else if (left->getType() == FUNCTION)
+				{
+					ss << "function@[" << left->characteristic();
+				}
 				else if (left->getType() == OBJECT)
 				{
 					//ss << "object";
@@ -489,6 +498,10 @@ namespace langX {
 					else if (right->getType() == NULLOBJECT)
 					{
 						ss << "null";
+					}
+					else if (right->getType() == FUNCTION)
+					{
+						ss << "function@[" << right->characteristic();
 					}
 					else if (right->getType() == OBJECT)
 					{
@@ -3247,7 +3260,7 @@ namespace langX {
 			}
 			if ( t->type != NODE_VARIABLE)
 			{
-				if (t->type == NODE_OPERATOR && t->opr_obj->opr == XCONST)
+				if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR)
 				{
 					__execCONST(t);
 				}
@@ -3294,7 +3307,7 @@ namespace langX {
 			}
 			if (t->type != NODE_VARIABLE)
 			{
-				if (t->type == NODE_OPERATOR && t->opr_obj->opr == XLOCAL)
+				if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR)
 				{
 					__execLOCAL(t);
 				}

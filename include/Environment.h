@@ -42,6 +42,8 @@ namespace langX {
 		// 放入一个 obj 的副本到 指定的key 
 		virtual void putObject(const std::string &, Object*) = 0;
 		virtual Object* getObject(const std::string &) = 0;
+		//  当前是否在第一级的查找环境
+		virtual Object* getObject(const std::string & ,bool );
 		// 只从自己的环境中寻找对象
 		virtual Object* getObjectSelf(const char *) const = 0;
 
@@ -113,6 +115,7 @@ namespace langX {
 		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
+		Object* getObject(const std::string &, bool);
 		// 只从自己的环境中寻找对象
 		Object* getObjectSelf(const char *) const;
 
@@ -140,6 +143,7 @@ namespace langX {
 		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*) ;
 		Object* getObject(const std::string &) ;
+		Object* getObject(const std::string &, bool);
 		// 只从自己的环境中寻找对象
 		Object* getObjectSelf(const char *) const ;
 
@@ -175,6 +179,7 @@ namespace langX {
 		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
+		Object* getObject(const std::string &, bool);
 		// 只从自己的环境中寻找对象
 		Object* getObjectSelf(const char *) const;
 
@@ -224,6 +229,7 @@ namespace langX {
 		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
+		Object* getObject(const std::string &, bool);
 		// 只从自己的环境中寻找对象
 		Object* getObjectSelf(const char *) const ;
 
@@ -261,6 +267,7 @@ namespace langX {
 		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
+		Object* getObject(const std::string &, bool);
 		Object* getObjectSelf(const char *) const;
 
 		void putFunction(const char*, Function*);
@@ -290,6 +297,7 @@ namespace langX {
 		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*);
 		Object* getObject(const std::string &);
+		Object* getObject(const std::string &, bool);
 		Object* getObjectSelf(const char *) const;
 
 
@@ -334,6 +342,7 @@ namespace langX {
 		// 放入一个 obj 的副本到 指定的key 
 		void putObject(const std::string &, Object*) ;
 		Object* getObject(const std::string &) ;
+		Object* getObject(const std::string &, bool);
 		// 只从自己的环境中寻找对象
 		Object* getObjectSelf(const char *) const ;
 
@@ -370,6 +379,7 @@ namespace langX {
 		void putObject(const std::string &, Object*);
 		// 如果桥接的环境没有这个Object ，则会 搜索父环境
 		Object* getObject(const std::string &);
+		Object* getObject(const std::string &, bool);
 		// 只从桥接的那个环境中寻找对象
 		Object* getObjectSelf(const char *) const;
 

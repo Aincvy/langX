@@ -96,7 +96,7 @@ namespace langX {
 		//   MemberException   成员异常
 		ClassInfo *memberException = new ClassInfo("MemberException");
 		memberException->setParent(exception);
-		l->regClassToGlobal(exception);
+		l->regClassToGlobal(memberException);
 
 		//   NoClassMemberException  没有类成员异常
 		ClassInfo *noClassMemberException = new ClassInfo("NoClassMemberException");
