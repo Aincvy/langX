@@ -71,6 +71,8 @@ namespace langX {
 		String *str = new String(this->m_value.c_str());
 		str->setEmergeEnv(getEmergeEnv());
 		str->setCharacteristic(characteristic());
+		str->setConst(this->isConst());
+		str->setLocal(this->isLocal());
 		return str;
 	}
 	void String::update(Object *right)

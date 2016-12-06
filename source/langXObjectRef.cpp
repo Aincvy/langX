@@ -78,6 +78,8 @@ namespace langX {
 
 		obj->setEmergeEnv(getEmergeEnv());
 		obj->setCharacteristic(characteristic());
+		obj->setConst(this->isConst());
+		obj->setLocal(this->isLocal());
 		return obj;
 	}
 

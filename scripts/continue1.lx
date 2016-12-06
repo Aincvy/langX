@@ -1,0 +1,14 @@
+
+for ( i = 0 ; i < 10 ; i++ ){
+	if ( i >= 8 ){
+		break ;
+	}
+	print("before continue i=" + i + "\n");
+	if ( i >= 5 ){
+		continue ;
+	}
+	
+	print("now i=" + i + "\n");
+}
+
+print("script over!\n");

@@ -1350,11 +1350,11 @@ case 20:
 break;
 case 21:
 #line 123 "a.y"
-	{ yyval.node = opr(XCONST , yystack.l_mark[0].node); }
+	{ yyval.node = opr(XCONST , 1,yystack.l_mark[0].node); }
 break;
 case 22:
 #line 124 "a.y"
-	{ yyval.node = opr(XLOCAL , yystack.l_mark[0].node); }
+	{ yyval.node = opr(XLOCAL , 1,yystack.l_mark[0].node); }
 break;
 case 23:
 #line 130 "a.y"

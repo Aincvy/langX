@@ -23,7 +23,10 @@ namespace langX {
 		// 释放 member ， 函数回头再进行释放
 		for (auto i = this->m_members.begin(); i != this->m_members.end(); i++)
 		{
-			m_exec_alloc.free(i->second);
+			if (i->second)
+			{
+				m_exec_alloc.free(i->second);
+			}
 		}
 		this->m_members.clear();
 
