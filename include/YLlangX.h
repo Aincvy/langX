@@ -118,4 +118,7 @@ void setInException(bool);
 bool getInException();
 
 
+void objToString(langX::Object * obj,char *, int offset, int maxSize);
+
+
 
