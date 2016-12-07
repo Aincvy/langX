@@ -1,4 +1,5 @@
 #include <string>
+#include <sstream>
 
 #include "../include/Object.h"
 #include "../include/Function.h"

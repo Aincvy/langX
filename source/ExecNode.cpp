@@ -458,24 +458,9 @@ namespace langX {
 				else if (left->getType() == OBJECT)
 				{
 					//ss << "object";
-					langXObjectRef *ref1 = (langXObjectRef*)left;
-					Function *func1 = ref1->getFunction("toString");
-					if (func1 == nullptr)
-					{
-						ss << "|[" << left->characteristic();
-					}
-					else {
-						// 
-						FunctionRef aref(func1);
-						aref.setObj(ref1->getRefObject());
-						Object *retObj = aref.call(nullptr, "");
-						if (retObj->getType() == STRING)
-						{
-							ss << ((String*)retObj)->getValue();
-						}
-						getState()->getAllocator().free(retObj);
-						retObj = nullptr;
-					}
+					char tmp[2048] = {0};
+					objToString(left, tmp, 0, 2048);
+					ss << tmp;
 				}
 				else {
 					printf("error type in do add opr! \n");
@@ -505,24 +490,9 @@ namespace langX {
 					}
 					else if (right->getType() == OBJECT)
 					{
-						langXObjectRef *ref1 = (langXObjectRef*)right;
-						Function *func1 = ref1->getFunction("toString");
-						if (func1 == nullptr)
-						{
-							ss << "|[" << right->characteristic();
-						}
-						else {
-							// 
-							FunctionRef aref(func1);
-							aref.setObj(ref1->getRefObject());
-							Object *retObj = aref.call(nullptr, "");
-							if (retObj->getType() == STRING)
-							{
-								ss << ((String*)retObj)->getValue();
-							}
-							getState()->getAllocator().free(retObj);
-							retObj = nullptr;
-						}
+						char tmp[2048] = { 0 };
+						objToString(right, tmp, 0, 2048);
+						ss << tmp;
 					}
 					else {
 						printf("error type in do add opr! \n");

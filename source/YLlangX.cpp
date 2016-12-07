@@ -14,7 +14,9 @@
 #include "../include/StackTrace.h"
 #include "../include/Exception.h"
 #include "../include/langXObject.h"
+#include "../include/langXObjectRef.h"
 #include "../include/NullObject.h"
+#include "../include/String.h"
 #include "../extern/y.tab.h"
 
 extern int yyget_lineno(void);
@@ -185,6 +187,39 @@ void setInException(bool f)
 bool getInException()
 {
 	return inException;
+}
+
+void objToString(langX::Object * obj, char *p, int offset, int maxSize)
+{
+	std::stringstream ss;
+	langXObjectRef *ref1 = (langXObjectRef*)obj;
+	Function *func1 = ref1->getFunction("toString");
+	if (func1 == nullptr)
+	{
+		ss << "|[" << obj->characteristic();
+	}
+	else {
+		// 
+		FunctionRef aref(func1);
+		aref.setObj(ref1->getRefObject());
+		Object *retObj = aref.call(nullptr, "");
+		if (retObj->getType() == STRING)
+		{
+			ss << ((String*)retObj)->getValue();
+		}
+		getState()->getAllocator().free(retObj);
+		retObj = nullptr;
+	}
+
+	std::string str = ss.str();
+	int size = maxSize;
+	if (str.size() < size)
+	{
+		size = str.size();
+	}
+	
+	memcpy(p+offset, str.c_str(), size);
+
 }
 
 XNode * string(char *v)
