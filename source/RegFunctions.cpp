@@ -44,7 +44,7 @@ namespace langX {
 					Object *tobj = args.args[i];
 					if (tobj == NULL || tobj->getType() == NULLOBJECT)
 					{
-						char * tp = "null\0";
+						const char * tp = "null\0";
 						int size = strlen(tp);
 						memcpy(tmp + pos, tp, size);
 						pos += size;
