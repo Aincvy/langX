@@ -85,6 +85,7 @@ namespace langX {
 					}
 				}
 
+				
 				va_list vas = tmp;
 				vprintf(str->getValue(), vas);
 			}
