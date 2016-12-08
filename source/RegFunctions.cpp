@@ -20,86 +20,32 @@ namespace langX {
 			return NULL;
 		}
 
-		// 先试试单参数
-		Object *obj = args.args[0];
-		if (obj == NULL)
+		for (size_t i = 0; i < args.index; i++)
 		{
-			printf("function %s error param!\n", func->getName());
-			return NULL;
-		}
-		if (obj->getType() == STRING)
-		{
-			String * str = (String*)obj;
-			str->simpleEscape();
+			Object *obj = args.args[i];
 
-			if (args.index == 1)
+			if (obj == NULL || obj->getType() == NULLOBJECT)
 			{
+				printf("null");
+			}
+			else if (obj->getType() == STRING)
+			{
+				String * str = (String*)obj;
+				str->simpleEscape();
+
 				printf(str->getValue());
 			}
-			else {
-				char tmp[2048] = { 0 };
-				int pos = 0;
-				for (size_t i = 1; i < args.index; i++)
-				{
-					Object *tobj = args.args[i];
-					if (tobj == NULL || tobj->getType() == NULLOBJECT)
-					{
-						char * tp = "null\0";
-						int size = strlen(tp);
-						memcpy(tmp + pos, tp, size);
-						pos += size;
-						continue;
-					}
-					else if (tobj->getType() == NUMBER)
-					{
-						Number * num = (Number*)tobj;
-						if (num->isInteger())
-						{
-							int v = num->getIntValue();
-							memcpy(tmp + pos, &v, sizeof(int));
-							pos += sizeof(int);
-							continue;
-						}
-						else {
-							double v = num->getDoubleValue();
-							memcpy(tmp + pos, &v, sizeof(double));
-							pos += sizeof(double);
-							continue;
-						}
-					}
-					else if (tobj->getType() == STRING)
-					{
-						const char * tp = ((String*)tobj)->getValue();
-						int size = strlen(tp);
-						memcpy(tmp + pos, tp, size);
-						pos += size;
-						continue;
-					}
-					else if (tobj->getType() == OBJECT)
-					{
-						char atmp[2048] = { 0 };
-						objToString(tobj, atmp, 0, 2048);
-						int size = strlen(atmp);
-						memcpy(tmp + pos, atmp, size);
-						pos += size;
-					}
-				}
-
-				va_list vas = tmp;
-				vprintf(str->getValue(), vas);
+			else if (obj->getType() == NUMBER)
+			{
+				printf("%f", ((Number*)obj)->getDoubleValue());
 			}
-		}
-		else if (obj->getType() == NUMBER)
-		{
-			printf("%f", ((Number*)obj)->getDoubleValue());
-		}
-		else if (obj->getType() == NULLOBJECT)
-		{
-			printf("null");
-		}
-		else if (obj->getType() == OBJECT)
-		{
-			printf("object");
+
+			else if (obj->getType() == OBJECT)
+			{
+				char atmp[2048] = { 0 };
+				objToString(obj, atmp, 0, 2048);
+				printf(atmp);
+			}
 		}
 
 		return NULL;
