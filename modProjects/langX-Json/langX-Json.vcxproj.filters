@@ -15,9 +15,19 @@
     <ClInclude Include="include\RegJsonModule.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="makefile" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\JsonModule.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\default.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\JsonArray.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\JsonObject.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
