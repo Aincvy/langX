@@ -40,6 +40,18 @@
     <ClCompile Include="source\Math.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\ByteArray.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\File.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\FileStream.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Stream.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreModule.h">

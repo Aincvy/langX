@@ -28,8 +28,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="makefile" />
+    <ClCompile Include="source\ByteArray.cpp" />
     <ClCompile Include="source\CoreModule.cpp" />
     <ClCompile Include="source\Default.cpp" />
+    <ClCompile Include="source\File.cpp" />
+    <ClCompile Include="source\FileStream.cpp" />
     <ClCompile Include="source\Iterator.cpp" />
     <ClCompile Include="source\List.cpp" />
     <ClCompile Include="source\Map.cpp" />
@@ -37,6 +40,7 @@
     <ClCompile Include="source\Queue.cpp" />
     <ClCompile Include="source\Set.cpp" />
     <ClCompile Include="source\Stack.cpp" />
+    <ClCompile Include="source\Stream.cpp" />
     <ClCompile Include="source\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>

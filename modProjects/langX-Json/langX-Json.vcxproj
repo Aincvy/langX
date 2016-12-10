@@ -32,7 +32,10 @@
     <ClInclude Include="makefile" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\default.cpp" />
+    <ClCompile Include="source\JsonArray.cpp" />
     <ClCompile Include="source\JsonModule.cpp" />
+    <ClCompile Include="source\JsonObject.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{46486bb3-3095-43f3-9d89-f733a7ec70d0}</ProjectGuid>
