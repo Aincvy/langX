@@ -5,16 +5,16 @@
 
 namespace langX {
 
-	// ×¢²á Iterator Àà
+	// æ³¨å†Œ Iterator ç±»
 	int regIterator(langXState *state , XNameSpace* space);
 	
-	// ×¢²á List Àà
+	// æ³¨å†Œ List ç±»
 	int regList(langXState *state, XNameSpace* space);
 
-	// ×¢²á Map Àà
+	// æ³¨å†Œ Map ç±»
 	int regMap(langXState *state, XNameSpace* space);
 
-	// ×¢²á SetÀà
+	// æ³¨å†Œ Setç±»
 	int regSet(langXState *state, XNameSpace* space);
 
 	// 
@@ -26,6 +26,17 @@ namespace langX {
 	//
 	int regVector(langXState *state, XNameSpace* space);
 
-	//  core ¿âµÄ¶«Î÷ £¬ÉÏÃæ¶¼ÊÇcore.util ÀïÃæµÄ¶«Î÷
+	//  core åº“çš„ä¸œè¥¿ ï¼Œä¸Šé¢éƒ½æ˜¯core.util é‡Œé¢çš„ä¸œè¥¿
 	int regDeafult(langXState *state, XNameSpace* space);
+
+
+	// io åº“é‡Œé¢çš„
+	int regFile(langXState *state, XNameSpace* space);
+
+	int regByteArray(langXState *state, XNameSpace* space);
+
+	int regFileStream(langXState *state, XNameSpace* space);
+
+	int regStream(langXState *state, XNameSpace* space);
+
 }

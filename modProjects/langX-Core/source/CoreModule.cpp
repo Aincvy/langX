@@ -26,6 +26,13 @@ namespace langX {
 
 		space = state->getNameSpaceOrCreate("langX.core");
 		regDeafult(state, space);
+
+		space = state->getNameSpaceOrCreate("langX.core.io");
+		regFile(state, space);
+		regByteArray(state, space);
+		regStream(state, space);
+		regFileStream(state, space);
+
 		return 0;
 	}
 	int CoreModule::unload(langXState *state)
