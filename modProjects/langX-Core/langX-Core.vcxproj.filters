@@ -63,5 +63,8 @@
     <ClInclude Include="include\RegDefaultClasses.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreFileStream.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

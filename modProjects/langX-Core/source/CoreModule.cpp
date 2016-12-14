@@ -2,6 +2,7 @@
 #include "../include/CoreModule.h"
 #include "../include/RegCoreModule.h"
 #include "../../../include/XNameSpace.h"
+#include "../../../include/ClassInfo.h"
 
 
 namespace langX {
@@ -30,8 +31,8 @@ namespace langX {
 		space = state->getNameSpaceOrCreate("langX.core.io");
 		regFile(state, space);
 		regByteArray(state, space);
-		regStream(state, space);
-		regFileStream(state, space);
+		ClassInfo * stream = regStream(state, space);
+		regFileStream(state, space , stream);
 
 		return 0;
 	}
