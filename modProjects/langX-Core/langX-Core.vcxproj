@@ -44,6 +44,7 @@
     <ClCompile Include="source\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\CoreFileStream.h" />
     <ClInclude Include="include\CoreModule.h" />
     <ClInclude Include="include\RegCoreModule.h" />
     <ClInclude Include="include\RegDefaultClasses.h" />

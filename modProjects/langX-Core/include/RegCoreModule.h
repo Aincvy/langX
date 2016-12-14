@@ -5,6 +5,8 @@
 
 namespace langX {
 
+	class ClassInfo;
+
 	// 注册 Iterator 类
 	int regIterator(langXState *state , XNameSpace* space);
 	
@@ -35,8 +37,8 @@ namespace langX {
 
 	int regByteArray(langXState *state, XNameSpace* space);
 
-	int regFileStream(langXState *state, XNameSpace* space);
+	ClassInfo* regStream(langXState *state, XNameSpace* space);
 
-	int regStream(langXState *state, XNameSpace* space);
+	int regFileStream(langXState *state, XNameSpace* space, ClassInfo *stream);
 
 }

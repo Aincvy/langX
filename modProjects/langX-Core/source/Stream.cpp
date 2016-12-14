@@ -107,7 +107,7 @@ namespace langX {
 
 
 
-	int regStream(langXState *state, XNameSpace* space) {
+	ClassInfo* regStream(langXState *state, XNameSpace* space){
 
 		ClassInfo *info = new ClassInfo("Stream");
 		info->addFunction("~Stream", create3rdFunc("~Stream", langX_Stream_Stream_Dtor));
@@ -121,7 +121,7 @@ namespace langX {
 
 		space->putClass(info);
 
-		return 0;
+		return info;
 	}
 }
 
