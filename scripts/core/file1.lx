@@ -1,0 +1,10 @@
+ref langX.core.io;
+
+File::writeText("temp.txt","hello,world!");
+File::appendText("temp1.txt",",hello,world!1321");
+
+astr1 = File::readText("temp.txt");
+astr2 = File::readText("temp1.txt");
+
+print("astr1: " + astr1 + "\n");
+print("astr2: " + astr2 + "\n");
