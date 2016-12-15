@@ -153,39 +153,56 @@ namespace langX {
 
 
 	Object * langX_File_openAppend(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
+		Object * a = args.args[0];
+		if (a && a->getType() == STRING)
 		{
-			printf("langX_File_openAppend error! NO OBJ!\n");
-			return nullptr;
+			const char * path = ((String*)a)->getValue();
+
+			CoreFileStream *cfs = createCoreFileStream();
+			cfs->cppFStream.open(path, std::ios::app);
+
+			return createFileStreamObj(cfs)->addRef();
 		}
 
-		return nullptr;
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
 
 	Object * langX_File_openWrite(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
+		Object * a = args.args[0];
+		if (a && a->getType() == STRING)
 		{
-			printf("langX_File_openWrite error! NO OBJ!\n");
-			return nullptr;
+			const char * path = ((String*)a)->getValue();
+
+			CoreFileStream *cfs = createCoreFileStream();
+			cfs->cppFStream.open(path, std::ios::out);
+
+			return createFileStreamObj(cfs)->addRef();
 		}
 
-		return nullptr;
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
 
 	Object * langX_File_openRead(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
+
+		Object * a = args.args[0];
+		if (a && a->getType() == STRING)
 		{
-			printf("langX_File_openRead error! NO OBJ!\n");
-			return nullptr;
+			const char * path = ((String*)a)->getValue();
+
+			CoreFileStream *cfs = createCoreFileStream();
+			cfs->cppFStream.open(path, std::ios::in);
+
+			return createFileStreamObj(cfs)->addRef();
 		}
+		
 
-
-
-		return nullptr;
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
