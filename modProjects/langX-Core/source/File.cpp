@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "../include/RegCoreModule.h"
+#include "../include/CoreFileStream.h"
 
 #include "../../../include/ClassInfo.h"
 #include "../../../include/YLlangX.h"
@@ -28,11 +29,6 @@ namespace langX {
 
 
 	Object * langX_File_appendText(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_File_appendText error! NO OBJ!\n");
-			return nullptr;
-		}
 
 		Object * a = args.args[0];
 		Object * b = args.args[1];
@@ -74,11 +70,6 @@ namespace langX {
 
 
 	Object * langX_File_readText(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_File_readText error! NO OBJ!\n");
-			return nullptr;
-		}
 
 		Object * a = args.args[0];
 		if (a && a->getType() == STRING)
@@ -131,12 +122,6 @@ namespace langX {
 
 	//  写入成功返回 写入的字节数，  写入失败 返回-1   参数错误返回 null
 	Object * langX_File_writeText(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_File_writeText error! NO OBJ!\n");
-			return nullptr;
-		}
-
 
 		Object * a = args.args[0];
 		Object * b = args.args[1];
@@ -150,7 +135,10 @@ namespace langX {
 				return getState()->getAllocator().allocateNumber(-1);
 			}
 
-			fout << ((String*)b)->getValue();
+			String *str = ((String*)b);
+			str->simpleEscape();
+
+			fout << str->getValue();
 			int size = fout.tellp();
 
 			fout.flush();
@@ -194,6 +182,8 @@ namespace langX {
 			printf("langX_File_openRead error! NO OBJ!\n");
 			return nullptr;
 		}
+
+
 
 		return nullptr;
 	}

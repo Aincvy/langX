@@ -23,6 +23,15 @@ namespace langX {
 			return nullptr;
 		}
 
+		CoreFileStream * cfs = (CoreFileStream *)args.object->get3rdObj();
+
+		if (!cfs->cppFStream.is_open())
+		{
+			return getState()->getAllocator().allocate(NULLOBJECT);
+		}
+
+		cfs->cppFStream.close();
+
 		return nullptr;
 	}
 
@@ -53,7 +62,20 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		CoreFileStream * cfs = (CoreFileStream *)args.object->get3rdObj();
+
+		if (!cfs->cppFStream.is_open())
+		{
+			return getState()->getAllocator().allocate(NULLOBJECT);
+		}
+
+		std::fstream & fs = cfs->cppFStream;
+		long a = fs.tellg();
+		fs.seekg(std::ios::end);
+		long size = fs.tellg();
+		fs.seekg(a, std::ios::beg);
+
+		return getState()->getAllocator().allocateNumber(size);
 	}
 
 
@@ -94,6 +116,19 @@ namespace langX {
 			return nullptr;
 		}
 
+		CoreFileStream * cfs = (CoreFileStream *)args.object->get3rdObj();
+
+		if (!cfs->cppFStream.is_open())
+		{
+			return getState()->getAllocator().allocate(NULLOBJECT);
+		}
+
+		Object * a = args.args[0];
+		if (a && a->getType() == NUMBER)
+		{
+			// 
+		}
+
 		return nullptr;
 	}
 
@@ -104,6 +139,34 @@ namespace langX {
 		{
 			printf("langX_FileStream_write error! NO OBJ!\n");
 			return nullptr;
+		}
+
+		CoreFileStream * cfs = (CoreFileStream *)args.object->get3rdObj();
+
+		if (!cfs->cppFStream.is_open())
+		{
+			return getState()->getAllocator().allocate(NULLOBJECT);
+		}
+
+		Object * a = args.args[0];
+		if (a)
+		{
+			if (a->getType() == NUMBER)
+			{
+				Number * num = (Number*)a;
+				if (num->isInteger())
+				{
+					cfs->cppFStream << num->getIntValue();
+				}
+				else {
+					cfs->cppFStream << num->getDoubleValue();
+				}
+			}
+			else if (a->getType() == STRING)
+			{
+				String * str = (String*)a;
+				cfs->cppFStream << str->getValue();
+			}
 		}
 
 		return nullptr;
@@ -144,6 +207,16 @@ namespace langX {
 			printf("langX_FileStream_read error! NO OBJ!\n");
 			return nullptr;
 		}
+
+		CoreFileStream * cfs = (CoreFileStream *)args.object->get3rdObj();
+
+		if (!cfs->cppFStream.is_open())
+		{
+			return getState()->getAllocator().allocate(NULLOBJECT);
+		}
+
+
+
 
 		return nullptr;
 	}
