@@ -116,6 +116,31 @@ namespace langX {
 		return NULL;
 	}
 
+	// doFile 函数
+	Object * langX_do_file(X3rdFunction *func, const X3rdArgs & args) {
+		if (args.index <= 0)
+		{
+			printf("function %s need at least 1 param!\n", func->getName());
+			return NULL;
+		}
+
+		
+		Object *obj = args.args[0];
+		if (obj == NULL)
+		{
+			printf("function %s error param!\n", func->getName());
+			return NULL;
+		}
+		if (obj->getType() == STRING)
+		{
+			String * str = (String*)obj;
+			//str->simpleEscape();
+			getState()->doFile(str->getValue());
+		}
+
+		return NULL;
+	}
+
 
 	// 读取出一个字符串
 	Object * langX_scan_string(X3rdFunction *func, const X3rdArgs & args) {
@@ -150,6 +175,7 @@ namespace langX {
 		state->reg3rd("printStackTrace", langX_print_stack_trace);
 		state->reg3rd("systemRun", langX_system_run);
 		state->reg3rd("println",langX_println);
+		state->reg3rd("doFile", langX_do_file);
 	}
 
 }
