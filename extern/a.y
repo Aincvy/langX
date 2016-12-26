@@ -334,7 +334,8 @@ args_expr_collection
 	| call_statement { $$ = $1; }
 	| arithmetic_stmt { $$ = $1;}
 	| array_ele_stmt  { $$ = $1;}
-	| class_member_stmt { $$ = $1; }
+	| class_member_stmt  { $$ = $1; }
+	| static_member_stmt { $$ = $1; }
 	;
 
 block
