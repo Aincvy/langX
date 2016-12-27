@@ -38,8 +38,8 @@ char *namespaceNameCat(char *,char *);
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
-%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor /*single_assign_stmt_factor*/ case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
-%type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt class_func_serial_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt bit_opr_factor
+%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
+%type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt bit_opr_factor
 %type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt adorn_var_declar_stmt
 %type <params> param_list parameter lambda_args_stmt
 %type <args> args_list args_expr
@@ -196,12 +196,6 @@ static_member_stmt
 	: id_expr SCOPE id_expr   { $$ = opr(SCOPE, 2 ,$1,$3) ; }
 	;
 
-// 函数连续调用语句
-class_func_serial_stmt
-	: IDENTIFIER '(' args_list ')' IDENTIFIER '(' args_list ')' {  $$ = NULL; }
-	| id_expr '.' id_expr '(' args_list ')' IDENTIFIER '(' args_list ')'  { $$ = NULL; }
-	| class_func_serial_stmt IDENTIFIER '(' args_list ')' { $$ = NULL; };
-	;
 
 // 函数声明语句
 func_declar_stmt
@@ -245,6 +239,8 @@ var_declar_stmt
 	| IDENTIFIER '[' XINTEGER ']' ',' var_declar_stmt  { $$ = opr(VAR_DECLAR , 2, arrayNode($1,$3,NULL),$6); }
 	| IDENTIFIER '[' IDENTIFIER ']' ';' %prec UMINUS {  $$ = opr(VAR_DECLAR , 1, arrayNode($1,-1,var($3)) ); }
 	| IDENTIFIER '[' IDENTIFIER ']' ',' var_declar_stmt {  $$ = opr(VAR_DECLAR , 2, arrayNode($1,-1,var($3)),$6); }
+	| IDENTIFIER '[' call_statement ']' ';' { $$ = opr(VAR_DECLAR , 1, arrayNode($1,-1, $3) ); } 
+	| IDENTIFIER '[' call_statement ']' ',' var_declar_stmt { $$ = opr(VAR_DECLAR , 2, arrayNode($1,-1, $3),$6 ); } 
 	;
 	
 //  条件控制语句
@@ -290,7 +286,6 @@ simple_stmt
 	| DELETE IDENTIFIER { $$ = opr(DELETE, 1 ,$2 ); }
 	| interrupt_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
-	| class_func_serial_stmt { $$ = $1; }
 	| restrict_stmt  { $$ = $1; }
 	| XCONTINUE { $$ = opr(XCONTINUE , 0 ); }
 	;

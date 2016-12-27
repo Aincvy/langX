@@ -12,6 +12,12 @@ namespace langX {
 
 	XArray::XArray(int length)
 	{
+		if (length <= 0)
+		{
+			// maybe should throw a execption... 
+			return;
+		}
+
 		this->m_length = length;
 		this->m_array = (Object**)calloc(length, sizeof(Object*));
 
