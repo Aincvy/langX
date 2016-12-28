@@ -1762,7 +1762,7 @@ namespace langX {
 			}
 			
 		}
-		else if (n1->value->getType() == NUMBER && n2->value->getType() == NUMBER)
+		else if (left->getType() == NUMBER && n2->value->getType() == NUMBER)
 		{
 			double a = ((Number*)n1->value)->getDoubleValue();
 			double b = ((Number*)n2->value)->getDoubleValue();
@@ -1775,7 +1775,7 @@ namespace langX {
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 		}
-		else if (n1->value->getType() == STRING && n2->value->getType() == STRING)
+		else if (left->getType() == STRING && n2->value->getType() == STRING)
 		{
 			// 字符串比较
 			const char * a = ((String*)n1->value)->getValue();
@@ -1789,7 +1789,7 @@ namespace langX {
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 		}
-		else if (left != NULL && left->getType() == OBJECT) {
+		else if (left->getType() == OBJECT) {
 			langXObjectRef * ref1 = (langXObjectRef*)left;
 			Function *func1 = ref1->getFunction("operator==");
 			if (func1)
@@ -1817,7 +1817,7 @@ namespace langX {
 				}
 
 			}
-			else if (right->getType() == NULLOBJECT)
+			else if (right->getType() == NULLOBJECT || right->getType() == XARRAY)
 			{
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
@@ -1826,6 +1826,32 @@ namespace langX {
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 
+		}
+		else if (left->getType() == XARRAY)
+		{
+			// 数组
+			if (right && right->getType() == OBJECT)
+			{
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
+			else if (right->getType() == NULLOBJECT)
+			{
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
+			else if (right->getType() == XARRAY)
+			{
+				if (strcmp(left->characteristic(), right->characteristic()) == 0)
+				{
+					n->value = m_exec_alloc.allocateNumber(1);
+				}
+				else {
+					n->value = m_exec_alloc.allocateNumber(0);
+				}
+			}
+			else {
+				getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
 		}
 		else {
 			//printf("类型不同，无法比较");
@@ -1871,7 +1897,7 @@ namespace langX {
 			}
 
 		}else
-		if (n1->value->getType() == NUMBER && n2->value->getType() == NUMBER)
+		if (left->getType() == NUMBER && n2->value->getType() == NUMBER)
 		{
 			double a = ((Number*)n1->value)->getDoubleValue();
 			double b = ((Number*)n2->value)->getDoubleValue();
@@ -1884,7 +1910,7 @@ namespace langX {
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 		}
-		else if (n1->value->getType() == STRING && n2->value->getType() == STRING)
+		else if (left->getType() == STRING && n2->value->getType() == STRING)
 		{
 			// 字符串比较
 			const char * a = ((String*)n1->value)->getValue();
@@ -1898,7 +1924,7 @@ namespace langX {
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 		}
-		else if (left != NULL && left->getType() == OBJECT) {
+		else if (left->getType() == OBJECT) {
 			langXObjectRef * ref1 = (langXObjectRef*)left;
 			Function *func1 = ref1->getFunction("operator!=");
 			if (func1)
@@ -1926,9 +1952,35 @@ namespace langX {
 				}
 
 			}
+			else if (right->getType() == NULLOBJECT || right->getType() == XARRAY)
+			{
+				n->value = m_exec_alloc.allocateNumber(1);
+			}
+			else {
+				getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+				n->value = m_exec_alloc.allocateNumber(0);
+			}
+		}
+		else if (left->getType() == XARRAY)
+		{
+			// 数组
+			if (right->getType() == OBJECT)
+			{
+				n->value = m_exec_alloc.allocateNumber(1);
+			}
 			else if (right->getType() == NULLOBJECT)
 			{
 				n->value = m_exec_alloc.allocateNumber(1);
+			}
+			else if (right->getType() == XARRAY)
+			{
+				if (strcmp(left->characteristic(), right->characteristic()) == 0)
+				{
+					n->value = m_exec_alloc.allocateNumber(0);
+				}
+				else {
+					n->value = m_exec_alloc.allocateNumber(1);
+				}
 			}
 			else {
 				getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
