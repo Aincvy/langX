@@ -94,7 +94,11 @@ namespace langX {
 		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
 		char *p = NULL;
 		PyArg_Parse(obj->pyObj, "s", &p);
-	
+		
+		if (p == NULL)
+		{
+			return new String("");
+		}
 		return new String(p);
 	}
 
@@ -120,6 +124,8 @@ namespace langX {
 			printf("langX_PyObject_callMethod error! NO OBJ!\n");
 			return nullptr;
 		}
+
+		
 
 		XClassPyObject *pyObj = (XClassPyObject *)args.object->get3rdObj();
 
@@ -187,7 +193,7 @@ namespace langX {
 				int i = PyDict_Size(obj->pyObj);
 				obj->size = i;
 			}
-			else if (obj->size == PyObjectType::Tuple)
+			else if (obj->type == PyObjectType::Tuple)
 			{
 				int i = PyTuple_Size(obj->pyObj);
 				obj->size = i;
