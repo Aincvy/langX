@@ -35,9 +35,6 @@
     <ClCompile Include="source\PyObject.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\PyResult.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="makefile" />

@@ -1,0 +1,17 @@
+ref langX.python ;
+
+PythonLib::load();
+
+py = new PythonHook();
+py.doSString("import sys");
+py.doSString("sys.path.append('/root/projects/langX/scripts/python/')");
+
+pModule = py.importModule("pytest1");
+pFunc = pModule.get("getTuple");
+pRet = pFunc.callMethod();
+pRet.toTuple();
+
+
+PythonLib::unload();
+
+print("file over!\n");
