@@ -24,4 +24,9 @@ def update():
     guest = guestlist()
     print( guest['aa'] )
 
+def getTuple():
+    classmates = ('Michael', 'Bob', 'Tracy')
+    return (classmates) 
+
+
 #update()
