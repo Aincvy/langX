@@ -49,6 +49,9 @@ namespace langX {
 
 		// 字典
 		Dict ,
+
+		// 列表
+		PyListX , 
 	};
 
 

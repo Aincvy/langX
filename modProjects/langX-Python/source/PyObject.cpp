@@ -344,6 +344,8 @@ namespace langX {
 			}
 		}
 
+		
+
 		return nullptr;
 	}
 
@@ -415,7 +417,7 @@ namespace langX {
 		if (a->getType() == STRING)
 		{
 			String *str = (String*)a;
-			if (obj->type == PyObjectType::Module || obj->type == PyObjectType::Dict)
+			if (obj->type == PyObjectType::Module || obj->type == PyObjectType::Dict || obj->type == PyObjectType::Unknown)
 			{
 				PyObject * ret =PyObject_GetAttrString(obj->pyObj, str->getValue());
 				return createLangXObjectPyObj(ret, PyObjectType::Unknown)->addRef();
@@ -424,7 +426,7 @@ namespace langX {
 		else if (a->getType() == NUMBER)
 		{
 			int i = ((Number*)a)->getIntValue();
-			if (obj->type == PyObjectType::Tuple)
+			if (obj->type == PyObjectType::Tuple || obj->type == PyObjectType::PyListX )
 			{
 				PyObject * ret = PyTuple_GetItem(obj->pyObj, i);
 				return createLangXObjectPyObj(ret, PyObjectType::Unknown)->addRef();
