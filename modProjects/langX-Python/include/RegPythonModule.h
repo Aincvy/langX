@@ -22,6 +22,4 @@ namespace langX {
 
 	int regPyException(langXState *state, XNameSpace* space);
 
-	int regPyResult(langXState *state, XNameSpace* space);
-
 }
