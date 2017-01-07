@@ -44,7 +44,7 @@ namespace langX {
 		// python 函数
 		PyFunction,
 
-		// 数组
+		// 数组  元祖
 		Tuple,
 
 		// 字典
