@@ -464,6 +464,16 @@ namespace langX {
 		return nullptr;
 	}
 
+	Object * langX_PyObject_isNull(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_PyObject_isNull error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		return nullptr;
+	}
+
 
 	int regPyObject(langXState *state, XNameSpace* space) {
 
@@ -481,6 +491,7 @@ namespace langX {
 		info->addFunction("getNumber", create3rdFunc("getNumber", langX_PyObject_getNumber));
 		info->addFunction("get", create3rdFunc("get", langX_PyObject_get));
 		info->addFunction("operator[]", create3rdFunc("operator[]", langX_PyObject_operator_square_brackets));
+		info->addFunction("isNull", create3rdFunc("isNull", langX_PyObject_isNull));
 
 		space->putClass(info);
 
