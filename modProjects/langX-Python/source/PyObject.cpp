@@ -471,7 +471,13 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
+		if (obj->pyObj == NULL)
+		{
+			return getState()->getAllocator().allocateNumber(1);
+		}
+
+		return getState()->getAllocator().allocateNumber(0);
 	}
 
 
