@@ -30,6 +30,7 @@
     <ClInclude Include="extern\y.tab.h" />
     <ClInclude Include="include\Allocator.h" />
     <ClInclude Include="include\ClassInfo.h" />
+    <ClInclude Include="include\Config.h" />
     <ClInclude Include="include\DestroyedObject.h" />
     <ClInclude Include="include\Environment.h" />
     <ClInclude Include="include\ExecNode.h" />
@@ -57,6 +58,7 @@
     <ClCompile Include="modProjects\Readme" />
     <ClCompile Include="source\Allocator.cpp" />
     <ClCompile Include="source\ClassInfo.cpp" />
+    <ClCompile Include="source\Config.cpp" />
     <ClCompile Include="source\DestroyedObject.cpp" />
     <ClCompile Include="source\Environment.cpp" />
     <ClCompile Include="source\ExecNode.cpp" />
@@ -81,6 +83,7 @@
   <ItemGroup>
     <None Include="extern\a.l" />
     <None Include="extern\a.y" />
+    <None Include="langX.properties" />
     <None Include="makefile" />
     <None Include="mod\Readme" />
   </ItemGroup>
