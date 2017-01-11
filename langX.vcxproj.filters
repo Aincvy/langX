@@ -87,6 +87,9 @@
     <ClInclude Include="include\InnerFunction.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\Config.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="extern\lex.yy.c">
@@ -164,6 +167,9 @@
     <ClCompile Include="source\InnerFunction.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\Config.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="extern\a.l">
@@ -176,5 +182,6 @@
     <None Include="mod\Readme">
       <Filter>mod</Filter>
     </None>
+    <None Include="langX.properties" />
   </ItemGroup>
 </Project>
