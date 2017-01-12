@@ -2,7 +2,10 @@
 #include <algorithm>
 #include <string.h>
 #include <iterator>
+#include <vector>
+#include <string>
 #include "../include/ClassInfo.h"
+#include "../include/Config.h"
 #include "../include/langX.h"
 #include "../include/Object.h"
 #include "../include/Number.h"
@@ -787,6 +790,28 @@ namespace langX {
 		return ret;
 #endif
 
+	}
+
+	int langXState::loadConfig(const char * path)
+	{
+		int a = this->m_config.loadFrom(path);
+		if (a < 0)
+		{
+			return -1;
+		}
+
+		std::string &dir = this->m_config.getLibDir();
+		std::vector<std::string> & paths = this->m_config.getLibPath();
+		for (auto i = paths.begin(); i != paths.end(); i++)
+		{
+			std::string abc = dir + (*i);
+			a = this->loadModule(abc.c_str());
+			if (a < 0)
+			{
+				return -1;
+			}
+		}
+		return 0;
 	}
 
 	bool langXState::isDisposing() const

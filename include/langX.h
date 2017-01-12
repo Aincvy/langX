@@ -17,6 +17,7 @@ namespace langX {
 	class GlobalEnvironment;
 	class ScriptEnvironment;
 	class X3rdModule;
+	class ConfigX;
 
 	/*
 	  所有的脚本环境最后在释放内存。 
@@ -120,6 +121,9 @@ namespace langX {
 		// 加载一个模块 ,成功返回 0 ， 失败返回 -1
 		int loadModule(const char *path);
 
+		// 从文件中加载配置
+		int loadConfig(const char *path);
+
 		// 是否正在销毁中
 		bool isDisposing() const;
 
@@ -130,6 +134,7 @@ namespace langX {
 		Environment *m_script_env = nullptr;
 		Allocator  *m_allocator = nullptr;
 		StackTrace m_stacktrace;
+		ConfigX m_config;
 
 		std::map<std::string, XNameSpace*> m_namespace_map;
 		//  执行过文件列表

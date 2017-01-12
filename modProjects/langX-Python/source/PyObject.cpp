@@ -198,6 +198,11 @@ namespace langX {
 				int i = PyTuple_Size(obj->pyObj);
 				obj->size = i;
 			}
+			else if (obj->type == PyObjectType::PyListX)
+			{
+				int i = PyList_Size(obj->pyObj);
+				obj->size = i;
+			}
 		}
 
 		return getState()->getAllocator().allocateNumber(obj->size);
@@ -297,6 +302,45 @@ namespace langX {
 				PyDict_SetItemString(obj->pyObj, index, Py_BuildValue("o", argPyObj->pyObj));
 			}
 		}
+		else if (obj->type == PyObjectType::PyListX)
+		{
+			if (a->getType() != NUMBER)
+			{
+				return nullptr;
+			}
+			Number *num = (Number*)a;
+			int index = num->getIntValue();
+
+			if (b->getType() == NUMBER)
+			{
+				Number *num2 = (Number*)b;
+				if (num2->isInteger())
+				{
+					PyList_SetItem(obj->pyObj, index, Py_BuildValue("i", num2->getIntValue()));
+				}
+				else {
+					PyList_SetItem(obj->pyObj, index, Py_BuildValue("d", num2->getDoubleValue()));
+				}
+			}
+			else if (b->getType() == STRING)
+			{
+				String *str2 = (String*)b;
+				PyList_SetItem(obj->pyObj, index, Py_BuildValue("s", str2->getValue()));
+			}
+			else if (b->getType() == OBJECT)
+			{
+
+				langXObjectRef *ref1 = (langXObjectRef*)b;
+				langXObject *robj = ref1->getRefObject();
+				if (!robj->typeCheck("PyObject"))
+				{
+					return nullptr;
+				}
+
+				XClassPyObject *argPyObj = (XClassPyObject *)robj->get3rdObj();
+				PyList_SetItem(obj->pyObj, index, Py_BuildValue("o", argPyObj->pyObj));
+			}
+		}
 
 		return nullptr;
 	}
@@ -341,6 +385,15 @@ namespace langX {
 
 				return new String(p);
 
+			}
+			else if (obj->type == PyObjectType::PyListX)
+			{
+				PyObject * ret = PyList_GetItem(obj->pyObj, i);
+
+				char *p = NULL;
+				PyArg_Parse(obj->pyObj, "s", &p);
+
+				return new String(p);
 			}
 		}
 
@@ -393,6 +446,15 @@ namespace langX {
 				return getState()->getAllocator().allocateNumber(a);
 				
 			}
+			else if (obj->type == PyObjectType::PyListX)
+			{
+				PyObject * ret = PyList_GetItem(obj->pyObj, i);
+
+				double a = 0;
+				PyArg_Parse(ret, "d", &a);
+
+				return getState()->getAllocator().allocateNumber(a);
+			}
 		}
 
 		return nullptr;
@@ -426,9 +488,14 @@ namespace langX {
 		else if (a->getType() == NUMBER)
 		{
 			int i = ((Number*)a)->getIntValue();
-			if (obj->type == PyObjectType::Tuple || obj->type == PyObjectType::PyListX )
+			if (obj->type == PyObjectType::Tuple )
 			{
 				PyObject * ret = PyTuple_GetItem(obj->pyObj, i);
+				return createLangXObjectPyObj(ret, PyObjectType::Unknown)->addRef();
+			}
+			else if (obj->type == PyObjectType::PyListX)
+			{
+				PyObject * ret = PyList_GetItem(obj->pyObj, i);
 				return createLangXObjectPyObj(ret, PyObjectType::Unknown)->addRef();
 			}
 		}
