@@ -4,7 +4,7 @@
 #include <vector>
 
 /*
- * @date 2017-01-11  ´´½¨ÎÄ¼ş
+ * @date 2017-01-11  åˆ›å»ºæ–‡ä»¶
  */
 
 namespace langX {
@@ -15,8 +15,14 @@ namespace langX {
 		ConfigX();
 		~ConfigX();
 
-		// ´ÓÎÄ¼şÖĞ¼ÓÔØÅäÖÃ
-		void loadFrom(const char *);
+		// ä»æ–‡ä»¶ä¸­åŠ è½½é…ç½®
+		int loadFrom(const char *);
+
+		//  è·å¾—æ‰€æœ‰çš„ lib çš„è·¯å¾„
+		std::vector<std::string> & getLibPath();
+
+		// è·å¾— 
+		std::string & getLibDir();
 
 	private:
 

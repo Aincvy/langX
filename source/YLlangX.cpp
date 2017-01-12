@@ -37,10 +37,12 @@ void initLangX()
 		regFunctions(state);
 		regExceptions();
 
-		state->loadModule("mod/core.so");
-		state->loadModule("mod/mysql.so");
-		state->loadModule("mod/mod_libevent.so");
-		state->loadModule("mod/python3_x.so");
+		state->loadConfig("./langX.properties");
+
+		//state->loadModule("mod/core.so");
+		//state->loadModule("mod/mysql.so");
+		//state->loadModule("mod/mod_libevent.so");
+		//state->loadModule("mod/python3_x.so");
 	}
 }
 
