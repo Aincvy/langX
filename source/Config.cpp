@@ -41,12 +41,50 @@ namespace langX {
 
 			std::string & key = list[0];
 			std::string & value = list[1];
+			if (value.empty())
+			{
+				continue;
+			}
 			if (key == "LIB_DIR")
 			{
 				this->m_lib_dir = std::string(value);
+
+				char tmpChar = value[value.length() - 1];
+				if (tmpChar == '\r' || tmpChar == '\n')
+				{
+					this->m_lib_dir = value.substr(0, value.length() - 1);
+				}else
+				if (value.length() > 1)
+				{
+					// \r\n
+					char tmpChar1 = value[value.length() - 2];
+					if (tmpChar1 == '\r' && tmpChar == '\n')
+					{
+						this->m_lib_dir = value.substr(0, value.length() - 2);
+					}
+				}
+
 			}
 			else {
-				this->m_lib_list.push_back( std::string(value) );
+				std::string tmpStr = std::string(value);
+
+				char tmpChar = value[value.length() - 1];
+				if (tmpChar == '\r' || tmpChar == '\n')
+				{
+					tmpStr = value.substr(0, value.length() - 1);
+				}
+				else
+					if (value.length() > 1)
+					{
+						// \r\n
+						char tmpChar1 = value[value.length() - 2];
+						if (tmpChar1 == '\r' && tmpChar == '\n')
+						{
+							tmpStr = value.substr(0, value.length() - 2);
+						}
+					}
+
+				this->m_lib_list.push_back(tmpStr);
 			}
 
 		}
