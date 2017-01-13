@@ -37,7 +37,7 @@ void initLangX()
 		regFunctions(state);
 		regExceptions();
 
-		state->loadConfig("./langX.properties");
+		state->loadConfig("/etc/langX.properties");
 
 		//state->loadModule("mod/core.so");
 		//state->loadModule("mod/mysql.so");

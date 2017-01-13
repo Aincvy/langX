@@ -5,6 +5,7 @@
 #include "Object.h"
 #include "Function.h"
 #include "StackTrace.h"
+#include "Config.h"
 
 namespace langX {
 	class Environment;
@@ -17,7 +18,6 @@ namespace langX {
 	class GlobalEnvironment;
 	class ScriptEnvironment;
 	class X3rdModule;
-	class ConfigX;
 
 	/*
 	  所有的脚本环境最后在释放内存。 

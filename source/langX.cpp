@@ -804,7 +804,7 @@ namespace langX {
 		std::vector<std::string> & paths = this->m_config.getLibPath();
 		for (auto i = paths.begin(); i != paths.end(); i++)
 		{
-			std::string abc = dir + (*i);
+			std::string abc = dir + "/" +  (*i);
 			a = this->loadModule(abc.c_str());
 			if (a < 0)
 			{
