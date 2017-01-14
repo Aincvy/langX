@@ -24,6 +24,7 @@ namespace langX {
 		regQueue(state, space);
 		regStack(state, space);
 		regVector(state, space);
+		regRandom(state, space);
 
 		space = state->getNameSpaceOrCreate("langX.core");
 		regDeafult(state, space);

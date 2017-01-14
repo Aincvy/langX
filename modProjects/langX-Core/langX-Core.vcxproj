@@ -38,6 +38,7 @@
     <ClCompile Include="source\Map.cpp" />
     <ClCompile Include="source\Math.cpp" />
     <ClCompile Include="source\Queue.cpp" />
+    <ClCompile Include="source\Random.cpp" />
     <ClCompile Include="source\Set.cpp" />
     <ClCompile Include="source\Stack.cpp" />
     <ClCompile Include="source\Stream.cpp" />
