@@ -52,6 +52,9 @@
     <ClCompile Include="source\Stream.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\Random.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreModule.h">

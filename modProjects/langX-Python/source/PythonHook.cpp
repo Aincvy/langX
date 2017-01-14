@@ -123,6 +123,25 @@ namespace langX {
 	}
 
 
+	Object * langX_PythonHook_newList(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_PythonHook_newList error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		Object *a = args.args[0];
+		if (a && a->getType() == NUMBER)
+		{
+			Number *num = (Number*)a;
+			PyObject *ret = PyList_New(num->getIntValue());
+			return createLangXObjectPyObj(ret, PyObjectType::PyListX)->addRef();
+		}
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
+	}
+
+
 
 	int regPythonHook(langXState *state, XNameSpace* space) {
 
@@ -133,6 +152,7 @@ namespace langX {
 		info->addFunction("PythonHook", create3rdFunc("PythonHook", langX_PythonHook_PythonHook));
 		info->addFunction("newDict", create3rdFunc("newDict", langX_PythonHook_newDict));
 		info->addFunction("newTuple", create3rdFunc("newTuple", langX_PythonHook_newTuple));
+		info->addFunction("newList", create3rdFunc("newList", langX_PythonHook_newList));
 		space->putClass(info);
 
 		return 0;
