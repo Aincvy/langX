@@ -18,6 +18,8 @@ void count(void);
 
 #define MAX_INCLUDE_DEPTH 45
 YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
+int line_stack[MAX_INCLUDE_DEPTH] ;       // 记录行的栈
+int now_line = 1 ;     // 当前行
 //  这个数值永远指向栈顶
 int include_stack_ptr = -1;
 //  文件深度 默认是0 ，解析文件1 ，将会变成1 
@@ -27,6 +29,9 @@ int fileDeep = 0 ;
 
 // 切换缓冲区到 文件指针
 void pushBuffer(FILE *fp);
+
+// 获得当前是在解析第几行
+int getParseLineNo();
 
 %}
 
@@ -124,6 +129,10 @@ operator([\+\-\*\/\.]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(yyt
 	  
 	  // 删除栈顶元素
 	  include_stack[include_stack_ptr] = NULL ;
+	  // 调整行信息
+	  now_line = line_stack[ include_stack_ptr ] ;
+	  line_stack[ include_stack_ptr ] = 0 ;
+	  // 
 	  include_stack_ptr-- ;
 	  //printf("remove stack top buffer to current.\n");
 	}else{
@@ -136,6 +145,10 @@ operator([\+\-\*\/\.]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(yyt
 }
 
 %%
+
+int getParseLineNo(){
+	return now_line ;
+}
 
 void pushBuffer(FILE *fp){
 	
@@ -151,9 +164,11 @@ void pushBuffer(FILE *fp){
 			exit( 1 );
 		}
 		include_stack[++include_stack_ptr] = YY_CURRENT_BUFFER;
+		line_stack[include_stack_ptr] = now_line ;
 		//printf("add current buffer to stack.\n");
 	}
 	
+	now_line = 1;
 	yyin = fp;	
 	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
 	BEGIN(INITIAL);
@@ -178,13 +193,12 @@ void count(void)
 	int i;
 
 	for (i = 0; yytext[i] != '\0'; i++)
-		if (yytext[i] == '\n')
+		if (yytext[i] == '\n'){
 			column = 0;
-		else if (yytext[i] == '\t')
+			now_line++ ;
+		} else if (yytext[i] == '\t')
 			column += 8 - (column % 8);
 		else
 			column++;
 
-	//ECHO; 
-	//printf("\n");
 }

@@ -217,7 +217,7 @@ namespace langX {
 			return;
 		}
 
-		r->setCharacteristic("no_pointer_to_anything");
+		//r->setCharacteristic("no_pointer_to_anything");
 		for (auto i = m_refs.begin(); i != m_refs.end(); i++)
 		{
 			if ((*i) == r)

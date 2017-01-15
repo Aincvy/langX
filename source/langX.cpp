@@ -639,14 +639,15 @@ namespace langX {
 
 		this->m_parsing_file = strdup(tmp);
 
-		if (this->m_script_env_map.find(tmp) == this->m_script_env_map.end())
+		auto b = this->m_script_env_map.find(tmp);
+		if (b == this->m_script_env_map.end())
 		{
 			ScriptEnvironment * env = new ScriptEnvironment(tmp);
 			this->m_script_env_map[tmp] = env;
 			newScriptEnv(env);
 		}
 		else {
-			newScriptEnv(this->m_script_env_map.at(tmp));
+			newScriptEnv( b->second );
 		}
 
 		//printf("push file %s to lex buffer!\n" , tmp);

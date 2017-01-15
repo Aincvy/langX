@@ -95,6 +95,7 @@ namespace langX {
 		{
 			this->m_object_ref->subRef(this);
 			this->m_object_ref = NULL;
+			this->setCharacteristic("no_pointer_to_anything");
 		}
 
 		if (obj->getType() == OBJECT)
