@@ -19,7 +19,7 @@
 #include "../include/String.h"
 #include "../extern/y.tab.h"
 
-extern int yyget_lineno(void);
+extern int getParseLineNo();
 
 using namespace langX;
 
@@ -109,7 +109,7 @@ void deal_switch_info(SwitchInfo *si) {
 }
 
 void deal_fileinfo(NodeFileInfo *f) {
-	f->lineno = yyget_lineno();
+	f->lineno = getParseLineNo();
 	f->filename = state->getParsingFile();
 }
 

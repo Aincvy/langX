@@ -1,0 +1,12 @@
+a = 1;
+b = a ;
+
+
+
+
+require_once "include2.lx"
+
+
+c = new ABC() ;
+
+b = 22 ;
