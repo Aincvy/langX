@@ -1,0 +1,5 @@
+innerKey = 3 ;
+
+getKey2 => (){
+	return innerKey ;
+}

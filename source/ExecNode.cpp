@@ -1069,7 +1069,17 @@ namespace langX {
 		}
 		else if (arrayInfo != NULL)
 		{
-			Object *obj = getValue(arrayInfo->name);
+			Object *obj = NULL;
+			if (arrayInfo->name != NULL)
+			{
+				obj = getValue(arrayInfo->name);
+			}
+			else if (arrayInfo->objNode != NULL)
+			{
+				__execNode(arrayInfo->objNode);
+				obj = arrayInfo->objNode->value;
+			}
+
 			if (obj == NULL || obj->getType() != XARRAY)
 			{
 				getState()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
@@ -3075,7 +3085,50 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
-	// 执行包含其他文件
+
+	// 包含其他文件
+	void __execINCLUDE(Node *n) {
+		if (n == NULL)
+		{
+			return;
+		}
+
+		char *tmp = n->opr_obj->op[0]->con_obj->sValue;
+
+		char *filename = strndup(tmp + 1, strlen(tmp) - 2);
+
+		char tmpMsg[1024] = { 0 };
+		sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
+		getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
+
+		//  把路径转换成绝对路径
+		if (filename[0] != '/')
+		{
+			//  非绝对路径
+			char tmpBuf[1024];
+			const char *t1 = getState()->getParsingFile();
+			if (realpath(t1, tmpBuf))
+			{
+				// ok 
+				std::string a(tmpBuf);
+				auto it = a.find_last_of('/');
+				if (it != std::string::npos)
+				{
+					// 找到了最后一个 /
+					a = a.substr(0, it + 1);
+					a += filename;
+					free(filename);
+					filename = strdup(a.c_str());
+				}
+			}
+		}
+
+
+		getState()->includeFile(filename);
+
+	}
+
+	// 执行 require 其他文件
 	void __execREQUIRE(Node *n) {
 		if (n == NULL)
 		{
@@ -3551,7 +3604,17 @@ namespace langX {
 		else if (node->type == NODE_ARRAY_ELE)
 		{
 			ArrayInfo * arrayInfo = node->arr_obj;
-			Object *obj = getValue(arrayInfo->name);
+			Object *obj = NULL;
+			if (arrayInfo->name != NULL)
+			{
+				obj = getValue(arrayInfo->name);
+			}
+			else if (arrayInfo->objNode != NULL)
+			{
+				__execNode(arrayInfo->objNode);
+				obj = arrayInfo->objNode->value;
+			}
+
 			if (obj == NULL)
 			{
 				//printf("left value is not array with array operator!\n");
@@ -3810,6 +3873,9 @@ namespace langX {
 			break;
 		case  REQUIRE_ONCE:
 			__execREQUIRE_ONCE(node);
+			break;
+		case XINCLUDE:
+			__execINCLUDE(node);
 			break;
 		case REF:
 			__execREF(node);

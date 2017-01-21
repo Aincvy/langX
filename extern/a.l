@@ -64,6 +64,7 @@ int getParseLineNo();
 "is"   {count();  return XIS; }
 "require" {count(); return REQUIRE;}
 "require_once" { count(); return REQUIRE_ONCE; }
+"include" { count(); return XINCLUDE; }
 "ref"  {count();  return REF ;}
 "continue" { count(); return XCONTINUE; }
 "const" { count(); return XCONST; }

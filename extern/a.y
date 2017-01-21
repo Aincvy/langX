@@ -34,7 +34,7 @@ char *namespaceNameCat(char *,char *);
 %token <sValue> IDENTIFIER TSTRING OPERATOR_X__
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL REQUIRE REQUIRE_ONCE REF XCONTINUE XCONST XLOCAL 
-%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL 
+%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL XINCLUDE
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
@@ -96,6 +96,7 @@ statement
 require_stmt
 	: REQUIRE string_expr         { $$ = opr(REQUIRE , 1 , $2); }
 	| REQUIRE_ONCE string_expr    { $$ = opr(REQUIRE_ONCE , 1 , $2); }
+	| XINCLUDE string_expr        { $$ = opr(XINCLUDE , 1 , $2); }
 	| REF namespace_name_stmt ';' { $$ = opr(REF , 1, string($2)); }
 	;
 
@@ -463,7 +464,7 @@ assign_stmt_value
 	| class_member_stmt  %prec NONASSOC { $$ = $1; }
 	| null_expr      { $$ = $1; }
 	| this_stmt    %prec UMINUS  { $$ = $1; }
-	| array_ele_stmt { $$ = $1; }
+	| array_ele_stmt  { $$ = $1; }
 	| static_member_stmt { $$ =$1 ;}
 	;
 
@@ -492,6 +493,10 @@ class_member_assign_stmt
 array_ele_stmt
 	: IDENTIFIER '[' XINTEGER ']'    { $$ = arr($1, $3, NULL); }
 	| IDENTIFIER '[' IDENTIFIER ']'  { $$ = arr($1, -1, var($3)) ; }
+	| class_member_stmt '[' XINTEGER ']'  {  $$ = arr2($1, $3, NULL) ; }
+	| class_member_stmt '[' IDENTIFIER ']'  {  $$ = arr2($1, -1, var($3)) ; }
+	| call_statement '[' XINTEGER ']'  {  $$ = arr2($1,  $3, NULL ) ; }
+	| call_statement '[' IDENTIFIER ']'  {  $$ = arr2($1, -1, var($3)) ; }
 	;
 
 // ARRAY_ELE 意思是获得数组元素

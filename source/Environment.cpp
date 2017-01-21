@@ -1165,6 +1165,18 @@ namespace langX {
 				}
 			}
 
+			if (!this->m_require_files_map.empty())
+			{
+				for (auto i = this->m_require_files_map.begin(); i != this->m_require_files_map.end(); i++)
+				{
+					Object *f = i->second->getObject(name);
+					if (f != nullptr && !f->isLocal())
+					{
+						return f;
+					}
+				}
+			}
+
 			if (this->m_parent != NULL && !m_restrict)
 			{
 				return this->m_parent->getObject(name,false);
@@ -1211,6 +1223,19 @@ namespace langX {
 					}
 				}
 			}
+
+			if (!this->m_require_files_map.empty())
+			{
+				for (auto i = this->m_require_files_map.begin(); i != this->m_require_files_map.end(); i++)
+				{
+					Function *f = i->second->getFunction(name);
+					if (f != nullptr )
+					{
+						return f;
+					}
+				}
+			}
+			
 
 			if (this->m_parent != NULL)
 			{
@@ -1261,6 +1286,18 @@ namespace langX {
 				}
 			}
 
+			if (!this->m_require_files_map.empty())
+			{
+				for (auto i = this->m_require_files_map.begin(); i != this->m_require_files_map.end(); i++)
+				{
+					ClassInfo *cInfo = i->second->getClass(name);
+					if (cInfo != nullptr)
+					{
+						return cInfo;
+					}
+				}
+			}
+
 			if (this->m_parent != NULL)
 			{
 				return this->m_parent->getClass(name);
@@ -1304,6 +1341,21 @@ namespace langX {
 		{
 			this->m_ref_classes_map[c->getName()] = c;
 		}
+	}
+
+	void ScriptEnvironment::addRequireFile(const char *name, ScriptEnvironment *env)
+	{
+		if (env == NULL)
+		{
+			return;
+		}
+
+		std::string str(name);
+		if (this->m_require_files_map.find(name) == this->m_require_files_map.end() )
+		{
+			this->m_require_files_map[str] = env;
+		}
+		
 	}
 
 	const char * ScriptEnvironment::getName() const
