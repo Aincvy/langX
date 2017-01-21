@@ -267,12 +267,27 @@ XNode *arr(char *name, int index, XNode *indexNode) {
 	node->arr_obj = (langX::ArrayInfo*) calloc(1, sizeof(langX::ArrayInfo) * 1);
 	node->type = NODE_ARRAY_ELE;
 
+	node->arr_obj->objNode = NULL;
 	node->arr_obj->name = name;
 	node->arr_obj->index = index;
 	node->arr_obj->indexNode = indexNode;
 
 	return node;
 
+}
+
+XNode * arr2(XNode *objNode, int index, XNode *indexNode)
+{
+	XNode * node = newNode();
+	node->arr_obj = (langX::ArrayInfo*) calloc(1, sizeof(langX::ArrayInfo) * 1);
+	node->type = NODE_ARRAY_ELE;
+
+	node->arr_obj->objNode = objNode;
+	node->arr_obj->name = NULL;
+	node->arr_obj->index = index;
+	node->arr_obj->indexNode = indexNode;
+
+	return node;
 }
 
 XNode * xint(int i)

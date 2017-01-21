@@ -105,6 +105,8 @@ namespace langX {
 		int doFile(const char *);
 
 		// 包含一个文件  当前脚本上执行
+		int includeFile(const char *);
+		// require一个文件  当前脚本上执行
 		int requireFile(const char *);
 
 		// 是否执行过这个脚本
@@ -131,6 +133,7 @@ namespace langX {
 		// 全局环境
 		GlobalEnvironment *m_global_env = nullptr;
 		Environment *m_current_env = nullptr;
+		// 当前的脚本环境， 可能是一个脚本环境， 可能是一个命名空间环境
 		Environment *m_script_env = nullptr;
 		Allocator  *m_allocator = nullptr;
 		StackTrace m_stacktrace;

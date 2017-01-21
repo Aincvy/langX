@@ -213,6 +213,8 @@ namespace langX {
 		int index;
 		// 变量索引 . 如果变量索引节点存在， 则使用这个， 否则使用 index 
 		Node * indexNode;
+		// 对象节点， 运算这个节点可以获得一个数组对象
+		Node * objNode;
 	};
 
 	struct Operator

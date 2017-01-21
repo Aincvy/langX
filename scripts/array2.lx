@@ -1,0 +1,14 @@
+Entity {
+	
+	array1[10] ;
+	
+	getArray1 => (){
+		return this.array1 ;
+	}
+}
+
+a = new Entity();
+a.array1[0] = 1;
+a.getArray1()[1] = "hello,world!";
+println("x: " + a.array1[0] );
+println("y: " + a.getArray1()[1] );
