@@ -13,6 +13,8 @@ namespace langX {
 
 	int JsonModule::init(langXState *state)
 	{
+
+
 		return 0;
 	}
 
