@@ -1,0 +1,31 @@
+ref langX.libevent ;
+ref langX.core.util;
+
+patternHello => (request,response){
+	response.header("Content-Type=text/plain;charset=utf8");
+	response.writeLine("hello, langX.libevent");
+	response.flush();
+}
+
+patternOther => (request,response){
+	response.setContentType(ContentType.HTML);
+	response.setCharset(Charset.UTF8);
+	response.writeLine("<html><body><h1>阿呼</h1></body></html>");
+	response.flush();
+}
+
+patternTestJson => (request , response) {
+	response.setContentType(ContentType.JSON) ;
+	response.setCharset(Charset.UTF8);
+	response.writeLine("{\"code\": 1 }");
+	response.flush();
+}
+
+server =  new HttpServer();
+server.listen(8080);
+route = server.getRoute();
+route.route("/hello", patternHello);
+route.route("/testjson", patternTestJson);
+route.route("*" , patternOther) ;
+
+server.serv();
