@@ -1,0 +1,41 @@
+ref langX.libevent;
+ref langX.protobuf;
+
+reader = new ProtobufAttrReader();    // protobuf 特性的读取器
+writer = new ProtobufAttrWriter();    // protobuf 特性的写入器
+
+reader.setReadTo( "GameMsg" );          // 特性读取器读出的对象类型
+writer.setWriteTo( "GameMsg" ) ;        // 写出类型
+// 上述类型虽然是用字符串， 但是也不是随便的字符串。 在加载 protobuf 库
+// 的时候会在 libevent 内注册一个 东西，对应这些那些。 然后在 protobuf 
+// 库上面也可以注册内容。  GameMsg 为一个 注册的KEY值
+// 特性读取器和 特性写入器 会注册到 libevent 内
+// GameMsg 为一个 protobuf 的协议文件 
+
+
+readCB => (server, client , gameMsg ){
+	requstCode = gameMsg.requestCode ;
+	
+	switch ( requestCode ) {
+	case 1 : 
+		println("code 1 get.");
+		break ;
+	case 2 :
+		println("code 2 get.");
+		break ;
+	default :
+		println("default get.");
+		break ;
+	}
+	
+	client.write( null );  // write nothing. because i donot think ok...
+}
+
+
+
+server = new TcpServer();
+server.listen(6006);
+server.setReader(reader);
+server.setWriter(writer);
+server.onRead( readCB ) ;
+server.serv();
