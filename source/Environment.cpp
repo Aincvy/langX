@@ -162,7 +162,7 @@ namespace langX {
 			return;
 		}
 
-		//  ÒòÎªclass ÄÚ²¿»á×Ô¶¯copy . ËùÒÔ²»ÐèÒªÔÙ»·¾³Õâ±ßÔÙ´ÎcopyÁË
+		//  å› ä¸ºclass å†…éƒ¨ä¼šè‡ªåŠ¨copy . æ‰€ä»¥ä¸éœ€è¦å†çŽ¯å¢ƒè¿™è¾¹å†æ¬¡copyäº†
 		this->m_class->addMember(name, obj);
 	}
 
@@ -173,7 +173,7 @@ namespace langX {
 			return;
 		}
 
-		//  ÒòÎªclass ÄÚ²¿»á×Ô¶¯copy . ËùÒÔ²»ÐèÒªÔÙ»·¾³Õâ±ßÔÙ´ÎcopyÁË
+		//  å› ä¸ºclass å†…éƒ¨ä¼šè‡ªåŠ¨copy . æ‰€ä»¥ä¸éœ€è¦å†çŽ¯å¢ƒè¿™è¾¹å†æ¬¡copyäº†
 		this->m_class->addMember(name.c_str(), obj);
 	}
 
@@ -286,7 +286,7 @@ namespace langX {
 		{
 			return;
 		}
-		// setMember µÄÊ±ºò ÄÚ²¿»á½øÐÐ¿ËÂ¡
+		// setMember çš„æ—¶å€™ å†…éƒ¨ä¼šè¿›è¡Œå…‹éš†
 		this->m_object->setMember(name, obj);
 	}
 
@@ -296,7 +296,7 @@ namespace langX {
 		{
 			return;
 		}
-		// setMember µÄÊ±ºò ÄÚ²¿»á½øÐÐ¿ËÂ¡
+		// setMember çš„æ—¶å€™ å†…éƒ¨ä¼šè¿›è¡Œå…‹éš†
 		this->m_object->setMember(name.c_str(), obj);
 	}
 
@@ -473,9 +473,9 @@ namespace langX {
 
 		if (it != this->m_objects_map.end())
 		{
-			// É¾³ý Ô­À´µÄÖµ
+			// åˆ é™¤ åŽŸæ¥çš„å€¼
 			getState()->getAllocator().free(it->second);
-			// Ìæ»»ÐÂÖµ
+			// æ›¿æ¢æ–°å€¼
 			it->second = obj;
 		}
 		else {
@@ -580,13 +580,13 @@ namespace langX {
 	void EnvironmentBridgeEnv::putObject(const char *name, Object *obj)
 	{
 
-		//  ÕâÊÇ»·¾³ÇÅ½Ó»·¾³£¬ ²»ÐèÒª¸´ÖÆ¡£ Ä¿±ê»·¾³Ó¦¸Ã»á½øÐÐ¸´ÖÆµÄ
+		//  è¿™æ˜¯çŽ¯å¢ƒæ¡¥æŽ¥çŽ¯å¢ƒï¼Œ ä¸éœ€è¦å¤åˆ¶ã€‚ ç›®æ ‡çŽ¯å¢ƒåº”è¯¥ä¼šè¿›è¡Œå¤åˆ¶çš„
 		this->m_env->putObject(name, obj);
 	}
 
 	void EnvironmentBridgeEnv::putObject(const std::string &name, Object *obj)
 	{
-		//  ÕâÊÇ»·¾³ÇÅ½Ó»·¾³£¬ ²»ÐèÒª¸´ÖÆ¡£ Ä¿±ê»·¾³Ó¦¸Ã»á½øÐÐ¸´ÖÆµÄ
+		//  è¿™æ˜¯çŽ¯å¢ƒæ¡¥æŽ¥çŽ¯å¢ƒï¼Œ ä¸éœ€è¦å¤åˆ¶ã€‚ ç›®æ ‡çŽ¯å¢ƒåº”è¯¥ä¼šè¿›è¡Œå¤åˆ¶çš„
 		this->m_env->putObject(name, obj);
 	}
 
@@ -741,14 +741,15 @@ namespace langX {
 
 		if (it != this->m_objects_map.end())
 		{
-			// É¾³ý Ô­À´µÄÖµ
+			// åˆ é™¤ åŽŸæ¥çš„å€¼
 			getState()->getAllocator().free(it->second);
-			// Ìæ»»ÐÂÖµ
+			// æ›¿æ¢æ–°å€¼
 			it->second = obj;
 		}
 		else {
 			this->m_objects_map[name] = obj;
-		}
+		}
+
 
 	}
 
@@ -844,7 +845,7 @@ namespace langX {
 
 	void XNameSpaceEnvironment::putObject(const std::string &name, Object *obj)
 	{
-		// ÒòÎªÊÇÃüÃû¿Õ¼äµÄÇÅ½Ó»·¾³¡£ ÃüÃû¿Õ¼äÄÚ²¿ÔÙÊµÏÖµÄÊ±ºò»ácopy ¡£ ËùÒÔÕâÀï²»½øÐÐcopy 
+		// å› ä¸ºæ˜¯å‘½åç©ºé—´çš„æ¡¥æŽ¥çŽ¯å¢ƒã€‚ å‘½åç©ºé—´å†…éƒ¨å†å®žçŽ°çš„æ—¶å€™ä¼šcopy ã€‚ æ‰€ä»¥è¿™é‡Œä¸è¿›è¡Œcopy 
 		this->m_space->putObject(name, obj);
 	}
 
@@ -933,13 +934,13 @@ namespace langX {
 
 	GlobalEnvironment::GlobalEnvironment()
 	{
-		//  ¹«¹²»·¾³ £¬ ËãÎªËÀÍö»·¾³
+		//  å…¬å…±çŽ¯å¢ƒ ï¼Œ ç®—ä¸ºæ­»äº¡çŽ¯å¢ƒ
 		setDead(true);
 	}
 
 	GlobalEnvironment::~GlobalEnvironment()
 	{
-		// ÊÍ·Åº¯ÊýÐÅÏ¢ºÍÀàÐÅÏ¢
+		// é‡Šæ”¾å‡½æ•°ä¿¡æ¯å’Œç±»ä¿¡æ¯
 		if (!m_functions_map.empty())
 		{
 			for (auto a = m_functions_map.begin(); a != m_functions_map.end(); a++) {
@@ -1065,9 +1066,9 @@ namespace langX {
 	ScriptEnvironment::~ScriptEnvironment()
 	{
 		Allocator &allocator = getState()->getAllocator();
-		// ÊÍ·ÅÄÚ´æ
+		// é‡Šæ”¾å†…å­˜
 		this->m_parent = NULL;
-		//printf("~Environment\n");
+		printf("~ScriptEnvironment: %p\n", this);
 		if (!m_objects_map.empty())
 		{
 			for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++) {
@@ -1098,6 +1099,18 @@ namespace langX {
 
 			m_classes_map.clear();
 		}
+
+		if (!m_require_files_map.empty())
+		{
+
+			for (auto a = m_require_files_map.begin(); a != m_require_files_map.end(); a++)
+			{
+				//printf("free require files: %p\n", a->second);
+				delete a->second;
+			}
+
+			m_require_files_map.clear();
+		}
 	}
 
 	void ScriptEnvironment::putObject(const char *name, Object *obj)
@@ -1119,9 +1132,9 @@ namespace langX {
 
 		if (it != this->m_objects_map.end())
 		{
-			// É¾³ý Ô­À´µÄÖµ
+			// åˆ é™¤ åŽŸæ¥çš„å€¼
 			getState()->getAllocator().free(it->second);
-			// Ìæ»»ÐÂÖµ
+			// æ›¿æ¢æ–°å€¼
 			it->second = obj;
 		}
 		else {
@@ -1235,6 +1248,7 @@ namespace langX {
 					}
 				}
 			}
+
 			
 
 			if (this->m_parent != NULL)
@@ -1343,7 +1357,24 @@ namespace langX {
 		}
 	}
 
-	void ScriptEnvironment::addRequireFile(const char *name, ScriptEnvironment *env)
+	int ScriptEnvironment::addRequireFile(const char *name, ScriptEnvironment *env)
+	{
+		if (env == NULL)
+		{
+			return -1;
+		}
+
+		std::string str(name);
+		if (this->m_require_files_map.find(name) == this->m_require_files_map.end() )
+		{
+			this->m_require_files_map[str] = env;
+			return 0;
+		}
+		
+		return -1;
+	}
+
+	void ScriptEnvironment::addRequireOnceFile(const char *name, ScriptEnvironment *env)
 	{
 		if (env == NULL)
 		{
@@ -1351,11 +1382,10 @@ namespace langX {
 		}
 
 		std::string str(name);
-		if (this->m_require_files_map.find(name) == this->m_require_files_map.end() )
+		if (this->m_require_once_file_map.find(name) == this->m_require_once_file_map.end())
 		{
-			this->m_require_files_map[str] = env;
+			this->m_require_once_file_map[str] = env;
 		}
-		
 	}
 
 	const char * ScriptEnvironment::getName() const

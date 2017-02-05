@@ -176,6 +176,16 @@ namespace langX {
 		return true;
 	}
 
+	void Function::setScriptEnv(ScriptEnvironment *env)
+	{
+		this->m_script_env = env;
+	}
+
+	ScriptEnvironment * Function::getScriptEnv() const
+	{
+		return this->m_script_env;
+	}
+
 
 	X3rdFunction::X3rdFunction()
 	{

@@ -17,9 +17,9 @@ class guestlist:
     def __init__(self):
         print( "aaaa" )
     def p():
-	    print( "bbbbb" )
+        print( "bbbbb" )
     def __getitem__(self, id):
-	    return "ccccc"
+        return "ccccc"
 def update():
     guest = guestlist()
     print( guest['aa'] )

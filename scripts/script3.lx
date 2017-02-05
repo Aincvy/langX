@@ -1,5 +1,5 @@
-require_once "script1.lx"
-require_once "script2.lx"
+require "script1.lx"
+require "script2.lx"
 
 println("key1: " + getKey1() );
 println("key2: " + getKey2() );

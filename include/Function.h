@@ -4,6 +4,7 @@ namespace langX {
 	class Object;
 	class ClassInfo;
 	class Environment;
+	class ScriptEnvironment;
 	class langXObject;
 
 	/* 0924  现在函数不在继承自Object . 而是添加一个新的 类型 FunctionRef 继承自Object */
@@ -34,6 +35,10 @@ namespace langX {
 		// 当前函数是否有名字
 		bool hasName() const;
 
+		// 这个函数所属脚本的相关处理
+		void setScriptEnv(ScriptEnvironment *);
+		ScriptEnvironment * getScriptEnv() const;
+
 	private:
 		// 内部函数执行的根节点
 		Node * m_node_root = nullptr;
@@ -41,6 +46,8 @@ namespace langX {
 		ParamsList * m_params_list = nullptr;
 		// 当前函数是属于哪个类
 		ClassInfo *m_class_info = nullptr;
+		// 这个函数所属的脚本环境
+		ScriptEnvironment * m_script_env = nullptr ;
 
 		// 私有函数?
 		bool m_private = false;

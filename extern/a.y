@@ -12,7 +12,7 @@ extern "C" {
 	void yyerror(char *);
 }
 
-extern int yyget_lineno(void);
+extern int getParseLineNo();
 extern int column; 
 extern char * yytext;
 
@@ -520,7 +520,7 @@ assign_stmt
 %%
 
 void yyerror(char *s) {
- fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , yyget_lineno(),column , yytext  );
+	fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , getParseLineNo(),column , yytext  );
 }
 
 char *namespaceNameCat(char *arg1,char *arg2){
