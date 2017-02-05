@@ -244,6 +244,11 @@ namespace langX {
 		return this->m_global_env;
 	}
 
+	Environment * langXState::getScriptOrNSEnv() const
+	{
+		return this->m_script_env;
+	}
+
 	Environment * langXState::getNearestObjectEnv() const
 	{
 		Environment *env = this->m_current_env;
@@ -600,6 +605,11 @@ namespace langX {
 		//  释放内存到 深度为1 的 环境
 		backToDeep1Env();
 
+		if (this->m_script_env != NULL && this->m_script_env->getType() == EnvironmentType::TScriptEnvironment)
+		{
+			this->m_doing_script_envs.push_front( (ScriptEnvironment*)this->m_script_env);
+		}
+
 		this->m_script_env = env;
 		this->m_current_deep++;
 		this->m_script_env->setDeep(this->m_current_deep);
@@ -719,6 +729,68 @@ namespace langX {
 			this->m_parsing_file = NULL;
 		}
 
+
+		char tmp[1024] = { 0 };
+		realpath(filename, tmp);
+
+		this->m_parsing_file = strdup(tmp);
+
+		
+		ScriptEnvironment * env = new ScriptEnvironment(tmp);
+
+		
+		// 如果当前环境是一个脚本环境， 则将新的玩家记录到原环境上
+		if (this->m_script_env->getType() == EnvironmentType::TScriptEnvironment)
+		{
+			// 
+			int i = ((ScriptEnvironment*)this->m_script_env)->addRequireFile(filename, env);
+			if (i != 0)
+			{
+				delete env;
+				env = NULL;
+				char tmpMsg[2048] = { 0 };
+				sprintf(tmpMsg, "require file %s error. code=%d", filename, i);
+				throwException(newException(tmpMsg)->addRef());
+				return -1;
+			}
+		}
+		// 将新的脚本环境 应用到当前环境上 
+		newScriptEnv(env);
+
+		//printf("push file %s to lex buffer!\n" , tmp);
+
+		pushBuffer(fp);
+
+		if (!m_yy_parsing)
+		{
+			m_yy_parsing = true;
+			yyparse();
+		}
+
+		return 0;
+	}
+
+	int langXState::require_onceFile(const char * filename)
+	{
+		
+		if (filename == NULL)
+		{
+			return -1;
+		}
+
+		FILE *fp = fopen(filename, "r");
+		if (fp == NULL)
+		{
+			throwException(newFileNotFoundException(filename)->addRef());
+			return -1;
+		}
+
+		if (this->m_parsing_file != NULL)
+		{
+			this->m_doing_files.push_front(this->m_parsing_file);
+			this->m_parsing_file = NULL;
+		}
+
 		auto a = std::find(m_didScripts.begin(), m_didScripts.end(), filename);
 		if (a == m_didScripts.end())
 		{
@@ -730,7 +802,7 @@ namespace langX {
 
 		this->m_parsing_file = strdup(tmp);
 
-		
+
 		ScriptEnvironment * env = NULL;
 		auto b = this->m_script_env_map.find(tmp);
 		if (b == this->m_script_env_map.end())
@@ -741,12 +813,12 @@ namespace langX {
 		else {
 			env = b->second;
 		}
-		
+
 		// 如果当前环境是一个脚本环境， 则将新的玩家记录到原环境上
 		if (this->m_script_env->getType() == EnvironmentType::TScriptEnvironment)
 		{
 			// 
-			((ScriptEnvironment*)this->m_script_env)->addRequireFile(filename, env);
+			((ScriptEnvironment*)this->m_script_env)->addRequireOnceFile(filename, env);
 		}
 		// 将新的脚本环境 应用到当前环境上 
 		newScriptEnv(env);
@@ -803,24 +875,14 @@ namespace langX {
 		this->m_doing_files.erase(this->m_doing_files.begin());
 		this->m_parsing_file = p;
 
-		int index = 0;
-		while (this->m_script_env_map.find(p) == this->m_script_env_map.end())
+		if (!m_doing_script_envs.empty())
 		{
-			//  脚本空间无法找到该变量 ，继续向下搜索
-			if (index >= this->m_doing_files.size())
-			{
-				return;
-			}
+			ScriptEnvironment *scrEnv = m_doing_script_envs.front();
+			m_doing_script_envs.erase(m_doing_script_envs.begin());
 
-			auto tmpIt = this->m_doing_files.begin();
-			advance(tmpIt, index);
-			p = (*tmpIt);
-
-			index++;
+			newScriptEnv(scrEnv);
 		}
-
-		//printf("change file to %s. change script env to file: %s \n", m_parsing_file , p );
-		newScriptEnv(this->m_script_env_map[p]);
+		
 	}
 
 	int langXState::loadModule(const char * path)

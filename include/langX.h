@@ -47,8 +47,12 @@ namespace langX {
 		//  是否对当前环境的指针进行 delete 操作 .  参数为false 的时候， 不进行delete 操作
 		void backEnv(bool);
 
+		// 获得 当前环境
 		Environment *getCurrentEnv() const;
+		// 换的 全局环境
 		Environment *getGlobalEnv() const;
+		// 获得脚本环境或者 命名空间环境  [类型视情况而定]
+		Environment *getScriptOrNSEnv() const;
 
 		// 获得最近的一个对象环境 (必定会返回一个 ObjectBridgeEnv!)
 		Environment *getNearestObjectEnv() const;
@@ -106,8 +110,10 @@ namespace langX {
 
 		// 包含一个文件  当前脚本上执行
 		int includeFile(const char *);
-		// require一个文件  当前脚本上执行
+		// require一个文件  
 		int requireFile(const char *);
+		//
+		int require_onceFile(const char *);
 
 		// 是否执行过这个脚本
 		bool isDidScript(const char  *);
@@ -144,7 +150,9 @@ namespace langX {
 		std::list<std::string> m_didScripts;
 		//  正在执行文件的栈
 		std::list<char*> m_doing_files;
-		//  k:  脚本文件绝对路径，  v: 脚本环境
+		//  正在执行的脚本环境的栈 
+		std::list<ScriptEnvironment*> m_doing_script_envs; 
+		//  k:  脚本文件绝对路径，  v: 脚本环境.  仅供 require_once 使用
 		std::map<std::string, ScriptEnvironment*> m_script_env_map;
 		// 加载完成的动态库
 		std::map<void*, X3rdModule*> m_load_libs;

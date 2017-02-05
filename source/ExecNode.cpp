@@ -1772,30 +1772,41 @@ namespace langX {
 			}
 			
 		}
-		else if (left->getType() == NUMBER && n2->value->getType() == NUMBER)
+		else if (left->getType() == NUMBER )
 		{
-			double a = ((Number*)n1->value)->getDoubleValue();
-			double b = ((Number*)n2->value)->getDoubleValue();
-
-			if (a == b)
+			if (n2->value->getType() == NUMBER)
 			{
-				n->value = m_exec_alloc.allocateNumber(1);
-			}
-			else {
+				double a = ((Number*)n1->value)->getDoubleValue();
+				double b = ((Number*)n2->value)->getDoubleValue();
+
+				if (a == b)
+				{
+					n->value = m_exec_alloc.allocateNumber(1);
+				}
+				else {
+					n->value = m_exec_alloc.allocateNumber(0);
+				}
+			}else{
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
+			
 		}
-		else if (left->getType() == STRING && n2->value->getType() == STRING)
+		else if (left->getType() == STRING )
 		{
-			// 字符串比较
-			const char * a = ((String*)n1->value)->getValue();
-			const char * b = ((String*)n2->value)->getValue();
-
-			if (strcmp(a, b) == 0)
+			if (n2->value->getType() == STRING)
 			{
-				n->value = m_exec_alloc.allocateNumber(1);
-			}
-			else {
+				// 字符串比较
+				const char * a = ((String*)n1->value)->getValue();
+				const char * b = ((String*)n2->value)->getValue();
+
+				if (strcmp(a, b) == 0)
+				{
+					n->value = m_exec_alloc.allocateNumber(1);
+				}
+				else {
+					n->value = m_exec_alloc.allocateNumber(0);
+				}
+			}else{
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 		}
@@ -1907,31 +1918,48 @@ namespace langX {
 			}
 
 		}else
-		if (left->getType() == NUMBER && n2->value->getType() == NUMBER)
+		if (left->getType() == NUMBER )
 		{
-			double a = ((Number*)n1->value)->getDoubleValue();
-			double b = ((Number*)n2->value)->getDoubleValue();
-
-			if (a != b)
+			if (n2->value->getType() == NUMBER)
 			{
-				n->value = m_exec_alloc.allocateNumber(1);
+				double a = ((Number*)n1->value)->getDoubleValue();
+				double b = ((Number*)n2->value)->getDoubleValue();
+
+				if (a != b)
+				{
+					n->value = m_exec_alloc.allocateNumber(1);
+				}
+				else {
+					n->value = m_exec_alloc.allocateNumber(0);
+				}
 			}
 			else {
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = m_exec_alloc.allocateNumber(1);
 			}
+			
 		}
-		else if (left->getType() == STRING && n2->value->getType() == STRING)
+		else if (left->getType() == STRING )
 		{
-			// 字符串比较
-			const char * a = ((String*)n1->value)->getValue();
-			const char * b = ((String*)n2->value)->getValue();
-
-			if (strcmp(a, b) != 0)
+			// 左侧类型为字符串
+			if (n2->value->getType() == STRING)
 			{
-				n->value = m_exec_alloc.allocateNumber(1);
+				// 如果右侧类型也为字符串
+
+				// 字符串比较
+				const char * a = ((String*)n1->value)->getValue();
+				const char * b = ((String*)n2->value)->getValue();
+
+				if (strcmp(a, b) != 0)
+				{
+					n->value = m_exec_alloc.allocateNumber(1);
+				}
+				else {
+					n->value = m_exec_alloc.allocateNumber(0);
+				}
 			}
 			else {
-				n->value = m_exec_alloc.allocateNumber(0);
+
+				n->value = m_exec_alloc.allocateNumber(1);
 			}
 		}
 		else if (left->getType() == OBJECT) {
@@ -3182,36 +3210,33 @@ namespace langX {
 
 		char *filename = strndup(tmp + 1, strlen(tmp) - 2);
 
-		if (!getState()->isDidScript(filename))
-		{
-			// 未执行过的文件
-			char tmpMsg[1024] = { 0 };
-			sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
-			getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
+		// 未执行过的文件
+		char tmpMsg[1024] = { 0 };
+		sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
+		getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
 
-			//  把路径转换成绝对路径
-			if (filename[0] != '/')
+		//  把路径转换成绝对路径
+		if (filename[0] != '/')
+		{
+			//  非绝对路径
+			char tmpBuf[1024];
+			if (realpath(getState()->getParsingFile(), tmpBuf))
 			{
-				//  非绝对路径
-				char tmpBuf[1024];
-				if (realpath(getState()->getParsingFile(), tmpBuf))
+				// ok 
+				std::string a(tmpBuf);
+				auto it = a.find_last_of('/');
+				if (it != std::string::npos)
 				{
-					// ok 
-					std::string a(tmpBuf);
-					auto it = a.find_last_of('/');
-					if (it != std::string::npos)
-					{
-						// 找到了最后一个 /
-						a = a.substr(0, it + 1);
-						a += filename;
-						free(filename);
-						filename = strdup(a.c_str());
-					}
+					// 找到了最后一个 /
+					a = a.substr(0, it + 1);
+					a += filename;
+					free(filename);
+					filename = strdup(a.c_str());
 				}
 			}
-
-			getState()->requireFile(filename);
 		}
+
+		getState()->require_onceFile(filename);
 
 		free(filename);
 
@@ -3593,6 +3618,11 @@ namespace langX {
 
 			//函数的产生环境可能在类内部
 			//func->setEmergeEnv(getState()->getCurrentEnv());
+			Environment *env = getState()->getScriptOrNSEnv();
+			if (env != NULL && env->getType() == EnvironmentType::TScriptEnvironment)
+			{
+				func->setScriptEnv( (ScriptEnvironment*)env );
+			}
 			getState()->getCurrentEnv()->putFunction(func->getName(), func);
 			return;
 		}

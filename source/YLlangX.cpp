@@ -583,6 +583,15 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 		abcEnv = NULL;
 	}
 
+	// 如果这个函数属于某个脚本， 先用该函数的脚本环境覆盖
+	ScriptEnvironment *fsenv =  function->getScriptEnv();
+	bool flagfsenv = false;
+	if (fsenv != nullptr)
+	{
+		flagfsenv = true;
+		getState()->newEnv2(fsenv);
+	}
+
 	getState()->newEnv(env);
 	ret = function->call();
 
@@ -592,6 +601,11 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 		return NULL;
 	}
 	getState()->backEnv();
+
+	if (flagfsenv)
+	{
+		getState()->backEnv();
+	}
 
 	return ret;
 }

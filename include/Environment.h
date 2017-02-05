@@ -198,7 +198,10 @@ namespace langX {
 		// 添加类到引用列表中
 		void addClassInfo(ClassInfo *);
 		// 添加一个脚本环境到当前的引用里面
-		void addRequireFile(const char *, ScriptEnvironment *);
+		// 0添加成功， 其他情况返回-1
+		int addRequireFile(const char *, ScriptEnvironment *);
+		// 添加一个脚本环境到当前的 once 引用里面
+		void addRequireOnceFile(const char *, ScriptEnvironment *);
 
 		//  脚本的文件名
 		const char * getName() const;
@@ -212,6 +215,8 @@ namespace langX {
 
 		// 包含的其他脚本的map.  key: 文件名, value: 环境
 		std::map<std::string, ScriptEnvironment*> m_require_files_map;
+		// require_once 
+		std::map<std::string, ScriptEnvironment*> m_require_once_file_map;
 
 		std::map<std::string, Function*> m_functions_map;
 		std::map<std::string, ClassInfo*> m_classes_map;

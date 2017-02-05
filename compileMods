@@ -1,0 +1,5 @@
+#!/bin/bash
+cd modProjects/langX-Core && make
+cd ../langX-libevent && make
+cd ../langX-Mysql && make
+cd ../langX-Python && make
