@@ -43,6 +43,10 @@ namespace langX {
 
 	int regDefaultNetPacket(langXState *state, XNameSpace *space);
 
+	int regHttpServer(langXState *state, XNameSpace* space);
+
+	int regHttpServerRoute(langXState *state, XNameSpace* space);
+
 	// 初始化server 需要的一些工具
 	void initServerSupportTools();
 

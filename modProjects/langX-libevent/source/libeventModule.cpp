@@ -26,6 +26,8 @@ namespace langX {
 		regTcpServer(state, space);
 		regTcpClient(state, space);
 		regDefaultNetPacket(state, space);
+		regHttpServer(state, space);
+		regHttpServerRoute(state, space);
 
 		return 0;
 	}

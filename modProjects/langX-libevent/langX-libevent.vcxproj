@@ -42,6 +42,8 @@
     <ClCompile Include="source\DefaultBytesEncoder.cpp" />
     <ClCompile Include="source\DefaultNetPacket.cpp" />
     <ClCompile Include="source\DefaultNetPacketX.cpp" />
+    <ClCompile Include="source\HttpServer.cpp" />
+    <ClCompile Include="source\HttpServerRoute.cpp" />
     <ClCompile Include="source\libeventModule.cpp" />
     <ClCompile Include="source\TcpClient.cpp" />
     <ClCompile Include="source\TcpServer.cpp" />

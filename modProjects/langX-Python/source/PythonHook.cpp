@@ -141,6 +141,21 @@ namespace langX {
 		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
+	Object * langX_PythonHook_printError(X3rdFunction *func, const X3rdArgs &args) {
+
+		PyErr_Print();
+
+		return nullptr;
+	}
+
+
+
+	Object * langX_PythonHook_clearError(X3rdFunction *func, const X3rdArgs &args) {
+		
+		PyErr_Clear();
+
+		return nullptr;
+	}
 
 
 	int regPythonHook(langXState *state, XNameSpace* space) {
@@ -153,6 +168,8 @@ namespace langX {
 		info->addFunction("newDict", create3rdFunc("newDict", langX_PythonHook_newDict));
 		info->addFunction("newTuple", create3rdFunc("newTuple", langX_PythonHook_newTuple));
 		info->addFunction("newList", create3rdFunc("newList", langX_PythonHook_newList));
+		info->addFunction("printError", create3rdFunc("printError", langX_PythonHook_printError));
+		info->addFunction("clearError", create3rdFunc("clearError", langX_PythonHook_clearError));
 		space->putClass(info);
 
 		return 0;
