@@ -1,4 +1,3 @@
-#include <vector>
 
 #include "../include/RegMysqlModule.h"
 #include "../../../include/ClassInfo.h"

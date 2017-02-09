@@ -292,7 +292,7 @@ namespace langX {
 					((Number*)dataTable->getMember("rowNum"))->setValue(rowNum);
 					((Number*)dataTable->getMember("isEmpty"))->setValue(rowNum <= 0 ? 1 : 0 );
 					std::vector<langXObjectRef*> *tableVec = (std::vector<langXObjectRef*> *) dataTable->get3rdObj();
-
+					
 					while ( row = mysql_fetch_row(res_ptr))
 					{
 						langXObject *dataRow = space->getClass("DataRow")->newObject();
