@@ -291,21 +291,32 @@ namespace langX {
 					dataTable->callConstructor(nullptr, "in langX_MysqlClient_ExecQuery");
 					((Number*)dataTable->getMember("rowNum"))->setValue(rowNum);
 					((Number*)dataTable->getMember("isEmpty"))->setValue(rowNum <= 0 ? 1 : 0 );
-					std::vector<langXObjectRef*> *tableVec = (std::vector<langXObjectRef*> *) dataTable->get3rdObj();
-					
+					DataTable * table = (DataTable*)dataTable->get3rdObj();
+					std::vector<langXObject*> tableVec = table->rows;
+					std::vector<std::string> cols = table->columns;
+
+					MYSQL_FIELD *field = NULL;
+					while ( field = mysql_fetch_field(res_ptr) )
+					{
+						cols.push_back(std::string(field->name));
+					}
+
 					while ( row = mysql_fetch_row(res_ptr))
 					{
 						langXObject *dataRow = space->getClass("DataRow")->newObject();
 						dataRow->callConstructor(nullptr, "in langX_MysqlClient_ExecQuery");
-						tableVec->push_back(dataRow->addRef());
-						std::vector<Object*> *rowVec = (std::vector<Object*> *) dataRow->get3rdObj();
+						tableVec.push_back(dataRow);
+						DataRow *xRowObj = (DataRow *)dataRow->get3rdObj();
+						std::vector<Object*> rowVec = xRowObj->list;
 						((Number*)dataRow->getMember("colNum"))->setValue(colNum);
 
 ;						int j = (int)colNum;
 						for (int i = 0; i < j; i++)
 						{
 							String *str = getState()->getAllocator().allocateString(row[i]);
-							rowVec->push_back(str);
+							rowVec.push_back(str);
+
+							xRowObj->kvpair[cols.at(i)] = str;
 						}
 					}
 

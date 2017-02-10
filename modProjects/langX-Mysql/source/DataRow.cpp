@@ -1,4 +1,5 @@
 #include <vector>
+#include <string.h>
 
 #include "../include/RegMysqlModule.h"
 #include "../../../include/ClassInfo.h"
@@ -8,6 +9,7 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+#include "../../../include/String.h"
 
 namespace langX {
 
@@ -19,8 +21,8 @@ namespace langX {
 			return nullptr;
 		}
 
-		std::vector<Object*> *list = new std::vector<Object*>();
-		args.object->set3rdObj(list);
+		DataRow *row = (DataRow *)calloc(1, sizeof(DataRow));
+		args.object->set3rdObj(row);
 
 		return nullptr;
 	}
@@ -32,19 +34,21 @@ namespace langX {
 			return nullptr;
 		}
 
-		std::vector<Object*> *list = (std::vector<Object*> *) args.object->get3rdObj();
+		DataRow *row = (DataRow *)args.object->get3rdObj();
+		std::vector<Object*> list = row->list;
 
-		if (!list->empty())
+		if (!list.empty())
 		{
-			for (auto i = list->begin(); i != list->end(); i++)
+			for (auto i = list.begin(); i != list.end(); i++)
 			{
 				Object * a = (*i);
 				getState()->getAllocator().free(a);
 			}
 		}
 
-		list->clear();
-		delete list;
+		row->kvpair.clear();
+		list.clear();
+		delete row;
 		args.object->set3rdObj(nullptr);
 
 		return nullptr;
@@ -58,15 +62,30 @@ namespace langX {
 			return nullptr;
 		}
 
-		std::vector<Object*> *list = (std::vector<Object*> *) args.object->get3rdObj();
+		DataRow *row = (DataRow *)args.object->get3rdObj();
+		std::vector<Object*> list = row->list;
 
 		Object *a = args.args[0];
-		if (a && a->getType() == NUMBER)
+		if (a )
 		{
-			int index = ((Number*)a)->getIntValue();
-			if (index >= 0 && index < list->size())
+			if (a->getType() == NUMBER)
 			{
-				return list->at(index)->clone();
+				int index = ((Number*)a)->getIntValue();
+				if (index >= 0 && index < list.size())
+				{
+					return list.at(index)->clone();
+				}
+			}
+			else if (a->getType() == STRING)
+			{
+				const char * key = ((String*)a)->getValue();
+				auto itr = row->kvpair.find(key);
+				if (itr == row->kvpair.end())
+				{
+					return getState()->getAllocator().allocate(NULLOBJECT);
+				}
+				
+				return itr->second->clone();
 			}
 			
 		}
