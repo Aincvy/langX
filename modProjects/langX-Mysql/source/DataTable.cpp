@@ -1,3 +1,4 @@
+#include <string.h>
 
 #include "../include/RegMysqlModule.h"
 #include "../../../include/ClassInfo.h"
@@ -17,8 +18,9 @@ namespace langX {
 			return nullptr;
 		}
 		
-		std::vector<langXObjectRef*> *list = new std::vector<langXObjectRef*>();
-		args.object->set3rdObj(list);
+
+		DataTable * table = (DataTable*)calloc(1, sizeof(DataTable));
+		args.object->set3rdObj(table);
 
 		return nullptr;
 	}
@@ -30,19 +32,21 @@ namespace langX {
 			return nullptr;
 		}
 
-		std::vector<langXObjectRef*> *list = (std::vector<langXObjectRef*> *) args.object->get3rdObj();
+		DataTable * table = (DataTable*)args.object->get3rdObj();
 
-		if (!list->empty())
+		std::vector<langXObject*> list = table->rows;
+
+		if (!list.empty())
 		{
-			for (auto i = list->begin(); i != list->end(); i++)
+			for (auto i = list.begin(); i != list.end(); i++)
 			{
-				langXObjectRef * a = (*i);
+				langXObject * a = (*i);
 				delete a;
 			}
 		}
 
-		list->clear();
-		delete list;
+		list.clear();
+		delete table;
 		args.object->set3rdObj(nullptr);
 
 		return nullptr;
@@ -56,15 +60,16 @@ namespace langX {
 			return nullptr;
 		}
 
-		std::vector<langXObjectRef*> *list = (std::vector<langXObjectRef*> *) args.object->get3rdObj();
+		DataTable * table = (DataTable*)args.object->get3rdObj();
+		std::vector<langXObject*> list = table->rows;
 		
 		Object *a = args.args[0];
 		if (a && a->getType() == NUMBER)
 		{
 			int index = ((Number*)a)->getIntValue();
-			if (index >= 0 && index < list->size())
+			if (index >= 0 && index < list.size())
 			{
-				return list->at(index)->clone();
+				return list.at(index)->addRef();
 			}
 		}
 
