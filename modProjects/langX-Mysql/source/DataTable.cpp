@@ -19,7 +19,7 @@ namespace langX {
 		}
 		
 
-		DataTable * table = (DataTable*)calloc(1, sizeof(DataTable));
+		DataTable * table = new DataTable();
 		args.object->set3rdObj(table);
 
 		return nullptr;

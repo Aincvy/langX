@@ -32,7 +32,7 @@ namespace langX {
 	struct DataRow
 	{
 		// k: col name, v: value 
-		std::map<std::string, Object*> kvpair;
+		std::map<std::string, Object*> kvpair = { };
 		// list value 
 		std::vector<Object*> list; 
 	};

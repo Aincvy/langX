@@ -1,5 +1,4 @@
 #include <vector>
-#include <string.h>
 
 #include "../include/RegMysqlModule.h"
 #include "../../../include/ClassInfo.h"
@@ -21,9 +20,8 @@ namespace langX {
 			return nullptr;
 		}
 
-		DataRow *row = (DataRow *)calloc(1, sizeof(DataRow));
+		DataRow *row = new DataRow();
 		args.object->set3rdObj(row);
-
 		return nullptr;
 	}
 
