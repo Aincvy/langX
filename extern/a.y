@@ -125,6 +125,10 @@ adorn_var_declar_stmt
 	| XLOCAL var_declar_stmt { $$ = opr(XLOCAL , 1,$2); }
 	;
 
+//  带 local 关键字修饰的 语句
+local_declar_stmt
+	:
+	;
 
 // 命名空间的声明语句
 namespace_declar_stmt
@@ -200,7 +204,8 @@ static_member_stmt
 
 // 函数声明语句
 func_declar_stmt
-	: IDENTIFIER FUNC_OP param_list '{' expr_list '}' { $$ = func($1,$3,$5);}
+	: '~' IDENTIFIER FUNC_OP param_list '{' expr_list '}' { $$ = dtrt($2,$4,$6);}
+	| IDENTIFIER FUNC_OP param_list '{' expr_list '}' { $$ = func($1,$3,$5);}
 	| OPERATOR_X__ FUNC_OP param_list '{' expr_list '}' { $$ = func($1,$3,$5);}
 	;
 
@@ -332,6 +337,7 @@ args_expr_collection
 	| array_ele_stmt  { $$ = $1;}
 	| class_member_stmt  { $$ = $1; }
 	| static_member_stmt { $$ = $1; }
+	| new_expr        { $$ = $1;}
 	;
 
 block
@@ -476,6 +482,8 @@ assign_stmt_value_eq
 	| id_expr       { $$ = $1; }
 	| self_inc_dec_stmt { $$ = $1; }
 	| class_member_stmt { $$ = $1; }
+	| static_member_stmt { $$ = $1; }
+	| this_stmt          { $$ = $1; }
 	;
 
 // 赋值

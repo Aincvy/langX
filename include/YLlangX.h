@@ -44,6 +44,8 @@ extern "C" {
 	XNode * claxx(char *name, char *parent, XNode * node , bool);
 	// 创建一个函数节点
 	XNode * func(char *, XParamsList *,XNode *);
+	// 创建一个析构函数节点
+	XNode * dtrt(char *, XParamsList *, XNode *);
 	// 创建一个数组节点， 在执行这个节点的时候会创建一个数组
 	XNode * arrayNode(char *,int length, XNode *);
 	// 创建一个 空引用节点
