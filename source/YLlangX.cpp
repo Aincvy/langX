@@ -99,6 +99,7 @@ void deal_state(NodeState * state) {
 	state->isSuffix = false;
 	state->classAuto = false;
 	state->isContinue = false;
+	state->isLocal = false;
 }
 
 void deal_switch_info(SwitchInfo *si) {
