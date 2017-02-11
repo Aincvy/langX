@@ -3405,7 +3405,7 @@ namespace langX {
 			{
 				continue;
 			}
-			if (t->type != NODE_VARIABLE)
+			if (t->type != NODE_VARIABLE && t->type != NodeType::NODE_CLASS)
 			{
 				if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR)
 				{
@@ -3420,16 +3420,25 @@ namespace langX {
 				continue;
 			}
 
-			char *name = t->var_obj->name;
-			Object *tmp = getState()->getCurrentEnv()->getObjectSelf(name);
-			if (tmp == NULL)
+			if (t->type == NodeType::NODE_VARIABLE)
 			{
-				setValueToEnv(name, obj);
+				char *name = t->var_obj->name;
+				Object *tmp = getState()->getCurrentEnv()->getObjectSelf(name);
+				if (tmp == NULL)
+				{
+					setValueToEnv(name, obj);
+				}
+				else {
+					tmp->setLocal(!tmp->isLocal());
+				}
 			}
-			else {
-				tmp->setLocal(!tmp->isLocal());
+			else if (t->type == NodeType::NODE_CLASS)
+			{
+				// 类声明
+				t->state.isLocal = true;
+				__execNode(t);
 			}
-
+			
 		}
 
 		m_exec_alloc.free(obj);
@@ -3563,6 +3572,8 @@ namespace langX {
 				return;
 			}
 			ClassInfo *cinfo = (ClassInfo*)node->ptr_u;
+
+			cinfo->setLocal(node->state.isLocal);
 
 			if (node->state.classAuto == false)
 			{

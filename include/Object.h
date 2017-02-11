@@ -159,6 +159,8 @@ namespace langX {
 
 		// 是否自动扩充前类
 		bool classAuto;
+		// 是否为 local 属性
+		bool isLocal;
 	};
 
 	struct Node;

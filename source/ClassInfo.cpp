@@ -206,11 +206,28 @@ namespace langX {
 			this->m_functions[str] = obj;
 		}
 
+		if (! this->m_local )
+		{
+			if (c1->isLocal() )
+			{
+				this->m_local = true;
+			}
+		}
 	}
 
 	ClassBridgeEnv * ClassInfo::getClassEnv()
 	{
 		return this->m_classEnv;
+	}
+
+	bool ClassInfo::isLocal() const
+	{
+		return this->m_local;
+	}
+
+	void ClassInfo::setLocal(bool f)
+	{
+		this->m_local = f;
 	}
 
 

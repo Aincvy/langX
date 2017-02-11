@@ -56,6 +56,11 @@ namespace langX {
 		// 获得这个类的桥接环境
 		ClassBridgeEnv *getClassEnv();
 
+		// 这个类是否为 local 类型
+		bool isLocal() const;
+		// 设置 local 属性
+		void setLocal(bool);
+
 	private:
 		//  当前类的 字段map ...
 		//  key:  属性名,  value:  对象指针
@@ -67,6 +72,8 @@ namespace langX {
 
 		//  当前类的桥接环境
 		ClassBridgeEnv *m_classEnv;
+		// local 属性
+		bool m_local;
 
 		// 父类
 		ClassInfo *m_parent = nullptr;
