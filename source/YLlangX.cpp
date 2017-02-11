@@ -384,6 +384,26 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	return nodeF;
 }
 
+XNode * dtrt(char *name, XParamsList *params, XNode *node)
+{
+	if (node != NULL)
+	{
+		node->freeOnExeced = false;
+	}
+
+	std::string str("~");
+	str += name;
+	Function *func = new Function(str.c_str(), node);
+	func->setParamsList(params);
+	//  在执行他的时候再把它放入环境中
+	//getState()->getCurrentEnv()->putFunction(name, func);
+	free(name);
+	XNode * nodeF = newNode();
+	nodeF->type = NODE_FUNCTION;
+	nodeF->ptr_u = func;
+	return nodeF;
+}
+
 XNode *lambda(XParamsList *params, XNode *node) {
 
 	Function *func = new Function("", node);
@@ -541,8 +561,10 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 	if (args != NULL)
 	{
 		XParamsList *params = function->getParamsList();
+		NullObject nullobj;
 		for (int i = 0; i < args->index; i++)
 		{
+			// 如果给出的参数个数大于需要的参数个数， 则无视剩余给出的参数
 			if (i >= params->index)
 			{
 				break;
@@ -566,12 +588,15 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 					env->putObject(params->args[i], args->args[i]->value);
 				}
 				else {
-					NullObject nullobj;
 					env->putObject(params->args[i], &nullobj);
 				}
 
 				
 				//printf("put param %s object: %d.on env: %p. number value: %f. \n", params->args[i] , t ,env, t == NUMBER ? ((Number*)args->args[i]->value)->getDoubleValue() : -1 );
+			}
+			else {
+				// 没给出的参数 给个NULL 
+				env->putObject(params->args[i], &nullobj);
 			}
 		}
 

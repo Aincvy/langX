@@ -196,6 +196,8 @@ namespace langX {
 		printf("free %d object(s)\n" , count);
 	}
 
+
+
 	void Allocator::checkGC()
 	{
 

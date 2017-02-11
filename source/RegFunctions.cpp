@@ -167,6 +167,25 @@ namespace langX {
 		return NULL;
 	}
 
+	Object * langX_exit(X3rdFunction *func, const X3rdArgs & args) {
+
+		int status = 0;
+
+		if (args.index > 0)
+		{
+			Object *a = args.args[0];
+			if (a && a->getType() == NUMBER)
+			{
+				status = ((Number*)a)->getIntValue();
+			}
+		}
+
+		exit(status);
+
+		return NULL;
+	}
+
+
 	void regFunctions(langXState *state)
 	{
 		state->reg3rd("print", langX_print);
@@ -176,6 +195,7 @@ namespace langX {
 		state->reg3rd("systemRun", langX_system_run);
 		state->reg3rd("println",langX_println);
 		state->reg3rd("doFile", langX_do_file);
+		state->reg3rd("exit", langX_exit);
 	}
 
 }
