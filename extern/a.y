@@ -385,7 +385,6 @@ arithmetic_stmt_factor
 	: assign_stmt_value_eq    { $$ = $1 ; }
 	| string_expr             { $$ = $1 ; }
 	| arithmetic_stmt         { $$ = $1 ; }
-	| array_ele_stmt          { $$ = $1; }
 	| '(' arithmetic_stmt ')' { $$ = $2 ; }
 	;
 
@@ -485,6 +484,7 @@ assign_stmt_value_eq
 	| class_member_stmt { $$ = $1; }
 	| static_member_stmt { $$ = $1; }
 	| this_stmt          { $$ = $1; }
+	| array_ele_stmt     { $$ = $1; }
 	;
 
 // 赋值
