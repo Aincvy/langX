@@ -1,0 +1,9 @@
+ref langX.core.util;
+
+a = new Map();
+
+a.put("key1","value1");
+
+abc = a.get("key1");
+
+println("abc="+abc);

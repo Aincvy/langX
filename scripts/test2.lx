@@ -1,0 +1,19 @@
+
+Class {
+	
+	searchFunc = null ;
+	
+}
+
+
+searchFuncImpl => (name){
+
+	println("searchFuncImpl=" + name);
+
+}
+
+
+a = new Class();
+a.searchFunc = searchFuncImpl ;
+
+a.searchFunc("test");
