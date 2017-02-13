@@ -1,0 +1,7 @@
+ref langX.core.util;
+
+r = new Random();
+println("next: " + r.nextInt() );
+println("next: " + r.nextDouble() );
+println("next: " + r.nextInt(100) );
+println("next: " + r.nextInt(999) );
