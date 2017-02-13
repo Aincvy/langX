@@ -10,4 +10,7 @@ namespace langX {
 	// 注册 Math 类
 	int regMath(langXState *state, XNameSpace* space);
 
+
+	int regDateTime(langXState *state, XNameSpace* space);
+
 }
