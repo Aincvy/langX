@@ -1,4 +1,6 @@
-﻿#include "../include/RegDefaultClasses.h"
+﻿#include <time.h>
+
+#include "../include/RegDefaultClasses.h"
 
 #include "../../../include/ClassInfo.h"
 #include "../../../include/YLlangX.h"
@@ -23,12 +25,37 @@ namespace langX {
 	};
 
 
+	void updateTime(DateTimeCoreX *dateTime) {
+
+		time_t now = time(NULL);
+		struct tm * time = localtime(&now);
+		
+		dateTime->year = time->tm_year + 1900;
+		dateTime->month = time->tm_mon + 1;  // tm_mon 为[0-11]
+		dateTime->date = time->tm_mday;
+		dateTime->hour = time->tm_hour;
+		dateTime->minute = time->tm_min;
+		dateTime->second = time->tm_sec;
+		dateTime->millisecond = 0;
+	}
+
 	Object * langX_DateTime_update(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
 			printf("langX_DateTime_update error! NO OBJ!\n");
 			return nullptr;
 		}
+
+		DateTimeCoreX* time = (DateTimeCoreX*)args.object->get3rdObj();
+		updateTime(time);
+
+		args.object->setMember("millisecond", getState()->getAllocator().allocateNumber(time->millisecond));
+		args.object->setMember("second", getState()->getAllocator().allocateNumber(time->second));
+		args.object->setMember("minute", getState()->getAllocator().allocateNumber(time->minute));
+		args.object->setMember("hour", getState()->getAllocator().allocateNumber(time->hour));
+		args.object->setMember("date", getState()->getAllocator().allocateNumber(time->date));
+		args.object->setMember("month", getState()->getAllocator().allocateNumber(time->month));
+		args.object->setMember("year", getState()->getAllocator().allocateNumber(time->year));
 
 		return nullptr;
 	}
@@ -42,6 +69,10 @@ namespace langX {
 			return nullptr;
 		}
 
+		DateTimeCoreX* time = (DateTimeCoreX*)args.object->get3rdObj();
+		delete time;
+		args.object->set3rdObj(nullptr);
+
 		return nullptr;
 	}
 
@@ -53,6 +84,10 @@ namespace langX {
 			printf("langX_DateTime_DateTime error! NO OBJ!\n");
 			return nullptr;
 		}
+
+		DateTimeCoreX* time = new DateTimeCoreX();
+		args.object->set3rdObj(time);
+		langX_DateTime_update(func, args);
 
 		return nullptr;
 	}
