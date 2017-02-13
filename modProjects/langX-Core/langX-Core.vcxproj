@@ -30,6 +30,7 @@
     <ClCompile Include="makefile" />
     <ClCompile Include="source\ByteArray.cpp" />
     <ClCompile Include="source\CoreModule.cpp" />
+    <ClCompile Include="source\DateTime.cpp" />
     <ClCompile Include="source\Default.cpp" />
     <ClCompile Include="source\File.cpp" />
     <ClCompile Include="source\FileStream.cpp" />
