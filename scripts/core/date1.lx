@@ -1,0 +1,5 @@
+ref langX.core;
+
+date = new DateTime();
+println("year=" + date.year + ",month="+ date.month + ",date=" + date.date);
+println("hour=" + date.hour + ",minute=" + date.minute + ",second=" + date.second );
