@@ -2169,7 +2169,9 @@ namespace langX {
 				return;
 			}
 			__execNode(run);
-			//n->state.isContinue = run->state.isContinue;
+			
+			freeSubNodes(run);
+
 			if (run->state.isBreak)
 			{
 				break;
@@ -2188,6 +2190,10 @@ namespace langX {
 
 				break;
 			}
+
+			// 重置 run 节点以及其子节点的状态
+			recursiveFreeNodeValue(run);
+			setStateIsContinueToFalse(run);
 
 			// 如果当前环境为一个死亡环境， 则直接返回
 			// TODO 清理内存
