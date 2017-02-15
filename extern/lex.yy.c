@@ -884,7 +884,7 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 40 "a.l"
-{ /* consume //-comment */ }
+{ /* consume //-comment */  now_line++; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
@@ -2311,6 +2311,9 @@ void comment(void)
   
 	while ((c = yyinput()) != 0)      /* (EOF maps to 0) */
 	{
+		if (c == '\n') {
+			now_line++ ;
+		}
 		if (c == '/' && prev == '*')
 			return;
 		prev = c;

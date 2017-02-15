@@ -37,7 +37,7 @@ int getParseLineNo();
 
 %%
 "/*"			{ comment(); }
-"//"[^\n]*      { /* consume //-comment */ }
+"//"[^\n]*      { /* consume //-comment */  now_line++; }
 
 "auto" {count(); return AUTO;}
 "if" {count(); return IF;}
@@ -182,6 +182,9 @@ void comment(void)
   
 	while ((c = yyinput()) != 0)      /* (EOF maps to 0) */
 	{
+		if (c == '\n') {
+			now_line++ ;
+		}
 		if (c == '/' && prev == '*')
 			return;
 		prev = c;
