@@ -164,7 +164,7 @@ namespace langX {
 	}
 
 	Object * langX_MysqlClient_LastAffectedRows(X3rdFunction *func, const X3rdArgs &args) {
-		// ÉèÖÃ×Ö·û¼¯
+		// 
 		if (args.object == nullptr)
 		{
 			printf("langX_MysqlClient_LastAffectedRows error! NO OBJ!\n");

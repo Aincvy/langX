@@ -1,13 +1,15 @@
 ref langX.mysql;
 
 mysql = new MysqlClient();
-mysql.connect("localhost","root","NWQ5ODI5Yj","mydb");
+mysql.connect("localhost","root","l1SyqmeJglF2","mydb");
 
 a = mysql.isConnected;
 if (a){
   print("连接数据库成功!\n");
+  abc = mysql.characterSet("utf8");
+  print("设置字符集结果： " + abc);
   
-  a = mysql.execUpdate("insert into test values('abctest2',10062)");
+  a = mysql.execUpdate("insert into test values('你好',10062)");
   if (a){
       print("插入数据成功!\n");
   }else{
