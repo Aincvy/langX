@@ -142,6 +142,11 @@ namespace langX {
 		ClassInfo *fileNotFoundException = new ClassInfo("FileNotFoundException");
 		fileNotFoundException->setParent(exception);
 		l->regClassToGlobal(fileNotFoundException);
+
+		// InnerException      内部异常
+		ClassInfo * innerException = new ClassInfo("InnerException");
+		innerException->setParent(exception);
+		l->regClassToGlobal(innerException);
 	}
 
 	langXObject * newException(const char * message)
@@ -219,6 +224,11 @@ namespace langX {
 	langXObject * newFileNotFoundException(const char * message)
 	{
 		return  newException("FileNotFoundException", message);
+	}
+
+	langXObject * newInnerException(const char * message)
+	{
+		return  newException("InnerException", message);
 	}
 
 }
