@@ -31,4 +31,5 @@ namespace langX {
 	langXObject *newIndexOutOfBoundsException(const char *message);
 	langXObject *newRedeclarationException(const char *message);
 	langXObject *newFileNotFoundException(const char *message);
+	langXObject *newInnerException(const char *message);
 }

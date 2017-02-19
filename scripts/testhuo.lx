@@ -1,0 +1,12 @@
+testFunc => (x){
+	if ( x == 1 || x == 2 || x == 3 ) {
+		println("ok..");
+		return 1 ;
+	}
+	
+	println("not ok... ");
+	return -1 ;
+}
+
+i = testFunc( 1 );
+println("i=" + i );

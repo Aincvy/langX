@@ -3711,8 +3711,22 @@ namespace langX {
 			}
 
 			XArrayRef *ref = (XArrayRef*)obj;
+			if (index < 0 || index >= ref->getLength())
+			{
+				char tmp[1024] = { 0 };
+				sprintf(tmp,"index %d,array length %d" ,index,ref->getLength());
+				getState()->throwException(newIndexOutOfBoundsException(tmp)->addRef());
+				return;
+			}
 
-			node->value = ref->at(index)->clone();
+			Object * ret = ref->at(index);
+			if (ret == nullptr)
+			{
+				// 内部异常
+				getState()->throwException(newInnerException(" array element is null... ")->addRef());
+				return;
+			}
+			node->value = ret->clone();
 			return;
 		}
 		else if (node->type == NODE_CHANGE_NAMESPACE)
@@ -3846,6 +3860,7 @@ namespace langX {
 			break;
 		case OR_OP:
 			__execOPOR(node);
+			break;
 		case IF:
 			__execIF(node);
 			break;
