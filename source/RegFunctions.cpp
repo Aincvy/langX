@@ -151,6 +151,15 @@ namespace langX {
 		return new String(t);
 	}
 
+	// 读取一行
+	Object * langX_read_line(X3rdFunction *func, const X3rdArgs & args) {
+
+		std::string str;
+		std::getline(std::cin, str);
+
+		return new String(str.c_str());
+	}
+
 	// 读取一个数字
 	Object * langX_scan_number(X3rdFunction *func, const X3rdArgs & args) {
 
@@ -196,6 +205,7 @@ namespace langX {
 		state->reg3rd("println",langX_println);
 		state->reg3rd("doFile", langX_do_file);
 		state->reg3rd("exit", langX_exit);
+		state->reg3rd("readLine", langX_read_line);
 	}
 
 }
