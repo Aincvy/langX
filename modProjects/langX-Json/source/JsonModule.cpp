@@ -1,4 +1,7 @@
+#include <stdio.h>
+
 #include "../include/JsonModule.h"
+#include "../include/RegJsonModule.h"
 #include "../../../include/XNameSpace.h"
 
 namespace langX {
@@ -13,7 +16,12 @@ namespace langX {
 
 	int JsonModule::init(langXState *state)
 	{
+		printf("init langX-Json¿â\n");
 
+		XNameSpace *space = state->getNameSpaceOrCreate("langX.json");
+
+		regJsonArray(state, space);
+		regJsonObject(state, space);
 
 		return 0;
 	}
