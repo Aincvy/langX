@@ -7,14 +7,27 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+#include "../../../include/String.h"
 
-#ifdef WIN32
-#include "../../../lib/cJSON-1.3.0/cJSON.h"
-#else
-#include <cjson/cJSON.h>
-#endif
+static langX::ClassInfo *jsonObjectClass;
 
 namespace langX {
+
+	langXObject * langX::createJsonObject(cJSON *root)
+	{
+		langXObject *obj = jsonObjectClass->newObject();
+		MyJsonData *data = new MyJsonData();
+		if (root)
+		{
+			data->pJsonRoot = root;
+		}
+		else {
+			data->pJsonRoot = cJSON_CreateObject();
+		}
+
+		obj->set3rdObj(data);
+		return obj;
+	}
 
 
 	Object * langX_JsonObject_getJsonArray(X3rdFunction *func, const X3rdArgs &args) {
@@ -23,6 +36,8 @@ namespace langX {
 			printf("langX_JsonObject_getJsonArray error! NO OBJ!\n");
 			return nullptr;
 		}
+
+
 
 		return nullptr;
 	}
@@ -36,7 +51,32 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+
+		Object * a = args.args[0];
+		Object * b = args.args[1];
+		if (a && b)
+		{
+			// a 为有效值
+			if (a->getType() == ObjectType::STRING)
+			{
+				String *keyStr = (String*)a;
+				if (b->getType() == ObjectType::STRING)
+				{
+					String *str = (String*)b;
+					cJSON_AddStringToObject(data->pJsonRoot, keyStr->getValue(), str->getValue());
+					return getState()->getAllocator().allocateNumber(1);
+				}
+				else if (b->getType() == ObjectType::NUMBER)
+				{
+					Number * num = (Number*)b;
+					cJSON_AddNumberToObject(data->pJsonRoot, keyStr->getValue(), num->getDoubleValue());
+					return getState()->getAllocator().allocateNumber(1);
+				}
+			}
+		}
+
+		return getState()->getAllocator().allocateNumber(0);
 	}
 
 
@@ -48,7 +88,25 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+
+		Object * a = args.args[0];
+		if (a)
+		{
+			// a 为有效值
+			if (a->getType() == ObjectType::STRING)
+			{
+				String *keyStr = (String*)a;
+				cJSON *cjson = cJSON_GetObjectItem(data->pJsonRoot, keyStr->getValue());
+				if (cjson == nullptr)
+				{
+					return getState()->getAllocator().allocate(NULLOBJECT);
+				}
+				return getState()->getAllocator().allocateString(cjson->valuestring);
+			}
+		}
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
@@ -60,7 +118,25 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+
+		Object * a = args.args[0];
+		if (a)
+		{
+			// a 为有效值
+			if (a->getType() == ObjectType::STRING)
+			{
+				String *keyStr = (String*)a;
+				cJSON *cjson = cJSON_GetObjectItem(data->pJsonRoot, keyStr->getValue());
+				if (cjson == nullptr)
+				{
+					return getState()->getAllocator().allocate(NULLOBJECT);
+				}
+				return getState()->getAllocator().allocateNumber(cjson->valuedouble);
+			}
+		}
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
@@ -72,7 +148,27 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+
+		Object * a = args.args[0];
+		if (a)
+		{
+			// a 为有效值
+			if (a->getType() == ObjectType::STRING)
+			{
+				String *keyStr = (String*)a;
+				cJSON *cjson = cJSON_GetObjectItem(data->pJsonRoot, keyStr->getValue());
+				if (cjson == nullptr)
+				{
+					return getState()->getAllocator().allocate(NULLOBJECT);
+				}
+
+				langXObject *obj = createJsonObject(cjson);
+				return obj->addRef();
+			}
+		}
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
@@ -83,6 +179,13 @@ namespace langX {
 			printf("langX_JsonObject_JsonObject_Dtor error! NO OBJ!\n");
 			return nullptr;
 		}
+
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+
+		cJSON_Delete(data->pJsonRoot);
+		data->pJsonRoot = nullptr;
+		delete data;
+		args.object->set3rdObj(nullptr);
 
 		return nullptr;
 	}
@@ -95,6 +198,11 @@ namespace langX {
 			printf("langX_JsonObject_JsonObject error! NO OBJ!\n");
 			return nullptr;
 		}
+
+		MyJsonData *data = new MyJsonData();
+		data->pJsonRoot = cJSON_CreateObject();
+
+		args.object->set3rdObj(data);
 
 		return nullptr;
 	}
@@ -113,6 +221,8 @@ namespace langX {
 		info->addFunction("JsonObject", create3rdFunc("JsonObject", langX_JsonObject_JsonObject));
 
 		space->putClass(info);
+
+		jsonObjectClass = info;
 
 		return 0;
 	}
