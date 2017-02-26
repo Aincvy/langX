@@ -73,4 +73,10 @@ namespace langX {
 		langX::langXObject *clientObject;
 	};
 
+	// http 的请求信息
+	struct HttpRequest
+	{
+
+	};
+
 }

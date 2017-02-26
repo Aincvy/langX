@@ -7,16 +7,30 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+#include "../../../include/String.h"
+#include "../../../include/XArray.h"
+#include "../../../include/NullObject.h"
 
-
-#ifdef WIN32
-#include "../../../lib/cJSON-1.3.0/cJSON.h"
-#else
-#include <cjson/cJSON.h>
-#endif
+static langX::ClassInfo *jsonArrayClass;
 
 namespace langX {
 
+	langXObject * langX::createJsonArray(cJSON *root)
+	{
+
+		langXObject *obj = jsonArrayClass->newObject();
+		MyJsonData *data = new MyJsonData();
+		if (root)
+		{
+			data->pJsonRoot = root;
+		}
+		else {
+			data->pJsonRoot = cJSON_CreateArray();
+		}
+
+		obj->set3rdObj(data);
+		return obj;
+	}
 
 	Object * langX_JsonArray_setItem(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
@@ -25,7 +39,7 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		return langX_JsonArray_put(func,args);
 	}
 
 
@@ -37,7 +51,28 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+
+		Object * b = args.args[0];
+		if (b)
+		{
+			// a 为有效值
+			if (b->getType() == ObjectType::STRING)
+			{
+				String *str = (String*)b;
+
+				cJSON_AddItemToArray(data->pJsonRoot, cJSON_CreateString(str->getValue()));
+				return getState()->getAllocator().allocateNumber(1);
+			}
+			else if (b->getType() == ObjectType::NUMBER)
+			{
+				Number * num = (Number*)b;
+				cJSON_AddItemToArray(data->pJsonRoot, cJSON_CreateNumber(num->getDoubleValue()));
+				return getState()->getAllocator().allocateNumber(1);
+			}
+		}
+
+		return getState()->getAllocator().allocateNumber(0);
 	}
 
 
@@ -49,7 +84,23 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+		Object * a = args.args[0];
+
+		if (a && a->getType() == ObjectType::NUMBER)
+		{
+			int index = ((Number*)a)->getIntValue();
+
+			cJSON *cjson = cJSON_GetArrayItem(data->pJsonRoot, index);
+			if (cjson == nullptr) {
+				return getState()->getAllocator().allocate(NULLOBJECT);
+			}
+
+			return getState()->getAllocator().allocateString(cjson->valuestring);
+		}
+		
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
@@ -61,7 +112,23 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+		Object * a = args.args[0];
+
+		if (a && a->getType() == ObjectType::NUMBER)
+		{
+			int index = ((Number*)a)->getIntValue();
+
+			cJSON *cjson = cJSON_GetArrayItem(data->pJsonRoot, index);
+			if (cjson == nullptr) {
+				return getState()->getAllocator().allocate(NULLOBJECT);
+			}
+
+			return getState()->getAllocator().allocateNumber(cjson->valuedouble);
+		}
+
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
@@ -73,7 +140,26 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+		int size = cJSON_GetArraySize(data->pJsonRoot);
+
+		XArray *array1 = new XArray(size);
+		NullObject nullObj;
+
+		for (size_t i = 0; i < size; i++)
+		{
+			cJSON *cjson = cJSON_GetArrayItem(data->pJsonRoot, i);
+			if (cjson == nullptr)
+			{
+				array1->set(i, &nullObj);
+			}
+			else {
+				String str(cjson->valuestring);
+				array1->set(i, &str);
+			}
+		}
+
+		return array1->addRef();
 	}
 
 
@@ -85,7 +171,26 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+		int size = cJSON_GetArraySize(data->pJsonRoot);
+
+		XArray *array1 = new XArray(size);
+		NullObject nullObj;
+
+		for (size_t i = 0; i < size; i++)
+		{
+			cJSON *cjson = cJSON_GetArrayItem(data->pJsonRoot, i);
+			if (cjson == nullptr)
+			{
+				array1->set(i, &nullObj);
+			}
+			else {
+				Number num1(cjson->valuedouble);
+				array1->set(i, &num1);
+			}
+		}
+
+		return array1->addRef();
 	}
 
 
@@ -97,7 +202,10 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+		int size = cJSON_GetArraySize(data->pJsonRoot);
+
+		return getState()->getAllocator().allocateNumber(size);
 	}
 
 
@@ -108,6 +216,13 @@ namespace langX {
 			printf("langX_JsonArray_JsonArray_Dtor error! NO OBJ!\n");
 			return nullptr;
 		}
+
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+
+		cJSON_Delete(data->pJsonRoot);
+		data->pJsonRoot = nullptr;
+		delete data;
+		args.object->set3rdObj(nullptr);
 
 		return nullptr;
 	}
@@ -121,7 +236,23 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+		Object * a = args.args[0];
+
+		if (a && a->getType() == ObjectType::NUMBER)
+		{
+			int index = ((Number*)a)->getIntValue();
+
+			cJSON *cjson = cJSON_GetArrayItem(data->pJsonRoot, index);
+			if (cjson == nullptr) {
+				return getState()->getAllocator().allocate(NULLOBJECT);
+			}
+
+			return createJsonArray(cjson)->addRef();
+		}
+
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
@@ -133,7 +264,23 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+		Object * a = args.args[0];
+
+		if (a && a->getType() == ObjectType::NUMBER)
+		{
+			int index = ((Number*)a)->getIntValue();
+
+			cJSON *cjson = cJSON_GetArrayItem(data->pJsonRoot, index);
+			if (cjson == nullptr) {
+				return getState()->getAllocator().allocate(NULLOBJECT);
+			}
+
+			return createJsonObject(cjson)->addRef();
+		}
+
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
@@ -144,6 +291,11 @@ namespace langX {
 			printf("langX_JsonArray_JsonArray error! NO OBJ!\n");
 			return nullptr;
 		}
+
+		MyJsonData *data = new MyJsonData();
+		data->pJsonRoot = cJSON_CreateArray();
+
+		args.object->set3rdObj(data);
 
 		return nullptr;
 	}
@@ -166,6 +318,7 @@ namespace langX {
 		info->addFunction("JsonArray", create3rdFunc("JsonArray", langX_JsonArray_JsonArray));
 
 		space->putClass(info);
+		jsonArrayClass = info;
 
 		return 0;
 	}
