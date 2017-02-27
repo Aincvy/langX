@@ -13,6 +13,7 @@ namespace langX {
 
 	class langXObject;
 	class Object;
+	class XArray;
 
 	int regJsonArray(langXState *state, XNameSpace* space);
 
@@ -27,6 +28,13 @@ namespace langX {
 	Object* jsonAddItemToObject(cJSON *, const char *, Object *);
 	// 添加元素到数组上
 	Object* jsonAddItemToArray(cJSON *, Object *);
+	// 将一个json 对象解析成一个对象 !!!  此函数并未实现
+	void jsonDecodeToObj(cJSON *, Object *);
+	// 将json 解析成一个数组  !!!  此函数并未实现
+	void jsonDecodeToArr(cJSON *, XArray *);
+	// 获得这个json 对象的值， 主要用于数组解析使用。 
+	// 此函数只返回 string/number
+	Object* getSimpleJsonValue(cJSON *);
 
 	// 一些数据结构
 
