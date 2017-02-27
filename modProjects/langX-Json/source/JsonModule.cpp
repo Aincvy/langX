@@ -16,7 +16,7 @@ namespace langX {
 
 	int JsonModule::init(langXState *state)
 	{
-		printf("init langX-Json¿â\n");
+		printf("init langX-Jsonåº“\n");
 
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.json");
 

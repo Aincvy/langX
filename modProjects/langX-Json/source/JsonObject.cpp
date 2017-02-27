@@ -13,7 +13,7 @@ static langX::ClassInfo *jsonObjectClass;
 
 namespace langX {
 
-	langXObject * langX::createJsonObject(cJSON *root)
+	langXObject * createJsonObject(cJSON *root)
 	{
 		langXObject *obj = jsonObjectClass->newObject();
 		MyJsonData *data = new MyJsonData();
@@ -37,11 +37,52 @@ namespace langX {
 			return nullptr;
 		}
 
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+
+		Object * a = args.args[0];
+		if (a)
+		{
+			// a 为有效值
+			if (a->getType() == ObjectType::STRING)
+			{
+				String *keyStr = (String*)a;
+				cJSON *cjson = cJSON_GetObjectItem(data->pJsonRoot, keyStr->getValue());
+				if (cjson == nullptr)
+				{
+					return getState()->getAllocator().allocate(NULLOBJECT);
+				}
+
+				langXObject *obj = createJsonArray(cjson);
+				return obj->addRef();
+			}
+		}
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 
 
 		return nullptr;
 	}
 
+
+	Object * langX_JsonObject_toJSONString(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_JsonObject_toJSONString error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+		char *p = cJSON_Print(data->pJsonRoot);
+		if (p == NULL)
+		{
+			return getState()->getAllocator().allocate(NULLOBJECT);
+		}
+
+		String *str = getState()->getAllocator().allocateString(p);
+		free(p);
+
+		return str;
+	}
 
 
 	Object * langX_JsonObject_put(X3rdFunction *func, const X3rdArgs &args) {
@@ -217,6 +258,7 @@ namespace langX {
 		info->addFunction("getString", create3rdFunc("getString", langX_JsonObject_getString));
 		info->addFunction("getNumber", create3rdFunc("getNumber", langX_JsonObject_getNumber));
 		info->addFunction("getJsonObject", create3rdFunc("getJsonObject", langX_JsonObject_getJsonObject));
+		info->addFunction("toJSONString", create3rdFunc("toJSONString", langX_JsonObject_toJSONString));
 		info->addFunction("~JsonObject", create3rdFunc("~JsonObject", langX_JsonObject_JsonObject_Dtor));
 		info->addFunction("JsonObject", create3rdFunc("JsonObject", langX_JsonObject_JsonObject));
 

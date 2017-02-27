@@ -15,7 +15,7 @@ static langX::ClassInfo *jsonArrayClass;
 
 namespace langX {
 
-	langXObject * langX::createJsonArray(cJSON *root)
+	langXObject * createJsonArray(cJSON *root)
 	{
 
 		langXObject *obj = jsonArrayClass->newObject();
@@ -31,18 +31,6 @@ namespace langX {
 		obj->set3rdObj(data);
 		return obj;
 	}
-
-	Object * langX_JsonArray_setItem(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_JsonArray_setItem error! NO OBJ!\n");
-			return nullptr;
-		}
-
-		return langX_JsonArray_put(func,args);
-	}
-
-
 
 	Object * langX_JsonArray_put(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
@@ -75,6 +63,16 @@ namespace langX {
 		return getState()->getAllocator().allocateNumber(0);
 	}
 
+
+	Object * langX_JsonArray_setItem(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_JsonArray_setItem error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		return langX_JsonArray_put(func, args);
+	}
 
 
 	Object * langX_JsonArray_getString(X3rdFunction *func, const X3rdArgs &args) {
@@ -284,6 +282,25 @@ namespace langX {
 	}
 
 
+	Object * langX_JsonArray_toJSONString(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_JsonArray_toJSONString error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+		char *p = cJSON_Print(data->pJsonRoot);
+		if (p == NULL)
+		{
+			return getState()->getAllocator().allocate(NULLOBJECT);
+		}
+
+		String *str = getState()->getAllocator().allocateString(p);
+		free(p);
+
+		return str;
+	}
 
 	Object * langX_JsonArray_JsonArray(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
@@ -316,6 +333,7 @@ namespace langX {
 		info->addFunction("getJsonArray", create3rdFunc("getJsonArray", langX_JsonArray_getJsonArray));
 		info->addFunction("getJsonObject", create3rdFunc("getJsonObject", langX_JsonArray_getJsonObject));
 		info->addFunction("JsonArray", create3rdFunc("JsonArray", langX_JsonArray_JsonArray));
+		info->addFunction("toJSONString", create3rdFunc("toJSONString", langX_JsonArray_toJSONString));
 
 		space->putClass(info);
 		jsonArrayClass = info;
