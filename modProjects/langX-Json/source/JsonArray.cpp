@@ -32,6 +32,34 @@ namespace langX {
 		return obj;
 	}
 
+	Object* jsonAddItemToArray(cJSON *root, Object *b) {
+		if (b->getType() == ObjectType::STRING)
+		{
+			String *str = (String*)b;
+
+			cJSON_AddItemToArray(root, cJSON_CreateString(str->getValue()));
+			return getState()->getAllocator().allocateNumber(1);
+		}
+		else if (b->getType() == ObjectType::NUMBER)
+		{
+			Number * num = (Number*)b;
+			cJSON_AddItemToArray(root, cJSON_CreateNumber(num->getDoubleValue()));
+			return getState()->getAllocator().allocateNumber(1);
+		}
+		else if (b->getType() == ObjectType::OBJECT)
+		{
+			langXObjectRef *ref = (langXObjectRef*)b;
+			if (ref->getClassInfo()->isInstanceOf("JsonObject") || ref->getClassInfo()->isInstanceOf("JsonArray"))
+			{
+				MyJsonData *thedata = (MyJsonData*)ref->getRefObject()->get3rdObj();
+				cJSON_AddItemToArray(root, thedata->pJsonRoot);
+				return getState()->getAllocator().allocateNumber(1);
+			}
+		}
+
+		return getState()->getAllocator().allocateNumber(0);
+	}
+
 	Object * langX_JsonArray_put(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
@@ -45,19 +73,7 @@ namespace langX {
 		if (b)
 		{
 			// a 为有效值
-			if (b->getType() == ObjectType::STRING)
-			{
-				String *str = (String*)b;
-
-				cJSON_AddItemToArray(data->pJsonRoot, cJSON_CreateString(str->getValue()));
-				return getState()->getAllocator().allocateNumber(1);
-			}
-			else if (b->getType() == ObjectType::NUMBER)
-			{
-				Number * num = (Number*)b;
-				cJSON_AddItemToArray(data->pJsonRoot, cJSON_CreateNumber(num->getDoubleValue()));
-				return getState()->getAllocator().allocateNumber(1);
-			}
+			return jsonAddItemToArray(data->pJsonRoot, b);
 		}
 
 		return getState()->getAllocator().allocateNumber(0);
