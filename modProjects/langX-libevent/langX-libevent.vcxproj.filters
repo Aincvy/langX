@@ -30,6 +30,9 @@
     <ClInclude Include="include\ReglibeventModule.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\RegHttpServer.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\libeventModule.cpp">
@@ -63,6 +66,12 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\HttpServerRoute.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\HttpRequest.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\HttpResponse.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

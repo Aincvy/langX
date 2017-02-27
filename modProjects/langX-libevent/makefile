@@ -3,12 +3,12 @@
 TARGET = ../../mod/mod_libevent.so
 
 OBJ = source/BytesDecoder.o source/BytesEncoder.o source/DefaultBytesDecoder.o source/DefaultBytesEncoder.o source/DefaultNetPacket.o source/DefaultNetPacketX.o \
-	source/libeventModule.o source/TcpClient.o source/TcpServer.o 
+	source/libeventModule.o source/TcpClient.o source/TcpServer.o source/HttpRequest.o source/HttpResponse.o 
 
 HEADER = include/BytesDecoder.h include/BytesEncoder.h include/DefaultBytesDecoder.h include/DefaultBytesEncoder.h include/DefaultNetPacket.h include/libeventModule include/ReglibeventModule
 
 SRC = source/BytesDecoder.cpp source/BytesEncoder.cpp source/DefaultBytesDecoder.cpp source/DefaultBytesEncoder.cpp source/DefaultNetPacket.cpp \
-	source/DefaultNetPacketX.cpp source/libeventModule.cpp source/TcpClient.cpp source/TcpServer.cpp 
+	source/DefaultNetPacketX.cpp source/libeventModule.cpp source/TcpClient.cpp source/TcpServer.cpp source/HttpRequest.cpp source/HttpResponse.cpp 
 
 DFLAGS = -llangX -levent
 

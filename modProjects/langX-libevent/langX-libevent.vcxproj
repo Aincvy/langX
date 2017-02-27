@@ -33,6 +33,7 @@
     <ClInclude Include="include\DefaultBytesEncoder.h" />
     <ClInclude Include="include\DefaultNetPacket.h" />
     <ClInclude Include="include\libeventModule.h" />
+    <ClInclude Include="include\RegHttpServer.h" />
     <ClInclude Include="include\ReglibeventModule.h" />
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +43,8 @@
     <ClCompile Include="source\DefaultBytesEncoder.cpp" />
     <ClCompile Include="source\DefaultNetPacket.cpp" />
     <ClCompile Include="source\DefaultNetPacketX.cpp" />
+    <ClCompile Include="source\HttpRequest.cpp" />
+    <ClCompile Include="source\HttpResponse.cpp" />
     <ClCompile Include="source\HttpServer.cpp" />
     <ClCompile Include="source\HttpServerRoute.cpp" />
     <ClCompile Include="source\libeventModule.cpp" />
