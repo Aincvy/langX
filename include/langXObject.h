@@ -35,6 +35,8 @@ namespace langX {
 		Object * getMember(const char *) const;
 		//  这个请求是否是来自子类 
 		Object * getMember(const char *,bool) const;
+		//  获得这个对象的属性和值的 map 
+		const std::map<std::string, Object*> & getMemberMap() const;
 
 		Function *getFunction(const char *) const;
 		//  这个请求是否是来自子类 

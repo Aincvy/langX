@@ -30,6 +30,34 @@ namespace langX {
 	}
 
 
+	Object* jsonAddItemToObject(cJSON *root, const char *key, Object *b)
+	{
+		if (b->getType() == ObjectType::STRING)
+		{
+			String *str = (String*)b;
+			cJSON_AddStringToObject(root, key, str->getValue());
+			return getState()->getAllocator().allocateNumber(1);
+		}
+		else if (b->getType() == ObjectType::NUMBER)
+		{
+			Number * num = (Number*)b;
+			cJSON_AddNumberToObject(root, key, num->getDoubleValue());
+			return getState()->getAllocator().allocateNumber(1);
+		}
+		else if (b->getType() == ObjectType::OBJECT)
+		{
+			langXObjectRef *ref = (langXObjectRef*)b;
+			if (ref->getClassInfo()->isInstanceOf("JsonObject") || ref->getClassInfo()->isInstanceOf("JsonArray"))
+			{
+				MyJsonData *thedata = (MyJsonData*)ref->getRefObject()->get3rdObj();
+				cJSON_AddItemToObject(root, key, thedata->pJsonRoot);
+				return getState()->getAllocator().allocateNumber(1);
+			}
+		}
+
+		return getState()->getAllocator().allocateNumber(0);
+	}
+
 	Object * langX_JsonObject_getJsonArray(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
@@ -102,18 +130,8 @@ namespace langX {
 			if (a->getType() == ObjectType::STRING)
 			{
 				String *keyStr = (String*)a;
-				if (b->getType() == ObjectType::STRING)
-				{
-					String *str = (String*)b;
-					cJSON_AddStringToObject(data->pJsonRoot, keyStr->getValue(), str->getValue());
-					return getState()->getAllocator().allocateNumber(1);
-				}
-				else if (b->getType() == ObjectType::NUMBER)
-				{
-					Number * num = (Number*)b;
-					cJSON_AddNumberToObject(data->pJsonRoot, keyStr->getValue(), num->getDoubleValue());
-					return getState()->getAllocator().allocateNumber(1);
-				}
+				
+				return jsonAddItemToObject(data->pJsonRoot, keyStr->getValue(), b);
 			}
 		}
 

@@ -160,6 +160,10 @@ namespace langX {
 		return NULL;
 	}
 
+	const std::map<std::string, Object*> & langXObject::getMemberMap() const {
+		return this->m_members;
+	}
+
 	Function * langXObject::getFunction(const char *name) const
 	{
 		return getFunction(name, false);
