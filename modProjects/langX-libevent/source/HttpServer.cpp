@@ -1,4 +1,4 @@
-﻿#include "../include/ReglibeventModule.h"
+﻿#include "../include/RegHttpServer.h"
 
 #include "../../../include/ClassInfo.h"
 #include "../../../include/YLlangX.h"
@@ -7,6 +7,9 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+
+
+
 
 namespace langX {
 
@@ -30,6 +33,8 @@ namespace langX {
 			return nullptr;
 		}
 
+		
+
 		return nullptr;
 	}
 
@@ -42,7 +47,9 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		HttpServerArgs* server = (HttpServerArgs*)args.object->get3rdObj();
+		
+		return server->routeObj->addRef();
 	}
 
 
@@ -66,6 +73,27 @@ namespace langX {
 			return nullptr;
 		}
 
+		HttpServerArgs* server = (HttpServerArgs*)args.object->get3rdObj();
+		if (server)
+		{
+			if (server->base)
+			{
+				event_base_free(server->base);
+			}
+			if (server->httpd)
+			{
+				evhttp_free(server->httpd);
+			}
+			if (server->routeObj)
+			{
+				delete server->routeObj;
+			}
+
+			delete server;
+			args.object->set3rdObj(nullptr);
+		}
+		
+
 		return nullptr;
 	}
 
@@ -77,6 +105,22 @@ namespace langX {
 			printf("langX_HttpServer_HttpServer error! NO OBJ!\n");
 			return nullptr;
 		}
+
+		HttpServerArgs* httpServerArgs = new HttpServerArgs();
+		httpServerArgs->base = event_base_new();
+		if (!httpServerArgs->base) {
+			fprintf(stderr, "Could not initialize libevent!\n");
+			return nullptr;
+		}
+
+		httpServerArgs->httpd = evhttp_new(httpServerArgs->base);
+		if (!httpServerArgs->httpd) {
+			fprintf(stderr, "couldn't create evhttp. Exiting.\n");
+			return nullptr;
+		}
+		httpServerArgs->routeObj = createHttpServerRoute();
+		httpServerArgs->routeObj->set3rdObj(httpServerArgs);
+		args.object->set3rdObj(httpServerArgs);
 
 		return nullptr;
 	}

@@ -2,6 +2,7 @@
 
 #include "../include/libeventModule.h"
 #include "../include/ReglibeventModule.h"
+#include "../include/RegHttpServer.h"
 #include "../../../include/XNameSpace.h"
 
 namespace langX {

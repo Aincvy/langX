@@ -1,4 +1,4 @@
-﻿#include "../include/ReglibeventModule.h"
+﻿#include "../include/RegHttpServer.h"
 
 #include "../../../include/ClassInfo.h"
 #include "../../../include/YLlangX.h"
@@ -7,9 +7,16 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+#include "../../../include/String.h"
+
+static langX::ClassInfo *httpServerRouteClass;
 
 namespace langX {
 
+	langXObject * langX::createHttpServerRoute()
+	{
+		return httpServerRouteClass->newObject();
+	}
 
 	Object * langX_HttpServerRoute_route(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
@@ -18,7 +25,19 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		HttpServerArgs* server = (HttpServerArgs*)args.object->get3rdObj();
+		Object *a = args.args[0];
+		Object *b = args.args[1];
+		if (a && b && a->getType() == ObjectType::STRING && b->getType() == ObjectType::FUNCTION)
+		{
+			String *str = (String*)a;
+			FunctionRef *ref = (FunctionRef*)b;
+			server->routeMap[std::string(str->getValue())] = ref;
+
+			return getState()->getAllocator().allocateNumber(1);
+		}
+
+		return getState()->getAllocator().allocateNumber(0);
 	}
 
 
@@ -27,7 +46,9 @@ namespace langX {
 
 		ClassInfo *info = new ClassInfo("HttpServerRoute");
 		info->addFunction("route", create3rdFunc("route", langX_HttpServerRoute_route));
+
 		space->putClass(info);
+		httpServerRouteClass = info;
 
 		return 0;
 	}
