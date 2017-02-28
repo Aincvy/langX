@@ -16,14 +16,26 @@
 #endif
 
 
-
 namespace langX {
+
+	void freeHttpRequestInfo(HttpRequestInfo *&reqInfo) {
+
+		if (reqInfo->buffer)
+		{
+			evbuffer_free(reqInfo->buffer);
+			reqInfo->buffer = nullptr;
+		}
+
+		delete reqInfo;
+
+		reqInfo = nullptr;
+	}
 
 	// http server 的默认回调
 	static void httpd_handler(struct evhttp_request *req, void *arg) {
 
 		/* 重要部分 */
-		
+
 		HttpServerArgs* server = (HttpServerArgs*)arg;
 		HttpRequestInfo *reqInfo = new HttpRequestInfo();
 
@@ -41,7 +53,7 @@ namespace langX {
 		case EVHTTP_REQ_PATCH: cmdtype = "PATCH"; break;
 		default: cmdtype = "unknown"; break;
 		}
-		sprintf(reqInfo->method,"%s",cmdtype);
+		sprintf(reqInfo->method, "%s", cmdtype);
 
 		reqInfo->evRequest = req;
 		reqInfo->buffer = evbuffer_new();
@@ -51,21 +63,50 @@ namespace langX {
 		decoded_uri = evhttp_decode_uri(uri);
 		evhttp_parse_query(decoded_uri, &reqInfo->params);
 
-
 		// 将请求传递到 langX 脚本内
-		delete reqInfo;
+		langXObject *request = createHttpReq(reqInfo);
+		langXObject *response = createHttpRes(reqInfo);
 
+		
+		const evhttp_uri * conx_uri = evhttp_request_get_evhttp_uri(req);
+		const char * path = evhttp_uri_get_path(conx_uri);
+		auto it = server->routeMap.find(path);
+		FunctionRef * cb = nullptr;
+		if (it == server->routeMap.end())
+		{
+			// 未找到
+			cb = server->defaultCB;
+		}
+		else {
+			cb = it->second;
+		}
+		
 		//HTTP header
 		evhttp_add_header(req->output_headers, "Server", "langX-libevent");
 		evhttp_add_header(req->output_headers, "Content-Type", "text/plain; charset=UTF-8");
 		evhttp_add_header(req->output_headers, "Connection", "close");
+
+		if (cb != nullptr)
+		{
+			Object *list1[2];
+			list1[0] = request->addRef();
+			list1[1] = response->addRef();
+			cb->call(list1,2,"in libevent httpd_handler");
+		}
+
+		
+		evhttp_send_reply(req, HTTP_OK, "OK", reqInfo->buffer);
+		freeHttpRequestInfo(reqInfo);
+
+		
 		//输出的内容
-		struct evbuffer *buf;
+		/*struct evbuffer *buf;
 		buf = evbuffer_new();
-		char output[2048] = "\0";
-		evbuffer_add_printf(buf, "It works!\n%s\n", output);
-		evhttp_send_reply(req, HTTP_OK, "OK", buf);
-		evbuffer_free(buf);
+		char output[2048] = "\0";*/
+		//sprintf(output, "evhttp_uri_get_path=%s\nevhttp_uri_get_host=%s\nevhttp_uri_get_port=%d\nevhttp_uri_get_fragment=%s\n", evhttp_uri_get_path(conx_uri), evhttp_uri_get_host(conx_uri), evhttp_uri_get_port(conx_uri), evhttp_uri_get_fragment(conx_uri));
+		//evbuffer_add_printf(buf, "It works!\n%s\n", output);
+		//evhttp_send_reply(req, HTTP_OK, "OK", buf);
+		//evbuffer_free(buf);
 
 	}
 
@@ -107,7 +148,7 @@ namespace langX {
 		}
 
 		HttpServerArgs* server = (HttpServerArgs*)args.object->get3rdObj();
-		
+
 		return server->routeObj->addRef();
 	}
 
@@ -166,7 +207,7 @@ namespace langX {
 			delete server;
 			args.object->set3rdObj(nullptr);
 		}
-		
+
 
 		return nullptr;
 	}

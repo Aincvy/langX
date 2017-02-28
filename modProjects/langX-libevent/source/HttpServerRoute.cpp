@@ -13,7 +13,7 @@ static langX::ClassInfo *httpServerRouteClass;
 
 namespace langX {
 
-	langXObject * langX::createHttpServerRoute()
+	langXObject * createHttpServerRoute()
 	{
 		return httpServerRouteClass->newObject();
 	}

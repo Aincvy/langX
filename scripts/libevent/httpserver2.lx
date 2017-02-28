@@ -1,0 +1,6 @@
+ref langX.libevent ;
+
+server =  new HttpServer();
+server.listen(6006);
+println("listen on 6006.");
+server.serv();

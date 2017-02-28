@@ -9,8 +9,15 @@
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
 
+static langX::ClassInfo *httpResponseClass;
+
 namespace langX {
 
+	langXObject *createHttpRes(HttpRequestInfo *req) {
+		langXObject * obj = httpResponseClass->newObject();
+		obj->set3rdObj(req);
+		return obj;
+	}
 
 	Object * langX_HttpResponse_setContentType(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
@@ -56,6 +63,7 @@ namespace langX {
 		info->addFunction("addHeader", create3rdFunc("addHeader", langX_HttpResponse_addHeader));
 
 		space->putClass(info);
+		httpResponseClass = info;
 
 		return 0;
 	}

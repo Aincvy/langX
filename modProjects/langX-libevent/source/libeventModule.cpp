@@ -29,6 +29,8 @@ namespace langX {
 		regDefaultNetPacket(state, space);
 		regHttpServer(state, space);
 		regHttpServerRoute(state, space);
+		regHttpRequest(state, space);
+		regHttpResponse(state, space);
 
 		return 0;
 	}
