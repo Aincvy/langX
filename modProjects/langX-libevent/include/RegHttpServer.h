@@ -40,14 +40,19 @@ namespace langX {
 		event_base *base;
 		evhttp *httpd;  
 		std::map<std::string, FunctionRef*> routeMap;   // 路由表
+		FunctionRef * defaultCB;     //默认的回调函数
 		langXObject *routeObj;
+		char bindIp[20] ;   // 绑定到的ip地址
+		
 	};
 
 	// http 的请求信息 ( httprequest 和  httpresponse 都使用这个作为 3rdObj )
 	struct HttpRequestInfo
 	{
 		evhttp_request *evRequest;
-
+		struct evkeyvalq params;  
+		struct evbuffer *buffer;
+		char method[10];    // GET/POST
 	};
 
 }
