@@ -8,6 +8,7 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+#include "../../../include/String.h"
 
 namespace langX {
 
@@ -53,6 +54,13 @@ namespace langX {
 		{
 			printf("langX_HttpRequest_getHeader error! NO OBJ!\n");
 			return nullptr;
+		}
+
+		Object* a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING)
+		{
+			const char *key = ((String*)a)->getValue();
+
 		}
 
 		return nullptr;
