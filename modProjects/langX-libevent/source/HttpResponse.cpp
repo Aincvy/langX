@@ -8,6 +8,14 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+#include "../../../include/String.h"
+
+#ifdef WIN32
+#include "../../../lib/libevent-2.0.21-stable/include/event2/buffer.h"
+
+#else
+#include <event2/buffer.h>
+#endif
 
 static langX::ClassInfo *httpResponseClass;
 
@@ -26,7 +34,20 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		HttpRequestInfo* reqInfo = (HttpRequestInfo*)args.object->get3rdObj();
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING)
+		{
+			const char *type = ((String*)a)->getValue();
+
+			int ret = evhttp_add_header(reqInfo->evRequest->output_headers, "Content-Type", type);
+			if (ret == 0)
+			{
+				return getState()->getAllocator().allocateNumber(1);
+			}
+		}
+
+		return getState()->getAllocator().allocateNumber(0);
 	}
 
 
@@ -36,6 +57,17 @@ namespace langX {
 		{
 			printf("langX_HttpResponse_write error! NO OBJ!\n");
 			return nullptr;
+		}
+
+		HttpRequestInfo* reqInfo = (HttpRequestInfo*)args.object->get3rdObj();
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING)
+		{
+			String *str = (String*)a;
+			str->simpleEscape();
+			const char * text = str->getValue();
+
+			evbuffer_add_printf(reqInfo->buffer, text);
 		}
 
 		return nullptr;
@@ -50,7 +82,22 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		HttpRequestInfo* reqInfo = (HttpRequestInfo*)args.object->get3rdObj();
+		Object *a = args.args[0];
+		Object *b = args.args[1];
+		if (a && b && a->getType() == ObjectType::STRING && b->getType() == ObjectType::STRING)
+		{
+			const char *key = ((String*)a)->getValue();
+			const char *value = ((String*)b)->getValue();
+
+			int ret = evhttp_add_header(reqInfo->evRequest->output_headers, key, value);
+			if (ret == 0)
+			{
+				return getState()->getAllocator().allocateNumber(1);
+			}
+		}
+
+		return getState()->getAllocator().allocateNumber(0);
 	}
 
 

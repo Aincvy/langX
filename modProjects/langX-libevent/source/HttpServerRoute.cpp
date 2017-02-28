@@ -32,7 +32,7 @@ namespace langX {
 		{
 			String *str = (String*)a;
 			FunctionRef *ref = (FunctionRef*)b;
-			server->routeMap[std::string(str->getValue())] = ref;
+			server->routeMap[std::string(str->getValue())] = (FunctionRef *)ref->clone();
 
 			return getState()->getAllocator().allocateNumber(1);
 		}
