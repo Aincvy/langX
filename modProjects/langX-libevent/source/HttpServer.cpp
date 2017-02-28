@@ -18,6 +18,34 @@
 
 namespace langX {
 
+	void freeHttpServer(HttpServerArgs*& server) {
+		if (server)
+		{
+			if (server->base)
+			{
+				event_base_loopbreak(server->base);
+				event_base_free(server->base);
+			}
+			if (server->httpd)
+			{
+				evhttp_free(server->httpd);
+			}
+			if (server->routeObj)
+			{
+				delete server->routeObj;
+			}
+
+			for (auto i = server->routeMap.begin(); i != server->routeMap.end(); i++)
+			{
+				delete i->second;
+			}
+			server->routeMap.clear();
+
+			delete server;
+			server = nullptr;
+		}
+	}
+
 	void freeHttpRequestInfo(HttpRequestInfo *&reqInfo) {
 
 		if (reqInfo->buffer)
@@ -83,7 +111,7 @@ namespace langX {
 		
 		//HTTP header
 		evhttp_add_header(req->output_headers, "Server", "langX-libevent");
-		evhttp_add_header(req->output_headers, "Content-Type", "text/plain; charset=UTF-8");
+		evhttp_add_header(req->output_headers, "Content-Type", "text/html; charset=UTF-8");
 		evhttp_add_header(req->output_headers, "Connection", "close");
 
 		if (cb != nullptr)
@@ -118,7 +146,9 @@ namespace langX {
 			return nullptr;
 		}
 
-		// 暂不实现 
+		HttpServerArgs* server = (HttpServerArgs*)args.object->get3rdObj();
+		freeHttpServer(server);
+		args.object->set3rdObj(nullptr);
 
 		return nullptr;
 	}
@@ -189,24 +219,8 @@ namespace langX {
 		}
 
 		HttpServerArgs* server = (HttpServerArgs*)args.object->get3rdObj();
-		if (server)
-		{
-			if (server->base)
-			{
-				event_base_free(server->base);
-			}
-			if (server->httpd)
-			{
-				evhttp_free(server->httpd);
-			}
-			if (server->routeObj)
-			{
-				delete server->routeObj;
-			}
-
-			delete server;
-			args.object->set3rdObj(nullptr);
-		}
+		freeHttpServer(server);
+		args.object->set3rdObj(nullptr);
 
 
 		return nullptr;
@@ -239,6 +253,7 @@ namespace langX {
 		evhttp_set_timeout(httpServerArgs->httpd, 30);
 		evhttp_set_gencb(httpServerArgs->httpd, httpd_handler, httpServerArgs);
 
+		httpServerArgs->defaultCB = nullptr;
 		sprintf(httpServerArgs->bindIp, "0.0.0.0");
 
 		args.object->set3rdObj(httpServerArgs);

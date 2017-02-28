@@ -1,6 +1,29 @@
 ref langX.libevent ;
 
+patternHello => (request,response){
+	response.write("<html><head> <title>title 1</title> </head><body><h1>hello, langX.libevent</h1></body></html>");
+}
+
+patternJson => (request,response){
+	response.setContentType("text/json; charset=UTF-8");
+	response.write("{\"key\": \"value\",\"key2\": 1 }");
+}
+
+patternTestCss => (request,response){
+	response.write("<html><head><title>Test Css</title>" );
+	response.write("<style type=\"text/css\">");
+	response.write("h1{ color: red; font-size: 20pt;}");
+	response.write("</style>");
+	response.write("</head><body>");
+	response.write("<h1>this is the big title .</h1>");
+	response.write("</body></html>");
+}
+
 server =  new HttpServer();
+route = server.getRoute();
+route.route("/hello", patternHello);
+route.route("/json1", patternJson);
+route.route("/testcss", patternTestCss);
 server.listen(6006);
 println("listen on 6006.");
 server.serv();

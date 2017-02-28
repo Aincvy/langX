@@ -377,9 +377,14 @@ namespace langX {
 		}
 
 		TcpServerArgs *arg = (TcpServerArgs*)args.object->get3rdObj();
+		//free(arg);       wtf...  Õâ¶¼ÊÇÉ¶- - 
+		event_base_loopbreak(arg->base);
+		event_base_free(arg->base);
+		arg->base = nullptr;
+		arg->xobject = nullptr;
 		free(arg);
-		arg->base = event_base_new();
-		arg->xobject = args.object;
+
+		args.object->set3rdObj(nullptr);
 
 		return nullptr;
 	}

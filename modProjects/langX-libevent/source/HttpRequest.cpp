@@ -27,7 +27,7 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
@@ -39,7 +39,7 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
@@ -51,7 +51,17 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		HttpRequestInfo* reqInfo = (HttpRequestInfo*)args.object->get3rdObj();
+		Object* a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING)
+		{
+			const char *key = ((String*)a)->getValue();
+			const char * value = evhttp_find_header(&reqInfo->params, key);
+
+			return getState()->getAllocator().allocateString(value);
+		}
+
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
@@ -63,14 +73,17 @@ namespace langX {
 			return nullptr;
 		}
 
+		HttpRequestInfo* reqInfo = (HttpRequestInfo*)args.object->get3rdObj();
 		Object* a = args.args[0];
 		if (a && a->getType() == ObjectType::STRING)
 		{
 			const char *key = ((String*)a)->getValue();
-
+			const char * value=evhttp_find_header(reqInfo->evRequest->input_headers, key);
+			
+			return getState()->getAllocator().allocateString(value);
 		}
 
-		return nullptr;
+		return getState()->getAllocator().allocate(NULLOBJECT);
 	}
 
 
@@ -82,7 +95,9 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		HttpRequestInfo* reqInfo = (HttpRequestInfo*)args.object->get3rdObj();
+
+		return getState()->getAllocator().allocateString(reqInfo->evRequest->uri);
 	}
 
 
@@ -94,7 +109,9 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		HttpRequestInfo* reqInfo = (HttpRequestInfo*)args.object->get3rdObj();
+
+		return getState()->getAllocator().allocateString(reqInfo->evRequest->uri);
 	}
 
 
@@ -106,7 +123,9 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		HttpRequestInfo* reqInfo= (HttpRequestInfo*)args.object->get3rdObj();
+
+		return getState()->getAllocator().allocateString(reqInfo->method);
 	}
 
 
