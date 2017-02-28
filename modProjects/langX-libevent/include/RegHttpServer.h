@@ -34,6 +34,7 @@ namespace langX {
 
 	langXObject *createHttpServerRoute();
 
+
 	// http server 的一些参数
 	struct HttpServerArgs
 	{
@@ -54,5 +55,13 @@ namespace langX {
 		struct evbuffer *buffer;
 		char method[10];    // GET/POST
 	};
+
+	// 释放一个 http request info
+	void freeHttpRequestInfo(HttpRequestInfo *&);
+
+	// http request 
+	langXObject *createHttpReq(HttpRequestInfo *);
+	// http response
+	langXObject *createHttpRes(HttpRequestInfo *);
 
 }

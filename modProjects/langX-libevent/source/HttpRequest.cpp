@@ -10,8 +10,15 @@
 #include "../../../include/Number.h"
 #include "../../../include/String.h"
 
+static langX::ClassInfo *httpRequestClass;
+
 namespace langX {
 
+	langXObject *createHttpReq(HttpRequestInfo *req) {
+		langXObject * obj = httpRequestClass->newObject();
+		obj->set3rdObj(req);
+		return obj;
+	}
 
 	Object * langX_HttpRequest_getBufferData(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
@@ -116,6 +123,7 @@ namespace langX {
 		info->addFunction("getMethod", create3rdFunc("getMethod", langX_HttpRequest_getMethod));
 
 		space->putClass(info);
+		httpRequestClass = info;
 
 		return 0;
 	}
