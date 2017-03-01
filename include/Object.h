@@ -71,10 +71,14 @@ namespace langX {
 		virtual void update(Object *) = 0;
 
 		// 返回这个对象的特性字符串
-		const char * characteristic() const;
+		virtual const char * characteristic() const;
 
 		// 设置这个对象的特性字符串
 		void setCharacteristic(const char *);
+
+	protected:
+		// 这个对象的特性字符串
+		mutable std::string m_characteristic;
 
 	private:
 		int m_ref_count;
@@ -89,9 +93,6 @@ namespace langX {
 
 		// 这个对象在出现环境中的名字
 		std::string m_name;
-
-		// 这个对象的特性字符串
-		std::string m_characteristic;
 
 		bool m_is_local = false;
 		bool m_is_private = false;

@@ -1,6 +1,7 @@
 #include <string>
 #include <algorithm>
 #include <string.h>
+#include <sstream>
 
 #include "../include/String.h"
 
@@ -191,6 +192,17 @@ namespace langX {
 			pos = find_pos + delim_len;
 		}
 		return elems;
+	}
+
+	const char * String::characteristic() const
+	{
+		std::stringstream ss;
+		ss << ccPrefix;
+		ss << this->m_value;
+
+		this->m_characteristic = ss.str();
+
+		return  this->m_characteristic.c_str();
 	}
 
 

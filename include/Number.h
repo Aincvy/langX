@@ -25,7 +25,9 @@ namespace langX {
 		void update(Object *);
 
 		// 判断当前值是否是一个int , 判断方式比较简单
-		bool isInteger();
+		bool isInteger() const;
+
+		const char * characteristic() const;
 
 		operator int() const;
 		operator double() const;
@@ -38,5 +40,7 @@ namespace langX {
 		double m_value = 0;
 
 		void finalize();
+
+		
 	};
 }

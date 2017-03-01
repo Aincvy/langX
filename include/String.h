@@ -65,10 +65,17 @@ namespace langX {
 		// 分割字符串
 		std::vector<std::string> split(const char *);
 
+		// 获得这个字符串的特性字符串 
+		const char * characteristic() const;
+
 	private:
 		std::string m_value;
 
 		void finalize();
+
+
+		const char *ccPrefix = "string@[";
+
 	};
 
 }

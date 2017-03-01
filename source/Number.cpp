@@ -1,7 +1,9 @@
 #include <string>
+#include <stdio.h>
+#include <sstream>
+
 #include "../include/Object.h"
 #include "../include/Number.h"
-#include <stdio.h>
 
 namespace langX {
 	Number::Number()
@@ -27,8 +29,24 @@ namespace langX {
 		this->m_value = a;
 	}
 
-	bool Number::isInteger() {
+	bool Number::isInteger() const {
 		return this->m_value == (int) this->m_value;
+	}
+
+	const char * Number::characteristic() const
+	{
+		std::stringstream ss;
+		if (this->isInteger())
+		{
+			ss << getIntValue();
+		}
+		else {
+			ss << this->m_value;
+		}
+
+		this->m_characteristic = ss.str();
+
+		return this->m_characteristic.c_str();
 	}
 
 	int Number::getIntValue() const
@@ -41,7 +59,7 @@ namespace langX {
 		return this->m_value;
 	}
 
-	void Number::setValue(double a) 
+	void Number::setValue(double a)
 	{
 		this->m_value = a;
 	}
@@ -68,6 +86,9 @@ namespace langX {
 		obj->setLocal(this->isLocal());
 		return obj;
 	}
+
+
+
 	void Number::update(Object *right)
 	{
 
@@ -76,7 +97,7 @@ namespace langX {
 		{
 			return;
 		}
-		
+
 		this->m_value = ((Number*)right)->getDoubleValue();
 	}
 	Number::operator int() const
