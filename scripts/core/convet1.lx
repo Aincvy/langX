@@ -1,0 +1,17 @@
+ref langX.core ;
+
+a = "123.04" ;
+b = Convert::toNumber(a);
+println("b=" + b);
+if ( b != null ){
+	c = b + 1;
+	println("c=" +c);
+	
+	str = Convert::toStr(b) ;
+	println("str=" + str);
+}
+
+abc = 100 ;
+println("abc=" + Convert::toStr(abc) );
+
+println("end ");

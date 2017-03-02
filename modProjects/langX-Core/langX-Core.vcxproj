@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClCompile Include="makefile" />
     <ClCompile Include="source\ByteArray.cpp" />
+    <ClCompile Include="source\Convert.cpp" />
     <ClCompile Include="source\CoreModule.cpp" />
     <ClCompile Include="source\DateTime.cpp" />
     <ClCompile Include="source\Default.cpp" />

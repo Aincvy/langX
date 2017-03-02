@@ -8,6 +8,7 @@ namespace langX {
 
 		regMath(state, space);
 		regDateTime(state, space);
+		regConvert(state, space);
 
 		return 0;
 	}
