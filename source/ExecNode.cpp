@@ -428,9 +428,7 @@ namespace langX {
 				freeSubNodes(n);
 				return;
 			}
-		}
-
-		if ((left != NULL && left->getType() == STRING) || (right != NULL  && right->getType() == STRING))
+		}else if ((left != NULL && left->getType() == STRING) || (right != NULL  && right->getType() == STRING))
 		{
 			// 字符串拼接 
 			std::stringstream ss;

@@ -194,7 +194,6 @@ namespace langX {
 		return NULL;
 	}
 
-
 	void regFunctions(langXState *state)
 	{
 		state->reg3rd("print", langX_print);
@@ -206,6 +205,7 @@ namespace langX {
 		state->reg3rd("doFile", langX_do_file);
 		state->reg3rd("exit", langX_exit);
 		state->reg3rd("readLine", langX_read_line);
+
 	}
 
 }

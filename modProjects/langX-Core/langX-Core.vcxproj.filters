@@ -58,6 +58,9 @@
     <ClCompile Include="source\DateTime.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\Convert.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreModule.h">
