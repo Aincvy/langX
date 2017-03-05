@@ -37,6 +37,9 @@ namespace langX {
 		//  更新当前引用， 引用到另外一个对象身上
 		void update(Object *);
 
+		// 设置当前引用的是哪个对象
+		void setRefObject(langXObject *);
+
 	private:
 		void finalize();
 

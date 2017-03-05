@@ -46,6 +46,9 @@ namespace langX {
 
 		// 检测垃圾回收
 		void checkGC();
+		
+		// 清理掉所有的对象
+		void freeAllObjs();
 
 	private:
 		std::list<langXObject*> m_objects;

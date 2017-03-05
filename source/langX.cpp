@@ -118,15 +118,11 @@ namespace langX {
 	{
 		this->m_disposing = true;
 
-		for (std::map<std::string, XNameSpace*>::iterator i = this->m_namespace_map.begin(); i != this->m_namespace_map.end(); i++)
-		{
-			XNameSpace *p = i->second;
-			delete p;
-		}
-		this->m_namespace_map.clear();
-
+		// 清理内存对象
+		this->m_allocator->freeAllObjs();
 		delete this->m_allocator;
 
+		// 清理掉环境 
 		backToDeep1Env();
 
 		while (this->m_current_env != NULL && this->m_current_env->getParent() != NULL)
@@ -144,18 +140,26 @@ namespace langX {
 
 		this->m_script_env_map.clear();
 
+		// 清理命名空间
+		for (std::map<std::string, XNameSpace*>::iterator i = this->m_namespace_map.begin(); i != this->m_namespace_map.end(); i++)
+		{
+			XNameSpace *p = i->second;
+			delete p;
+		}
+		this->m_namespace_map.clear();
+
+		
+#ifdef WIN32
+		
+		// WIN32实现
+#else
 		// 清理加载的动态库
 		for (auto it = this->m_load_libs.begin(); it != this->m_load_libs.end(); it++)
 		{
 			it->second->unload(this);
-			
-#ifdef WIN32
-			// WIN32实现
-			
-#else
 			dlclose(it->first);
-#endif
 		}
+#endif
 
 		this->m_load_libs.clear();
 	}
@@ -885,12 +889,13 @@ namespace langX {
 		
 	}
 
-	int langXState::loadModule(const char * path)
-	{
 #ifdef WIN32
+	int langXState::loadModule(const char * path) {
 		// WIN32实现
 		return -1;
+	}
 #else
+	int langXState::loadModule(const char * path) {
 		void *soObj = dlopen(path, RTLD_LAZY);
 		if (soObj == NULL) {
 			printf("dlopen err:%s.\n", dlerror());
@@ -916,9 +921,10 @@ namespace langX {
 		this->m_load_libs[soObj] = mod;
 
 		return ret;
+	}
 #endif
 
-	}
+	
 
 	int langXState::loadConfig(const char * path)
 	{

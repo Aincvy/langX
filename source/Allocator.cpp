@@ -11,7 +11,6 @@
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 #include "../include/XArray.h"
-#include "../include/DestroyedObject.h"
 
 namespace langX {
 	Allocator::Allocator()
@@ -72,9 +71,6 @@ namespace langX {
 		{
 			return new FunctionRef(NULL);
 		}
-		else if (t == ObjectType::DESTROYEDOBJECT) {
-			return new DestroyedObject();
-		}
 
 		return NULL;
 	}
@@ -106,10 +102,6 @@ namespace langX {
 		else if (obj->getType() == XARRAY)
 		{
 			delete (XArrayRef *) obj;
-		}
-		else if(obj->getType() == DESTROYEDOBJECT)
-		{
-			delete (DestroyedObject*)obj;
 		}
 	}
 	
@@ -206,6 +198,17 @@ namespace langX {
 			gc();
 		}
 		
+	}
+
+	void Allocator::freeAllObjs()
+	{
+		for (auto i = this->m_objects.begin(); i != this->m_objects.end(); i++)
+		{
+			langXObject *obj = (*i);
+			delete obj;
+		}
+
+		this->m_objects.clear();
 	}
 
 

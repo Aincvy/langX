@@ -8,7 +8,6 @@
 #include "../include/langXObjectRef.h"
 #include "../include/Environment.h"
 #include "../include/Utils.h"
-#include "../include/DestroyedObject.h"
 
 namespace langX {
 
@@ -44,6 +43,7 @@ namespace langX {
 
 	langXObject::~langXObject()
 	{
+		this->m_disposing = true;
 		// 先干掉自己， 再干掉父类对象
 		
 		// 先调用自己的 析构函数
@@ -58,28 +58,17 @@ namespace langX {
 		}
 
 		// 清理引用
-		if (!getState()->isDisposing())
+		for (auto i = 0; i < this->m_refs.size(); i++)
 		{
-			DestroyedObject destoryObj;
-
-			for (auto i = 0 ; i < this->m_refs.size(); i++)
+			langXObjectRef *r = this->m_refs.at(i);
+			if (!r)
 			{
-				langXObjectRef *r = this->m_refs.at(i);
-				if (!r)
-				{
-					continue;
-				}
-				Environment* env= r->getEmergeEnv();
-				if (env)
-				{
-					env->putObject(r->getName(), &destoryObj);
-				}
-
-				delete r;
-				r = NULL;
+				continue;
 			}
-			this->m_refs.clear();
+			
+			r->setRefObject(nullptr);
 		}
+		this->m_refs.clear();
 
 		// 干掉父类对象
 		if (this->m_parent != NULL)
@@ -307,6 +296,11 @@ namespace langX {
 	const char * langXObject::characteristic() const
 	{
 		return nullptr;
+	}
+
+	bool langXObject::isDisposing() const
+	{
+		return this->m_disposing;
 	}
 
 

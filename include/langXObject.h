@@ -84,6 +84,9 @@ namespace langX {
 		// 返回这个对象的特性字符串
 		const char * characteristic() const;
 
+		// 此对象是否在销毁中
+		bool isDisposing() const;
+
 	private:
 
 		// 引用的那些引用
@@ -104,6 +107,9 @@ namespace langX {
 
 		// 这个对象的特性字符串
 		std::string m_characteristic;
+
+		// 此对象是否在销毁中
+		bool m_disposing = false;
 	};
 
 }
