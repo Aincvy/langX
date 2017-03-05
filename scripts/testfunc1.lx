@@ -1,0 +1,13 @@
+
+func1 => ( x ) {
+	println("x=" + x);
+}
+
+func2 => ( x){
+	return 1 + x ;
+}
+
+for ( i = 0 ; i < 5 ; i++){
+	func1 ( func2( 5 ) ) ;
+}
+

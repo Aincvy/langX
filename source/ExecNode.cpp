@@ -140,7 +140,25 @@ namespace langX {
 
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
-			n->opr_obj->op[i]->state = n->state;
+			Node *tmp = n->opr_obj->op[i];
+			tmp->state = n->state;
+
+			if (tmp->type == NODE_OPERATOR)
+			{
+				if (tmp->opr_obj->opr == FUNC_CALL)
+				{
+					// 参数
+					XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
+					if (args != nullptr)
+					{
+						for (size_t i = 0; i < args->index; i++)
+						{
+							stateExtends(args->args[i]);
+						}
+					}
+				}
+
+			}
 		}
 	}
 
@@ -157,7 +175,26 @@ namespace langX {
 		{
 			for (int i = 0; i < n->opr_obj->op_count; i++)
 			{
-				stateInLoop(n->opr_obj->op[i]);
+				Node *tmp = n->opr_obj->op[i];
+
+				if (tmp && tmp->type == NODE_OPERATOR)
+				{
+					if (tmp->opr_obj->opr == FUNC_CALL)
+					{
+						// 参数
+						XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
+						if (args != nullptr)
+						{
+							for (size_t i = 0; i < args->index; i++)
+							{
+								stateInLoop(args->args[i]);
+							}
+						}
+					}
+
+				}
+
+				stateInLoop(tmp);
 			}
 		}
 
@@ -214,7 +251,7 @@ namespace langX {
 	}
 
 
-	//递归释放节点值的内存, 如果节点是 一个获得数组元素的节点， 同样释放 indexNode 节点的值内存
+	//递归释放节点及子节点值的内存, 如果节点是 一个获得数组元素的节点， 同样释放 indexNode 节点的值内存
 	void recursiveFreeNodeValue(Node *n) {
 
 		if (n == NULL)
@@ -2537,9 +2574,6 @@ namespace langX {
 		}
 
 		Node *n1 = n->opr_obj->op[0];
-		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
-		const char *remark = fileInfoString(n->fileinfo).c_str();
-
 		__execNode(n1);
 		if (getState()->getCurrentEnv()->isDead())
 		{
@@ -2548,6 +2582,8 @@ namespace langX {
 			return;
 		}
 
+		std::string remark = fileInfoString(n->fileinfo);
+		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
 		char * name = n1->var_obj->name;
 		bool flag = true;
 		if (n1->value != NULL)
@@ -2555,7 +2591,7 @@ namespace langX {
 			if (n1->value->getType() == FUNCTION)
 			{
 				FunctionRef *f = (FunctionRef*)n1->value;
-				n->value = f->call(args, remark);
+				n->value = f->call(args, remark.c_str());
 				flag = false;
 			}
 			else if (n1->value->getType() == STRING)
@@ -2567,14 +2603,14 @@ namespace langX {
 				str += name;
 				str += " ";
 				str += remark;
-				n->value = call(n1Str->getValue(), args, remark);
+				n->value = call(n1Str->getValue(), args, str.c_str());
 				flag = false;
 			}
 		}
 
 		if (flag)
 		{
-			n->value = call(name, args, remark);
+			n->value = call(name, args, remark.c_str());
 			//printf("func %s exec end\n" , name);
 		}
 
@@ -2584,6 +2620,9 @@ namespace langX {
 
 		if (!n->state.in_func && !n->state.in_loop)
 		{
+#ifdef SHOW_DETAILS
+			printf("freeArgsList node in __execFUNC_CALL: \n" );
+#endif
 			freeArgsList(args);
 		}
 	}

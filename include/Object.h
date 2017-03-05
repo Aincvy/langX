@@ -1,12 +1,14 @@
 #pragma once
 #include <string>
 
+#define SHOW_DETAILS 1
+
 /*
 *   创建时间：  2016-07-07
 *   作者： The World(world@aincvy.com)
 *
 *   文件描述：
-*   描述：     表示一个 langX 对象 
+*   描述：     表示一个 langX 基础对象 
 */
 
 namespace langX {
@@ -21,7 +23,7 @@ namespace langX {
 	// 对象类型
 	enum ObjectType
 	{
-		UNKNOWN=100, NUMBER , STRING, FUNCTION, OBJECT , NULLOBJECT ,XARRAY , DESTROYEDOBJECT
+		UNKNOWN=100, NUMBER , STRING, FUNCTION, OBJECT , NULLOBJECT ,XARRAY  
 	};
 
 	class Object

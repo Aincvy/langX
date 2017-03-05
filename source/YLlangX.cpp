@@ -493,6 +493,9 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 		return NULL;
 	}
 
+#ifdef SHOW_DETAILS
+	printf("callFunc %s %s\n" , function->getName(), remark );
+#endif
 
 	getState()->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
@@ -512,12 +515,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 					continue;
 				}
 
-				// 释放这个参数节点的值先
-
-				getState()->getAllocator().free(args->args[i]->value);
-				args->args[i]->value = NULL;
-				//freeSubNodes(args->args[i]);
-
+				// 计算出参数节点的值。 然后克隆一份给 传参的那个数据结构。 然后再释放掉参数节点的值。 
 				execNode(args->args[i]);
 
 				if (getState()->getCurrentEnv()->isDead())
@@ -525,7 +523,20 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 					return NULL;
 				}
 
-				_3rdArgs.args[i] = args->args[i]->value;
+				Object * tmp1 = args->args[i]->value;
+				if (tmp1)
+				{
+					_3rdArgs.args[i] = tmp1->clone();
+				}
+				else {
+					_3rdArgs.args[i] = getState()->getAllocator().allocate(NULLOBJECT);
+				}
+				
+
+				// 释放这个参数节点的值
+				getState()->getAllocator().free(args->args[i]->value);
+				args->args[i]->value = NULL;
+
 			}
 			_3rdArgs.index = args->index;
 		}
@@ -539,12 +550,16 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 			else {
 				_3rdArgs.object = ((ObjectBridgeEnv*)currEnv1)->getEnvObject();
 			}
-
-
 		}
 
 		Object * ret1 = x3rdfunc->call(_3rdArgs);
 		getState()->getStackTrace().popFrame();
+
+		for (size_t i = 0; i < _3rdArgs.index; i++)
+		{
+			getState()->getAllocator().free(_3rdArgs.args[i]);
+		}
+
 		return ret1;
 	}
 
@@ -573,9 +588,8 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 
 			if (args->args[i] != NULL)
 			{
-				// 释放这个参数节点的值先
-				getState()->getAllocator().free(args->args[i]->value);
-				args->args[i]->value = NULL;
+
+				// 最初的时候， 参数的值应该是一个NULL 。 然后执行参数节点， 产生一个结果
 
 				execNode(args->args[i]);
 
@@ -587,11 +601,19 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 				if (args->args[i]->value)
 				{
 					env->putObject(params->args[i], args->args[i]->value);
+
 				}
 				else {
 					env->putObject(params->args[i], &nullobj);
 				}
 
+				// 上面的做法是把参数的值 复制到环境内。   
+				// Environment.putObject   内都是保留的一个副本。  
+				// 这片代码的本意是吧参数节点的值算出来，然后丢给函数。 现在任务已经完成了。 可以把参数节点的值给释放掉了
+
+				// 释放这个参数节点的值
+				getState()->getAllocator().free(args->args[i]->value);
+				args->args[i]->value = NULL;
 				
 				//printf("put param %s object: %d.on env: %p. number value: %f. \n", params->args[i] , t ,env, t == NUMBER ? ((Number*)args->args[i]->value)->getDoubleValue() : -1 );
 			}
@@ -725,6 +747,11 @@ void freeNode(XNode * n) {
 	{
 		return;
 	}
+
+#ifdef SHOW_DETAILS
+	printf("free node: %d\n",n->type);
+#endif
+
 	// 如果是一个函数节点， 直接FREE节点内存就好了
 	if (n->type == NODE_FUNCTION)
 	{

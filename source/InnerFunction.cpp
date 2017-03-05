@@ -59,12 +59,6 @@ namespace langX {
 					continue;
 				}
 
-				// 释放这个参数节点的值先
-
-				getState()->getAllocator().free(args->args[i]->value);
-				args->args[i]->value = NULL;
-				//freeSubNodes(args->args[i]);
-
 				execNode(args->args[i]);
 
 				if (getState()->getCurrentEnv()->isDead())
@@ -72,7 +66,18 @@ namespace langX {
 					return NULL;
 				}
 
-				_3rdArgs.args[i] = args->args[i]->value;
+				Object *obj = args->args[i]->value;
+				if (obj)
+				{
+					_3rdArgs.args[i] = obj->clone();
+				}
+				else {
+					_3rdArgs.args[i] = getState()->getAllocator().allocate(NULLOBJECT);
+				}
+
+				// 释放这个参数节点的值
+				getState()->getAllocator().free(args->args[i]->value);
+				args->args[i]->value = NULL;
 			}
 			_3rdArgs.index = args->index;
 		}
@@ -82,6 +87,11 @@ namespace langX {
 		if (!n->state.in_func && !n->state.in_loop)
 		{
 			freeArgsList(args);
+		}
+
+		for (size_t i = 0; i < _3rdArgs.index; i++)
+		{
+			getState()->getAllocator().free(_3rdArgs.args[i]);
 		}
 
 		return ret;

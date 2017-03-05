@@ -3,6 +3,12 @@
 #include <stdarg.h>
 #include <string.h>
 
+#ifdef WIN32
+#else
+#include <unistd.h>
+#include <termios.h>
+#endif
+
 #include "../include/RegFunctions.h"
 #include "../include/Function.h"
 #include "../include/Object.h"
@@ -10,8 +16,39 @@
 #include "../include/Number.h"
 #include "../include/YLlangX.h"
 
+
+static struct termios old, newone;
+
 namespace langX {
 	
+	/* Initialize new terminal i/o settings */
+	void initTermios(int echo)
+#ifdef WIN32
+	{
+		// win32 
+	}
+#else
+	{
+		tcgetattr(0, &old); /* grab old terminal i/o settings */
+		newone = old; /* make new settings same as old settings */
+		newone.c_lflag &= ~ICANON; /* disable buffered i/o */
+		newone.c_lflag &= echo ? ECHO : ~ECHO; /* set echo mode */
+		tcsetattr(0, TCSANOW, &newone); /* use these new terminal i/o settings now */
+	}
+#endif
+
+	/* Restore old terminal i/o settings */
+	void resetTermios(void)
+#ifdef WIN32
+	{
+		// win32 
+	}
+#else
+	{
+		tcsetattr(0, TCSANOW, &old);
+	}
+#endif
+
 	// 打印语句之后自动换行
 	Object * langX_println(X3rdFunction *func, const X3rdArgs & args) {
 		if (args.index <= 0)
@@ -154,10 +191,27 @@ namespace langX {
 	// 读取一行
 	Object * langX_read_line(X3rdFunction *func, const X3rdArgs & args) {
 
-		std::string str;
-		std::getline(std::cin, str);
+		char inputBuffer[2048] = { 0 };
+		int inputIndex = 0;
 
-		return new String(str.c_str());
+		initTermios(0);
+		char c;
+		while ((c = getchar()) != '\n') {
+
+			if (c == '\b' && inputIndex > 0) {
+				inputBuffer[--inputIndex] = '\0';
+				printf("\b \b");
+			}
+			else {
+				inputBuffer[inputIndex++] = c;
+				printf("%c", c);
+			}
+
+		}
+		resetTermios();
+		printf("\n");
+
+		return new String(inputBuffer);
 	}
 
 	// 读取一个数字

@@ -15,6 +15,11 @@ namespace langX {
 	{
 		if (this->m_object_ref != nullptr)
 		{
+			// 当前对象正在销毁中， 则 直接返回， 不减少引用
+			if (this->m_object_ref->isDisposing())
+			{
+				return;
+			}
 			this->m_object_ref->subRef(this);
 		}
 	}
@@ -24,18 +29,34 @@ namespace langX {
 	}
 	void langXObjectRef::setMember(const char *name, Object *obj)
 	{
+		if (m_object_ref == nullptr)
+		{
+			return ;
+		}
 		this->m_object_ref->setMember(name, obj);
 	}
 	Object * langXObjectRef::getMember(const char *name) const
 	{
+		if (m_object_ref == nullptr)
+		{
+			return NULL;
+		}
 		return this->m_object_ref->getMember(name);
 	}
 	Function * langXObjectRef::getFunction(const char *name) const
 	{
+		if (m_object_ref == nullptr)
+		{
+			return NULL;
+		}
 		return this->m_object_ref->getFunction(name);
 	}
 	const ClassInfo * langXObjectRef::getClassInfo() const
 	{
+		if (m_object_ref == nullptr)
+		{
+			return NULL;
+		}
 		return this->m_object_ref->getClassInfo();
 	}
 	Function * langXObjectRef::getConstructor() const
@@ -104,6 +125,11 @@ namespace langX {
 			this->m_object_ref->justAddRef(this);
 		}
 
+	}
+
+	void langXObjectRef::setRefObject(langXObject *obj)
+	{
+		this->m_object_ref = obj;
 	}
 
 	void langXObjectRef::finalize()
