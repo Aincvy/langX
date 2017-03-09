@@ -39,6 +39,7 @@
     <ClInclude Include="include\langX.h" />
     <ClInclude Include="include\langXObject.h" />
     <ClInclude Include="include\langXObjectRef.h" />
+    <ClInclude Include="include\langXThread.h" />
     <ClInclude Include="include\NullObject.h" />
     <ClInclude Include="include\Number.h" />
     <ClInclude Include="include\Object.h" />
@@ -66,6 +67,7 @@
     <ClCompile Include="source\langX.cpp" />
     <ClCompile Include="source\langXObject.cpp" />
     <ClCompile Include="source\langXObjectRef.cpp" />
+    <ClCompile Include="source\langXThread.cpp" />
     <ClCompile Include="source\NullObject.cpp" />
     <ClCompile Include="source\Number.cpp" />
     <ClCompile Include="source\Object.cpp" />
