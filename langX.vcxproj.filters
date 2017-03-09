@@ -87,6 +87,9 @@
     <ClInclude Include="include\Config.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\langXThread.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="extern\lex.yy.c">
@@ -162,6 +165,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\Config.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\langXThread.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
