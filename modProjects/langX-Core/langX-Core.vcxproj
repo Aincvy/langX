@@ -44,6 +44,7 @@
     <ClCompile Include="source\Set.cpp" />
     <ClCompile Include="source\Stack.cpp" />
     <ClCompile Include="source\Stream.cpp" />
+    <ClCompile Include="source\Thread.cpp" />
     <ClCompile Include="source\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>

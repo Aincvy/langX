@@ -9,6 +9,7 @@ namespace langX {
 		regMath(state, space);
 		regDateTime(state, space);
 		regConvert(state, space);
+		regThread(state, space);
 
 		return 0;
 	}
