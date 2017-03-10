@@ -15,4 +15,6 @@ namespace langX {
 
 	int regConvert(langXState *state, XNameSpace* space);
 
+	int regThread(langXState *state, XNameSpace* space);
+
 }
