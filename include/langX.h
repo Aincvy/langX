@@ -18,6 +18,7 @@ namespace langX {
 	class GlobalEnvironment;
 	class ScriptEnvironment;
 	class X3rdModule;
+	class langXThreadMgr;
 
 	/*
 	  所有的脚本环境最后在释放内存。 
@@ -31,33 +32,11 @@ namespace langX {
 		langXState();
 		~langXState();
 
-		void putObject(const char* , Object*);
-		void putObject(const std::string &, Object*);
-		Object * getObject(const std::string &);
 
-		/* 生成一个新的环境，并将当前环境设置为该环境的父级环境， 然后将该环境设置为当前环境 */
-		Environment* newEnv();
-		// 将参数作为 当前环境， 并将原当前环境至为 参数的 父级环境
-		Environment* newEnv(Environment *);
-		// 并不会将参数赋值， 而是 new 一个 环境的桥接环境
-		Environment* newEnv2(Environment *);
-		/* 将环境退回一级，如果当前只有一级环境，则什么也不做 
-		  如果退回上级环境， 当前环境内的所有变量的内存都将会被释放. 当前环境也会被释放 */
-		void backEnv();
-		//  是否对当前环境的指针进行 delete 操作 .  参数为false 的时候， 不进行delete 操作
-		void backEnv(bool);
-
-		// 获得 当前环境
-		Environment *getCurrentEnv() const;
 		// 换的 全局环境
 		Environment *getGlobalEnv() const;
 		// 获得脚本环境或者 命名空间环境  [类型视情况而定]
 		Environment *getScriptOrNSEnv() const;
-
-		// 获得最近的一个对象环境 (必定会返回一个 ObjectBridgeEnv!)
-		Environment *getNearestObjectEnv() const;
-		// 根据深度 获得环境 
-		Environment *getEnvironment(int deep);
 
 		// 注册一个第三方函数
 		void reg3rd(const char *, X3rdFuncWorker worker);
@@ -71,15 +50,6 @@ namespace langX {
 		void regClassToGlobal(ClassInfo *);
 
 		Allocator &getAllocator() const;
-
-		// 获得当前的调用栈
-		StackTrace & getStackTrace();
-
-		// 打印调用堆栈信息  会优先输出最近的那个信息
-		void printStackTrace() const;
-
-		// 丢出一个 异常。  参数的内存在执行结束之后会被释放
-		void throwException(langXObjectRef *);
 
 		// NEW 一个对象 ，并不会执行对象的构造函数
 		langXObject *newObject(const char *) const;
@@ -138,11 +108,10 @@ namespace langX {
 	private:
 		// 全局环境
 		GlobalEnvironment *m_global_env = nullptr;
-		Environment *m_current_env = nullptr;
+		
 		// 当前的脚本环境， 可能是一个脚本环境， 可能是一个命名空间环境
 		Environment *m_script_env = nullptr;
 		Allocator  *m_allocator = nullptr;
-		StackTrace m_stacktrace;
 		ConfigX m_config;
 
 		std::map<std::string, XNameSpace*> m_namespace_map;
@@ -162,11 +131,12 @@ namespace langX {
 
 		bool m_yy_parsing = false;
 
-		int m_current_deep = 0;
+		
 
 		bool m_disposing = false;
 
-		//  返回到 深度为1的 环境上
-		void backToDeep1Env();
+		langXThreadMgr* m_thread_mgr;
+
+		
 	};
 }

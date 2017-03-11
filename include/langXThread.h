@@ -4,18 +4,22 @@
 
 #include <string>
 #include <map>
+#include <thread>
+#include <mutex>
 
 namespace langX {
 
+	class Environment;
+
 	// 线程状态
-	enum langXThreadStatus{
+	enum langXThreadStatus {
 		// 运行中
-		RUNNING = 101 ,
+		Running = 101,
 		// 睡眠
-		SLEEP  ,
+		Sleep,
 		// 就绪状态
-		Runnable ,
-	}
+		Runnable,
+	};
 	
 	// 调用栈的栈顶状态 
 	struct StackTraceTopStatus{
@@ -28,18 +32,70 @@ namespace langX {
 		short inFunction = 0 ;
 		// 是否在switch 内
 		short inSwitch = 0 ;
-	}
+	};
 	
 
 	// 线程信息
 	class langXThread
 	{
 	public:
-		langXThread();
+		// id 分配过来的线程id
+		langXThread(int id);
 		~langXThread();
 
 		// 获得当前的调用栈
 		StackTrace & getStackTrace();
+
+		// 获得这个线程的名字
+		const char * getName() const;
+		// 设置这个线程的名字
+		void setName(const char *);
+		
+		// 设置这个线程的状态
+		langXThreadStatus getStatus() const;
+		// 获得这个线程的状态
+		void setStatus(langXThreadStatus );
+
+		// 设置是否在循环内  true:是，false  否
+		void setInLoop(bool);
+		// 当前是否在循环内
+		bool isInLoop();
+		// 
+		void setInFunction(bool);
+		bool isInFunction();
+		void setInSwitch(bool);
+		bool isInSwitch();
+
+		void putObject(const char*, Object*);
+		void putObject(const std::string &, Object*);
+		Object * getObject(const std::string &);
+
+		// 丢出一个 异常。  参数的内存在执行结束之后会被释放
+		void throwException(langXObjectRef *);
+
+
+		// 获得 当前环境
+		Environment *getCurrentEnv() const;
+
+		// 打印调用堆栈信息  会优先输出最近的那个信息
+		void printStackTrace() const;
+
+		/* 生成一个新的环境，并将当前环境设置为该环境的父级环境， 然后将该环境设置为当前环境 */
+		Environment* newEnv();
+		// 将参数作为 当前环境， 并将原当前环境至为 参数的 父级环境
+		Environment* newEnv(Environment *);
+		// 并不会将参数赋值， 而是 new 一个 环境的桥接环境
+		Environment* newEnv2(Environment *);
+		/* 将环境退回一级，如果当前只有一级环境，则什么也不做
+		如果退回上级环境， 当前环境内的所有变量的内存都将会被释放. 当前环境也会被释放 */
+		void backEnv();
+		//  是否对当前环境的指针进行 delete 操作 .  参数为false 的时候， 不进行delete 操作
+		void backEnv(bool);
+
+		// 获得最近的一个对象环境 (必定会返回一个 ObjectBridgeEnv!)
+		Environment *getNearestObjectEnv() const;
+		// 根据深度 获得环境 
+		Environment *getEnvironment(int deep);
 
 	private:
 
@@ -50,6 +106,17 @@ namespace langX {
 		// 这个线程的名字
 		std::string m_name;
 
+		langXThreadStatus m_thread_status;
+		// 执行栈的栈顶状态
+		StackTraceTopStatus m_exec_status;
+
+		// 线程的当前环境
+		Environment *m_current_env = nullptr;
+
+		int m_current_deep = 0;
+
+		//  返回到 深度为1的 环境上
+		void backToDeep1Env();
 
 	};
 
@@ -61,10 +128,24 @@ namespace langX {
 		langXThreadMgr();
 		~langXThreadMgr();
 
+		// 初始化 主线程信息
+		void initMainThreadInfo();
+
+		// 获得当前线程的对象
+		langXThread *currentThread();
+
 	private:
 		
+		// key: 从系统函数获取的线程id ,value: 线程对象
+		std::map<std::thread::id, langXThread*> m_idmap;
+		// key: 自身内部的线程id, value: 线程对象
+		std::map<int, langXThread*> m_selfmap;
 		
-		
+		// id 自增量
+		int m_id_gen;
+		// 用于id自增量的互斥锁
+		std::mutex m_mutex_id_gen;
+
 	};
 
 
