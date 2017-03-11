@@ -142,13 +142,6 @@ namespace langX {
 	// 节点的状态， 比如： 正常，在循环内，在函数内
 	struct NodeState
 	{
-		// 在循环内的语句
-		bool in_loop;
-		// 在函数内的语句
-		bool in_func;
-		// 在switch 语句中
-		bool in_switch;
-
 		// 是否在 break 状态
 		bool isBreak;
 		// 是否在 return 状态

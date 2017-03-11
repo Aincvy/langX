@@ -19,6 +19,7 @@ namespace langX {
 	class ScriptEnvironment;
 	class X3rdModule;
 	class langXThreadMgr;
+	class langXThread;
 
 	/*
 	  所有的脚本环境最后在释放内存。 
@@ -104,6 +105,9 @@ namespace langX {
 
 		// 是否正在销毁中
 		bool isDisposing() const;
+
+		// 返回当前线程信息
+		langXThread* curThread() const;
 
 	private:
 		// 全局环境

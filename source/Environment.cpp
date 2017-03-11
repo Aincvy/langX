@@ -10,6 +10,7 @@
 #include "../include/YLlangX.h"
 #include "../include/Exception.h"
 #include "../include/Allocator.h"
+#include "../include/langXThread.h"
 
 namespace langX {
 
@@ -58,7 +59,7 @@ namespace langX {
 	{
 		char tmp[200] = { 0 };
 		sprintf(tmp, "cannot put class %s into a (Environment/TryEnvironment)!", name);
-		getState()->throwException(newUnsupportedOperationException(tmp)->addRef());
+		getState()->curThread()->throwException(newUnsupportedOperationException(tmp)->addRef());
 
 		delete claxx;
 	}
@@ -85,16 +86,6 @@ namespace langX {
 	void Environment::setParent(Environment *env)
 	{
 		this->m_parent = env;
-	}
-
-	void Environment::setDead(bool b)
-	{
-		this->m_dead = b;
-	}
-
-	bool Environment::isDead() const
-	{
-		return this->m_dead;
 	}
 
 	void Environment::setRestrict(bool flag)
@@ -339,7 +330,7 @@ namespace langX {
 	{
 		char tmp[200] = { 0 };
 		sprintf(tmp, "cannot put function %s into a object!", name);
-		getState()->throwException(newUnsupportedOperationException(tmp)->addRef());
+		getState()->curThread()->throwException(newUnsupportedOperationException(tmp)->addRef());
 
 		delete f;
 	}
@@ -348,7 +339,7 @@ namespace langX {
 	{
 		char tmp[200] = { 0 };
 		sprintf(tmp, "cannot put function %s into a object!", name.c_str());
-		getState()->throwException(newUnsupportedOperationException(tmp)->addRef());
+		getState()->curThread()->throwException(newUnsupportedOperationException(tmp)->addRef());
 
 		delete f;
 	}
@@ -934,8 +925,7 @@ namespace langX {
 
 	GlobalEnvironment::GlobalEnvironment()
 	{
-		//  公共环境 ， 算为死亡环境
-		setDead(true);
+		
 	}
 
 	GlobalEnvironment::~GlobalEnvironment()

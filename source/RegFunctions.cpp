@@ -15,6 +15,7 @@
 #include "../include/String.h"
 #include "../include/Number.h"
 #include "../include/YLlangX.h"
+#include "../include/langXThread.h"
 
 
 static struct termios old, newone;
@@ -225,7 +226,7 @@ namespace langX {
 
 	Object * langX_print_stack_trace(X3rdFunction *func, const X3rdArgs & args) {
 
-		func->getLangX()->printStackTrace();
+		func->getLangX()->curThread()->printStackTrace();
 
 		return NULL;
 	}

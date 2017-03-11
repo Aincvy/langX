@@ -60,11 +60,8 @@ namespace langX {
 				}
 
 				execNode(args->args[i]);
-
-				if (getState()->getCurrentEnv()->isDead())
-				{
-					return NULL;
-				}
+				
+				// TODO  判定一下是否出现了异常
 
 				Object *obj = args->args[i]->value;
 				if (obj)

@@ -11,6 +11,7 @@
 #include "../include/ClassInfo.h"
 #include "../include/Environment.h"
 #include "../include/NullObject.h"
+#include "../include/langXThread.h"
 
 
 langX::Allocator m_exec_alloc;
@@ -339,12 +340,12 @@ namespace langX {
 		Environment *env = getFunctionEnv();
 		if (env != NULL)
 		{
-			getState()->newEnv(env);
+			getState()->curThread()->newEnv(env);
 		}
 		Object *ret = callFunc(getRefFunction(), argsList, remark);
 		if (env != NULL)
 		{
-			getState()->backEnv();
+			getState()->curThread()->backEnv();
 		}
 
 		return ret;
@@ -356,7 +357,7 @@ namespace langX {
 		Function *function = this->m_func;
 		Object * ret = NULL;
 
-		getState()->getStackTrace().newFrame(function->getClassInfo(), function, remark);
+		getState()->curThread()->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
 		if (function->is3rd())
 		{
@@ -388,11 +389,11 @@ namespace langX {
 			Environment *tEnv = getFunctionEnv();
 			if (tEnv != nullptr)
 			{
-				getState()->newEnv(tEnv);
+				getState()->curThread()->newEnv(tEnv);
 			}
 
 			// 函数执行的环境
-			Environment * env = getState()->newEnv();
+			Environment * env = getState()->curThread()->newEnv();
 
 			if (args != NULL)
 			{
@@ -419,17 +420,17 @@ namespace langX {
 			//printf("call function %s over in function ref." ,this->m_func->getName());
 			if (env != NULL)
 			{
-				getState()->backEnv();
+				getState()->curThread()->backEnv();
 			}
 			if (tEnv != NULL)
 			{
-				getState()->backEnv();
+				getState()->curThread()->backEnv();
 			}
 
 		}
 		
 
-		getState()->getStackTrace().popFrame();
+		getState()->curThread()->getStackTrace().popFrame();
 
 		return ret;
 	}
