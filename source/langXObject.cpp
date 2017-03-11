@@ -8,6 +8,7 @@
 #include "../include/langXObjectRef.h"
 #include "../include/Environment.h"
 #include "../include/Utils.h"
+#include "../include/langXThread.h"
 
 namespace langX {
 
@@ -240,12 +241,12 @@ namespace langX {
 
 			Environment *env = getObjectEnvironment();
 
-			getState()->newEnv2(env);
-			getState()->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
+			getState()->curThread()->newEnv2(env);
+			getState()->curThread()->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
 			callFunc(func, args,remark);
 
-			getState()->getStackTrace().popFrame();
-			getState()->backEnv();
+			getState()->curThread()->getStackTrace().popFrame();
+			getState()->curThread()->backEnv();
 		}
 	}
 
@@ -258,9 +259,9 @@ namespace langX {
 			return NULL;
 		}
 
-		getState()->newEnv2(this->m_my_env);
+		getState()->curThread()->newEnv2(this->m_my_env);
 		Object *obj = func->call();
-		getState()->backEnv();
+		getState()->curThread()->backEnv();
 
 		return obj;
 	}

@@ -32,6 +32,8 @@ namespace langX {
 		short inFunction = 0 ;
 		// 是否在switch 内
 		short inSwitch = 0 ;
+		// 是否在异常内  发生异常之后会累加此值，遇到 try-catch 则会减少1
+		short inException = 0;
 	};
 	
 
@@ -65,6 +67,8 @@ namespace langX {
 		bool isInFunction();
 		void setInSwitch(bool);
 		bool isInSwitch();
+		void setInException(bool);
+		bool isInException();
 
 		void putObject(const char*, Object*);
 		void putObject(const std::string &, Object*);

@@ -171,6 +171,25 @@ namespace langX {
 		return m_exec_status.inSwitch > 0;
 	}
 
+	void langXThread::setInException(bool flag)
+	{
+		if (flag)
+		{
+			m_exec_status.inException++;
+		}
+		else {
+			if (m_exec_status.inException > 0)
+			{
+				m_exec_status.inException--;
+			}
+		}
+	}
+
+	bool langXThread::isInException()
+	{
+		return m_exec_status.inException > 0;
+	}
+
 	Environment * langXThread::getCurrentEnv() const
 	{
 		return this->m_current_env;
@@ -248,6 +267,7 @@ namespace langX {
 	void langXThread::throwException(langXObjectRef *obj)
 	{
 		// 丢出一个异常
+		this->setInException(true);
 
 		// 找到try环境
 		TryEnvironment *tryEnv = NULL;
@@ -298,7 +318,6 @@ namespace langX {
 
 			// 新建一个环境，并设置当前环境为 dead 环境
 			newEnv();
-			this->m_current_env->setDead(true);
 
 			// 删除对象
 			delete obj->getRefObject();
@@ -328,10 +347,6 @@ namespace langX {
 			}
 
 			// 主动进行 try-catch 操作的时候 ， try 执行后会释放一个环境，所以当前环境保留
-			// 将当前环境设置为死亡环境， 这样就可以忽略 try 内的剩余操作了？
-			env->setDead(true);
-
-			//setInException(false);
 
 			// 删除对象
 			delete obj->getRefObject();

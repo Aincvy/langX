@@ -60,11 +60,6 @@ namespace langX {
 		Environment *getParent() const;
 		void setParent(Environment *);
 
-		//  死亡符号。  如果当前环境为 死亡环境， 则不应该执行节点，直接返回就好了
-		void setDead(bool);
-		//  死亡符号。  如果当前环境为 死亡环境， 则不应该执行节点，直接返回就好了
-		bool isDead() const;
-
 		// 设置限定
 		void setRestrict(bool);
 		// 是否限定

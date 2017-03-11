@@ -19,6 +19,7 @@
 #include "../include/StackTrace.h"
 #include "../include/NullObject.h"
 #include "../include/InnerFunction.h"
+#include "../include/langXThread.h"
 
 
 namespace langX {
@@ -53,7 +54,7 @@ namespace langX {
 	将节点的值更新到当前环境中
 	*/
 	void setValueToEnv(const char*name, Object *val) {
-		setValueToEnv2(name, val, getState()->getCurrentEnv());
+		setValueToEnv2(name, val, getState()->curThread()->getCurrentEnv());
 	}
 
 	/*
@@ -162,51 +163,9 @@ namespace langX {
 		}
 	}
 
-	// 将 n 及 n 下的所有子节点 的状态更新为在循环内
-	void stateInLoop(Node *n) {
-		if (!n)
-		{
-			return;
-		}
-
-		n->state.in_loop = true;
-
-		if (n->type == NODE_OPERATOR)
-		{
-			for (int i = 0; i < n->opr_obj->op_count; i++)
-			{
-				Node *tmp = n->opr_obj->op[i];
-
-				if (tmp && tmp->type == NODE_OPERATOR)
-				{
-					if (tmp->opr_obj->opr == FUNC_CALL)
-					{
-						// 参数
-						XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
-						if (args != nullptr)
-						{
-							for (size_t i = 0; i < args->index; i++)
-							{
-								stateInLoop(args->args[i]);
-							}
-						}
-					}
-
-				}
-
-				stateInLoop(tmp);
-			}
-		}
-
-	}
-
 	//  释放 n 及 n 下的所有节点的参数列表内存
 	void freeAllArgList(Node *n) {
 		if (!n)
-		{
-			return;
-		}
-		if (n->state.in_func)
 		{
 			return;
 		}
@@ -350,18 +309,16 @@ namespace langX {
 
 			return;
 		}
-		if (getState()->getCurrentEnv()->isDead())
-		{
-			return;
-		}
+		
+		// TODO  判定一下是否出现了异常
 
-		Object *obj = getState()->getObject(left->var_obj->name);
+		Object *obj = getState()->curThread()->getObject(left->var_obj->name);
 		if (obj == NULL)
 		{
 			// 左值没声明过, 那么左值的产生环境就为 当前环境
 			obj = m_exec_alloc.allocate(rightType);
-			obj->setEmergeEnv(getState()->getCurrentEnv());
-			getState()->putObject(left->var_obj->name, obj);
+			obj->setEmergeEnv(getState()->curThread()->getCurrentEnv());
+			getState()->curThread()->putObject(left->var_obj->name, obj);
 		}
 		else {
 			//  左值声明过
@@ -426,18 +383,19 @@ namespace langX {
 	void __exec43(Node *n) {
 		doSubNodes(n);
 
-		if (getState()->getCurrentEnv()->isDead())
-		{
-			freeSubNodes(n);
-			return;
-		}
+		// TODO  判定一下是否出现了异常
+		//if (getState()->curThread()->isInException())
+		//{
+		//	freeSubNodes(n);
+		//	return;
+		//}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '+'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '+'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -537,7 +495,7 @@ namespace langX {
 					n->value = m_exec_alloc.allocateString(ss.str().c_str());
 		}
 		else {
-			getState()->throwException(newArithmeticException("args type error when do opr '+' .")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("args type error when do opr '+' .")->addRef());
 		}
 
 		freeSubNodes(n);
@@ -548,18 +506,20 @@ namespace langX {
 	// -
 	void __exec45(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+
+		// TODO  判定一下是否出现了异常
+		/*if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
-		}
+		}*/
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -583,7 +543,7 @@ namespace langX {
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '-'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '-'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -595,18 +555,20 @@ namespace langX {
 	// *
 	void __exec42(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
-		{
-			freeSubNodes(n);
-			return;
-		}
+
+		// TODO  判定一下是否出现了异常
+		//if (getState()->curThread()->isInException())
+		//{
+		//	freeSubNodes(n);
+		//	return;
+		//}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '*'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '*'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -631,7 +593,7 @@ namespace langX {
 
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '*'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '*'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -644,7 +606,7 @@ namespace langX {
 	// /
 	void __exec47(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -655,7 +617,7 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '/'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '/'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -680,7 +642,7 @@ namespace langX {
 
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '/'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '/'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -688,7 +650,7 @@ namespace langX {
 		double d2 = ((Number*)n2->value)->getDoubleValue();
 		if (d2 == 0)
 		{
-			getState()->throwException(newArithmeticException("/ by zero on opr '/'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("/ by zero on opr '/'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -702,7 +664,7 @@ namespace langX {
 	void __exec124(Node *n) {
 
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -713,13 +675,13 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '|'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '|'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '|'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '|'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -736,24 +698,26 @@ namespace langX {
 	// 按位与  &
 	void __exec38(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
-		{
-			freeSubNodes(n);
-			return;
-		}
+
+		// TODO  判定一下是否出现了异常
+		//if (getState()->curThread()->isInException())
+		//{
+		//	freeSubNodes(n);
+		//	return;
+		//}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '&'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '&'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '&'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '&'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -770,7 +734,7 @@ namespace langX {
 	// 按位异或  ^
 	void __exec94(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -781,13 +745,13 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '^'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '^'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '^'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '^'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -805,7 +769,7 @@ namespace langX {
 	void __exec126(Node *n) {
 
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -815,13 +779,13 @@ namespace langX {
 
 		if (n1->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '~'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '~'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '~'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '~'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -838,7 +802,7 @@ namespace langX {
 	void __execLEFT_SHIFT(Node *n) {
 
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -849,7 +813,7 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '<<'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '<<'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -874,7 +838,7 @@ namespace langX {
 
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '<<'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '<<'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -893,7 +857,7 @@ namespace langX {
 	void __execRIGHT_SHIFT(Node *n) {
 
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -904,7 +868,7 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '>>'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '>>'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -929,7 +893,7 @@ namespace langX {
 
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '>>'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '>>'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -947,7 +911,7 @@ namespace langX {
 	void __exec37(Node *n) {
 
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -958,7 +922,7 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '%'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '%'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -983,7 +947,7 @@ namespace langX {
 
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '%'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '%'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1018,7 +982,7 @@ namespace langX {
 			}
 			else {
 				//printf("left not the CLAXX_MEMBER! \n");
-				getState()->throwException(newException("left not the CLAXX_MEMBER!")->addRef());
+				getState()->curThread()->throwException(newException("left not the CLAXX_MEMBER!")->addRef());
 				freeSubNodes(n);
 				return;
 			}
@@ -1031,12 +995,12 @@ namespace langX {
 			if (left->type != NODE_VARIABLE)
 			{
 				//printf("left not the NODE_VARIABLE\n");
-				getState()->throwException(newTypeErrorException("left not the NODE_VARIABLE")->addRef());
+				getState()->curThread()->throwException(newTypeErrorException("left not the NODE_VARIABLE")->addRef());
 				freeSubNodes(n);
 				return;
 			}
 
-		if (getState()->getCurrentEnv()->isDead()) {
+		if (getState()->curThread()->isInException()) {
 			return;
 		}
 
@@ -1044,7 +1008,7 @@ namespace langX {
 		Node *right = n->opr_obj->op[1];
 		//printf("right->value: %p\n", right->value);
 		checkValue(right);
-		if (getState()->getCurrentEnv()->isDead()) {
+		if (getState()->curThread()->isInException()) {
 			return;
 		}
 
@@ -1054,11 +1018,11 @@ namespace langX {
 			// 判断是否是函数
 			if (right->type == NODE_VARIABLE)
 			{
-				Function *func = getState()->getCurrentEnv()->getFunction(right->var_obj->name);
+				Function *func = getState()->curThread()->getCurrentEnv()->getFunction(right->var_obj->name);
 				if (func != nullptr)
 				{
 					FunctionRef * f = m_exec_alloc.allocateFunctionRef(func);
-					f->setEmergeEnv(getState()->getCurrentEnv());
+					f->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 					right->value = f;
 				}
 			}
@@ -1074,7 +1038,7 @@ namespace langX {
 		if (objectRef == NULL && arrayInfo == NULL)
 		{
 			checkVarValue(left, rightType);
-			if (getState()->getCurrentEnv()->isDead()) {
+			if (getState()->curThread()->isInException()) {
 				return;
 			}
 
@@ -1082,7 +1046,7 @@ namespace langX {
 			{
 				char tmp[1024] = { 0 };
 				sprintf(tmp, "cannot change %s value, because it is a const value.", left->value->getName());
-				getState()->throwException(newUnsupportedOperationException(tmp)->addRef());
+				getState()->curThread()->throwException(newUnsupportedOperationException(tmp)->addRef());
 				return;
 			}
 
@@ -1117,7 +1081,7 @@ namespace langX {
 
 			if (obj == NULL || obj->getType() != XARRAY)
 			{
-				getState()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
+				getState()->curThread()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
 				freeSubNodes(n);
 				//printf("left value is not array with array operator!\n");
 				return;
@@ -1131,7 +1095,7 @@ namespace langX {
 
 				if (t->value == NULL || t->value->getType() != NUMBER)
 				{
-					getState()->throwException(newException("error array length!")->addRef());
+					getState()->curThread()->throwException(newException("error array length!")->addRef());
 					freeSubNodes(n);
 					//printf("error array length !\n");
 					return;
@@ -1156,7 +1120,7 @@ namespace langX {
 			{
 				char tmp[100] = { 0 };
 				sprintf(tmp, "cannot find member %s in class %s!", name, objectRef->getClassInfo()->getName());
-				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
 
 			}
 			else {
@@ -1164,7 +1128,7 @@ namespace langX {
 				{
 					char tmp[1024] = { 0 };
 					sprintf(tmp, "cannot change %s value, because it is a const value.", left->value->getName());
-					getState()->throwException(newUnsupportedOperationException(tmp)->addRef());
+					getState()->curThread()->throwException(newUnsupportedOperationException(tmp)->addRef());
 					return;
 				}
 
@@ -1193,7 +1157,7 @@ namespace langX {
 
 	void __execADD_EQ(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1204,13 +1168,13 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '+='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '+='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '+='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '+='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1224,7 +1188,7 @@ namespace langX {
 
 	void __execSUB_EQ(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1235,13 +1199,13 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '-='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '-='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '-='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '-='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1255,7 +1219,7 @@ namespace langX {
 
 	void __execMUL_EQ(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1266,13 +1230,13 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '*='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '*='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '*='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '*='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1286,7 +1250,7 @@ namespace langX {
 
 	void __execDIV_EQ(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1297,13 +1261,13 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '/='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '/='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '/='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '/='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1311,7 +1275,7 @@ namespace langX {
 		double d2 = ((Number*)n2->value)->getDoubleValue();
 		if (d2 == 0)
 		{
-			getState()->throwException(newArithmeticException("/ by zero on opr '/='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("/ by zero on opr '/='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1325,7 +1289,7 @@ namespace langX {
 
 	void __execMOD_EQ(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1336,13 +1300,13 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '%='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '%='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '%='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '%='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1364,9 +1328,10 @@ namespace langX {
 			return;
 		}
 
-		if (!n->state.in_loop && !n->state.in_switch)
+		langXThread * thread = getState()->curThread();
+		if (!thread->isInLoop() && !thread->isInSwitch())
 		{
-			getState()->throwException(newUnsupportedOperationException("invalid break stmt.")->addRef());
+			getState()->curThread()->throwException(newUnsupportedOperationException("invalid break stmt.")->addRef());
 			//printf("无效的BREAK 语句 ");
 			return;
 		}
@@ -1382,9 +1347,10 @@ namespace langX {
 
 		// 不在函数内 也能使用 return 语句？
 		// 回头再调整吧， 这个 无伤大雅
-		if (!n->state.in_func)
+		langXThread * thread = getState()->curThread();
+		if (!thread->isInFunction())
 		{
-			getState()->throwException(newUnsupportedOperationException("invalid return stmt.")->addRef());
+			getState()->curThread()->throwException(newUnsupportedOperationException("invalid return stmt.")->addRef());
 			//printf("无效的 return 语句");
 			return;
 		}
@@ -1403,11 +1369,9 @@ namespace langX {
 				return;
 			}
 
-			a->state.in_func = n->state.in_func;
-			a->state.in_loop = n->state.in_loop;
 			__execNode(a);
 
-			if (getState()->getCurrentEnv()->isDead() || a->value == NULL)
+			if (getState()->curThread()->isInException() || a->value == NULL)
 			{
 				freeSubNodes(n);
 				return;
@@ -1422,7 +1386,7 @@ namespace langX {
 	// 自增运算符 ++ 
 	void __execINC_OP(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1432,14 +1396,14 @@ namespace langX {
 
 		if (n1 == NULL)
 		{
-			getState()->throwException(newArithmeticException("node is null on opr '++'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("node is null on opr '++'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 
 		if (n1->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1462,7 +1426,7 @@ namespace langX {
 
 		if (n1->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1485,7 +1449,7 @@ namespace langX {
 	// 自减运算符 -- 
 	void __execDEC_OP(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1498,14 +1462,14 @@ namespace langX {
 		Node *n1 = n->opr_obj->op[0];
 		if (n1 == NULL)
 		{
-			getState()->throwException(newArithmeticException("node is null on opr '--'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("node is null on opr '--'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 
 		if (n1->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '--'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '--'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1528,7 +1492,7 @@ namespace langX {
 
 		if (n1->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1568,12 +1532,9 @@ namespace langX {
 			{
 				continue;
 			}
-			run->state.in_func = n->state.in_func;   // state 传递
-			run->state.in_loop = n->state.in_loop;
-			run->state.in_switch = n->state.in_switch;
 			__execNode(run);
 
-			if (getState()->getCurrentEnv()->isDead())
+			if (getState()->curThread()->isInException())
 			{
 				freeSubNodes(n);
 				return;
@@ -1618,7 +1579,7 @@ namespace langX {
 	// 符号： >
 	void __exec62(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1629,13 +1590,13 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '>'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '>'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '>'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '>'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1658,7 +1619,7 @@ namespace langX {
 	// 大于等于
 	void __execGE_OP(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1669,13 +1630,13 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '>='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '>='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '>='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '>='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1698,7 +1659,7 @@ namespace langX {
 	// 符号： <
 	void __exec60(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1709,13 +1670,13 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '<'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '<'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '<'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '<'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1738,7 +1699,7 @@ namespace langX {
 	// 小于等于
 	void __execLE_OP(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1749,13 +1710,13 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '<='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '<='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 		{
-			getState()->throwException(newArithmeticException("type error on opr '<='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '<='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1778,7 +1739,7 @@ namespace langX {
 	// 等于
 	void __execEQ_OP(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1789,7 +1750,7 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '=='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '=='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -1878,7 +1839,7 @@ namespace langX {
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 			else {
-				getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+				getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 
@@ -1905,13 +1866,13 @@ namespace langX {
 				}
 			}
 			else {
-				getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+				getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 		}
 		else {
 			//printf("类型不同，无法比较");
-			getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
 			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
@@ -1922,7 +1883,7 @@ namespace langX {
 	// 不等于
 	void __execNE_OP(Node *n) {
 		doSubNodes(n);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -1933,7 +1894,7 @@ namespace langX {
 
 		if (n1->value == NULL || n2->value == NULL)
 		{
-			getState()->throwException(newArithmeticException("value is null on opr '!='!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '!='!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -2030,7 +1991,7 @@ namespace langX {
 				n->value = m_exec_alloc.allocateNumber(1);
 			}
 			else {
-				getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+				getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 		}
@@ -2056,13 +2017,13 @@ namespace langX {
 				}
 			}
 			else {
-				getState()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+				getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
 				n->value = m_exec_alloc.allocateNumber(0);
 			}
 		}
 		else {
 			//printf("类型不同，无法比较");
-			getState()->throwException(newArithmeticException("type error on opr '!='! only can number or string!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '!='! only can number or string!")->addRef());
 			n->value = m_exec_alloc.allocateNumber(0);
 		}
 
@@ -2078,7 +2039,7 @@ namespace langX {
 
 		stateExtends(n);
 		bool f = __tryConvertToBool(n->opr_obj->op[0]);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -2102,7 +2063,7 @@ namespace langX {
 
 		stateExtends(n);
 		bool f = __tryConvertToBool(n->opr_obj->op[0]);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -2126,7 +2087,7 @@ namespace langX {
 		}
 
 		bool f = __tryConvertToBool(n->opr_obj->op[0]);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -2188,9 +2149,8 @@ namespace langX {
 
 		// 先执行条件 节点 ,然后判断条件 节点的值， 然后释放条件 节点的内存
 		// 循环执行结束 ， 释放掉  所有节点值 的内存
-		//stateExtends(n);
-		// TODO 处理节点， 以及子节点的状态
-		stateInLoop(n);
+		langXThread * thread = getState()->curThread();
+		thread->setInLoop(true);
 
 		Node *conNode = n->opr_obj->op[0];
 		while (__tryConvertToBool(conNode))
@@ -2232,19 +2192,20 @@ namespace langX {
 
 			// 如果当前环境为一个死亡环境， 则直接返回
 			// TODO 清理内存
-			if (getState()->getCurrentEnv()->isDead())
+			if (getState()->curThread()->isInException())
 			{
 				return;
 			}
 		}
 
 		// 释放循环内的参数列表的内存
-		if (!n->state.in_func)
+		if (!thread->isInFunction())
 		{
 			// 释放
 			freeAllArgList(n);
 		}
 
+		thread->setInLoop(false);
 		doSuffixOperation(n);
 		freeSubNodes(n);
 	}
@@ -2254,9 +2215,9 @@ namespace langX {
 		{
 			return;
 		}
-		//stateExtends(n);
-		// TODO 处理节点， 以及子节点的状态
-		stateInLoop(n);
+
+		langXThread * thread = getState()->curThread();
+		thread->setInLoop(true);
 
 		Node *conNode = n->opr_obj->op[1];
 		// 后置节点
@@ -2271,10 +2232,8 @@ namespace langX {
 			{
 				continue;
 			}
-			run->state.in_loop = true;
 			__execNode(run);
 			freeSubNodes(run);
-			//n->state.isContinue = run->state.isContinue;
 			if (run->state.isBreak)
 			{
 				break;
@@ -2297,7 +2256,7 @@ namespace langX {
 
 			// 如果当前环境为一个死亡环境， 则直接返回
 			// TODO 清理内存
-			if (getState()->getCurrentEnv()->isDead())
+			if (getState()->curThread()->isInException())
 			{
 				return;
 			}
@@ -2305,12 +2264,13 @@ namespace langX {
 		}
 
 		// 释放循环内的参数列表的内存
-		if (!n->state.in_func)
+		if (!thread->isInFunction())
 		{
 			// 释放
 			freeAllArgList(n);
 		}
 
+		thread->setInLoop(false);
 		freeSubNodes(n);
 	}
 
@@ -2325,19 +2285,20 @@ namespace langX {
 		__execNode(id_expr);
 		if (id_expr->value == NULL)
 		{
-			getState()->throwException(newUnsupportedOperationException("null condition value in switch()!")->addRef());
+			getState()->curThread()->throwException(newUnsupportedOperationException("null condition value in switch()!")->addRef());
 			return;
 		}
 		//printf("switch id_expr value: %f\n" , ((Number*)id_expr->value)->getDoubleValue());
-
-		n->state.in_switch = true;
+	
+		langXThread * thread = getState()->curThread();
+		thread->setInLoop(true);
 		Node * case_list = n->opr_obj->op[1];
 		//printf("case_list op_count: %d\n", case_list->opr_obj->op_count);
 		for (int i = 0; i < case_list->opr_obj->op_count; i++)
 		{
 			// 如果当前环境为一个死亡环境， 则直接返回
 			// TODO 清理内存
-			if (getState()->getCurrentEnv()->isDead())
+			if (getState()->curThread()->isInException())
 			{
 				return;
 			}
@@ -2349,7 +2310,6 @@ namespace langX {
 			}
 
 			t->state.isCaseNeedCon = n->state.isCaseNeedCon;
-			t->state.in_switch = true;
 			t->ptr_u = id_expr->value;
 			t->switch_info.doDefault = false;
 			__execNode(t);
@@ -2394,6 +2354,7 @@ namespace langX {
 			__execNode(n->switch_info.defaultNode);
 		}
 
+		thread->setInLoop(false);
 		freeSubNodes(n);
 	}
 
@@ -2404,7 +2365,7 @@ namespace langX {
 		{
 			// 如果当前环境为一个死亡环境， 则直接返回
 			// TODO 清理内存
-			if (getState()->getCurrentEnv()->isDead())
+			if (getState()->curThread()->isInException())
 			{
 				return;
 			}
@@ -2415,7 +2376,6 @@ namespace langX {
 				continue;
 			}
 
-			t->state.in_switch = true;
 			t->state.isCaseNeedCon = n->state.isCaseNeedCon;
 			// case 语句中  ptr_u 属性保存的是 指向 switch(a)  a 的值
 			t->ptr_u = n->ptr_u;
@@ -2464,7 +2424,6 @@ namespace langX {
 		Node *defaultNode = n->switch_info.defaultNode;
 		if (flag && defaultNode != NULL)
 		{
-			defaultNode->state.in_switch = true;
 			defaultNode->switch_info.doDefault = true;
 			__execNode(n->switch_info.defaultNode);
 		}
@@ -2490,7 +2449,6 @@ namespace langX {
 			Node * t = n->opr_obj->op[1];
 			if (t != NULL)
 			{
-				t->state.in_switch = true;
 				__execNode(t);
 
 				n->state.isBreak = t->state.isBreak;
@@ -2536,7 +2494,7 @@ namespace langX {
 
 		doSubNodes(n);
 
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -2546,14 +2504,14 @@ namespace langX {
 
 		if (n1->value == NULL) {
 			//printf("__execUMINUS n1->value is NULL\n");
-			getState()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER)
 		{
 			//printf("ERROR:  __execUMINUS is NOT NUMBER...  \n");
-			getState()->throwException(newArithmeticException("type error on opr '-'! only can number!")->addRef());
+			getState()->curThread()->throwException(newArithmeticException("type error on opr '-'! only can number!")->addRef());
 			freeSubNodes(n);
 
 			return;
@@ -2575,7 +2533,7 @@ namespace langX {
 
 		Node *n1 = n->opr_obj->op[0];
 		__execNode(n1);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			m_exec_alloc.free(n1->value);
 			n1->value = NULL;
@@ -2618,7 +2576,9 @@ namespace langX {
 		m_exec_alloc.free(n1->value);
 		n1->value = NULL;
 
-		if (!n->state.in_func && !n->state.in_loop)
+		langXThread * thread = getState()->curThread();
+
+		if (!thread->isInFunction() && !thread->isInLoop())
 		{
 #ifdef SHOW_DETAILS
 			printf("freeArgsList node in __execFUNC_CALL: \n" );
@@ -2633,17 +2593,17 @@ namespace langX {
 		ClassInfo *claxxInfo = getState()->getClass(className);
 		if (claxxInfo == NULL)
 		{
-			getState()->throwException(newClassNotFoundException(className)->addRef());
+			getState()->curThread()->throwException(newClassNotFoundException(className)->addRef());
 			return;
 		}
 		langXObject *object = claxxInfo->newObject();
 		if (object == NULL)
 		{
-			getState()->throwException(newClassNotFoundException(className)->addRef());
+			getState()->curThread()->throwException(newClassNotFoundException(className)->addRef());
 			return;
 		}
 		langXObjectRef * objectRef = object->addRef();
-		objectRef->setEmergeEnv(getState()->getCurrentEnv());
+		objectRef->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 
 
 		//objectRef->setMembersEmergeEnv(env);
@@ -2655,7 +2615,7 @@ namespace langX {
 			XArgsList *args = (XArgsList *)argNode->ptr_u;
 			object->callConstructor(args, fileInfoString(n->fileinfo).c_str());
 
-			if (getState()->getCurrentEnv()->isDead())
+			if (getState()->curThread()->isInException())
 			{
 				return;
 			}
@@ -2677,7 +2637,7 @@ namespace langX {
 		// 都初始为 null
 		// 数组要赋值
 		Object *obj = m_exec_alloc.allocate(NULLOBJECT);
-		obj->setEmergeEnv(getState()->getCurrentEnv());
+		obj->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
 			Node *t = n->opr_obj->op[i];
@@ -2692,7 +2652,7 @@ namespace langX {
 					if (t->ptr_u == NULL)
 					{
 						//printf("delar array erorr!\n");
-						getState()->throwException(newException("Inner Error! delar array erorr!")->addRef());
+						getState()->curThread()->throwException(newException("Inner Error! delar array erorr!")->addRef());
 						m_exec_alloc.free(obj);
 						return;
 					}
@@ -2707,7 +2667,7 @@ namespace langX {
 						if (t->value == NULL || t->value->getType() != NUMBER)
 						{
 							//printf("error array length !\n");
-							getState()->throwException(newException("error array length !")->addRef());
+							getState()->curThread()->throwException(newException("error array length !")->addRef());
 							return;
 						}
 
@@ -2717,7 +2677,7 @@ namespace langX {
 					XArray *array1 = new XArray(len);
 					char *name = an->name;
 					Object *arrayRef = array1->addRef();
-					arrayRef->setEmergeEnv(getState()->getCurrentEnv());
+					arrayRef->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 					setValueToEnv(name, arrayRef);
 
 				}
@@ -2741,7 +2701,7 @@ namespace langX {
 			//printf("left value %s is not class object or array  !\n", n1->var_obj->name);
 			char tmp[100] = { 0 };
 			sprintf(tmp, "left value %s is not class object or array  !\n", n1->var_obj->name);
-			getState()->throwException(newTypeErrorException(tmp)->addRef());
+			getState()->curThread()->throwException(newTypeErrorException(tmp)->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -2760,7 +2720,7 @@ namespace langX {
 			else {
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no member %s in array.", memberName);
-				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
 			}
 
 			freeSubNodes(n);
@@ -2777,7 +2737,7 @@ namespace langX {
 			else {
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no member %s in string.", memberName);
-				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
 			}
 
 			freeSubNodes(n);
@@ -2786,7 +2746,7 @@ namespace langX {
 
 		if (n1->value->getType() != OBJECT)
 		{
-			getState()->throwException(newTypeErrorException("left value is not a object.")->addRef());
+			getState()->curThread()->throwException(newTypeErrorException("left value is not a object.")->addRef());
 			//printf("left value %s is not class object or array  !\n", n1->var_obj->name);
 			freeSubNodes(n);
 			return;
@@ -2819,13 +2779,13 @@ namespace langX {
 			{
 				FunctionRef *fr = m_exec_alloc.allocateFunctionRef(func);
 				fr->setObj(objectRef->getRefObject());
-				fr->setEmergeEnv(getState()->getCurrentEnv());
+				fr->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 				t = fr;
 			}
 			else {
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no member %s in class %s.", memberName, objectRef->getClassInfo()->getName());
-				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
 				freeSubNodes(n);
 				return;
 			}
@@ -2848,7 +2808,7 @@ namespace langX {
 
 		if (n1->value == NULL)
 		{
-			getState()->throwException(newTypeErrorException("left value is not class object !")->addRef());
+			getState()->curThread()->throwException(newTypeErrorException("left value is not class object !")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -2862,19 +2822,19 @@ namespace langX {
 
 		if (n1->value->getType() != OBJECT)
 		{
-			getState()->throwException(newTypeErrorException("left value is not class object !")->addRef());
+			getState()->curThread()->throwException(newTypeErrorException("left value is not class object !")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 
 		langXObjectRef* objectRef = (langXObjectRef*)n1->value;
 		Environment *env = objectRef->getRefObject()->getObjectEnvironment();
-		getState()->newEnv2(env);
+		getState()->curThread()->newEnv2(env);
 
 		// 根据语法解析文件可知， 第二个节点为一个函数调用节点
 		Node *n2 = n->opr_obj->op[1];
 		__execNode(n2);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -2887,7 +2847,7 @@ namespace langX {
 			n->value = NULL;
 		}
 
-		getState()->backEnv();
+		getState()->curThread()->backEnv();
 
 		freeSubNodes(n);
 	}
@@ -2897,11 +2857,11 @@ namespace langX {
 
 		if (n->opr_obj->op_count <= 0)
 		{
-			getState()->getCurrentEnv()->setRestrict(true);
+			getState()->curThread()->getCurrentEnv()->setRestrict(true);
 		}
 		else {
 
-			getState()->getCurrentEnv()->setRestrict(__tryConvertToBool(n->opr_obj->op[0]));
+			getState()->curThread()->getCurrentEnv()->setRestrict(__tryConvertToBool(n->opr_obj->op[0]));
 
 			freeSubNodes(n);
 		}
@@ -2910,11 +2870,11 @@ namespace langX {
 	// 执行 this.xxx
 	void __execTHIS(Node *n) {
 
-		Environment * env = getState()->getNearestObjectEnv();
+		Environment * env = getState()->curThread()->getNearestObjectEnv();
 		if (!env)
 		{
 			//printf("cannot find the object on use this!\n");
-			getState()->throwException(newUnsupportedOperationException("invalid this stmt! cannot find the object on use this!")->addRef());
+			getState()->curThread()->throwException(newUnsupportedOperationException("invalid this stmt! cannot find the object on use this!")->addRef());
 			return;
 		}
 
@@ -2928,7 +2888,7 @@ namespace langX {
 
 		// 限定好像没什么卵用。。 
 		//env->setRestrict(true);
-		getState()->newEnv2(env);
+		getState()->curThread()->newEnv2(env);
 
 		langXObject *thisObj = objEnv->getEnvObject();
 		Node *n1 = n->opr_obj->op[0];
@@ -2956,7 +2916,7 @@ namespace langX {
 				// 没有那个成员
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no class member %s in class %s!", n->var_obj->name, thisObj->getClassName());
-				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
 				free(n->var_obj->name);
 				free(n->var_obj);
 				n->var_obj = NULL;
@@ -2974,13 +2934,13 @@ namespace langX {
 		if (n1->value == NULL)
 		{
 			//printf("error in __execTHIS, n1->value == NULL");
-			getState()->throwException(newException("error in __execTHIS, n1->value == NULL")->addRef());
+			getState()->curThread()->throwException(newException("error in __execTHIS, n1->value == NULL")->addRef());
 		}
 		else {
 			n->value = n1->value->clone();
 		}
 
-		getState()->backEnv();
+		getState()->curThread()->backEnv();
 		freeSubNodes(n);
 	}
 
@@ -2995,7 +2955,7 @@ namespace langX {
 		ClassInfo *claxxInfo = getState()->getClass(className);
 		if (claxxInfo == NULL)
 		{
-			getState()->throwException(newClassNotFoundException(className)->addRef());
+			getState()->curThread()->throwException(newClassNotFoundException(className)->addRef());
 			return;
 		}
 
@@ -3008,18 +2968,18 @@ namespace langX {
 			{
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no member %s in class %s.", memberName, className);
-				getState()->throwException(newNoClassMemberException(tmp)->addRef());
+				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
 				return;
 			}
 
 			FunctionRef *fr = m_exec_alloc.allocateFunctionRef(tf);
 			fr->setClaxx(claxxInfo);
-			fr->setEmergeEnv(getState()->getCurrentEnv());
+			fr->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 			t = fr;
 		}
 
 		n->value = t->clone();
-		//n->value->setEmergeEnv(getState()->getCurrentEnv());
+		//n->value->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 	}
 
 	void __execSCOPE_FUNC_CALL(Node *n) {
@@ -3035,7 +2995,7 @@ namespace langX {
 		ClassInfo *claxxInfo = getState()->getClass(className);
 		if (claxxInfo == NULL)
 		{
-			getState()->throwException(newClassNotFoundException(className)->addRef());
+			getState()->curThread()->throwException(newClassNotFoundException(className)->addRef());
 			return;
 		}
 
@@ -3045,12 +3005,12 @@ namespace langX {
 		{
 			char tmp[100] = { 0 };
 			sprintf(tmp, "no function %s in class %s.", memberName, className);
-			getState()->throwException(newNoClassMemberException(tmp)->addRef());
+			getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
 			return;
 		}
 
 		ClassBridgeEnv *env = new ClassBridgeEnv(claxxInfo);
-		getState()->newEnv(env);
+		getState()->curThread()->newEnv(env);
 
 		// 根据语法解析文件得知， 第二个节点为参数节点
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
@@ -3061,12 +3021,13 @@ namespace langX {
 		//m_exec_alloc.free(n1->value);
 		n1->value = NULL;
 
-		if (!n->state.in_func && !n->state.in_loop)
+		langXThread *thread = getState()->curThread();
+		if (!thread->isInFunction() && !thread->isInLoop())
 		{
 			freeArgsList(args);
 		}
 
-		getState()->backEnv();
+		getState()->curThread()->backEnv();
 	}
 
 	// 执行 try {}
@@ -3078,9 +3039,9 @@ namespace langX {
 
 		TryEnvironment * tryEnv = new TryEnvironment();
 		tryEnv->setCatchNode(n->opr_obj->op[1]);
-		getState()->newEnv(tryEnv);
+		getState()->curThread()->newEnv(tryEnv);
 		__execNode(n->opr_obj->op[0]);
-		getState()->backEnv();
+		getState()->curThread()->backEnv();
 
 		// OK ,这就算执行完毕了。 如果出发了异常 会走另外一个地方。
 		// 正常执行完毕， 会无视 catch 内的东西
@@ -3093,7 +3054,7 @@ namespace langX {
 		Node *n2 = n->opr_obj->op[1];
 
 		__execNode(n1);
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			freeSubNodes(n);
 			return;
@@ -3170,7 +3131,7 @@ namespace langX {
 
 		char tmpMsg[1024] = { 0 };
 		sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
-		getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
+		getState()->curThread()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
 
 		//  把路径转换成绝对路径
 		if (filename[0] != '/')
@@ -3212,7 +3173,7 @@ namespace langX {
 
 		char tmpMsg[1024] = { 0 };
 		sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
-		getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
+		getState()->curThread()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
 
 		//  把路径转换成绝对路径
 		if (filename[0] != '/')
@@ -3256,7 +3217,7 @@ namespace langX {
 		// 未执行过的文件
 		char tmpMsg[1024] = { 0 };
 		sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
-		getState()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
+		getState()->curThread()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
 
 		//  把路径转换成绝对路径
 		if (filename[0] != '/')
@@ -3289,17 +3250,17 @@ namespace langX {
 	void __execREF(Node *n) {
 
 		//  深度为1 的环境为一个 脚本环境 或者命名空间环境。
-		Environment *env = getState()->getEnvironment(2);
+		Environment *env = getState()->curThread()->getEnvironment(2);
 		if (env == nullptr)
 		{
 			// error.
-			getState()->throwException(newUnsupportedOperationException("cannot ref operation now!")->addRef());
+			getState()->curThread()->throwException(newUnsupportedOperationException("cannot ref operation now!")->addRef());
 			return;
 		}
 
 		if (env->getType() != TScriptEnvironment)
 		{
-			getState()->throwException(newUnsupportedOperationException("cannot ref not inner a script! check you are is a namespace?")->addRef());
+			getState()->curThread()->throwException(newUnsupportedOperationException("cannot ref not inner a script! check you are is a namespace?")->addRef());
 			return;
 		}
 
@@ -3348,7 +3309,7 @@ namespace langX {
 			//  error.  cannot find the namespace.
 			char tmp[1024] = { 0 };
 			sprintf(tmp, "cannot find namespace %s.", namespaceName);
-			getState()->throwException(newException(tmp)->addRef());
+			getState()->curThread()->throwException(newException(tmp)->addRef());
 			return;
 		}
 
@@ -3373,7 +3334,7 @@ namespace langX {
 					//  error.  cannot find the namespace.
 					char tmp[1024] = { 0 };
 					sprintf(tmp, "cannot find namespace %s.", namespaceName);
-					getState()->throwException(newException(tmp)->addRef());
+					getState()->curThread()->throwException(newException(tmp)->addRef());
 					return;
 				}
 				scriptEnv->addNameSpace(space);
@@ -3392,7 +3353,7 @@ namespace langX {
 		// 
 
 		Object *obj = m_exec_alloc.allocate(NULLOBJECT);
-		obj->setEmergeEnv(getState()->getCurrentEnv());
+		obj->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 		obj->setConst(true);
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
@@ -3410,14 +3371,14 @@ namespace langX {
 				else 
 				{
 					// 抛出异常
-					getState()->throwException(newUnsupportedOperationException("invalid const stmt.")->addRef());
+					getState()->curThread()->throwException(newUnsupportedOperationException("invalid const stmt.")->addRef());
 					return;
 				}
 				continue;
 			}
 
 			char *name = t->var_obj->name;
-			Object *tmp = getState()->getCurrentEnv()->getObjectSelf(name);
+			Object *tmp = getState()->curThread()->getCurrentEnv()->getObjectSelf(name);
 			if (tmp == NULL)
 			{
 				setValueToEnv(name, obj);
@@ -3439,7 +3400,7 @@ namespace langX {
 		}
 
 		Object *obj = m_exec_alloc.allocate(NULLOBJECT);
-		obj->setEmergeEnv(getState()->getCurrentEnv());
+		obj->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 		obj->setLocal(true);
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
@@ -3457,7 +3418,7 @@ namespace langX {
 				else
 				{
 					// 抛出异常
-					getState()->throwException(newUnsupportedOperationException("invalid local stmt.")->addRef());
+					getState()->curThread()->throwException(newUnsupportedOperationException("invalid local stmt.")->addRef());
 					return;
 				}
 				continue;
@@ -3466,7 +3427,7 @@ namespace langX {
 			if (t->type == NodeType::NODE_VARIABLE)
 			{
 				char *name = t->var_obj->name;
-				Object *tmp = getState()->getCurrentEnv()->getObjectSelf(name);
+				Object *tmp = getState()->curThread()->getCurrentEnv()->getObjectSelf(name);
 				if (tmp == NULL)
 				{
 					setValueToEnv(name, obj);
@@ -3494,9 +3455,9 @@ namespace langX {
 			return;
 		}
 
-		if (!n->state.in_loop )
+		if (!getState()->curThread()->isInLoop() )
 		{
-			getState()->throwException(newUnsupportedOperationException("invalid continue stmt.")->addRef());
+			getState()->curThread()->throwException(newUnsupportedOperationException("invalid continue stmt.")->addRef());
 			//printf("无效的BREAK 语句 ");
 			return;
 		}
@@ -3522,7 +3483,7 @@ namespace langX {
 		//}
 
 		// 如果当前环境为一个死亡环境， 则什么都不做
-		if (getState()->getCurrentEnv()->isDead())
+		if (getState()->curThread()->isInException())
 		{
 			return;
 		}
@@ -3554,7 +3515,7 @@ namespace langX {
 					//printf("var %s=null \n", node->var_obj->name);
 
 					// find function.
-					Function *func = getState()->getCurrentEnv()->getFunction(node->var_obj->name);
+					Function *func = getState()->curThread()->getCurrentEnv()->getFunction(node->var_obj->name);
 					if (func != nullptr)
 					{
 
@@ -3620,11 +3581,11 @@ namespace langX {
 
 			if (node->state.classAuto == false)
 			{
-				if (getState()->getCurrentEnv()->getClassSelf(cinfo->getName()) != NULL)
+				if (getState()->curThread()->getCurrentEnv()->getClassSelf(cinfo->getName()) != NULL)
 				{
 					char tmp[100] = { 0 };
 					sprintf(tmp, "class %s already declared.", cinfo->getName());
-					getState()->throwException(newRedeclarationException(tmp)->addRef());
+					getState()->curThread()->throwException(newRedeclarationException(tmp)->addRef());
 					delete cinfo;
 					node->ptr_u = NULL;
 					return;
@@ -3632,7 +3593,7 @@ namespace langX {
 			}
 			else {
 				//  自动填充
-				ClassInfo *c1 = getState()->getCurrentEnv()->getClass(cinfo->getName());
+				ClassInfo *c1 = getState()->curThread()->getCurrentEnv()->getClass(cinfo->getName());
 				if (c1 != NULL)
 				{
 					c1->expand(cinfo);
@@ -3660,24 +3621,24 @@ namespace langX {
 				// 匿名函数
 				return;
 			}
-			if (getState()->getCurrentEnv()->getFunctionSelf(func->getName()) != NULL)
+			if (getState()->curThread()->getCurrentEnv()->getFunctionSelf(func->getName()) != NULL)
 			{
 				char tmp[100] = { 0 };
 				sprintf(tmp, "function %s already declared.", func->getName());
-				getState()->throwException(newRedeclarationException(tmp)->addRef());
+				getState()->curThread()->throwException(newRedeclarationException(tmp)->addRef());
 				delete func;
 				node->value = NULL;
 				return;
 			}
 
 			//函数的产生环境可能在类内部
-			//func->setEmergeEnv(getState()->getCurrentEnv());
+			//func->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 			Environment *env = getState()->getScriptOrNSEnv();
 			if (env != NULL && env->getType() == EnvironmentType::TScriptEnvironment)
 			{
 				func->setScriptEnv( (ScriptEnvironment*)env );
 			}
-			getState()->getCurrentEnv()->putFunction(func->getName(), func);
+			getState()->curThread()->getCurrentEnv()->putFunction(func->getName(), func);
 			return;
 		}
 		else if (node->type == NODE_NULL)
@@ -3702,7 +3663,7 @@ namespace langX {
 			if (obj == NULL)
 			{
 				//printf("left value is not array with array operator!\n");
-				getState()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
+				getState()->curThread()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
 				return;
 			}
 
@@ -3715,7 +3676,7 @@ namespace langX {
 				if (t->value == NULL || t->value->getType() != NUMBER)
 				{
 					//printf("error array length !\n");
-					getState()->throwException(newException("error array length !")->addRef());
+					getState()->curThread()->throwException(newException("error array length !")->addRef());
 					return;
 				}
 
@@ -3743,7 +3704,7 @@ namespace langX {
 
 			if (obj->getType() != XARRAY)
 			{
-				getState()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
+				getState()->curThread()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
 				return;
 			}
 
@@ -3752,7 +3713,7 @@ namespace langX {
 			{
 				char tmp[1024] = { 0 };
 				sprintf(tmp,"index %d,array length %d" ,index,ref->getLength());
-				getState()->throwException(newIndexOutOfBoundsException(tmp)->addRef());
+				getState()->curThread()->throwException(newIndexOutOfBoundsException(tmp)->addRef());
 				return;
 			}
 
@@ -3760,7 +3721,7 @@ namespace langX {
 			if (ret == nullptr)
 			{
 				// 内部异常
-				getState()->throwException(newInnerException(" array element is null... ")->addRef());
+				getState()->curThread()->throwException(newInnerException(" array element is null... ")->addRef());
 				return;
 			}
 			node->value = ret->clone();
@@ -3809,7 +3770,7 @@ namespace langX {
 			//printf("undeal type: %d\n", node->type);
 			char tmp[100] = { 0 };
 			sprintf(tmp, "undeal type: %d", node->type);
-			getState()->throwException(newException(tmp)->addRef());
+			getState()->curThread()->throwException(newException(tmp)->addRef());
 			return;
 		}
 

@@ -47,7 +47,6 @@ namespace langX {
 		this->m_thread_mgr = new langXThreadMgr();
 		this->m_thread_mgr->initMainThreadInfo();
 
-		this->m_stacktrace.newFrame(NULL, NULL, "<startFrame>");
 	}
 
 	langXState::~langXState()
@@ -286,14 +285,7 @@ namespace langX {
 			return;
 		}
 
-		//  释放内存到 深度为1 的 环境
-		backToDeep1Env();
-
 		this->m_script_env = new XNameSpaceEnvironment(s);
-		this->m_current_deep++;
-		this->m_script_env->setDeep(this->m_current_deep);
-		this->m_script_env->setParent(this->m_current_env);
-		this->m_current_env = this->m_script_env;
 	}
 
 	void langXState::newScriptEnv(ScriptEnvironment *env)
@@ -307,19 +299,12 @@ namespace langX {
 			return;
 		}
 
-		//  释放内存到 深度为1 的 环境
-		backToDeep1Env();
-
 		if (this->m_script_env != NULL && this->m_script_env->getType() == EnvironmentType::TScriptEnvironment)
 		{
 			this->m_doing_script_envs.push_front( (ScriptEnvironment*)this->m_script_env);
 		}
 
 		this->m_script_env = env;
-		this->m_current_deep++;
-		this->m_script_env->setDeep(this->m_current_deep);
-		this->m_script_env->setParent(this->m_current_env);
-		this->m_current_env = this->m_script_env;
 
 	}
 
@@ -333,7 +318,7 @@ namespace langX {
 		FILE *fp = fopen(filename, "r");
 		if (fp == NULL)
 		{
-			throwException(newFileNotFoundException(filename)->addRef());
+			curThread()->throwException(newFileNotFoundException(filename)->addRef());
 			return -1;
 		}
 
@@ -389,7 +374,7 @@ namespace langX {
 		FILE *fp = fopen(filename, "r");
 		if (fp == NULL)
 		{
-			throwException(newFileNotFoundException(filename)->addRef());
+			curThread()->throwException(newFileNotFoundException(filename)->addRef());
 			return -1;
 		}
 
@@ -424,7 +409,7 @@ namespace langX {
 		FILE *fp = fopen(filename, "r");
 		if (fp == NULL)
 		{
-			throwException(newFileNotFoundException(filename)->addRef());
+			curThread()->throwException(newFileNotFoundException(filename)->addRef());
 			return -1;
 		}
 
@@ -455,7 +440,7 @@ namespace langX {
 				env = NULL;
 				char tmpMsg[2048] = { 0 };
 				sprintf(tmpMsg, "require file %s error. code=%d", filename, i);
-				throwException(newException(tmpMsg)->addRef());
+				curThread()->throwException(newException(tmpMsg)->addRef());
 				return -1;
 			}
 		}
@@ -486,7 +471,7 @@ namespace langX {
 		FILE *fp = fopen(filename, "r");
 		if (fp == NULL)
 		{
-			throwException(newFileNotFoundException(filename)->addRef());
+			curThread()->throwException(newFileNotFoundException(filename)->addRef());
 			return -1;
 		}
 
@@ -653,6 +638,11 @@ namespace langX {
 	{
 		
 		return this->m_disposing;
+	}
+
+	langXThread* langXState::curThread() const
+	{
+		return this->m_thread_mgr->currentThread();
 	}
 
 
