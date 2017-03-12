@@ -29,7 +29,7 @@ void resetNodeState(langX::Node *n) {
 	// ptr_u 可能存放了参数， 等以后有问题的时候再进行调整，  0821
 	//n->ptr_u = NULL;
 	n->postposition = NULL;
-	n->state.in_func = true;
+	/*n->state.in_func = true;*/
 
 	if (n->type == langX::NODE_OPERATOR)
 	{

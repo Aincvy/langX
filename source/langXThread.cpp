@@ -4,6 +4,9 @@
 #include "../include/langXObjectRef.h"
 #include "../include/Function.h"
 #include "../include/ExecNode.h"
+#include "../include/Allocator.h"
+#include "../include/langX.h"
+#include "../include/YLlangX.h"
 
 
 // 释放环境内存
@@ -188,6 +191,82 @@ namespace langX {
 	bool langXThread::isInException()
 	{
 		return m_exec_status.inException > 0;
+	}
+
+	void langXThread::setInBreak(bool flag)
+	{
+		if (flag)
+		{
+			m_exec_status.inBreak++;
+		}
+		else {
+			if (m_exec_status.inBreak > 0)
+			{
+				m_exec_status.inBreak--;
+			}
+		}
+	}
+
+	bool langXThread::isInBreak()
+	{
+		return m_exec_status.inBreak > 0;
+	}
+
+	void langXThread::setInReturn(bool flag)
+	{
+		if (flag)
+		{
+			m_exec_status.inReturn++;
+		}
+		else {
+			if (m_exec_status.inReturn > 0)
+			{
+				m_exec_status.inReturn--;
+			}
+		}
+	}
+
+	bool langXThread::isInReturn()
+	{
+		return m_exec_status.inReturn > 0;
+	}
+
+	void langXThread::setInContinue(bool flag)
+	{
+		if (flag)
+		{
+			m_exec_status.inContinue++;
+		}
+		else {
+			if (m_exec_status.inContinue > 0)
+			{
+				m_exec_status.inContinue--;
+			}
+		}
+	}
+
+	bool langXThread::isInContinue()
+	{
+		return m_exec_status.inContinue > 0;
+	}
+
+	void langXThread::setInCaseNeedCon(bool flag)
+	{
+		if (flag)
+		{
+			m_exec_status.inCaseNeedCon++;
+		}
+		else {
+			if (m_exec_status.inCaseNeedCon > 0)
+			{
+				m_exec_status.inCaseNeedCon--;
+			}
+		}
+	}
+
+	bool langXThread::isInCaseNeedCon()
+	{
+		return m_exec_status.inCaseNeedCon > 0;
 	}
 
 	Environment * langXThread::getCurrentEnv() const
@@ -413,6 +492,27 @@ namespace langX {
 		}
 
 		return env;
+	}
+
+	Object * langXThread::getFunctionResult()
+	{
+		return this->m_function_result;
+	}
+
+	void langXThread::setFunctionResult(Object *obj)
+	{
+		if (this->m_function_result)
+		{
+			getState()->getAllocator().free(obj);
+		}
+
+		if (!obj)
+		{
+			this->m_function_result = nullptr;
+		}
+		else {
+			this->m_function_result = obj->clone();
+		}
 	}
 
 	void langXThread::backEnv()

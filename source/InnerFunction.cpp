@@ -9,6 +9,7 @@
 #include "../include/XArray.h"
 #include "../extern/y.tab.h"
 #include "../include/langXObjectRef.h"
+#include "../include/langXThread.h"
 
 #include <string.h>
 #include <string>
@@ -80,8 +81,8 @@ namespace langX {
 		}
 
 		Object *ret = callInnerFunc(obj, name, &_3rdArgs);
-
-		if (!n->state.in_func && !n->state.in_loop)
+		langXThread * thread = getState()->curThread();
+		if (!thread->isInFunction() && !thread->isInLoop())
 		{
 			freeArgsList(args);
 		}

@@ -142,14 +142,6 @@ namespace langX {
 	// 节点的状态， 比如： 正常，在循环内，在函数内
 	struct NodeState
 	{
-		// 是否在 break 状态
-		bool isBreak;
-		// 是否在 return 状态
-		bool isReturn;
-		// 是否执行了 continue 
-		bool isContinue;
-		// 在case 的时候是否需要计算case 的条件
-		bool isCaseNeedCon;
 		// 是否是后缀
 		bool isSuffix;
 
