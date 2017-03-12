@@ -66,6 +66,8 @@ namespace langX {
 			return;
 		}
 
+		langXThread *thread = getState()->curThread();
+
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
 			Node *run = n->opr_obj->op[i];
@@ -80,19 +82,16 @@ namespace langX {
 			run->state.isSuffix = flag;
 
 			__execNode(run);
-			if (run->state.isBreak)
+			if (thread->isInBreak())
 			{
-				n->state.isBreak = run->state.isBreak;
 				return;
 			}
-			if (run->state.isReturn)
+			if (thread->isInReturn())
 			{
-				n->state.isReturn = run->state.isReturn;
 				return;
 			}
-			if (run->state.isContinue)
+			if (thread->isInContinue())
 			{
-				n->state.isContinue = run->state.isContinue;
 				return;
 			}
 		}
@@ -161,52 +160,6 @@ namespace langX {
 
 			}
 		}
-	}
-
-	//  释放 n 及 n 下的所有节点的参数列表内存
-	void freeAllArgList(Node *n) {
-		if (!n)
-		{
-			return;
-		}
-
-		if (n->type == NODE_OPERATOR)
-		{
-			if (n->opr_obj->opr == FUNC_CALL)
-			{
-				if (n->ptr_u != NULL)
-				{
-					freeArgsList((ArgsList*)n->ptr_u);
-					n->ptr_u = NULL;
-				}
-			}
-
-			for (int i = 0; i < n->opr_obj->op_count; i++)
-			{
-				freeAllArgList(n->opr_obj->op[i]);
-			}
-		}
-
-	}
-
-	// 递归使某个节点以及其子节点的 isContinue 的状态 为false
-	void setStateIsContinueToFalse(Node *n) {
-
-		if (n == NULL)
-		{
-			return;
-		}
-
-		n->state.isContinue = false;
-
-		if (n->type == NODE_OPERATOR)
-		{
-			for (int i = 0; i < n->opr_obj->op_count; i++)
-			{
-				setStateIsContinueToFalse(n->opr_obj->op[i]);
-			}
-		}
-
 	}
 
 
@@ -1336,7 +1289,7 @@ namespace langX {
 			return;
 		}
 
-		n->state.isBreak = true;
+		thread->setInBreak(true);
 	}
 
 	void __execRETURN(Node *n) {
@@ -1355,7 +1308,7 @@ namespace langX {
 			return;
 		}
 
-		n->state.isReturn = true;
+		thread->setInReturn(true);
 		if (n->opr_obj->op_count <= 0)
 		{
 			n->value = NULL;
@@ -1381,6 +1334,8 @@ namespace langX {
 
 			freeSubNodes(n);
 		}
+
+		thread->setFunctionResult(n->value);
 	}
 
 	// 自增运算符 ++ 
@@ -1525,6 +1480,7 @@ namespace langX {
 			return;
 		}
 
+		langXThread * thread = getState()->curThread();
 		for (size_t i = 0; i < n->opr_obj->op_count; i++)
 		{
 			Node *run = n->opr_obj->op[i];
@@ -1540,19 +1496,16 @@ namespace langX {
 				return;
 			}
 
-			if (run->state.isContinue)
+			if (thread->isInContinue())
 			{
-				n->state.isContinue = true;
 				break;
 			}
-			if (run->state.isBreak)
+			if (thread->isInBreak())
 			{
-				n->state.isBreak = true;
 				break;
 			}
-			if (run->state.isReturn)
+			if (thread->isInReturn())
 			{
-				n->state.isReturn = true;
 				if (run->value == NULL)
 				{
 					n->value = NULL;
@@ -2100,9 +2053,6 @@ namespace langX {
 			if (a != NULL)
 			{
 				__execNode(a);
-				n->state.isContinue = a->state.isContinue;
-				n->state.isBreak = a->state.isBreak;
-				n->state.isReturn = a->state.isReturn;
 
 				if (a->value == NULL)
 				{
@@ -2121,9 +2071,6 @@ namespace langX {
 				if (a != NULL)
 				{
 					__execNode(a);
-					n->state.isContinue = a->state.isContinue;
-					n->state.isBreak = a->state.isBreak;
-					n->state.isReturn = a->state.isReturn;
 					if (a->value == NULL)
 					{
 						n->value = NULL;
@@ -2167,14 +2114,12 @@ namespace langX {
 			
 			freeSubNodes(run);
 
-			if (run->state.isBreak)
+			if (thread->isInBreak())
 			{
 				break;
 			}
-			if (run->state.isReturn)
+			if (thread->isInReturn())
 			{
-				n->state.isReturn = true;
-
 				if (run->value == NULL)
 				{
 					n->value = NULL;
@@ -2188,7 +2133,6 @@ namespace langX {
 
 			// 重置 run 节点以及其子节点的状态
 			recursiveFreeNodeValue(run);
-			setStateIsContinueToFalse(run);
 
 			// 如果当前环境为一个死亡环境， 则直接返回
 			// TODO 清理内存
@@ -2196,13 +2140,6 @@ namespace langX {
 			{
 				return;
 			}
-		}
-
-		// 释放循环内的参数列表的内存
-		if (!thread->isInFunction())
-		{
-			// 释放
-			freeAllArgList(n);
 		}
 
 		thread->setInLoop(false);
@@ -2234,13 +2171,12 @@ namespace langX {
 			}
 			__execNode(run);
 			freeSubNodes(run);
-			if (run->state.isBreak)
+			if (thread->isInBreak())
 			{
 				break;
 			}
-			if (run->state.isReturn)
+			if (thread->isInReturn())
 			{
-				n->state.isReturn = true;
 				if (run->value == NULL)
 				{
 					n->value = NULL;
@@ -2252,7 +2188,6 @@ namespace langX {
 			}
 
 			recursiveFreeNodeValue(run);
-			setStateIsContinueToFalse(run);
 
 			// 如果当前环境为一个死亡环境， 则直接返回
 			// TODO 清理内存
@@ -2261,13 +2196,6 @@ namespace langX {
 				return;
 			}
 
-		}
-
-		// 释放循环内的参数列表的内存
-		if (!thread->isInFunction())
-		{
-			// 释放
-			freeAllArgList(n);
 		}
 
 		thread->setInLoop(false);
@@ -2309,7 +2237,6 @@ namespace langX {
 				continue;
 			}
 
-			t->state.isCaseNeedCon = n->state.isCaseNeedCon;
 			t->ptr_u = id_expr->value;
 			t->switch_info.doDefault = false;
 			__execNode(t);
@@ -2328,14 +2255,12 @@ namespace langX {
 			{
 				flag = false;
 			}
-			n->state.isCaseNeedCon = t->state.isCaseNeedCon;
 
-			n->state.isContinue = t->state.isContinue;
-			if (t->state.isBreak || t->state.isContinue)
+			if (thread->isInBreak() || thread->isInContinue())
 			{
 				break;
 			}
-			if (t->state.isReturn)
+			if (thread->isInReturn())
 			{
 				if (t->value == NULL)
 				{
@@ -2360,6 +2285,7 @@ namespace langX {
 
 	void __execCASE_LIST(Node *n) {
 
+		langXThread * thread = getState()->curThread();
 		bool flag = true;
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
@@ -2376,7 +2302,6 @@ namespace langX {
 				continue;
 			}
 
-			t->state.isCaseNeedCon = n->state.isCaseNeedCon;
 			// case 语句中  ptr_u 属性保存的是 指向 switch(a)  a 的值
 			t->ptr_u = n->ptr_u;
 			t->switch_info.doDefault = false;
@@ -2396,19 +2321,12 @@ namespace langX {
 			{
 				flag = false;
 			}
-			n->state.isCaseNeedCon = t->state.isCaseNeedCon;
 			
-			if (t->state.isBreak)
+			if (thread->isInBreak() || thread->isInContinue())
 			{
-				n->state.isBreak = true;
 				break;
 			}
-			if (t->state.isContinue)
-			{
-				n->state.isContinue = t->state.isContinue;
-				break;
-			}
-			if (t->state.isReturn)
+			if (thread->isInReturn())
 			{
 				if (t->value == NULL)
 				{
@@ -2442,20 +2360,19 @@ namespace langX {
 		Node * con = n->opr_obj->op[0];
 		__execNode(con);
 
-		if (a == ((Number*)con->value)->getDoubleValue() || !n->state.isCaseNeedCon)
+		langXThread * thread = getState()->curThread();
+
+		if (a == ((Number*)con->value)->getDoubleValue() || !thread->isInCaseNeedCon())
 		{
-			n->state.isCaseNeedCon = false;
+			thread->setInCaseNeedCon(false);
 			n->switch_info.isInCase = true;
 			Node * t = n->opr_obj->op[1];
 			if (t != NULL)
 			{
 				__execNode(t);
 
-				n->state.isBreak = t->state.isBreak;
-				n->state.isContinue = t->state.isContinue;
-				if (t->state.isReturn)
+				if (thread->isInReturn())
 				{
-					n->state.isReturn = true;
 					if (t->value == NULL)
 					{
 						n->value = NULL;
@@ -3462,7 +3379,7 @@ namespace langX {
 			return;
 		}
 
-		n->state.isContinue = true;
+		getState()->curThread()->setInContinue(true);
 	}
 
 
@@ -3482,13 +3399,17 @@ namespace langX {
 		//	return;
 		//}
 
-		// 如果当前环境为一个死亡环境， 则什么都不做
-		if (getState()->curThread()->isInException())
+
+		langXThread * thread = getState()->curThread();
+		// 如果当前处于异常中， 则什么都不做
+		if (thread->isInException())
 		{
 			return;
 		}
 
-		if (node->state.isBreak || node->state.isReturn || node->state.isContinue)
+		
+
+		if (thread->isInBreak() || thread->isInReturn() || thread->isInContinue())
 		{
 			//  节点中断
 			return;

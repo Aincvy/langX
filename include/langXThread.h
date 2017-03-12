@@ -10,6 +10,7 @@
 namespace langX {
 
 	class Environment;
+	class Object;
 
 	// 线程状态
 	enum langXThreadStatus {
@@ -34,6 +35,14 @@ namespace langX {
 		short inSwitch = 0 ;
 		// 是否在异常内  发生异常之后会累加此值，遇到 try-catch 则会减少1
 		short inException = 0;
+		// 是否在 break 状态
+		short inBreak = 0;
+		// 是否在 return 状态
+		short inReturn = 0;
+		// 是否执行了 continue 
+		short inContinue = 0;
+		// 在case 的时候是否需要计算case 的条件
+		short inCaseNeedCon = 0;
 	};
 	
 
@@ -69,6 +78,14 @@ namespace langX {
 		bool isInSwitch();
 		void setInException(bool);
 		bool isInException();
+		void setInBreak(bool);
+		bool isInBreak();
+		void setInReturn(bool);
+		bool isInReturn();
+		void setInContinue(bool);
+		bool isInContinue();
+		void setInCaseNeedCon(bool);
+		bool isInCaseNeedCon();
 
 		void putObject(const char*, Object*);
 		void putObject(const std::string &, Object*);
@@ -101,6 +118,11 @@ namespace langX {
 		// 根据深度 获得环境 
 		Environment *getEnvironment(int deep);
 
+		// 获得函数的返回值
+		Object * getFunctionResult();
+		// 设置函数的返回值   函数内部会自动尝试获得该值的副本
+		void setFunctionResult(Object *);
+
 	private:
 
 		// 线程id
@@ -118,6 +140,8 @@ namespace langX {
 		Environment *m_current_env = nullptr;
 
 		int m_current_deep = 0;
+		// 函数的返回值
+		Object *m_function_result = nullptr;
 
 		//  返回到 深度为1的 环境上
 		void backToDeep1Env();

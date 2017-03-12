@@ -5,6 +5,7 @@
 #include "../include/String.h"
 #include "../include/Function.h"
 #include "../include/langXObject.h"
+#include "../include/langXThread.h"
 
 namespace langX {
 
@@ -58,7 +59,7 @@ namespace langX {
 		NodeFileInfo f = getCurrentNodeFileInfo();
 		printf("%s: %s  \n%s\n", args.object->getClassName(), ((String*)args.object->getMember("message"))->getValue(), fileInfoString(f).c_str());
 
-		func->getLangX()->printStackTrace();
+		func->getLangX()->curThread()->printStackTrace();
 
 		return NULL;
 	}

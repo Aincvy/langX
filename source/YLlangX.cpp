@@ -91,15 +91,8 @@ double getNumberValue(const char *n)
 }
 
 void deal_state(NodeState * state) {
-	state->isBreak = false;
-	state->isReturn = false;
-	state->in_func = false;
-	state->in_loop = false;
-	state->in_switch = false;
-	state->isCaseNeedCon = true;
 	state->isSuffix = false;
 	state->classAuto = false;
-	state->isContinue = false;
 	state->isLocal = false;
 }
 
@@ -723,6 +716,8 @@ XArgsList * xArgs(XArgsList *args, XNode *node) {
 	return list;
 }
 
+
+
 void freeArgsList(XArgsList *alist) {
 	if (alist->args != NULL)
 	{
@@ -739,6 +734,32 @@ void freeArgsList(XArgsList *alist) {
 	free(alist);
 }
 
+//  释放 n 及 n 下的所有节点的参数列表内存
+void freeAllArgList(Node *n) {
+	if (!n)
+	{
+		return;
+	}
+
+	if (n->type == NODE_OPERATOR)
+	{
+		if (n->opr_obj->opr == FUNC_CALL)
+		{
+			if (n->ptr_u != NULL)
+			{
+				freeArgsList((ArgsList*)n->ptr_u);
+				n->ptr_u = NULL;
+			}
+		}
+
+		for (int i = 0; i < n->opr_obj->op_count; i++)
+		{
+			freeAllArgList(n->opr_obj->op[i]);
+		}
+	}
+
+}
+
 void freeNode(XNode * n) {
 	if (n == NULL)
 	{
@@ -753,17 +774,18 @@ void freeNode(XNode * n) {
 	printf("free node: %d\n",n->type);
 #endif
 
-	// 如果是一个函数节点， 直接FREE节点内存就好了
-	if (n->type == NODE_FUNCTION)
-	{
-		free(n);
-		return;
-	}
-
 	if (n->value != NULL)
 	{
 		getState()->getAllocator().free(n->value);
 		n->value = NULL;
+	}
+
+	// 如果是一个函数节点， 还需要释放它的参数列表
+	if (n->type == NODE_FUNCTION)
+	{
+		freeAllArgList(n);
+		//free(n);
+		//return;
 	}
 
 	if (n->var_obj != NULL)
