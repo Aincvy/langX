@@ -48,8 +48,8 @@ void resetNodeState(langX::Node *n) {
 
 // 设置节点的状态为 可释放 [暂时没用到这个函数]
 void setStateToCanFree(langX::Node *n) {
-	deal_state(&n->state);
-	deal_switch_info(&n->switch_info);
+	//deal_state(&n->state);
+	//deal_switch_info(&n->switch_info);
 	n->freeOnExeced = true;
 
 	if (n->type == langX::NODE_OPERATOR)
@@ -94,7 +94,8 @@ namespace langX {
 		}
 		if (this->m_node_root != NULL)
 		{
-			this->m_node_root->freeOnExeced = true;
+			//this->m_node_root->freeOnExeced = true;
+			setStateToCanFree(this->m_node_root);
 			freeNode(this->m_node_root);
 			this->m_node_root = NULL;
 		}

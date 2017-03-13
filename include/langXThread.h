@@ -122,6 +122,13 @@ namespace langX {
 		Object * getFunctionResult();
 		// 设置函数的返回值   函数内部会自动尝试获得该值的副本
 		void setFunctionResult(Object *);
+		
+		// 设置正在执行的那个节点
+		void setExecNode(Node *n);
+		// 获得正在执行的那个节点
+		Node * getExecNode();
+		// 获得正在执行节点的文件信息
+		NodeFileInfo getCurrentNodeFileInfo();
 
 	private:
 
@@ -140,8 +147,10 @@ namespace langX {
 		Environment *m_current_env = nullptr;
 
 		int m_current_deep = 0;
-		// 函数的返回值
+		// 函数的返回值 | 可能用用不到这个值
 		Object *m_function_result = nullptr;
+		// 正在执行的节点
+		Node *m_current_node = NULL;
 
 		//  返回到 深度为1的 环境上
 		void backToDeep1Env();

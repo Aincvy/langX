@@ -108,20 +108,6 @@ std::string fileInfoString(const langX::NodeFileInfo & f);
 // 创建一个第三方函数
 XFunction* create3rdFunc(const char *, langX::X3rdFuncWorker);
 
-// 获得当前执行结点的文件信息。  即： 当前结点执行的文件名以及行号
-langX::NodeFileInfo getCurrentNodeFileInfo();
-
-// 设置正在执行的节点是哪个
-void setExecNode(XNode *);
-// 获得正在执行的节点是哪个
-XNode* getExecNode();
-
-// 设置是否发生了一个异常
-void setInException(bool);
-// 获得当前结点是否在异常执行节点中
-bool getInException();
-
-
 void objToString(langX::Object * obj,char *, int offset, int maxSize);
 
 
