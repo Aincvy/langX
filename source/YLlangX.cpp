@@ -25,8 +25,6 @@ extern int getParseLineNo();
 using namespace langX;
 
 static langXState* state = NULL;
-static Node *currentNode = NULL;
-static bool inException = false;
 
 void initLangX()
 {
@@ -154,36 +152,6 @@ XFunction * create3rdFunc(const char *name, langX::X3rdFuncWorker worker)
 	func->setLangX(state);
 
 	return func;
-}
-
-NodeFileInfo getCurrentNodeFileInfo()
-{
-	if (currentNode == NULL)
-	{
-		NodeFileInfo f;
-		deal_fileinfo(&f);
-		return (f);
-	}
-	return currentNode->fileinfo;
-}
-
-void setExecNode(XNode *n) {
-	currentNode = n;
-}
-
-XNode * getExecNode()
-{
-	return currentNode;
-}
-
-void setInException(bool f)
-{
-	inException = f;
-}
-
-bool getInException()
-{
-	return inException;
 }
 
 void objToString(langX::Object * obj, char *p, int offset, int maxSize)
@@ -491,7 +459,8 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 	printf("callFunc %s %s\n" , function->getName(), remark );
 #endif
 
-	getState()->curThread()->getStackTrace().newFrame(function->getClassInfo(), function, remark);
+	langXThread * thread = getState()->curThread();
+	thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
 	if (function->is3rd())
 	{
@@ -512,7 +481,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 				// 计算出参数节点的值。 然后克隆一份给 传参的那个数据结构。 然后再释放掉参数节点的值。 
 				execNode(args->args[i]);
 
-				if (getState()->curThread()->isInException())
+				if (thread->isInException())
 				{
 					return NULL;
 				}
@@ -534,7 +503,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 			}
 			_3rdArgs.index = args->index;
 		}
-		Environment *currEnv1 = getState()->curThread()->getCurrentEnv();
+		Environment *currEnv1 = thread->getCurrentEnv();
 		if (currEnv1->isObjectEnvironment())
 		{
 			if (currEnv1->isEnvEnvironment())
@@ -546,8 +515,10 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 			}
 		}
 
+		thread->setInFunction(true);
 		Object * ret1 = x3rdfunc->call(_3rdArgs);
-		getState()->curThread()->getStackTrace().popFrame();
+		thread->getStackTrace().popFrame();
+		thread->setInFunction(false);
 
 		for (size_t i = 0; i < _3rdArgs.index; i++)
 		{
@@ -559,11 +530,11 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 
 	// 如果当前环境是一个对象环境， 则暂存他
 	Environment *abcEnv = NULL;
-	Environment *currEnv1 = getState()->curThread()->getCurrentEnv();
+	Environment *currEnv1 = thread->getCurrentEnv();
 	if (currEnv1->isObjectEnvironment())
 	{
 		abcEnv = currEnv1;
-		getState()->curThread()->backEnv(false);
+		thread->backEnv(false);
 	}
 
 	Environment * env = new DefaultEnvironment();
@@ -587,7 +558,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 
 				execNode(args->args[i]);
 
-				if (getState()->curThread()->isInException())
+				if (thread->isInException())
 				{
 					return NULL;
 				}
@@ -621,7 +592,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 
 	if (abcEnv != NULL)
 	{
-		getState()->curThread()->newEnv(abcEnv);
+		thread->newEnv(abcEnv);
 		abcEnv = NULL;
 	}
 
@@ -631,22 +602,23 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 	if (fsenv != nullptr)
 	{
 		flagfsenv = true;
-		getState()->curThread()->newEnv2(fsenv);
+		thread->newEnv2(fsenv);
 	}
 
-	getState()->curThread()->newEnv(env);
+	thread->newEnv(env);
+	thread->setInFunction(true);
 	ret = function->call();
-
-	getState()->curThread()->getStackTrace().popFrame();
-	if (getState()->curThread()->isInException())
+	thread->setInFunction(false);
+	thread->getStackTrace().popFrame();
+	if (thread->isInException())
 	{
 		return NULL;
 	}
-	getState()->curThread()->backEnv();
+	thread->backEnv();
 
 	if (flagfsenv)
 	{
-		getState()->curThread()->backEnv();
+		thread->backEnv();
 	}
 
 	return ret;

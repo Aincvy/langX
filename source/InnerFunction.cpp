@@ -81,11 +81,6 @@ namespace langX {
 		}
 
 		Object *ret = callInnerFunc(obj, name, &_3rdArgs);
-		langXThread * thread = getState()->curThread();
-		if (!thread->isInFunction() && !thread->isInLoop())
-		{
-			freeArgsList(args);
-		}
 
 		for (size_t i = 0; i < _3rdArgs.index; i++)
 		{

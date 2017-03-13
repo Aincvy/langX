@@ -2493,15 +2493,6 @@ namespace langX {
 		m_exec_alloc.free(n1->value);
 		n1->value = NULL;
 
-		langXThread * thread = getState()->curThread();
-
-		if (!thread->isInFunction() && !thread->isInLoop())
-		{
-#ifdef SHOW_DETAILS
-			printf("freeArgsList node in __execFUNC_CALL: \n" );
-#endif
-			freeArgsList(args);
-		}
 	}
 
 	void __execNEW(Node *n) {
@@ -2937,12 +2928,6 @@ namespace langX {
 		doSuffixOperationArgs(args);
 		//m_exec_alloc.free(n1->value);
 		n1->value = NULL;
-
-		langXThread *thread = getState()->curThread();
-		if (!thread->isInFunction() && !thread->isInLoop())
-		{
-			freeArgsList(args);
-		}
 
 		getState()->curThread()->backEnv();
 	}
@@ -3415,9 +3400,9 @@ namespace langX {
 			return;
 		}
 
-		if (!getInException())
+		if (!thread->isInException())
 		{
-			setExecNode(node);
+			thread->setExecNode(node);
 		}
 
 		//printf("__execNode 01x\n");

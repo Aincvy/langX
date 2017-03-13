@@ -404,7 +404,6 @@ namespace langX {
 			obj = NULL;
 		}
 		else {
-			//setInException(true);
 			// 将异常赋值
 			// 进入catch 环境
 			env = newEnv();
@@ -513,6 +512,28 @@ namespace langX {
 		else {
 			this->m_function_result = obj->clone();
 		}
+	}
+
+	void langXThread::setExecNode(Node * n)
+	{
+		this->m_current_node = n;
+	}
+
+	Node * langXThread::getExecNode()
+	{
+		return this->m_current_node;
+	}
+
+	NodeFileInfo langXThread::getCurrentNodeFileInfo()
+	{
+		if (m_current_node == NULL)
+		{
+			NodeFileInfo f;
+			f.lineno = -1;
+			f.filename = "No Current Node Info... ";
+			return (f);
+		}
+		return m_current_node->fileinfo;
 	}
 
 	void langXThread::backEnv()
