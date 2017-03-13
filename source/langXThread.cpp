@@ -11,7 +11,7 @@
 #include "../include/langXObjectRef.h"
 
 
-// ÊÍ·Å»·¾³ÄÚ´æ
+// é‡Šæ”¾çŽ¯å¢ƒå†…å­˜
 void freeEnv(langX::Environment **env) {
 
 	if (env == NULL || (*env) == NULL)
@@ -55,8 +55,6 @@ void freeEnv(langX::Environment **env) {
 
 namespace langX {
 
-
-
 	void  gTryCatchCB(langXObjectRef *obj) {
 		Function *func = obj->getFunction("printStackTrace");
 		if (func != NULL)
@@ -93,6 +91,23 @@ namespace langX {
 
 	langXThread::~langXThread()
 	{
+		if (m_thrown_obj != nullptr)
+		{
+			Allocator::free(m_thrown_obj);
+			m_thrown_obj = nullptr;
+		}
+
+		// æ¸…ç†æŽ‰çŽ¯å¢ƒ 
+		backToDeep1Env();
+
+		while (this->m_current_env != NULL && this->m_current_env->getParent() != NULL)
+		{
+			backEnv();
+		}
+
+		////  ä¸‹é¢é‚£æ¡è¯­å¥çš„å½“å‰çŽ¯å¢ƒå°±æ˜¯  m_global_env  ï¼Œæ‰€ä»¥æ— éœ€é‡Šæ”¾ m_global_env
+		freeEnv(&this->m_current_env);
+
 	}
 
 	StackTrace & langXThread::getStackTrace()
@@ -280,7 +295,7 @@ namespace langX {
 	{
 		StrackTraceFrameArray array1 = this->m_stacktrace.frames();
 
-		// ²»´òÓ¡×Ô¼ºÕâ¸öº¯Êý
+		// ä¸æ‰“å°è‡ªå·±è¿™ä¸ªå‡½æ•°
 		for (int i = array1.length - 2; i >= 0; i--)
 		{
 			printf("%s\n", array1.frame[i]->getInfo());
@@ -347,11 +362,17 @@ namespace langX {
 
 	void langXThread::throwException(langXObjectRef *obj)
 	{
-		// ¶ª³öÒ»¸öÒì³£
+		// ä¸¢å‡ºä¸€ä¸ªå¼‚å¸¸
 		this->setInException(true);
+
+		if (m_thrown_obj != nullptr)
+		{
+			Allocator::free(m_thrown_obj);
+			m_thrown_obj = nullptr;
+		}
 		this->m_thrown_obj = obj;
 
-		// ÕÒµ½try»·¾³
+		// æ‰¾åˆ°tryçŽ¯å¢ƒ
 		//TryEnvironment *tryEnv = NULL;
 		//Environment *env = this->m_current_env;
 		//while (1)
@@ -373,11 +394,11 @@ namespace langX {
 		//		break;
 		//	}
 
-		//	// ÒòÎª¶ª³öÁËÒì³££¬ ËùÒÔµ½ try »·¾³Ö®Ç°µÄËùÓÐ»·¾³¶¼»á±ä³ÉËÀÍö»·¾³
+		//	// å› ä¸ºä¸¢å‡ºäº†å¼‚å¸¸ï¼Œ æ‰€ä»¥åˆ° try çŽ¯å¢ƒä¹‹å‰çš„æ‰€æœ‰çŽ¯å¢ƒéƒ½ä¼šå˜æˆæ­»äº¡çŽ¯å¢ƒ
 		//	//env->setDead(true);
 		//	Environment *p = env->getParent();
 
-		//	// ÍË»ØÒ»¼¶»·¾³ £¬Ö±µ½ÍË»Øtry »·¾³
+		//	// é€€å›žä¸€çº§çŽ¯å¢ƒ ï¼Œç›´åˆ°é€€å›žtry çŽ¯å¢ƒ
 		//	backEnv();
 
 		//	env = p;
@@ -389,7 +410,7 @@ namespace langX {
 		//	return;
 		//}
 
-		////  ÍË³ötry »·¾³
+		////  é€€å‡ºtry çŽ¯å¢ƒ
 		//backEnv(false);
 
 		//// check call back first.
@@ -398,25 +419,25 @@ namespace langX {
 		//{
 		//	c(obj);
 
-		//	// ÐÂ½¨Ò»¸ö»·¾³£¬²¢ÉèÖÃµ±Ç°»·¾³Îª dead »·¾³
+		//	// æ–°å»ºä¸€ä¸ªçŽ¯å¢ƒï¼Œå¹¶è®¾ç½®å½“å‰çŽ¯å¢ƒä¸º dead çŽ¯å¢ƒ
 		//	newEnv();
 
-		//	// É¾³ý¶ÔÏó
+		//	// åˆ é™¤å¯¹è±¡
 		//	delete obj->getRefObject();
 		//	delete obj;
 		//	obj = NULL;
 		//}
 		//else {
-		//	// ½«Òì³£¸³Öµ
-		//	// ½øÈëcatch »·¾³
+		//	// å°†å¼‚å¸¸èµ‹å€¼
+		//	// è¿›å…¥catch çŽ¯å¢ƒ
 		//	env = newEnv();
 		//	Node *cNode = tryEnv->getCatchNode();
 		//	env->putObject(cNode->opr_obj->op[0]->var_obj->name, obj);
 
-		//	// Ö´ÐÐ catch ¿éµÄÓï¾ä
+		//	// æ‰§è¡Œ catch å—çš„è¯­å¥
 		//	__execNode(cNode->opr_obj->op[1]);
 
-		//	// ½«»·¾³back µ½env
+		//	// å°†çŽ¯å¢ƒback åˆ°env
 		//	while (env != this->m_current_env)
 		//	{
 		//		if (this->m_current_env == NULL)
@@ -427,15 +448,15 @@ namespace langX {
 		//		backEnv();
 		//	}
 
-		//	// Ö÷¶¯½øÐÐ try-catch ²Ù×÷µÄÊ±ºò £¬ try Ö´ÐÐºó»áÊÍ·ÅÒ»¸ö»·¾³£¬ËùÒÔµ±Ç°»·¾³±£Áô
+		//	// ä¸»åŠ¨è¿›è¡Œ try-catch æ“ä½œçš„æ—¶å€™ ï¼Œ try æ‰§è¡ŒåŽä¼šé‡Šæ”¾ä¸€ä¸ªçŽ¯å¢ƒï¼Œæ‰€ä»¥å½“å‰çŽ¯å¢ƒä¿ç•™
 
-		//	// É¾³ý¶ÔÏó
+		//	// åˆ é™¤å¯¹è±¡
 		//	delete obj->getRefObject();
 		//	delete obj;
 		//	obj = NULL;
 		//}
 
-		//// Ïú»Ùtry »·¾³
+		//// é”€æ¯try çŽ¯å¢ƒ
 		//delete tryEnv;
 		//tryEnv = NULL;
 	}
@@ -558,7 +579,7 @@ namespace langX {
 		}
 		if (flag)
 		{
-			//  ×ÓÀà
+			//  å­ç±»
 			freeEnv(&this->m_current_env);
 			//this->m_current_env = NULL;
 		}
@@ -581,7 +602,7 @@ namespace langX {
 		
 		int id = this->m_id_gen++;
 		langXThread *thread = new langXThread(id);
-		thread->setName("main");   // ÉèÖÃÏß³ÌÃû×ÖÎªÖ÷Ïß³Ì
+		thread->setName("main");   // è®¾ç½®çº¿ç¨‹åå­—ä¸ºä¸»çº¿ç¨‹
 		thread->setStatus(langXThreadStatus::Running);
 		this->m_selfmap[id] = thread;
 		this->m_idmap[curThreadId] = thread;
