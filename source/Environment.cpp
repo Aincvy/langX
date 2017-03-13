@@ -395,14 +395,13 @@ namespace langX {
 
 	TryEnvironment::~TryEnvironment()
 	{
-		Allocator& allocator = getState()->getAllocator();
 		this->m_parent = NULL;
 		//printf("~Environment\n");
 		if (!m_objects_map.empty())
 		{
 			for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++) {
 				//a->second->decRefCount();
-				allocator.free(a->second);
+				Allocator::free(a->second);
 			}
 
 			m_objects_map.clear();
@@ -458,14 +457,14 @@ namespace langX {
 			obj = obj->clone();
 		}
 		else {
-			obj = getState()->getAllocator().allocate(NULLOBJECT);
+			obj = Allocator::allocate(NULLOBJECT);
 		}
 		obj->setName(name);
 
 		if (it != this->m_objects_map.end())
 		{
 			// 删除 原来的值
-			getState()->getAllocator().free(it->second);
+			Allocator::free(it->second);
 			// 替换新值
 			it->second = obj;
 		}
@@ -698,7 +697,6 @@ namespace langX {
 
 	DefaultEnvironment::~DefaultEnvironment()
 	{
-		Allocator& allocator = getState()->getAllocator();
 		this->m_parent = NULL;
 		//printf("~Environment\n");
 		if (!m_objects_map.empty())
@@ -706,7 +704,7 @@ namespace langX {
 			for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++) {
 				//a->second->decRefCount();
 				//delete a->second;
-				allocator.free(a->second);
+				Allocator::free(a->second);
 			}
 
 			m_objects_map.clear();
@@ -726,14 +724,14 @@ namespace langX {
 			obj = obj->clone();
 		}
 		else {
-			obj = getState()->getAllocator().allocate(NULLOBJECT);
+			obj = Allocator::allocate(NULLOBJECT);
 		}
 		obj->setName(name);
 
 		if (it != this->m_objects_map.end())
 		{
 			// 删除 原来的值
-			getState()->getAllocator().free(it->second);
+			Allocator::free(it->second);
 			// 替换新值
 			it->second = obj;
 		}
@@ -1055,7 +1053,6 @@ namespace langX {
 
 	ScriptEnvironment::~ScriptEnvironment()
 	{
-		Allocator &allocator = getState()->getAllocator();
 		// 释放内存
 		this->m_parent = NULL;
 		printf("~ScriptEnvironment: %p\n", this);
@@ -1064,7 +1061,7 @@ namespace langX {
 			for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++) {
 				//a->second->decRefCount();
 				//delete a->second;
-				allocator.free(a->second);
+				Allocator::free(a->second);
 			}
 
 			m_objects_map.clear();
@@ -1116,14 +1113,14 @@ namespace langX {
 			obj = obj->clone();
 		}
 		else {
-			obj = getState()->getAllocator().allocate(NULLOBJECT);
+			obj = Allocator::allocate(NULLOBJECT);
 		}
 		obj->setName(name);
 
 		if (it != this->m_objects_map.end())
 		{
 			// 删除 原来的值
-			getState()->getAllocator().free(it->second);
+			Allocator::free(it->second);
 			// 替换新值
 			it->second = obj;
 		}

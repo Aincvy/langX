@@ -11,6 +11,7 @@ namespace langX {
 
 	class Environment;
 	class Object;
+	class langXObjectRef;
 
 	// 线程状态
 	enum langXThreadStatus {
@@ -130,6 +131,9 @@ namespace langX {
 		// 获得正在执行节点的文件信息
 		NodeFileInfo getCurrentNodeFileInfo();
 
+		// 获得丢出来的那个对象
+		langXObjectRef *getThrownObj();
+
 	private:
 
 		// 线程id
@@ -151,9 +155,12 @@ namespace langX {
 		Object *m_function_result = nullptr;
 		// 正在执行的节点
 		Node *m_current_node = NULL;
+		// 丢出来的那个对象
+		langXObjectRef * m_thrown_obj = nullptr;
 
 		//  返回到 深度为1的 环境上
 		void backToDeep1Env();
+
 
 	};
 

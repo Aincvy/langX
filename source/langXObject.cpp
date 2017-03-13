@@ -108,7 +108,7 @@ namespace langX {
 			a->update(obj);
 		}
 		else {
-			getState()->getAllocator().free(a);
+			Allocator::free(a);
 			a = NULL;
 			a = obj->clone();
 			a->setName(name);

@@ -20,44 +20,49 @@ namespace langX {
 		~Allocator();
 
 		// 复制一个参数对象，  和clone操作差不多
-		Object *copy(Object *) const;
+		static Object *copy(Object *);
 
-		Object *allocate(ObjectType) const;
-		void free(Object *) const;
+		static Object *allocate(ObjectType);
+		static void free(Object *);
 
-		Number *allocateNumber() const;
-		Number *allocateNumber(double ) const;
-		void freeNumber(Number *);
+		static Number *allocateNumber();
+		static Number *allocateNumber(double );
+		static void freeNumber(Number *);
 
-		String *allocateString() const;
-		String *allocateString(const char *) const;
-		void freeString(String *);
+		static String *allocateString();
+		static String *allocateString(const char *);
+		static void freeString(String *);
 
 		// 申请一个数组
-		XArray *allocateArray(int size);
+		static XArray *allocateArray(int size);
 
-		FunctionRef *allocateFunctionRef(Function *) const;
-		void freeFunctionRef(FunctionRef *) const;
+		static FunctionRef *allocateFunctionRef(Function *);
+		static void freeFunctionRef(FunctionRef *);
 
-		langXObject * newObject(ClassInfo *) ;
+		static langXObject * newObject(ClassInfo *) ;
 
 		// 垃圾回收
-		void gc();
+		static void gc();
 
 		// 检测垃圾回收
-		void checkGC();
+		static void checkGC();
 		
 		// 清理掉所有的对象
-		void freeAllObjs();
+		static void freeAllObjs();
 
 	private:
-		std::list<langXObject*> m_objects;
+		static std::list<langXObject*> m_objects;
 
 		// 对象的申请次数
-		int m_a_count = 0;
+		static int m_a_count;
 
 		// 申请的对象数量到达这个就进行gc 
-		const int GC_OBJECT_COUNT = 1500;
+		static const int GC_OBJECT_COUNT;
 	};
+
+
+	const int Allocator::GC_OBJECT_COUNT = 1500;
+	int Allocator::m_a_count = 0;
+	std::list<langXObject*> Allocator::m_objects;
 
 }

@@ -20,7 +20,7 @@ namespace langX {
 	{
 	}
 
-	Object * Allocator::copy(Object *obj) const
+	Object * Allocator::copy(Object *obj)
 	{
 		if (obj == NULL)
 		{
@@ -41,7 +41,7 @@ namespace langX {
 		return ret;
 	}
 
-	Object * Allocator::allocate(ObjectType t) const
+	Object * Allocator::allocate(ObjectType t)
 	{
 		if (t == ObjectType::UNKNOWN)
 		{
@@ -75,7 +75,7 @@ namespace langX {
 		return NULL;
 	}
 
-	void Allocator::free(Object *obj) const
+	void Allocator::free(Object *obj)
 	{
 		if (obj == NULL)
 		{
@@ -105,11 +105,11 @@ namespace langX {
 		}
 	}
 	
-	Number * Allocator::allocateNumber() const
+	Number * Allocator::allocateNumber()
 	{
 		return new Number();
 	}
-	Number * Allocator::allocateNumber(double v) const
+	Number * Allocator::allocateNumber(double v)
 	{
 		return new Number(v);
 	}
@@ -122,12 +122,12 @@ namespace langX {
 		delete v;
 	}
 
-	String * Allocator::allocateString() const
+	String * Allocator::allocateString()
 	{
 		return new String("");
 	}
 
-	String * Allocator::allocateString(const char *str) const
+	String * Allocator::allocateString(const char *str)
 	{
 		return new String(str);
 	}
@@ -146,12 +146,12 @@ namespace langX {
 		return new XArray(size);
 	}
 
-	FunctionRef * Allocator::allocateFunctionRef(Function *f) const
+	FunctionRef * Allocator::allocateFunctionRef(Function *f)
 	{
 		return new FunctionRef(f);
 	}
 
-	void Allocator::freeFunctionRef(FunctionRef *f) const
+	void Allocator::freeFunctionRef(FunctionRef *f)
 	{
 		delete f;
 	}
@@ -162,8 +162,8 @@ namespace langX {
 
 		//printf("new object. now object count: %d\n" , this->m_a_count);
 		langXObject *p = new langXObject(c);
-		this->m_objects.push_back(p);
-		this->m_a_count++;
+		m_objects.push_back(p);
+		m_a_count++;
 		
 		return p;
 	}
@@ -173,18 +173,18 @@ namespace langX {
 		printf("gc start \n");
 
 		int count = 0;
-		for (auto i = this->m_objects.begin(); i != this->m_objects.end(); i++)
+		for (auto i = m_objects.begin(); i != m_objects.end(); i++)
 		{
 			langXObject *obj = (*i);
 			if (obj->getRefCount() <= 0)
 			{
 				delete obj;
-				this->m_objects.erase(i++);
+				m_objects.erase(i++);
 				count++;
 			}
 		}
 
-		this->m_a_count -= count;
+		m_a_count -= count;
 		printf("free %d object(s)\n" , count);
 	}
 
@@ -193,7 +193,7 @@ namespace langX {
 	void Allocator::checkGC()
 	{
 
-		if (this->m_a_count >= GC_OBJECT_COUNT)
+		if (m_a_count >= GC_OBJECT_COUNT)
 		{
 			gc();
 		}
@@ -202,13 +202,13 @@ namespace langX {
 
 	void Allocator::freeAllObjs()
 	{
-		for (auto i = this->m_objects.begin(); i != this->m_objects.end(); i++)
+		for (auto i = m_objects.begin(); i != m_objects.end(); i++)
 		{
 			langXObject *obj = (*i);
 			delete obj;
 		}
 
-		this->m_objects.clear();
+		m_objects.clear();
 	}
 
 

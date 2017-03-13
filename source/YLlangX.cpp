@@ -172,7 +172,7 @@ void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 		{
 			ss << ((String*)retObj)->getValue();
 		}
-		getState()->getAllocator().free(retObj);
+		Allocator::free(retObj);
 		retObj = nullptr;
 	}
 
@@ -492,12 +492,12 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 					_3rdArgs.args[i] = tmp1->clone();
 				}
 				else {
-					_3rdArgs.args[i] = getState()->getAllocator().allocate(NULLOBJECT);
+					_3rdArgs.args[i] = Allocator::allocate(NULLOBJECT);
 				}
 				
 
 				// 释放这个参数节点的值
-				getState()->getAllocator().free(args->args[i]->value);
+				Allocator::free(args->args[i]->value);
 				args->args[i]->value = NULL;
 
 			}
@@ -522,7 +522,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 
 		for (size_t i = 0; i < _3rdArgs.index; i++)
 		{
-			getState()->getAllocator().free(_3rdArgs.args[i]);
+			Allocator::free(_3rdArgs.args[i]);
 		}
 
 		return ret1;
@@ -577,7 +577,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 				// 这片代码的本意是吧参数节点的值算出来，然后丢给函数。 现在任务已经完成了。 可以把参数节点的值给释放掉了
 
 				// 释放这个参数节点的值
-				getState()->getAllocator().free(args->args[i]->value);
+				Allocator::free(args->args[i]->value);
 				args->args[i]->value = NULL;
 				
 				//printf("put param %s object: %d.on env: %p. number value: %f. \n", params->args[i] , t ,env, t == NUMBER ? ((Number*)args->args[i]->value)->getDoubleValue() : -1 );
@@ -748,7 +748,7 @@ void freeNode(XNode * n) {
 
 	if (n->value != NULL)
 	{
-		getState()->getAllocator().free(n->value);
+		Allocator::free(n->value);
 		n->value = NULL;
 	}
 
