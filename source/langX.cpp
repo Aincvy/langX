@@ -37,8 +37,6 @@ namespace langX {
 
 	langXState::langXState()
 	{
-		XNameSpace *s = new XNameSpace("$NoName1");
-		this->m_namespace_map[s->getName()] = s;
 		this->m_global_env = new GlobalEnvironment();
 		this->m_global_env->setParent(NULL);
 		this->m_global_env->setDeep(0);

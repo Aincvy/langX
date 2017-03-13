@@ -193,4 +193,6 @@ namespace langX {
 	};
 
 
+	//  try-catch 的回调函数
+	void  gTryCatchCB(langXObjectRef *obj);
 }

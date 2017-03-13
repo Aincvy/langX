@@ -847,5 +847,13 @@ void execNode(XNode *n) {
 
 void execAndFreeNode(XNode *n) {
 	execNode(n);
+
+	// 判断一下程序有没有异常
+	langXThread * thread = getState()->curThread();
+	if (thread->isInException())
+	{
+		gTryCatchCB(thread->getThrownObj());
+	}
+
 	freeNode(n);
 }
