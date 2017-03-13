@@ -38,7 +38,7 @@ namespace langX {
 		// n 应该是一个函数调用节点
 		if (n->type != NodeType::NODE_OPERATOR || n->opr_obj->opr != FUNC_CALL)
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		Node *n1 = n->opr_obj->op[0];
@@ -70,11 +70,11 @@ namespace langX {
 					_3rdArgs.args[i] = obj->clone();
 				}
 				else {
-					_3rdArgs.args[i] = getState()->getAllocator().allocate(NULLOBJECT);
+					_3rdArgs.args[i] = Allocator::allocate(NULLOBJECT);
 				}
 
 				// 释放这个参数节点的值
-				getState()->getAllocator().free(args->args[i]->value);
+				Allocator::free(args->args[i]->value);
 				args->args[i]->value = NULL;
 			}
 			_3rdArgs.index = args->index;
@@ -84,7 +84,7 @@ namespace langX {
 
 		for (size_t i = 0; i < _3rdArgs.index; i++)
 		{
-			getState()->getAllocator().free(_3rdArgs.args[i]);
+			Allocator::free(_3rdArgs.args[i]);
 		}
 
 		return ret;
@@ -101,7 +101,7 @@ namespace langX {
 			
 			if (strcmp(name,"length") == 0)
 			{
-				ret = getState()->getAllocator().allocateNumber(str->size());
+				ret = Allocator::allocateNumber(str->size());
 			}
 			else if (strcmp(name, "subString") == 0)
 			{
@@ -120,15 +120,15 @@ namespace langX {
 
 				if (index == -1)
 				{
-					return getState()->getAllocator().allocate(NULLOBJECT);
+					return Allocator::allocate(NULLOBJECT);
 				}
 
 				if (len == -1)
 				{
-					return getState()->getAllocator().allocateString(str->subStr(index).c_str());
+					return Allocator::allocateString(str->subStr(index).c_str());
 				}
 
-				return getState()->getAllocator().allocateString(str->subStr(index,len).c_str());
+				return Allocator::allocateString(str->subStr(index,len).c_str());
 			}
 			else if (strcmp(name, "contains") == 0)
 			{
@@ -137,11 +137,11 @@ namespace langX {
 				{
 					if ( str->contains(((String*)a)->getValue()) )
 					{
-						return getState()->getAllocator().allocateNumber(1);
+						return Allocator::allocateNumber(1);
 					}
 				}
 
-				return getState()->getAllocator().allocateNumber(0);
+				return Allocator::allocateNumber(0);
 			}
 			else if (strcmp(name, "indexOf") == 0)
 			{
@@ -150,20 +150,20 @@ namespace langX {
 				{
 					int i = str->indexOf(((String*)a)->getValue());
 
-					return getState()->getAllocator().allocateNumber(i);
+					return Allocator::allocateNumber(i);
 					
 				}
 
-				return getState()->getAllocator().allocateNumber(-1);
+				return Allocator::allocateNumber(-1);
 			}
 			else if (strcmp(name, "isEmpty") == 0)
 			{
 				if (str->isEmpty())
 				{
-					return getState()->getAllocator().allocateNumber(1);
+					return Allocator::allocateNumber(1);
 				}
 
-				return getState()->getAllocator().allocateNumber(0);
+				return Allocator::allocateNumber(0);
 			}
 			else if (strcmp(name, "replace") == 0)
 			{
@@ -175,9 +175,9 @@ namespace langX {
 					String *str1 = (String*)a;
 					String *str2 = (String*)b;
 					std::string t1 = str->replace(str1->getValue(), str2->getValue());
-					return getState()->getAllocator().allocateString(t1.c_str());
+					return Allocator::allocateString(t1.c_str());
 				}
-				return getState()->getAllocator().allocate(NULLOBJECT);
+				return Allocator::allocate(NULLOBJECT);
 			}
 			else if (strcmp(name, "replaceFirst") == 0)
 			{
@@ -189,9 +189,9 @@ namespace langX {
 					String *str1 = (String*)a;
 					String *str2 = (String*)b;
 					std::string t1 = str->replaceFirst(str1->getValue(), str2->getValue());
-					return getState()->getAllocator().allocateString(t1.c_str());
+					return Allocator::allocateString(t1.c_str());
 				}
-				return getState()->getAllocator().allocate(NULLOBJECT);
+				return Allocator::allocate(NULLOBJECT);
 			}
 			else if (strcmp(name, "split") == 0)
 			{
@@ -200,33 +200,33 @@ namespace langX {
 				{
 					std::vector<std::string> vector1 = str->split(((String*)a)->getValue());
 
-					XArray *array1 = getState()->getAllocator().allocateArray(vector1.size());
+					XArray *array1 = Allocator::allocateArray(vector1.size());
 					int index = 0;
 					for (auto i = vector1.begin(); i != vector1.end(); i++)
 					{
-						array1->set(index++, getState()->getAllocator().allocateString(((*i).c_str())));
+						array1->set(index++, Allocator::allocateString(((*i).c_str())));
 					}
 
 					return array1->addRef();
 				}
-				return getState()->getAllocator().allocate(NULLOBJECT);
+				return Allocator::allocate(NULLOBJECT);
 			}
 			else if (strcmp(name, "lowerCase") == 0)
 			{
 				std::string t1 = str->lowerCase();
-				return getState()->getAllocator().allocateString(t1.c_str());
+				return Allocator::allocateString(t1.c_str());
 			}
 			else if (strcmp(name, "upperCase") == 0)
 			{
 				std::string t1 = str->upperCase();
-				return getState()->getAllocator().allocateString(t1.c_str());
+				return Allocator::allocateString(t1.c_str());
 			}
 
 		}
 
 		if (ret == nullptr)
 		{
-			ret = getState()->getAllocator().allocate(NULLOBJECT);
+			ret = Allocator::allocate(NULLOBJECT);
 		}
 		return ret;
 	}

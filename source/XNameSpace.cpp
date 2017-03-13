@@ -45,7 +45,7 @@ namespace langX {
 			obj = obj->clone();
 		}
 		else {
-			obj = getState()->getAllocator().allocate(NULLOBJECT);
+			obj = Allocator::allocate(NULLOBJECT);
 		}
 
 		obj->setName(name);

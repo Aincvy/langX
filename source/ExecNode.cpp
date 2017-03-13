@@ -23,8 +23,6 @@
 
 
 namespace langX {
-	// 内存的 管理器
-	Allocator m_exec_alloc;
 
 	// 将节点的值更新到环境中
 	void setValueToEnv2(const char*name, Object *val, Environment *env) {
@@ -114,7 +112,7 @@ namespace langX {
 		else if (n->type == NODE_VARIABLE && n->postposition != NULL)
 		{
 			setValueToEnv(n->var_obj->name, n->postposition);
-			m_exec_alloc.free(n->postposition);
+			Allocator::free(n->postposition);
 			n->postposition = NULL;
 		}
 	}
@@ -173,7 +171,7 @@ namespace langX {
 
 		if (n->value != NULL)
 		{
-			m_exec_alloc.free(n->value);
+			Allocator::free(n->value);
 			n->value = NULL;
 		}
 
@@ -182,7 +180,7 @@ namespace langX {
 			Node * t = n->arr_obj->indexNode;
 			if (t != NULL && t->value != NULL)
 			{
-				m_exec_alloc.free(t->value);
+				Allocator::free(t->value);
 				t->value = NULL;
 			}
 		}
@@ -219,7 +217,7 @@ namespace langX {
 			}
 
 			//printf("freeSubNodes: %d\n" , i);
-			m_exec_alloc.free(n->opr_obj->op[i]->value);
+			Allocator::free(n->opr_obj->op[i]->value);
 			n->opr_obj->op[i]->value = NULL;
 		}
 	}
@@ -252,7 +250,7 @@ namespace langX {
 				// 类型不一样
 				// 先不管 left 原来指向的值
 				Object *obj = left->value;
-				Object *t = m_exec_alloc.allocate(rightType);
+				Object *t = Allocator::allocate(rightType);
 				t->setEmergeEnv(obj->getEmergeEnv());
 				t->setConst(obj->isConst());
 				t->setLocal(obj->isLocal());
@@ -269,7 +267,7 @@ namespace langX {
 		if (obj == NULL)
 		{
 			// 左值没声明过, 那么左值的产生环境就为 当前环境
-			obj = m_exec_alloc.allocate(rightType);
+			obj = Allocator::allocate(rightType);
 			obj->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 			getState()->curThread()->putObject(left->var_obj->name, obj);
 		}
@@ -277,7 +275,7 @@ namespace langX {
 			//  左值声明过
 			if (obj->getType() != rightType)
 			{
-				Object *t = m_exec_alloc.allocate(rightType);
+				Object *t = Allocator::allocate(rightType);
 				// 变量的常量和local属性也不应该变化
 				t->setLocal(obj->isLocal());
 				t->setConst(obj->isConst());
@@ -287,7 +285,7 @@ namespace langX {
 
 				// 释放掉原值   0820  上面那条 putObject 语句执行结束之后， 好像就访问不到 obj 了 以后需要查看是为什么 TODO 
 				// 上述语句会调用 langXObject::setMember  ，这个函数会检查类型， 如果类型不一致， 会释放掉原有内存
-				//m_exec_alloc.free(obj);
+				//Allocator::free(obj);
 
 				// 赋值到新值
 				obj = t;
@@ -360,7 +358,7 @@ namespace langX {
 
 		if (left->getType() == NUMBER && right->getType() == NUMBER)
 		{
-			n->value = m_exec_alloc.allocateNumber(((Number*)left)->getDoubleValue() + ((Number*)right)->getDoubleValue());
+			n->value = Allocator::allocateNumber(((Number*)left)->getDoubleValue() + ((Number*)right)->getDoubleValue());
 		}
 		else if (left != NULL && left->getType() == OBJECT) {
 			langXObjectRef * ref1 = (langXObjectRef*)left;
@@ -445,7 +443,7 @@ namespace langX {
 						return;
 					}
 
-					n->value = m_exec_alloc.allocateString(ss.str().c_str());
+					n->value = Allocator::allocateString(ss.str().c_str());
 		}
 		else {
 			getState()->curThread()->throwException(newArithmeticException("args type error when do opr '+' .")->addRef());
@@ -501,7 +499,7 @@ namespace langX {
 			return;
 		}
 
-		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() - ((Number*)n2->value)->getDoubleValue());
+		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() - ((Number*)n2->value)->getDoubleValue());
 		freeSubNodes(n);
 	}
 
@@ -551,7 +549,7 @@ namespace langX {
 			return;
 		}
 
-		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() * ((Number*)n2->value)->getDoubleValue());
+		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() * ((Number*)n2->value)->getDoubleValue());
 		freeSubNodes(n);
 
 	}
@@ -608,7 +606,7 @@ namespace langX {
 			return;
 		}
 
-		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() / d2);
+		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() / d2);
 		freeSubNodes(n);
 
 	}
@@ -643,7 +641,7 @@ namespace langX {
 		int i2 = ((Number*)n2->value)->getIntValue();
 		int i3 = i1 | i2;
 
-		n->value = m_exec_alloc.allocateNumber(i3);
+		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
 
 	}
@@ -679,7 +677,7 @@ namespace langX {
 		int i2 = ((Number*)n2->value)->getIntValue();
 		int i3 = i1 & i2;
 
-		n->value = m_exec_alloc.allocateNumber(i3);
+		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
 
 	}
@@ -713,7 +711,7 @@ namespace langX {
 		int i2 = ((Number*)n2->value)->getIntValue();
 		int i3 = i1 ^ i2;
 
-		n->value = m_exec_alloc.allocateNumber(i3);
+		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
 
 	}
@@ -746,7 +744,7 @@ namespace langX {
 		int i1 = ((Number*)n1->value)->getIntValue();
 		int i3 = ~i1;
 
-		n->value = m_exec_alloc.allocateNumber(i3);
+		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
 
 	}
@@ -802,7 +800,7 @@ namespace langX {
 		int i2 = ((Number*)n2->value)->getIntValue();
 		int i3 = i1 << i2;
 
-		n->value = m_exec_alloc.allocateNumber(i3);
+		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
 	}
 
@@ -855,7 +853,7 @@ namespace langX {
 		int i2 = ((Number*)n2->value)->getIntValue();
 		int i3 = i1 >> i2;
 
-		n->value = m_exec_alloc.allocateNumber(i3);
+		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
 
 	}
@@ -909,7 +907,7 @@ namespace langX {
 		int i2 = ((Number*)n2->value)->getIntValue();
 		int i3 = i1 % i2;
 
-		n->value = m_exec_alloc.allocateNumber(i3);
+		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
 
 	}
@@ -974,7 +972,7 @@ namespace langX {
 				Function *func = getState()->curThread()->getCurrentEnv()->getFunction(right->var_obj->name);
 				if (func != nullptr)
 				{
-					FunctionRef * f = m_exec_alloc.allocateFunctionRef(func);
+					FunctionRef * f = Allocator::allocateFunctionRef(func);
 					f->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 					right->value = f;
 				}
@@ -982,7 +980,7 @@ namespace langX {
 
 			if (right->value == NULL)
 			{
-				right->value = m_exec_alloc.allocate(NULLOBJECT);
+				right->value = Allocator::allocate(NULLOBJECT);
 			}
 		}
 
@@ -1006,7 +1004,7 @@ namespace langX {
 			left->value->update(right->value);
 
 			// 释放右值的内存 
-			m_exec_alloc.free(right->value);
+			Allocator::free(right->value);
 			right->value = NULL;
 
 
@@ -1014,9 +1012,9 @@ namespace langX {
 			setValueToEnv2(left->var_obj->name, left->value, left->value->getEmergeEnv());
 
 
-			n->value = m_exec_alloc.copy(left->value);
+			n->value = Allocator::copy(left->value);
 			// 左值是指向 Environment 内的内存的复制， 需要释放
-			m_exec_alloc.free(left->value);
+			Allocator::free(left->value);
 			left->value = NULL;
 		}
 		else if (arrayInfo != NULL)
@@ -1055,16 +1053,16 @@ namespace langX {
 				}
 
 				index = ((Number*)t->value)->getIntValue();
-				m_exec_alloc.free(t->value);
+				Allocator::free(t->value);
 				t->value = NULL;
 			}
 
 			XArrayRef *ref = (XArrayRef*)obj;
 			ref->set(index, right->value);
-			m_exec_alloc.free(right->value);
+			Allocator::free(right->value);
 			right->value = NULL;
 
-			n->value = m_exec_alloc.copy(right->value);
+			n->value = Allocator::copy(right->value);
 		}
 		else {
 			// 这里的Left 已经被执行过了   
@@ -1086,10 +1084,10 @@ namespace langX {
 				}
 
 				objectRef->setMember(name, right->value);
-				n->value = m_exec_alloc.copy(right->value);
+				n->value = Allocator::copy(right->value);
 			}
 
-			m_exec_alloc.free(right->value);
+			Allocator::free(right->value);
 			right->value = NULL;
 
 			delete objectRef;
@@ -1132,7 +1130,7 @@ namespace langX {
 			return;
 		}
 
-		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() + ((Number*)n2->value)->getDoubleValue());
+		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() + ((Number*)n2->value)->getDoubleValue());
 
 		setValueToEnv(n1->var_obj->name, n->value);
 
@@ -1163,7 +1161,7 @@ namespace langX {
 			return;
 		}
 
-		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() - ((Number*)n2->value)->getDoubleValue());
+		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() - ((Number*)n2->value)->getDoubleValue());
 
 		setValueToEnv(n1->var_obj->name, n->value);
 
@@ -1194,7 +1192,7 @@ namespace langX {
 			return;
 		}
 
-		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() * ((Number*)n2->value)->getDoubleValue());
+		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() * ((Number*)n2->value)->getDoubleValue());
 
 		setValueToEnv(n1->var_obj->name, n->value);
 
@@ -1233,7 +1231,7 @@ namespace langX {
 			return;
 		}
 
-		n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() / ((Number*)n2->value)->getDoubleValue());
+		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() / ((Number*)n2->value)->getDoubleValue());
 
 		setValueToEnv(n1->var_obj->name, n->value);
 
@@ -1268,7 +1266,7 @@ namespace langX {
 		int i2 = ((Number*)n2->value)->getIntValue();
 		int i3 = i1 % i2;
 
-		n->value = m_exec_alloc.allocateNumber(i3);
+		n->value = Allocator::allocateNumber(i3);
 
 		setValueToEnv(n1->var_obj->name, n->value);
 
@@ -1389,13 +1387,13 @@ namespace langX {
 		if (!n->state.isSuffix)
 		{
 			// 前缀自增
-			n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() + 1);
+			n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() + 1);
 			n1->postposition = n->value->clone();
 		}
 		else {
 			//  后缀自增
 			n->value = n1->value->clone();
-			n1->postposition = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() + 1);
+			n1->postposition = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() + 1);
 		}
 
 		freeSubNodes(n);
@@ -1455,13 +1453,13 @@ namespace langX {
 		if (!n->state.isSuffix)
 		{
 			// 前缀自减
-			n->value = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() - 1);
+			n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() - 1);
 			n1->postposition = n->value->clone();
 		}
 		else {
 			//  后缀自减
 			n->value = n1->value->clone();
-			n1->postposition = m_exec_alloc.allocateNumber(((Number*)n1->value)->getDoubleValue() - 1);
+			n1->postposition = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() - 1);
 		}
 
 		freeSubNodes(n);
@@ -1559,10 +1557,10 @@ namespace langX {
 
 		if (a > b)
 		{
-			n->value = m_exec_alloc.allocateNumber(1);
+			n->value = Allocator::allocateNumber(1);
 		}
 		else {
-			n->value = m_exec_alloc.allocateNumber(0);
+			n->value = Allocator::allocateNumber(0);
 		}
 
 		doSuffixOperation(n);
@@ -1599,10 +1597,10 @@ namespace langX {
 
 		if (a >= b)
 		{
-			n->value = m_exec_alloc.allocateNumber(1);
+			n->value = Allocator::allocateNumber(1);
 		}
 		else {
-			n->value = m_exec_alloc.allocateNumber(0);
+			n->value = Allocator::allocateNumber(0);
 		}
 
 		doSuffixOperation(n);
@@ -1639,10 +1637,10 @@ namespace langX {
 
 		if (a < b)
 		{
-			n->value = m_exec_alloc.allocateNumber(1);
+			n->value = Allocator::allocateNumber(1);
 		}
 		else {
-			n->value = m_exec_alloc.allocateNumber(0);
+			n->value = Allocator::allocateNumber(0);
 		}
 
 		doSuffixOperation(n);
@@ -1679,10 +1677,10 @@ namespace langX {
 
 		if (a <= b)
 		{
-			n->value = m_exec_alloc.allocateNumber(1);
+			n->value = Allocator::allocateNumber(1);
 		}
 		else {
-			n->value = m_exec_alloc.allocateNumber(0);
+			n->value = Allocator::allocateNumber(0);
 		}
 
 		doSuffixOperation(n);
@@ -1715,9 +1713,9 @@ namespace langX {
 		{
 			if (right->getType() == NULLOBJECT)
 			{
-				n->value = m_exec_alloc.allocateNumber(1);
+				n->value = Allocator::allocateNumber(1);
 			}else{
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = Allocator::allocateNumber(0);
 			}
 			
 		}
@@ -1730,13 +1728,13 @@ namespace langX {
 
 				if (a == b)
 				{
-					n->value = m_exec_alloc.allocateNumber(1);
+					n->value = Allocator::allocateNumber(1);
 				}
 				else {
-					n->value = m_exec_alloc.allocateNumber(0);
+					n->value = Allocator::allocateNumber(0);
 				}
 			}else{
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = Allocator::allocateNumber(0);
 			}
 			
 		}
@@ -1750,13 +1748,13 @@ namespace langX {
 
 				if (strcmp(a, b) == 0)
 				{
-					n->value = m_exec_alloc.allocateNumber(1);
+					n->value = Allocator::allocateNumber(1);
 				}
 				else {
-					n->value = m_exec_alloc.allocateNumber(0);
+					n->value = Allocator::allocateNumber(0);
 				}
 			}else{
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = Allocator::allocateNumber(0);
 			}
 		}
 		else if (left->getType() == OBJECT) {
@@ -1780,20 +1778,20 @@ namespace langX {
 				langXObjectRef * ref2 = (langXObjectRef*)right;
 				if (strcmp(ref1->characteristic(), ref2->characteristic()) == 0)
 				{
-					n->value = m_exec_alloc.allocateNumber(1);
+					n->value = Allocator::allocateNumber(1);
 				}
 				else {
-					n->value = m_exec_alloc.allocateNumber(0);
+					n->value = Allocator::allocateNumber(0);
 				}
 
 			}
 			else if (right->getType() == NULLOBJECT || right->getType() == XARRAY)
 			{
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = Allocator::allocateNumber(0);
 			}
 			else {
 				getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = Allocator::allocateNumber(0);
 			}
 
 		}
@@ -1802,31 +1800,31 @@ namespace langX {
 			// 数组
 			if (right && right->getType() == OBJECT)
 			{
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = Allocator::allocateNumber(0);
 			}
 			else if (right->getType() == NULLOBJECT)
 			{
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = Allocator::allocateNumber(0);
 			}
 			else if (right->getType() == XARRAY)
 			{
 				if (strcmp(left->characteristic(), right->characteristic()) == 0)
 				{
-					n->value = m_exec_alloc.allocateNumber(1);
+					n->value = Allocator::allocateNumber(1);
 				}
 				else {
-					n->value = m_exec_alloc.allocateNumber(0);
+					n->value = Allocator::allocateNumber(0);
 				}
 			}
 			else {
 				getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = Allocator::allocateNumber(0);
 			}
 		}
 		else {
 			//printf("类型不同，无法比较");
 			getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-			n->value = m_exec_alloc.allocateNumber(0);
+			n->value = Allocator::allocateNumber(0);
 		}
 
 		doSuffixOperation(n);
@@ -1860,10 +1858,10 @@ namespace langX {
 		{
 			if (right->getType() == NULLOBJECT)
 			{
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = Allocator::allocateNumber(0);
 			}
 			else {
-				n->value = m_exec_alloc.allocateNumber(1);
+				n->value = Allocator::allocateNumber(1);
 			}
 
 		}else
@@ -1876,14 +1874,14 @@ namespace langX {
 
 				if (a != b)
 				{
-					n->value = m_exec_alloc.allocateNumber(1);
+					n->value = Allocator::allocateNumber(1);
 				}
 				else {
-					n->value = m_exec_alloc.allocateNumber(0);
+					n->value = Allocator::allocateNumber(0);
 				}
 			}
 			else {
-				n->value = m_exec_alloc.allocateNumber(1);
+				n->value = Allocator::allocateNumber(1);
 			}
 			
 		}
@@ -1900,15 +1898,15 @@ namespace langX {
 
 				if (strcmp(a, b) != 0)
 				{
-					n->value = m_exec_alloc.allocateNumber(1);
+					n->value = Allocator::allocateNumber(1);
 				}
 				else {
-					n->value = m_exec_alloc.allocateNumber(0);
+					n->value = Allocator::allocateNumber(0);
 				}
 			}
 			else {
 
-				n->value = m_exec_alloc.allocateNumber(1);
+				n->value = Allocator::allocateNumber(1);
 			}
 		}
 		else if (left->getType() == OBJECT) {
@@ -1932,20 +1930,20 @@ namespace langX {
 				langXObjectRef * ref2 = (langXObjectRef*)right;
 				if (strcmp(ref1->characteristic(), ref2->characteristic()) == 0)
 				{
-					n->value = m_exec_alloc.allocateNumber(0);
+					n->value = Allocator::allocateNumber(0);
 				}
 				else {
-					n->value = m_exec_alloc.allocateNumber(1);
+					n->value = Allocator::allocateNumber(1);
 				}
 
 			}
 			else if (right->getType() == NULLOBJECT || right->getType() == XARRAY)
 			{
-				n->value = m_exec_alloc.allocateNumber(1);
+				n->value = Allocator::allocateNumber(1);
 			}
 			else {
 				getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = Allocator::allocateNumber(0);
 			}
 		}
 		else if (left->getType() == XARRAY)
@@ -1953,31 +1951,31 @@ namespace langX {
 			// 数组
 			if (right->getType() == OBJECT)
 			{
-				n->value = m_exec_alloc.allocateNumber(1);
+				n->value = Allocator::allocateNumber(1);
 			}
 			else if (right->getType() == NULLOBJECT)
 			{
-				n->value = m_exec_alloc.allocateNumber(1);
+				n->value = Allocator::allocateNumber(1);
 			}
 			else if (right->getType() == XARRAY)
 			{
 				if (strcmp(left->characteristic(), right->characteristic()) == 0)
 				{
-					n->value = m_exec_alloc.allocateNumber(0);
+					n->value = Allocator::allocateNumber(0);
 				}
 				else {
-					n->value = m_exec_alloc.allocateNumber(1);
+					n->value = Allocator::allocateNumber(1);
 				}
 			}
 			else {
 				getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-				n->value = m_exec_alloc.allocateNumber(0);
+				n->value = Allocator::allocateNumber(0);
 			}
 		}
 		else {
 			//printf("类型不同，无法比较");
 			getState()->curThread()->throwException(newArithmeticException("type error on opr '!='! only can number or string!")->addRef());
-			n->value = m_exec_alloc.allocateNumber(0);
+			n->value = Allocator::allocateNumber(0);
 		}
 
 		doSuffixOperation(n);
@@ -1999,10 +1997,10 @@ namespace langX {
 		}
 		if (f)
 		{
-			n->value = __tryConvertToBool(n->opr_obj->op[1]) ? n->value = m_exec_alloc.allocateNumber(1) : n->value = m_exec_alloc.allocateNumber(0);
+			n->value = __tryConvertToBool(n->opr_obj->op[1]) ? n->value = Allocator::allocateNumber(1) : n->value = Allocator::allocateNumber(0);
 		}
 		else {
-			n->value = m_exec_alloc.allocateNumber(0);
+			n->value = Allocator::allocateNumber(0);
 		}
 
 		freeSubNodes(n);
@@ -2024,10 +2022,10 @@ namespace langX {
 
 		if (f)
 		{
-			n->value = m_exec_alloc.allocateNumber(1);
+			n->value = Allocator::allocateNumber(1);
 		}
 		else {
-			n->value = __tryConvertToBool(n->opr_obj->op[1]) ? n->value = m_exec_alloc.allocateNumber(1) : n->value = m_exec_alloc.allocateNumber(0);
+			n->value = __tryConvertToBool(n->opr_obj->op[1]) ? n->value = Allocator::allocateNumber(1) : n->value = Allocator::allocateNumber(0);
 		}
 
 		freeSubNodes(n);
@@ -2102,7 +2100,7 @@ namespace langX {
 		Node *conNode = n->opr_obj->op[0];
 		while (__tryConvertToBool(conNode))
 		{
-			m_exec_alloc.free(conNode->value);
+			Allocator::free(conNode->value);
 			conNode->value = NULL;
 
 			Node *run = n->opr_obj->op[1];
@@ -2161,7 +2159,7 @@ namespace langX {
 		Node *sNode = n->opr_obj->op[2];
 		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode); freeSubNodes(sNode), __execNode(sNode), doSuffixOperation(sNode))
 		{
-			m_exec_alloc.free(conNode->value);
+			Allocator::free(conNode->value);
 			conNode->value = NULL;
 
 			Node *run = n->opr_obj->op[3];
@@ -2434,7 +2432,7 @@ namespace langX {
 			return;
 		}
 		else {
-			n->value = m_exec_alloc.allocateNumber(-((Number*)n1->value)->getDoubleValue());
+			n->value = Allocator::allocateNumber(-((Number*)n1->value)->getDoubleValue());
 		}
 
 		freeSubNodes(n);
@@ -2452,7 +2450,7 @@ namespace langX {
 		__execNode(n1);
 		if (getState()->curThread()->isInException())
 		{
-			m_exec_alloc.free(n1->value);
+			Allocator::free(n1->value);
 			n1->value = NULL;
 			return;
 		}
@@ -2490,7 +2488,7 @@ namespace langX {
 		}
 
 		doSuffixOperationArgs(args);
-		m_exec_alloc.free(n1->value);
+		Allocator::free(n1->value);
 		n1->value = NULL;
 
 	}
@@ -2544,7 +2542,7 @@ namespace langX {
 
 		// 都初始为 null
 		// 数组要赋值
-		Object *obj = m_exec_alloc.allocate(NULLOBJECT);
+		Object *obj = Allocator::allocate(NULLOBJECT);
 		obj->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
@@ -2561,7 +2559,7 @@ namespace langX {
 					{
 						//printf("delar array erorr!\n");
 						getState()->curThread()->throwException(newException("Inner Error! delar array erorr!")->addRef());
-						m_exec_alloc.free(obj);
+						Allocator::free(obj);
 						return;
 					}
 
@@ -2580,7 +2578,7 @@ namespace langX {
 						}
 
 						len = ((Number*)t->value)->getIntValue();
-						m_exec_alloc.free(t->value);
+						Allocator::free(t->value);
 					}
 					XArray *array1 = new XArray(len);
 					char *name = an->name;
@@ -2596,7 +2594,7 @@ namespace langX {
 			setValueToEnv(name, obj);
 		}
 
-		m_exec_alloc.free(obj);
+		Allocator::free(obj);
 	}
 
 	void __execCLAXX_MEMBER(Node *n) {
@@ -2623,7 +2621,7 @@ namespace langX {
 			if (strcmp(memberName, "length") == 0)
 			{
 				// array.length.
-				n->value = m_exec_alloc.allocateNumber(arrayRef->getLength());
+				n->value = Allocator::allocateNumber(arrayRef->getLength());
 			}
 			else {
 				char tmp[100] = { 0 };
@@ -2640,7 +2638,7 @@ namespace langX {
 			if (strcmp(memberName, "length") == 0)
 			{
 				// string.length.
-				n->value = m_exec_alloc.allocateNumber(str->size());
+				n->value = Allocator::allocateNumber(str->size());
 			}
 			else {
 				char tmp[100] = { 0 };
@@ -2685,7 +2683,7 @@ namespace langX {
 			Function *func = objectRef->getFunction(memberName);
 			if (func != nullptr)
 			{
-				FunctionRef *fr = m_exec_alloc.allocateFunctionRef(func);
+				FunctionRef *fr = Allocator::allocateFunctionRef(func);
 				fr->setObj(objectRef->getRefObject());
 				fr->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 				t = fr;
@@ -2880,7 +2878,7 @@ namespace langX {
 				return;
 			}
 
-			FunctionRef *fr = m_exec_alloc.allocateFunctionRef(tf);
+			FunctionRef *fr = Allocator::allocateFunctionRef(tf);
 			fr->setClaxx(claxxInfo);
 			fr->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 			t = fr;
@@ -2926,7 +2924,7 @@ namespace langX {
 		n->value = callFunc(t, args, remark);
 
 		doSuffixOperationArgs(args);
-		//m_exec_alloc.free(n1->value);
+		//Allocator::free(n1->value);
 		n1->value = NULL;
 
 		getState()->curThread()->backEnv();
@@ -2939,14 +2937,26 @@ namespace langX {
 			return;
 		}
 
+		langXThread *thread = getState()->curThread();
 		TryEnvironment * tryEnv = new TryEnvironment();
-		tryEnv->setCatchNode(n->opr_obj->op[1]);
-		getState()->curThread()->newEnv(tryEnv);
+		//tryEnv->setCatchNode(n->opr_obj->op[1]);
+		thread->newEnv(tryEnv);
 		__execNode(n->opr_obj->op[0]);
-		getState()->curThread()->backEnv();
+		thread->backEnv();
 
-		// OK ,这就算执行完毕了。 如果出发了异常 会走另外一个地方。
-		// 正常执行完毕， 会无视 catch 内的东西
+		if (thread->isInException() )
+		{
+			// 发生了异常， 走 catch 节点
+			thread->setInException(false);
+
+			Environment *env = thread->newEnv();
+			Node *cNode = n->opr_obj->op[1];
+			env->putObject(cNode->opr_obj->op[0]->var_obj->name, thread->getThrownObj());
+			// 执行catch 内的语句
+			__execNode(cNode->opr_obj->op[1]);
+			thread->backEnv();
+		}
+
 	}
 
 	//  类型判断语句， 返回一个 true/false
@@ -2964,7 +2974,7 @@ namespace langX {
 
 		if (n1->value == NULL)
 		{
-			n->value = m_exec_alloc.allocateNumber(0);
+			n->value = Allocator::allocateNumber(0);
 		}
 		else {
 			//UNKNOWN=100, NUMBER , STRING, FUNCTION, OBJECT , NULLOBJECT ,XARRAY
@@ -3013,7 +3023,7 @@ namespace langX {
 				break;
 			}
 
-			n->value = m_exec_alloc.allocateNumber(i);
+			n->value = Allocator::allocateNumber(i);
 		}
 
 		freeSubNodes(n);
@@ -3251,10 +3261,7 @@ namespace langX {
 		if (!n) {
 			return;
 		}
-
-		// 
-
-		Object *obj = m_exec_alloc.allocate(NULLOBJECT);
+		Object *obj = Allocator::allocate(NULLOBJECT);
 		obj->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 		obj->setConst(true);
 		for (int i = 0; i < n->opr_obj->op_count; i++)
@@ -3291,7 +3298,7 @@ namespace langX {
 			
 		}
 
-		m_exec_alloc.free(obj);
+		Allocator::free(obj);
 
 	}
 
@@ -3301,7 +3308,7 @@ namespace langX {
 			return;
 		}
 
-		Object *obj = m_exec_alloc.allocate(NULLOBJECT);
+		Object *obj = Allocator::allocate(NULLOBJECT);
 		obj->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 		obj->setLocal(true);
 		for (int i = 0; i < n->opr_obj->op_count; i++)
@@ -3347,7 +3354,7 @@ namespace langX {
 			
 		}
 
-		m_exec_alloc.free(obj);
+		Allocator::free(obj);
 
 	}
 
@@ -3377,12 +3384,12 @@ namespace langX {
 		{
 			return;
 		}
+
 		// 如果节点存在值， 那说明这个节点已经运算过了
-		// 会重新进行计算和赋值
-		//if (node->value != NULL)
-		//{
-		//	return;
-		//}
+		if (node->value != NULL)
+		{
+			return;
+		}
 
 
 		langXThread * thread = getState()->curThread();
@@ -3400,11 +3407,8 @@ namespace langX {
 			return;
 		}
 
-		if (!thread->isInException())
-		{
-			thread->setExecNode(node);
-		}
-
+		thread->setExecNode(node);
+		
 		//printf("__execNode 01x\n");
 		//printf("node addr: %p\n",node);
 		if (node->type == NODE_VARIABLE)
@@ -3425,7 +3429,7 @@ namespace langX {
 					if (func != nullptr)
 					{
 
-						node->value = m_exec_alloc.allocateFunctionRef(func);
+						node->value = Allocator::allocateFunctionRef(func);
 					}
 					else {
 						node->value = new NullObject();
@@ -3455,7 +3459,7 @@ namespace langX {
 		else if (node->type == NODE_CONSTANT_NUMBER)
 		{
 			//printf("__execNode NODE_CONSTANT_NUMBER\n");
-			node->value = m_exec_alloc.allocateNumber(node->con_obj->dValue);
+			node->value = Allocator::allocateNumber(node->con_obj->dValue);
 			return;
 		}
 		else if (node->type == NODE_CONSTANT_STRING)
@@ -3463,14 +3467,14 @@ namespace langX {
 			//printf("__execNode NODE_CONSTANT_STRING\n");
 			//  因为匹配出的字符串是带有 双引号的， 现在要去掉这个双引号
 			char *tmp = strndup(node->con_obj->sValue + 1, strlen(node->con_obj->sValue) - 2);
-			node->value = m_exec_alloc.allocateString(tmp);
+			node->value = Allocator::allocateString(tmp);
 			free(tmp);
 
 			return;
 		}
 		else if (node->type == NODE_CONSTANT_INTEGER)
 		{
-			node->value = m_exec_alloc.allocateNumber(node->con_obj->iValue);
+			node->value = Allocator::allocateNumber(node->con_obj->iValue);
 
 			return;
 		}
@@ -3549,7 +3553,7 @@ namespace langX {
 		}
 		else if (node->type == NODE_NULL)
 		{
-			node->value = m_exec_alloc.allocate(NULLOBJECT);
+			node->value = Allocator::allocate(NULLOBJECT);
 			return;
 		}
 		else if (node->type == NODE_ARRAY_ELE)
@@ -3587,7 +3591,7 @@ namespace langX {
 				}
 
 				index = ((Number*)t->value)->getIntValue();
-				m_exec_alloc.free(t->value);
+				Allocator::free(t->value);
 				t->value = NULL;
 			}
 

@@ -139,7 +139,7 @@ namespace langX {
 
 	langXObject * ClassInfo::newObject()
 	{
-		return getState()->getAllocator().newObject(this);
+		return Allocator::newObject(this);
 	}
 
 	std::map<std::string, Object*>& ClassInfo::getMembers()

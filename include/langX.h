@@ -50,8 +50,6 @@ namespace langX {
 		// 注册一个类 到 全局环境内。  在公共环境释放内存的时候会释放类信息， 所以不必手动释放
 		void regClassToGlobal(ClassInfo *);
 
-		Allocator &getAllocator() const;
-
 		// NEW 一个对象 ，并不会执行对象的构造函数
 		langXObject *newObject(const char *) const;
 
@@ -115,7 +113,6 @@ namespace langX {
 		
 		// 当前的脚本环境， 可能是一个脚本环境， 可能是一个命名空间环境
 		Environment *m_script_env = nullptr;
-		Allocator  *m_allocator = nullptr;
 		ConfigX m_config;
 
 		std::map<std::string, XNameSpace*> m_namespace_map;

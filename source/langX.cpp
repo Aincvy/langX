@@ -42,7 +42,6 @@ namespace langX {
 		this->m_global_env = new GlobalEnvironment();
 		this->m_global_env->setParent(NULL);
 		this->m_global_env->setDeep(0);
-		this->m_allocator = new Allocator();
 		this->m_disposing = false;
 		this->m_thread_mgr = new langXThreadMgr();
 		this->m_thread_mgr->initMainThreadInfo();
@@ -54,8 +53,7 @@ namespace langX {
 		this->m_disposing = true;
 
 		// 清理内存对象
-		this->m_allocator->freeAllObjs();
-		delete this->m_allocator;
+		Allocator::freeAllObjs();
 
 		// 清理掉环境 
 		//backToDeep1Env();
@@ -146,12 +144,6 @@ namespace langX {
 
 		this->m_global_env->putClass(c->getName(), c);
 	}
-
-	Allocator & langXState::getAllocator() const
-	{
-		return (*this->m_allocator);
-	}
-
 
 	langXObject * langXState::newObject(const char * name) const
 	{

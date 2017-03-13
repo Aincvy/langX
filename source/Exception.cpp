@@ -56,10 +56,12 @@ namespace langX {
 			return NULL;
 		}
 
-		NodeFileInfo f = getCurrentNodeFileInfo();
+		langXThread *thread = func->getLangX()->curThread();
+
+		NodeFileInfo f = thread->getCurrentNodeFileInfo();
 		printf("%s: %s  \n%s\n", args.object->getClassName(), ((String*)args.object->getMember("message"))->getValue(), fileInfoString(f).c_str());
 
-		func->getLangX()->curThread()->printStackTrace();
+		thread->printStackTrace();
 
 		return NULL;
 	}
