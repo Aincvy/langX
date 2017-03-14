@@ -969,7 +969,7 @@ namespace langX {
 			// 判断是否是函数
 			if (right->type == NODE_VARIABLE)
 			{
-				Function *func = getState()->curThread()->getCurrentEnv()->getFunction(right->var_obj->name);
+				Function *func = getState()->curThread()->getFunction(right->var_obj->name);
 				if (func != nullptr)
 				{
 					FunctionRef * f = Allocator::allocateFunctionRef(func);
@@ -3162,7 +3162,7 @@ namespace langX {
 	void __execREF(Node *n) {
 
 		//  深度为1 的环境为一个 脚本环境 或者命名空间环境。
-		Environment *env = getState()->curThread()->getEnvironment(2);
+		Environment *env = getState()->getScriptOrNSEnv();
 		if (env == nullptr)
 		{
 			// error.
@@ -3425,7 +3425,7 @@ namespace langX {
 					//printf("var %s=null \n", node->var_obj->name);
 
 					// find function.
-					Function *func = getState()->curThread()->getCurrentEnv()->getFunction(node->var_obj->name);
+					Function *func = getState()->curThread()->getFunction(node->var_obj->name);
 					if (func != nullptr)
 					{
 
