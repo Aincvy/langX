@@ -635,7 +635,4 @@ namespace langX {
 		return this->m_thread_mgr->currentThread();
 	}
 
-
-	
-
 }

@@ -9,6 +9,7 @@
 #include "../include/YLlangX.h"
 #include "../include/Object.h"
 #include "../include/langXObjectRef.h"
+#include "../include/Function.h"
 
 
 // 释放环境内存
@@ -85,8 +86,9 @@ namespace langX {
 		TryEnvironment *tryEnv = new TryEnvironment();
 		tryEnv->setParent( nullptr );
 		tryEnv->setCatchCB(gTryCatchCB);
-		tryEnv->setDeep(1);
+		tryEnv->setDeep(2);
 		this->m_current_env = tryEnv;
+		this->m_current_deep = 2;
 	}
 
 	langXThread::~langXThread()
@@ -340,26 +342,6 @@ namespace langX {
 		return bEnv;
 	}
 
-	void langXThread::backToDeep1Env()
-	{
-		if (this->m_current_deep <= 1)
-		{
-			return;
-		}
-
-		while (this->m_current_deep != 2) {
-			backEnv();
-		}
-
-		if (this->m_current_env->getType() == TScriptEnvironment)
-		{
-			backEnv(false);
-		}
-		else {
-			backEnv();
-		}
-	}
-
 	void langXThread::throwException(langXObjectRef *obj)
 	{
 		// 丢出一个异常
@@ -493,28 +475,24 @@ namespace langX {
 	}
 	Object * langXThread::getObject(const std::string &name)
 	{
-		return this->m_current_env->getObject(name);
+		Object * obj = this->m_current_env->getObject(name);
+
+		if (obj == nullptr)
+		{
+			obj = getState()->getScriptOrNSEnv()->getObject(name);
+		}
+
+		return obj;
 	}
 
-	Environment * langXThread::getEnvironment(int deep)
+	Function * langXThread::getFunction(const std::string & name)
 	{
-		if (this->m_current_deep < deep)
+		Function * func = this->m_current_env->getFunction(name);
+		if (func == nullptr)
 		{
-			return nullptr;
+			func = getState()->getScriptOrNSEnv()->getFunction(name);
 		}
-
-		if (this->m_current_deep == deep)
-		{
-			return this->m_current_env;
-		}
-
-		Environment *env = this->m_current_env->getParent();
-		while (env != nullptr && env->getDeep() != deep)
-		{
-			env = env->getParent();
-		}
-
-		return env;
+		return func;
 	}
 
 	Object * langXThread::getFunctionResult()

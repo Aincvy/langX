@@ -435,7 +435,7 @@ XNode * claxx(char *name, char *parent, XNode * node, bool flag) {
 
 XObject * call(const char *name, XArgsList* args, const char *remark)
 {
-	Function *function = getState()->curThread()->getCurrentEnv()->getFunction(name);
+	Function *function = getState()->curThread()->getFunction(name);
 	if (function == NULL)
 	{
 		char tmp[100] = { 0 };

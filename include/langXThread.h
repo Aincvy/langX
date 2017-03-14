@@ -12,6 +12,7 @@ namespace langX {
 	class Environment;
 	class Object;
 	class langXObjectRef;
+	class Function;
 
 	// 线程状态
 	enum langXThreadStatus {
@@ -91,6 +92,8 @@ namespace langX {
 		void putObject(const char*, Object*);
 		void putObject(const std::string &, Object*);
 		Object * getObject(const std::string &);
+		Function * getFunction(const std::string &);
+		
 
 		// 丢出一个 异常。  参数的内存在执行结束之后会被释放
 		void throwException(langXObjectRef *);
@@ -116,8 +119,6 @@ namespace langX {
 
 		// 获得最近的一个对象环境 (必定会返回一个 ObjectBridgeEnv!)
 		Environment *getNearestObjectEnv() const;
-		// 根据深度 获得环境 
-		Environment *getEnvironment(int deep);
 
 		// 获得函数的返回值
 		Object * getFunctionResult();
