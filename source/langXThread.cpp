@@ -1,4 +1,3 @@
-
 #include "../include/langXThread.h"
 #include "../include/Environment.h"
 #include "../include/langXObjectRef.h"
@@ -10,6 +9,20 @@
 #include "../include/Object.h"
 #include "../include/langXObjectRef.h"
 #include "../include/Function.h"
+
+
+#ifdef WIN32
+// win32的库
+#else
+// linux 库
+#include <pthread.h>
+#include <thread>
+#include <unistd.h>
+#endif
+
+#ifdef SHOW_DETAILS
+#include <iostream>
+#endif
 
 
 // 释放环境内存
@@ -100,7 +113,6 @@ namespace langX {
 		}
 
 		// 清理掉环境 
-		backToDeep1Env();
 
 		while (this->m_current_env != NULL && this->m_current_env->getParent() != NULL)
 		{
@@ -578,6 +590,10 @@ namespace langX {
 	{
 		std::thread::id curThreadId = std::this_thread::get_id();
 		
+#ifdef SHOW_DETAILS
+		std::cout << " initMainThreadInfo thread id: " << curThreadId << std::endl;
+#endif
+
 		int id = this->m_id_gen++;
 		langXThread *thread = new langXThread(id);
 		thread->setName("main");   // 设置线程名字为主线程
@@ -589,6 +605,17 @@ namespace langX {
 
 	langXThread * langXThreadMgr::currentThread()
 	{
+		std::thread::id curThreadId = std::this_thread::get_id();
+
+#ifdef SHOW_DETAILS
+		std::cout << " currentThread thread id: " << curThreadId << std::endl;
+#endif
+		auto it = this->m_idmap.find(curThreadId);
+		if (it != this->m_idmap.end())
+		{
+			return it->second;
+		}
+
 		return nullptr;
 	}
 
