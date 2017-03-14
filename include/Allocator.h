@@ -60,9 +60,4 @@ namespace langX {
 		static const int GC_OBJECT_COUNT;
 	};
 
-
-	const int Allocator::GC_OBJECT_COUNT = 1500;
-	int Allocator::m_a_count = 0;
-	std::list<langXObject*> Allocator::m_objects;
-
 }

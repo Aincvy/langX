@@ -13,6 +13,8 @@ namespace langX {
 	class Object;
 	class langXObjectRef;
 	class Function;
+	struct Node;
+	struct NodeFileInfo;
 
 	// 线程状态
 	enum langXThreadStatus {
@@ -158,10 +160,6 @@ namespace langX {
 		Node *m_current_node = NULL;
 		// 丢出来的那个对象
 		langXObjectRef * m_thrown_obj = nullptr;
-
-		//  返回到 深度为1的 环境上
-		void backToDeep1Env();
-
 
 	};
 

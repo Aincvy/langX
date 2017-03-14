@@ -27,7 +27,7 @@ CFLAGS = -std=c++11 -g -ggdb
 
 SOCFLAGS = -std=c++11 -g -ggdb -fPIC
 
-SODFLAGS = -ll -ldl
+SODFLAGS = -ll -ldl -lpthread
 
 ${TARGET} : ${OBJ} ${SO}
 	g++ ${CFLAGS} ${OBJ} -o ${TARGET} ${DFLAGS} 
