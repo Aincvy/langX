@@ -42,7 +42,10 @@ namespace langX {
 
 		const char * getName() const;
 
+		// 生成一个本类的对象
 		langXObject* newObject();
+		// 生成一个本类的对象  参数： true 将生成的对象放入Allocator进行登记， false: 不放
+		langXObject* newObject(bool );
 
 		std::map<std::string, Object*> & getMembers();
 		std::map<std::string, Function*> & getFunctions();

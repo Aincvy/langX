@@ -743,10 +743,6 @@ void freeNode(XNode * n) {
 		return;
 	}
 
-#ifdef SHOW_DETAILS
-	printf("free node: %d\n",n->type);
-#endif
-
 	if (n->value != NULL)
 	{
 		Allocator::free(n->value);
@@ -851,7 +847,6 @@ void execAndFreeNode(XNode *n) {
 
 	// 判断一下程序有没有异常
 	langXThread * thread = getState()->curThread();
-	std::cout << "thread->isInException(): " << thread->isInException() << std::endl;
 
 	if (thread->isInException())
 	{

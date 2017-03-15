@@ -165,7 +165,7 @@ namespace langX {
 	{
 		checkGC();
 
-		//printf("new object. now object count: %d\n" , this->m_a_count);
+		printf("new object %s . now object count: %d\n" ,c->getName(), m_a_count);
 		langXObject *p = new langXObject(c);
 		m_objects.push_back(p);
 		m_a_count++;
@@ -214,6 +214,7 @@ namespace langX {
 		}
 
 		m_objects.clear();
+		m_a_count = 0;
 	}
 
 

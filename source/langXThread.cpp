@@ -366,6 +366,13 @@ namespace langX {
 		}
 		this->m_thrown_obj = obj;
 
+		if (this->m_current_deep == 2)
+		{
+			// 当前环境深度为2 ，说明应该是没try-catch 的
+
+			gTryCatchCB(this->m_thrown_obj);
+		}
+
 		// 找到try环境
 		//TryEnvironment *tryEnv = NULL;
 		//Environment *env = this->m_current_env;
@@ -555,6 +562,21 @@ namespace langX {
 		return this->m_thrown_obj;
 	}
 
+	bool langXThread::isMainThread()
+	{
+		return this->m_is_main_thread;
+	}
+
+	void langXThread::setMainThread(bool flag)
+	{
+		this->m_is_main_thread = flag;
+	}
+
+	void langXThread::kill()
+	{
+		// 暂不实现
+	}
+
 	void langXThread::backEnv()
 	{
 		backEnv(true);
@@ -589,10 +611,6 @@ namespace langX {
 	void langXThreadMgr::initMainThreadInfo()
 	{
 		std::thread::id curThreadId = std::this_thread::get_id();
-		
-#ifdef SHOW_DETAILS
-		std::cout << " initMainThreadInfo thread id: " << curThreadId << std::endl;
-#endif
 
 		int id = this->m_id_gen++;
 		langXThread *thread = new langXThread(id);
@@ -603,13 +621,33 @@ namespace langX {
 
 	}
 
+	void langXThreadMgr::freeAllThreads()
+	{
+		if (this->m_idmap.empty())
+		{
+			return;
+		}
+
+		for (auto i = this->m_idmap.begin(); i != this->m_idmap.end(); i++)
+		{
+			langXThread *thread = i->second;
+			if (!thread->isMainThread())
+			{
+				thread->kill();
+			}
+
+			delete thread;
+			i->second = nullptr;
+		}
+
+		this->m_id_gen = 0;
+		this->m_idmap.clear();
+		this->m_selfmap.clear();
+	}
+
 	langXThread * langXThreadMgr::currentThread()
 	{
 		std::thread::id curThreadId = std::this_thread::get_id();
-
-#ifdef SHOW_DETAILS
-		std::cout << " currentThread thread id: " << curThreadId << std::endl;
-#endif
 		auto it = this->m_idmap.find(curThreadId);
 		if (it != this->m_idmap.end())
 		{

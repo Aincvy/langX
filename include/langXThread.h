@@ -137,6 +137,13 @@ namespace langX {
 		// 获得丢出来的那个对象
 		langXObjectRef *getThrownObj();
 
+		// 
+		bool isMainThread();
+		void setMainThread(bool);
+
+		// 杀死当前线程
+		void kill();
+
 	private:
 
 		// 线程id
@@ -152,6 +159,8 @@ namespace langX {
 
 		// 线程的当前环境
 		Environment *m_current_env = nullptr;
+		// 线程是否是主线程
+		bool m_is_main_thread = false;
 
 		int m_current_deep = 0;
 		// 函数的返回值 | 可能用用不到这个值
@@ -174,6 +183,9 @@ namespace langX {
 		// 初始化 主线程信息
 		void initMainThreadInfo();
 
+		// 释放掉所有的线程信息
+		void freeAllThreads();
+
 		// 获得当前线程的对象
 		langXThread *currentThread();
 
@@ -188,6 +200,7 @@ namespace langX {
 		int m_id_gen;
 		// 用于id自增量的互斥锁
 		std::mutex m_mutex_id_gen;
+
 
 	};
 

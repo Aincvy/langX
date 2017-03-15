@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include "../include/Object.h"
 #include "../include/ClassInfo.h"
 #include "../include/Function.h"
@@ -20,7 +21,7 @@ namespace langX {
 		ClassInfo *pclass = claxxInfo->getParent();
 		if (pclass != nullptr)
 		{
-			this->m_parent = pclass->newObject();
+			this->m_parent = pclass->newObject(false);
 		}
 
 		this->m_class_info = claxxInfo;
@@ -44,6 +45,8 @@ namespace langX {
 
 	langXObject::~langXObject()
 	{
+		//std::cout << "langXObject::~langXObject() " << this->m_class_info->getName() << std::endl;
+
 		this->m_disposing = true;
 		// 先干掉自己， 再干掉父类对象
 		
@@ -221,6 +224,8 @@ namespace langX {
 			}
 		}
 		subRef();
+
+		//printf("void langXObject::subRef(langXObjectRef *r) \n");
 	}
 
 	int langXObject::getRefCount() const
