@@ -96,12 +96,8 @@ namespace langX {
 		this->m_exec_status.inLoop = 0;
 		this->m_exec_status.inSwitch = 0;
 
-		TryEnvironment *tryEnv = new TryEnvironment();
-		tryEnv->setParent( nullptr );
-		tryEnv->setCatchCB(gTryCatchCB);
-		tryEnv->setDeep(2);
-		this->m_current_env = tryEnv;
-		this->m_current_deep = 2;
+		this->m_current_env = nullptr;
+		this->m_current_deep = 0;
 	}
 
 	langXThread::~langXThread()
@@ -485,16 +481,34 @@ namespace langX {
 
 	void langXThread::putObject(const char * name, Object *obj)
 	{
-		this->m_current_env->putObject(name, obj);
+		if (this->m_current_deep > 0)
+		{
+			this->m_current_env->putObject(name, obj);
+		}else{
+			getState()->getScriptOrNSEnv()->putObject(name, obj);
+		}
+		
 	}
 
 	void langXThread::putObject(const std::string &name, Object *obj)
 	{
-		this->m_current_env->putObject(name, obj);
+		if (this->m_current_deep > 0)
+		{
+			this->m_current_env->putObject(name, obj);
+		}
+		else {
+			getState()->getScriptOrNSEnv()->putObject(name, obj);
+		}
 	}
+
 	Object * langXThread::getObject(const std::string &name)
 	{
-		Object * obj = this->m_current_env->getObject(name);
+		Object * obj = nullptr;
+
+		if (this->m_current_deep > 0)
+		{
+			obj = this->m_current_env->getObject(name);
+		}
 
 		if (obj == nullptr)
 		{
@@ -506,7 +520,12 @@ namespace langX {
 
 	Function * langXThread::getFunction(const std::string & name)
 	{
-		Function * func = this->m_current_env->getFunction(name);
+		Function * func = nullptr;
+		if (this->m_current_deep > 0)
+		{
+			func = this->m_current_env->getFunction(name);
+		}
+
 		if (func == nullptr)
 		{
 			func = getState()->getScriptOrNSEnv()->getFunction(name);
