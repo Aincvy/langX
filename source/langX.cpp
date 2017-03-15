@@ -50,19 +50,12 @@ namespace langX {
 	{
 		this->m_disposing = true;
 
+		// 清理掉所有的线程
+		this->m_thread_mgr->freeAllThreads();
+		delete this->m_thread_mgr;
+
 		// 清理内存对象
 		Allocator::freeAllObjs();
-
-		// 清理掉环境 
-		//backToDeep1Env();
-
-		//while (this->m_current_env != NULL && this->m_current_env->getParent() != NULL)
-		//{
-		//	backEnv();
-		//}
-
-		////  下面那条语句的当前环境就是  m_global_env  ，所以无需释放 m_global_env
-		//freeEnv(&this->m_current_env);
 
 		for (auto i = this->m_script_env_map.begin(); i != this->m_script_env_map.end(); i++)
 		{
@@ -333,6 +326,7 @@ namespace langX {
 		if (b == this->m_script_env_map.end())
 		{
 			ScriptEnvironment * env = new ScriptEnvironment(tmp);
+			env->setParent(this->m_global_env);
 			this->m_script_env_map[tmp] = env;
 			newScriptEnv(env);
 		}
@@ -417,7 +411,7 @@ namespace langX {
 
 		
 		ScriptEnvironment * env = new ScriptEnvironment(tmp);
-
+		env->setParent(this->m_global_env);
 		
 		// 如果当前环境是一个脚本环境， 则将新的玩家记录到原环境上
 		if (this->m_script_env->getType() == EnvironmentType::TScriptEnvironment)
@@ -488,6 +482,7 @@ namespace langX {
 		if (b == this->m_script_env_map.end())
 		{
 			env = new ScriptEnvironment(tmp);
+			env->setParent(this->m_global_env);
 			this->m_script_env_map[tmp] = env;
 		}
 		else {

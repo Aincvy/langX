@@ -13,8 +13,6 @@
 #include "../include/NullObject.h"
 #include "../include/langXThread.h"
 
-
-langX::Allocator m_exec_alloc;
 extern void deal_state(langX::NodeState * state);
 extern void deal_switch_info(langX::SwitchInfo *si);
 
@@ -23,7 +21,7 @@ void resetNodeState(langX::Node *n) {
 	deal_switch_info(&n->switch_info);
 	if (n->value != NULL)
 	{
-		m_exec_alloc.free(n->value);
+		langX::Allocator::free(n->value);
 		n->value = NULL;
 	}
 	// ptr_u 可能存放了参数， 等以后有问题的时候再进行调整，  0821
@@ -156,7 +154,7 @@ namespace langX {
 		if (m_node_root->value != NULL)
 		{
 			Object * obj = m_node_root->value->clone();
-			m_exec_alloc.free(m_node_root->value);
+			Allocator::free(m_node_root->value);
 			m_node_root->value = NULL;
 			return obj;
 		}

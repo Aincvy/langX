@@ -8,8 +8,6 @@
 #include "../include/Environment.h"
 #include "../include/YLlangX.h"
 
-extern langX::Allocator m_exec_alloc;
-
 namespace langX {
 
 	langX::ClassInfo::ClassInfo(const char*name)
@@ -25,7 +23,7 @@ namespace langX {
 		{
 			if (i->second)
 			{
-				m_exec_alloc.free(i->second);
+				Allocator::free(i->second);
 			}
 		}
 		this->m_members.clear();
@@ -43,7 +41,7 @@ namespace langX {
 		if (i != this->m_members.end())
 		{
 			// 存在旧值
-			m_exec_alloc.free(i->second);
+			Allocator::free(i->second);
 		}
 		Object *t = obj->clone();
 		t->setName(name);
@@ -139,7 +137,17 @@ namespace langX {
 
 	langXObject * ClassInfo::newObject()
 	{
-		return Allocator::newObject(this);
+		return newObject(true);
+	}
+
+	langXObject * ClassInfo::newObject(bool flag)
+	{
+		if (flag)
+		{
+			return Allocator::newObject(this);
+		}
+
+		return new langXObject(this);
 	}
 
 	std::map<std::string, Object*>& ClassInfo::getMembers()
@@ -184,7 +192,7 @@ namespace langX {
 			if (abc != this->m_members.end())
 			{
 				// 存在旧值
-				m_exec_alloc.free(abc->second);
+				Allocator::free(abc->second);
 			}
 
 			this->m_members[str] = obj->clone();

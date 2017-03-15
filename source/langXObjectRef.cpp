@@ -13,6 +13,7 @@ namespace langX {
 	}
 	langXObjectRef::~langXObjectRef()
 	{
+		
 		if (this->m_object_ref != nullptr)
 		{
 			// 当前对象正在销毁中， 则 直接返回， 不减少引用
@@ -21,6 +22,7 @@ namespace langX {
 				return;
 			}
 			this->m_object_ref->subRef(this);
+			this->m_object_ref = nullptr;
 		}
 	}
 	langXObject * langXObjectRef::getRefObject()
