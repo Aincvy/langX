@@ -457,7 +457,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 	}
 
 #ifdef SHOW_DETAILS
-	printf("callFunc %s %s\n" , function->getName(), remark );
+	//printf("callFunc %s %s\n" , function->getName(), remark );
 #endif
 
 	langXThread * thread = getState()->curThread();
@@ -520,6 +520,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 		Object * ret1 = x3rdfunc->call(_3rdArgs);
 		thread->getStackTrace().popFrame();
 		thread->setInFunction(false);
+		thread->setInReturn(false);
 
 		for (size_t i = 0; i < _3rdArgs.index; i++)
 		{
@@ -610,6 +611,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 	thread->setInFunction(true);
 	ret = function->call();
 	thread->setInFunction(false);
+	thread->setInReturn(false);
 	thread->getStackTrace().popFrame();
 	if (thread->isInException())
 	{
@@ -839,15 +841,29 @@ void doFile(const char *f)
 }
 
 void execNode(XNode *n) {
+
+	langXThread * thread = getState()->curThread();
+	if (thread->isInException())
+	{
+		// 当前在异常中， 不执行节点了
+		return;
+	}
+
 	langX::__execNode(n);
 }
 
 void execAndFreeNode(XNode *n) {
+
+	langXThread * thread = getState()->curThread();
+	if (thread->isInException())
+	{
+		// 当前在异常中， 不执行节点了
+		return;
+	}
+
 	execNode(n);
 
-	// 判断一下程序有没有异常
-	langXThread * thread = getState()->curThread();
-
+	// 判断一下执行后程序有没有异常
 	if (thread->isInException())
 	{
 		gTryCatchCB(thread->getThrownObj());

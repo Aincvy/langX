@@ -298,6 +298,10 @@ namespace langX {
 
 	Environment * langXThread::getCurrentEnv() const
 	{
+		if (this->m_current_deep == 0)
+		{
+			return getState()->getScriptOrNSEnv();
+		}
 		return this->m_current_env;
 	}
 
@@ -362,9 +366,9 @@ namespace langX {
 		}
 		this->m_thrown_obj = obj;
 
-		if (this->m_current_deep == 2)
+		if (this->m_current_deep == 0)
 		{
-			// 当前环境深度为2 ，说明应该是没try-catch 的
+			// 当前环境深度为0 ，说明当前只是在脚本中，并无别的情况了
 
 			gTryCatchCB(this->m_thrown_obj);
 		}
