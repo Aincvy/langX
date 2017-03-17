@@ -1306,7 +1306,6 @@ namespace langX {
 			return;
 		}
 
-		thread->setInReturn(true);
 		if (n->opr_obj->op_count <= 0)
 		{
 			n->value = NULL;
@@ -1333,6 +1332,7 @@ namespace langX {
 			freeSubNodes(n);
 		}
 
+		thread->setInReturn(true);
 		thread->setFunctionResult(n->value);
 	}
 
@@ -3367,7 +3367,7 @@ namespace langX {
 		if (!getState()->curThread()->isInLoop() )
 		{
 			getState()->curThread()->throwException(newUnsupportedOperationException("invalid continue stmt.")->addRef());
-			//printf("无效的BREAK 语句 ");
+			//printf("无效的CONTINUE 语句 ");
 			return;
 		}
 

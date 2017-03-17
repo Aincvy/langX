@@ -150,6 +150,7 @@ namespace langX {
 
 		//m_node_root->state.in_func = true;
 		__execNode(m_node_root);
+		
 
 		if (m_node_root->value != NULL)
 		{
