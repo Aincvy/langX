@@ -200,13 +200,13 @@ namespace langX {
 			if (!handle)
 			{
 				fprintf(stderr, "Server http handle error\n");
-				return  getState()->getAllocator().allocateNumber(-1);
+				return  Allocator::allocateNumber(-1);
 			}
 
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 

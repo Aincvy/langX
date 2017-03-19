@@ -36,7 +36,7 @@ namespace langX {
 		for (auto i = vector->begin(); i != vector->end(); i++)
 		{
 			Object *t = (*i);
-			getState()->getAllocator().free(t);
+			Allocator::free(t);
 		}
 
 		vector->clear();
@@ -87,7 +87,7 @@ namespace langX {
 					{
 						i++;
 					}
-					getState()->getAllocator().free(*i);
+					Allocator::free(*i);
 					vector->erase(i++);
 				}
 			}
@@ -126,7 +126,7 @@ namespace langX {
 				if (index < vector->size())
 				{
 					//  ·µ»ØÖµµÄ copy
-					return getState()->getAllocator().copy( vector->at(index));
+					return Allocator::copy( vector->at(index));
 				}
 			}
 		}
@@ -143,7 +143,7 @@ namespace langX {
 
 		std::vector<Object*> * vector = (std::vector<Object*> *)args.object->get3rdObj();
 		
-		return getState()->getAllocator().allocateNumber(vector->size());
+		return Allocator::allocateNumber(vector->size());
 	}
 
 
@@ -158,11 +158,11 @@ namespace langX {
 		std::vector<Object*> * vector = (std::vector<Object*> *)args.object->get3rdObj();
 		if (vector->empty())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 
-		return getState()->getAllocator().copy(vector->front());
+		return Allocator::copy(vector->front());
 	}
 
 	Object * langX_Vector_Last(X3rdFunction *func, const X3rdArgs &args) {
@@ -176,11 +176,11 @@ namespace langX {
 		std::vector<Object*> * vector = (std::vector<Object*> *)args.object->get3rdObj();
 		if (vector->empty())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 
-		return getState()->getAllocator().copy(vector->back());
+		return Allocator::copy(vector->back());
 	}
 
 	Object * langX_Vector_Iterator(X3rdFunction *func, const X3rdArgs &args) {

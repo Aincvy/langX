@@ -79,7 +79,7 @@ namespace langX {
 
 		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
 
-		return getState()->getAllocator().allocateNumber((int)obj->type);
+		return Allocator::allocateNumber((int)obj->type);
 	}
 
 
@@ -115,7 +115,7 @@ namespace langX {
 		double a = 0;
 		PyArg_Parse(pyObj->pyObj, "d", &a);
 
-		return getState()->getAllocator().allocateNumber(a);
+		return Allocator::allocateNumber(a);
 	}
 
 	Object * langX_PyObject_callMethod(X3rdFunction *func, const X3rdArgs &args) {
@@ -205,7 +205,7 @@ namespace langX {
 			}
 		}
 
-		return getState()->getAllocator().allocateNumber(obj->size);
+		return Allocator::allocateNumber(obj->size);
 	}
 
 
@@ -357,7 +357,7 @@ namespace langX {
 		Object *a = args.args[0];
 		if (!a)
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		if (a->getType() == STRING)
@@ -415,7 +415,7 @@ namespace langX {
 		Object *a = args.args[0];
 		if (!a)
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		if (a->getType() == STRING)
@@ -428,7 +428,7 @@ namespace langX {
 				double a = 0;
 				PyArg_Parse(ret, "d", &a);
 
-				return getState()->getAllocator().allocateNumber(a);
+				return Allocator::allocateNumber(a);
 
 				
 			}
@@ -443,7 +443,7 @@ namespace langX {
 				double a = 0;
 				PyArg_Parse(ret, "d", &a);
 
-				return getState()->getAllocator().allocateNumber(a);
+				return Allocator::allocateNumber(a);
 				
 			}
 			else if (obj->type == PyObjectType::PyListX)
@@ -453,7 +453,7 @@ namespace langX {
 				double a = 0;
 				PyArg_Parse(ret, "d", &a);
 
-				return getState()->getAllocator().allocateNumber(a);
+				return Allocator::allocateNumber(a);
 			}
 		}
 
@@ -473,7 +473,7 @@ namespace langX {
 		Object *a = args.args[0];
 		if (!a)
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		if (a->getType() == STRING)
@@ -541,10 +541,10 @@ namespace langX {
 		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
 		if (obj->pyObj == NULL)
 		{
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 

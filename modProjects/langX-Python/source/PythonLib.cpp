@@ -32,10 +32,10 @@ namespace langX {
 
 		if (Py_IsInitialized())
 		{
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 
 	}
 
@@ -45,17 +45,17 @@ namespace langX {
 
 		if (Py_IsInitialized())
 		{
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
 		Py_Initialize();
 		
 		if (Py_IsInitialized())
 		{
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 

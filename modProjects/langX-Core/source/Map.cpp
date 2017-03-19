@@ -37,7 +37,7 @@ namespace langX {
 		for (auto i = map->begin(); i != map->end(); i++)
 		{
 			Object *t = i->second;
-			getState()->getAllocator().free(t);
+			Allocator::free(t);
 		}
 
 		map->clear();
@@ -63,16 +63,16 @@ namespace langX {
 			auto i = map->find(c);
 			if (i != map->end())
 			{
-				getState()->getAllocator().free(i->second);
+				Allocator::free(i->second);
 				i->second = b->clone();
 			}
 			else {
 				map->insert(std::make_pair(c, b->clone()));
 			}
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 
@@ -85,7 +85,7 @@ namespace langX {
 
 		std::map<std::string, Object*> * map = (std::map<std::string, Object*> *)args.object->get3rdObj();
 
-		return getState()->getAllocator().allocateNumber(map->size());
+		return Allocator::allocateNumber(map->size());
 	}
 
 	Object * langX_Map_Get(X3rdFunction *func, const X3rdArgs &args) {
@@ -105,11 +105,11 @@ namespace langX {
 			auto i = map->find(c);
 			if (i != map->end())
 			{
-				return getState()->getAllocator().copy(i->second);
+				return Allocator::copy(i->second);
 			}
 		}
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 	Object * langX_Map_Remove(X3rdFunction *func, const X3rdArgs &args) {
@@ -136,7 +136,7 @@ namespace langX {
 			}
 		}
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 	Object * langX_Map_ContainsKey(X3rdFunction *func, const X3rdArgs &args) {
@@ -154,11 +154,11 @@ namespace langX {
 			const char * c = a->characteristic();
 			if (map->find(c) != map->end())
 			{
-				return  getState()->getAllocator().allocateNumber(1);
+				return  Allocator::allocateNumber(1);
 			}
 		}
 
-		return  getState()->getAllocator().allocateNumber(0);
+		return  Allocator::allocateNumber(0);
 	}
 	//containsKey
 

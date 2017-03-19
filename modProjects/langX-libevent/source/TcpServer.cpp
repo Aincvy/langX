@@ -210,12 +210,12 @@ namespace langX {
 		if (!arg->base)
 		{
 			// not listen.
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 		event_base_dispatch(arg->base);
 
-		return getState()->getAllocator().allocateNumber(1);
+		return Allocator::allocateNumber(1);
 	}
 
 
@@ -230,7 +230,7 @@ namespace langX {
 		Object *a = args.args[0];
 		if (!a || a->getType() != NUMBER)
 		{
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 		int port = ((Number*)a)->getIntValue();
@@ -247,10 +247,10 @@ namespace langX {
 
 		if (!arg->listener) {
 			fprintf(stderr, "Could not create a listener!\n");
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
-		return getState()->getAllocator().allocateNumber(1);
+		return Allocator::allocateNumber(1);
 	}
 
 
@@ -269,10 +269,10 @@ namespace langX {
 		{
 			FunctionRef * b = (FunctionRef*)a;
 			arg->serverclosecb = (FunctionRef *)b->clone();
-			//return getState()->getAllocator().allocateNumber(1);
+			//return Allocator::allocateNumber(1);
 		}
 
-		//return getState()->getAllocator().allocateNumber(0);
+		//return Allocator::allocateNumber(0);
 		return args.object->addRef();
 	}
 
@@ -292,10 +292,10 @@ namespace langX {
 		{
 			FunctionRef * b = (FunctionRef*)a;
 			arg->clientclosecb = (FunctionRef *)b->clone();
-			//return getState()->getAllocator().allocateNumber(1);
+			//return Allocator::allocateNumber(1);
 		}
 
-		//return getState()->getAllocator().allocateNumber(0);
+		//return Allocator::allocateNumber(0);
 		return args.object->addRef();
 	}
 
@@ -315,10 +315,10 @@ namespace langX {
 		{
 			FunctionRef * b = (FunctionRef*)a;
 			arg->writecb = (FunctionRef *)b->clone();
-			//return getState()->getAllocator().allocateNumber(1);
+			//return Allocator::allocateNumber(1);
 		}
 
-		//return getState()->getAllocator().allocateNumber(0);
+		//return Allocator::allocateNumber(0);
 		return args.object->addRef();
 	}
 
@@ -338,10 +338,10 @@ namespace langX {
 		{
 			FunctionRef * b = (FunctionRef*)a;
 			arg->readcb = (FunctionRef *)b->clone();
-			//return getState()->getAllocator().allocateNumber(1);
+			//return Allocator::allocateNumber(1);
 		}
 
-		//return getState()->getAllocator().allocateNumber(0);
+		//return Allocator::allocateNumber(0);
 		return args.object->addRef();
 
 	}
@@ -362,10 +362,10 @@ namespace langX {
 		{
 			FunctionRef * b = (FunctionRef*)a;
 			arg->acceptcb = (FunctionRef *)b->clone();
-			//return getState()->getAllocator().allocateNumber(1);
+			//return Allocator::allocateNumber(1);
 		}
 
-		//return getState()->getAllocator().allocateNumber(0);
+		//return Allocator::allocateNumber(0);
 		return args.object->addRef();
 	}
 
@@ -393,7 +393,7 @@ namespace langX {
 	int regTcpServer(langXState *state, XNameSpace* space) {
 
 		ClassInfo *info = new ClassInfo("TcpServer");
-		info->addMember("listenPort", getState()->getAllocator().allocateNumber(0));
+		info->addMember("listenPort", Allocator::allocateNumber(0));
 
 		info->addFunction("~TcpServer", create3rdFunc("~TcpServer", langX_TcpServer_TcpServer_Dtor));
 		info->addFunction("TcpServer", create3rdFunc("TcpServer", langX_TcpServer_TcpServer));

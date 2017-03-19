@@ -95,7 +95,7 @@ namespace langX {
 		}
 	}
 
-	// 做后缀操作符的 工作
+	// 做后缀操作符的 工作 也包括前缀操作符
 	void doSuffixOperation(Node *n) {
 		if (n == NULL)
 		{
@@ -2100,6 +2100,7 @@ namespace langX {
 		Node *conNode = n->opr_obj->op[0];
 		while (__tryConvertToBool(conNode))
 		{
+			doSuffixOperation(conNode);
 			Allocator::free(conNode->value);
 			conNode->value = NULL;
 
@@ -2140,6 +2141,11 @@ namespace langX {
 			}
 		}
 
+		// 清理条件节点的内容
+		doSuffixOperation(conNode);
+		Allocator::free(conNode->value);
+		conNode->value = NULL;
+
 		thread->setInLoop(false);
 		doSuffixOperation(n);
 		freeSubNodes(n);
@@ -2157,8 +2163,9 @@ namespace langX {
 		Node *conNode = n->opr_obj->op[1];
 		// 后置节点
 		Node *sNode = n->opr_obj->op[2];
-		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode); freeSubNodes(sNode), __execNode(sNode), doSuffixOperation(sNode))
+		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode);  )
 		{
+			doSuffixOperation(conNode);
 			Allocator::free(conNode->value);
 			conNode->value = NULL;
 
@@ -2194,7 +2201,17 @@ namespace langX {
 				return;
 			}
 
+			__execNode(sNode);
+			doSuffixOperation(sNode);
+			freeSubNodes(sNode);
+			Allocator::free(sNode->value);
+			sNode->value = nullptr;
 		}
+
+		// 清理条件节点的内容
+		doSuffixOperation(conNode);
+		Allocator::free(conNode->value);
+		conNode->value = NULL;
 
 		thread->setInLoop(false);
 		freeSubNodes(n);

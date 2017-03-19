@@ -59,7 +59,7 @@ namespace langX {
 		if (clientArgs == nullptr)
 		{
 			printf("clientArgs == nullptr ! \n");
-			return getState()->getAllocator().allocateNumber(-1);
+			return Allocator::allocateNumber(-1);
 		}
 
 		Object *a = args.args[0];
@@ -72,10 +72,10 @@ namespace langX {
 			strcat(reply_msg + strlen(reply_msg), "123");
 			int i =bufferevent_write(clientArgs->bev, reply_msg, strlen(reply_msg));*/
 
-			return getState()->getAllocator().allocateNumber(i);
+			return Allocator::allocateNumber(i);
 		}
 		
-		return getState()->getAllocator().allocateNumber(-1);
+		return Allocator::allocateNumber(-1);
 	}
 
 
@@ -95,8 +95,8 @@ namespace langX {
 	int regTcpClient(langXState *state, XNameSpace* space) {
 
 		ClassInfo *info = new ClassInfo("TcpClient");
-		info->addMember("isConnected", getState()->getAllocator().allocateNumber(0));
-		info->addMember("available", getState()->getAllocator().allocateNumber(0));
+		info->addMember("isConnected", Allocator::allocateNumber(0));
+		info->addMember("available", Allocator::allocateNumber(0));
 
 		info->addFunction("write", create3rdFunc("write", langX_TcpClient_write));
 		info->addFunction("close", create3rdFunc("close", langX_TcpClient_close));

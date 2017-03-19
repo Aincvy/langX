@@ -37,7 +37,7 @@ namespace langX {
 		for (auto i = list->begin(); i != list->end(); i++)
 		{
 			Object *t = (*i);
-			getState()->getAllocator().free(t);
+			Allocator::free(t);
 		}
 
 		list->clear();
@@ -87,7 +87,7 @@ namespace langX {
 					{
 						i++;
 					}
-					getState()->getAllocator().free(*i);
+					Allocator::free(*i);
 					list->erase(i++);
 				}
 			}
@@ -131,7 +131,7 @@ namespace langX {
 					{
 						i++;
 					}
-					return getState()->getAllocator().copy(*i);
+					return Allocator::copy(*i);
 				}
 			}
 		}
@@ -148,7 +148,7 @@ namespace langX {
 
 		std::list<Object*> * list = (std::list<Object*> *)args.object->get3rdObj();
 
-		return getState()->getAllocator().allocateNumber(list->size());
+		return Allocator::allocateNumber(list->size());
 	}
 
 	Object * langX_List_Set(X3rdFunction *func, const X3rdArgs &args) {
@@ -182,7 +182,7 @@ namespace langX {
 				{
 					i++;
 				}
-				getState()->getAllocator().free(*i);
+				Allocator::free(*i);
 				*i = b->clone();
 			}
 		}

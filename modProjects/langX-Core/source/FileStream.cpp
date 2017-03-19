@@ -27,7 +27,7 @@ namespace langX {
 
 		if (!cfs->cppFStream.is_open())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		cfs->cppFStream.close();
@@ -47,10 +47,10 @@ namespace langX {
 		CoreFileStream * cfs = (CoreFileStream *)args.object->get3rdObj();
 		if (cfs->cppFStream.eof())
 		{
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 
@@ -66,7 +66,7 @@ namespace langX {
 
 		if (!cfs->cppFStream.is_open())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		std::fstream & fs = cfs->cppFStream;
@@ -75,7 +75,7 @@ namespace langX {
 		long size = fs.tellg();
 		fs.seekg(a, std::ios::beg);
 
-		return getState()->getAllocator().allocateNumber(size);
+		return Allocator::allocateNumber(size);
 	}
 
 
@@ -91,7 +91,7 @@ namespace langX {
 
 		if (!cfs->cppFStream.is_open())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		Object *a = args.args[0];
@@ -101,10 +101,10 @@ namespace langX {
 			long l = cfs->cppFStream.tellp();
 			cfs->cppFStream << str << std::endl;
 			long b = cfs->cppFStream.tellp() - l;
-			return getState()->getAllocator().allocateNumber(b);
+			return Allocator::allocateNumber(b);
 		}
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -120,7 +120,7 @@ namespace langX {
 
 		if (!cfs->cppFStream.is_open())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		Object * a = args.args[0];
@@ -145,7 +145,7 @@ namespace langX {
 
 		if (!cfs->cppFStream.is_open())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		Object * a = args.args[0];
@@ -185,18 +185,18 @@ namespace langX {
 		
 		if (!cfs->cppFStream.is_open())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		std::string str;
 		
 		if (std::getline(cfs->cppFStream, str))
 		{
-			return getState()->getAllocator().allocateString(str.c_str());
+			return Allocator::allocateString(str.c_str());
 		}
 
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -212,7 +212,7 @@ namespace langX {
 
 		if (!cfs->cppFStream.is_open())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 

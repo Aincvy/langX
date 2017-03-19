@@ -26,7 +26,7 @@ namespace langX {
 		
 		double abc = std::uniform_real_distribution<double>(0.0,1.0)((*gen));
 
-		return getState()->getAllocator().allocateNumber(abc);
+		return Allocator::allocateNumber(abc);
 	}
 
 
@@ -53,7 +53,7 @@ namespace langX {
 			abc = std::uniform_int_distribution<int>(0 )((*gen));
 		}
 
-		return getState()->getAllocator().allocateNumber(abc);
+		return Allocator::allocateNumber(abc);
 	}
 
 

@@ -36,7 +36,7 @@ namespace langX {
 		{
 			Object *t = stack->top();
 			stack->pop();
-			getState()->getAllocator().free(t);
+			Allocator::free(t);
 		}
 
 		delete stack;
@@ -54,10 +54,10 @@ namespace langX {
 		std::stack<Object*> * stack = (std::stack<Object*> *)args.object->get3rdObj();
 		if (stack->empty())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
-		return getState()->getAllocator().copy(stack->top());
+		return Allocator::copy(stack->top());
 	}
 
 	Object * langX_Stack_Pop(X3rdFunction *func, const X3rdArgs &args) {
@@ -70,7 +70,7 @@ namespace langX {
 		std::stack<Object*> * stack = (std::stack<Object*> *)args.object->get3rdObj();
 		if (stack->empty())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		Object *obj = stack->top();
@@ -106,7 +106,7 @@ namespace langX {
 
 		std::stack<Object*> * stack = (std::stack<Object*> *)args.object->get3rdObj();
 
-		return getState()->getAllocator().allocateNumber(stack->size());
+		return Allocator::allocateNumber(stack->size());
 	}
 
 	int regStack(langXState *state, XNameSpace* space) {

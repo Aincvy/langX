@@ -546,7 +546,8 @@ namespace langX {
 	{
 		if (this->m_function_result)
 		{
-			Allocator::free(obj);
+			Allocator::free(this->m_function_result);
+			this->m_function_result = nullptr;
 		}
 
 		if (!obj)

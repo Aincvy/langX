@@ -17,7 +17,7 @@ namespace langX {
 		Object *a = args.args[0];
 		if (a != nullptr && a->getType() == NUMBER)
 		{
-			return getState()->getAllocator().allocateNumber(abs(((Number*)a)->getIntValue()));
+			return Allocator::allocateNumber(abs(((Number*)a)->getIntValue()));
 		}
 
 		return nullptr;
@@ -33,7 +33,7 @@ namespace langX {
 			double j = ((Number*)b)->getDoubleValue();
 
 
-			return getState()->getAllocator().allocateNumber(pow(i,j));
+			return Allocator::allocateNumber(pow(i,j));
 		}
 		
 		return nullptr;
@@ -46,7 +46,7 @@ namespace langX {
 		{
 			double i = ((Number*)a)->getDoubleValue();
 
-			return getState()->getAllocator().allocateNumber(sqrt(i));
+			return Allocator::allocateNumber(sqrt(i));
 		}
 
 		return nullptr;
@@ -66,7 +66,7 @@ namespace langX {
 				k = j;
 			}
 			
-			return getState()->getAllocator().allocateNumber(k);
+			return Allocator::allocateNumber(k);
 		}
 
 		return nullptr;
@@ -86,7 +86,7 @@ namespace langX {
 				k = j;
 			}
 
-			return getState()->getAllocator().allocateNumber(k);
+			return Allocator::allocateNumber(k);
 		}
 
 		
@@ -101,7 +101,7 @@ namespace langX {
 		{
 			double i = ((Number*)a)->getDoubleValue();
 
-			return getState()->getAllocator().allocateNumber(log(i));
+			return Allocator::allocateNumber(log(i));
 		}
 
 		return nullptr;
@@ -114,7 +114,7 @@ namespace langX {
 		{
 			double i = ((Number*)a)->getDoubleValue();
 
-			return getState()->getAllocator().allocateNumber(sin(i));
+			return Allocator::allocateNumber(sin(i));
 		}
 
 		return nullptr;
@@ -127,7 +127,7 @@ namespace langX {
 		{
 			double i = ((Number*)a)->getDoubleValue();
 
-			return getState()->getAllocator().allocateNumber(cos(i));
+			return Allocator::allocateNumber(cos(i));
 		}
 
 		return nullptr;
@@ -140,7 +140,7 @@ namespace langX {
 		{
 			double i = ((Number*)a)->getDoubleValue();
 
-			return getState()->getAllocator().allocateNumber(tan(i));
+			return Allocator::allocateNumber(tan(i));
 		}
 
 		return nullptr;
@@ -153,7 +153,7 @@ namespace langX {
 		{
 			double i = ((Number*)a)->getDoubleValue();
 
-			return getState()->getAllocator().allocateNumber(asin(i));
+			return Allocator::allocateNumber(asin(i));
 		}
 
 		return nullptr;
@@ -166,7 +166,7 @@ namespace langX {
 		{
 			double i = ((Number*)a)->getDoubleValue();
 
-			return getState()->getAllocator().allocateNumber(acos(i));
+			return Allocator::allocateNumber(acos(i));
 		}
 
 		return nullptr;
@@ -179,7 +179,7 @@ namespace langX {
 		{
 			double i = ((Number*)a)->getDoubleValue();
 
-			return getState()->getAllocator().allocateNumber(atan(i));
+			return Allocator::allocateNumber(atan(i));
 		}
 
 		return nullptr;
@@ -189,7 +189,7 @@ namespace langX {
 	int regMath(langXState *state, XNameSpace* space) {
 
 		ClassInfo *math = new ClassInfo("Math");
-		math->addMember("PI", getState()->getAllocator().allocateNumber(M_PI));
+		math->addMember("PI", Allocator::allocateNumber(M_PI));
 		math->addFunction("abs", create3rdFunc("abs", langX_Math_Abs));
 		math->addFunction("pow", create3rdFunc("pow", langX_Math_Pow));
 		math->addFunction("sqrt", create3rdFunc("sqrt", langX_Math_Sqrt));

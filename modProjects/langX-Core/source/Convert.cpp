@@ -25,9 +25,9 @@ namespace langX {
 				Number *num = (Number*)a;
 				if (num->isInteger())
 				{
-					return getState()->getAllocator().allocateString(std::to_string(num->getIntValue()).c_str() );
+					return Allocator::allocateString(std::to_string(num->getIntValue()).c_str() );
 				}
-				return getState()->getAllocator().allocateString(std::to_string(num->getDoubleValue()).c_str());
+				return Allocator::allocateString(std::to_string(num->getDoubleValue()).c_str());
 			}
 			else if (a->getType() == ObjectType::OBJECT)
 			{
@@ -40,7 +40,7 @@ namespace langX {
 			}
 		}
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -57,7 +57,7 @@ namespace langX {
 				try
 				{
 					double a = std::stod(value, nullptr);
-					return getState()->getAllocator().allocateNumber(a);
+					return Allocator::allocateNumber(a);
 				}
 				catch (const std::invalid_argument& )
 				{
@@ -75,7 +75,7 @@ namespace langX {
 			}
 		}
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 

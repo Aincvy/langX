@@ -38,13 +38,13 @@ namespace langX {
 			String *str = (String*)b;
 
 			cJSON_AddItemToArray(root, cJSON_CreateString(str->getValue()));
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 		else if (b->getType() == ObjectType::NUMBER)
 		{
 			Number * num = (Number*)b;
 			cJSON_AddItemToArray(root, cJSON_CreateNumber(num->getDoubleValue()));
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 		else if (b->getType() == ObjectType::OBJECT)
 		{
@@ -53,11 +53,11 @@ namespace langX {
 			{
 				MyJsonData *thedata = (MyJsonData*)ref->getRefObject()->get3rdObj();
 				cJSON_AddItemToArray(root, thedata->pJsonRoot);
-				return getState()->getAllocator().allocateNumber(1);
+				return Allocator::allocateNumber(1);
 			}
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 	Object * langX_JsonArray_put(X3rdFunction *func, const X3rdArgs &args) {
@@ -76,7 +76,7 @@ namespace langX {
 			return jsonAddItemToArray(data->pJsonRoot, b);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 
@@ -107,14 +107,14 @@ namespace langX {
 
 			cJSON *cjson = cJSON_GetArrayItem(data->pJsonRoot, index);
 			if (cjson == nullptr) {
-				return getState()->getAllocator().allocate(NULLOBJECT);
+				return Allocator::allocate(NULLOBJECT);
 			}
 
-			return getState()->getAllocator().allocateString(cjson->valuestring);
+			return Allocator::allocateString(cjson->valuestring);
 		}
 		
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -135,14 +135,14 @@ namespace langX {
 
 			cJSON *cjson = cJSON_GetArrayItem(data->pJsonRoot, index);
 			if (cjson == nullptr) {
-				return getState()->getAllocator().allocate(NULLOBJECT);
+				return Allocator::allocate(NULLOBJECT);
 			}
 
-			return getState()->getAllocator().allocateNumber(cjson->valuedouble);
+			return Allocator::allocateNumber(cjson->valuedouble);
 		}
 
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -219,7 +219,7 @@ namespace langX {
 		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
 		int size = cJSON_GetArraySize(data->pJsonRoot);
 
-		return getState()->getAllocator().allocateNumber(size);
+		return Allocator::allocateNumber(size);
 	}
 
 
@@ -259,14 +259,14 @@ namespace langX {
 
 			cJSON *cjson = cJSON_GetArrayItem(data->pJsonRoot, index);
 			if (cjson == nullptr) {
-				return getState()->getAllocator().allocate(NULLOBJECT);
+				return Allocator::allocate(NULLOBJECT);
 			}
 
 			return createJsonArray(cjson)->addRef();
 		}
 
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -287,14 +287,14 @@ namespace langX {
 
 			cJSON *cjson = cJSON_GetArrayItem(data->pJsonRoot, index);
 			if (cjson == nullptr) {
-				return getState()->getAllocator().allocate(NULLOBJECT);
+				return Allocator::allocate(NULLOBJECT);
 			}
 
 			return createJsonObject(cjson)->addRef();
 		}
 
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -309,10 +309,10 @@ namespace langX {
 		char *p = cJSON_Print(data->pJsonRoot);
 		if (p == NULL)
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
-		String *str = getState()->getAllocator().allocateString(p);
+		String *str = Allocator::allocateString(p);
 		free(p);
 
 		return str;

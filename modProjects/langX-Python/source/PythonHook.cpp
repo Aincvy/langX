@@ -119,7 +119,7 @@ namespace langX {
 			return createLangXObjectPyObj(ret, PyObjectType::Tuple)->addRef();
 		}
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -138,7 +138,7 @@ namespace langX {
 			return createLangXObjectPyObj(ret, PyObjectType::PyListX)->addRef();
 		}
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 	Object * langX_PythonHook_printError(X3rdFunction *func, const X3rdArgs &args) {
