@@ -39,7 +39,7 @@ namespace langX {
 			if (!fout)
 			{
 				// TODO 抛出文件未找到异常
-				return getState()->getAllocator().allocateNumber(-1);
+				return Allocator::allocateNumber(-1);
 			}
 
 			int s = fout.tellp();
@@ -49,7 +49,7 @@ namespace langX {
 			fout.flush();
 			fout.close();
 
-			return getState()->getAllocator().allocateNumber( (e-s) );
+			return Allocator::allocateNumber( (e-s) );
 		}
 
 		return nullptr;
@@ -79,7 +79,7 @@ namespace langX {
 			if (!fin)
 			{
 				// TODO 抛出文件未找到异常
-				return getState()->getAllocator().allocate(NULLOBJECT);
+				return Allocator::allocate(NULLOBJECT);
 			}
 
 			long size;
@@ -90,13 +90,13 @@ namespace langX {
 			if (!buf)
 			{
 				//  抛出内存不够异常
-				return getState()->getAllocator().allocate(NULLOBJECT);
+				return Allocator::allocate(NULLOBJECT);
 			}
 
 			fin.read(buf, size);
 			fin.close();
 
-			String * str = getState()->getAllocator().allocateString(buf);
+			String * str = Allocator::allocateString(buf);
 
 			free(buf);
 
@@ -132,7 +132,7 @@ namespace langX {
 			if (!fout)
 			{
 				// TODO 抛出文件未找到异常
-				return getState()->getAllocator().allocateNumber(-1);
+				return Allocator::allocateNumber(-1);
 			}
 
 			String *str = ((String*)b);
@@ -144,7 +144,7 @@ namespace langX {
 			fout.flush();
 			fout.close();
 
-			return getState()->getAllocator().allocateNumber(size);
+			return Allocator::allocateNumber(size);
 		}
 
 		return nullptr;
@@ -165,7 +165,7 @@ namespace langX {
 		}
 
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -183,7 +183,7 @@ namespace langX {
 		}
 
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -202,7 +202,7 @@ namespace langX {
 		}
 		
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 

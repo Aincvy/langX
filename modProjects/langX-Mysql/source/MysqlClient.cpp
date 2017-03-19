@@ -92,12 +92,12 @@ namespace langX {
 
 		if (!serverAddr || !user || !pwd || !dbname )
 		{
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 		if (serverAddr->getType() != STRING || user->getType() != STRING || pwd->getType() != STRING || dbname->getType() != STRING )
 		{
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 		if (portObj && portObj->getType() == NUMBER)
@@ -110,13 +110,13 @@ namespace langX {
 			// 连接成功
 			number->setValue(1);
 			args.object->set3rdObj(mysql);
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 		else {
 			// 失败
 			mysql_close(mysql);
 			args.object->set3rdObj(nullptr);
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 		return nullptr;
@@ -143,13 +143,13 @@ namespace langX {
 
 		if (!args.object->getMember(isConnectedStr)->isTrue())
 		{
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 		Object *a = args.args[0];
 		if (!a || a->getType() != STRING)
 		{
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 		MYSQL *mysql = (MYSQL*)args.object->get3rdObj();
@@ -157,10 +157,10 @@ namespace langX {
 		if (mysql_set_character_set(mysql, ((String*)a)->getValue()) == 0)
 		{
 			// 成功
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 	Object * langX_MysqlClient_LastAffectedRows(X3rdFunction *func, const X3rdArgs &args) {
@@ -173,13 +173,13 @@ namespace langX {
 
 		if (!args.object->getMember(isConnectedStr)->isTrue())
 		{
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 		MYSQL *mysql = (MYSQL*)args.object->get3rdObj();
 		
 		double a = mysql_affected_rows(mysql);
-		return getState()->getAllocator().allocateNumber(a);
+		return Allocator::allocateNumber(a);
 	}
 
 
@@ -210,7 +210,7 @@ namespace langX {
 		}
 		
 		MYSQL *mysql = (MYSQL*)args.object->get3rdObj();
-		return getState()->getAllocator().allocateString(mysql_error(mysql));
+		return Allocator::allocateString(mysql_error(mysql));
 
 	}
 
@@ -223,13 +223,13 @@ namespace langX {
 
 		if (!args.object->getMember(isConnectedStr)->isTrue())
 		{
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 		Object *a = args.args[0];
 		if (!a || a->getType() != STRING)
 		{
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 
@@ -237,10 +237,10 @@ namespace langX {
 
 		if (mysql_select_db(mysql, ((String*)a)->getValue()) == 0)
 		{
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 	Object * langX_MysqlClient_Close(X3rdFunction *func, const X3rdArgs &args) {
@@ -252,12 +252,12 @@ namespace langX {
 
 		if (!args.object->getMember(isConnectedStr)->isTrue())
 		{
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
 		closeMysql(args.object);
 
-		return getState()->getAllocator().allocateNumber(1);
+		return Allocator::allocateNumber(1);
 	}
 
 	Object * langX_MysqlClient_ExecQuery(X3rdFunction *func, const X3rdArgs &args) {
@@ -269,7 +269,7 @@ namespace langX {
 
 		if (!args.object->getMember(isConnectedStr)->isTrue())
 		{
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
 		MYSQL *mysql = (MYSQL*)args.object->get3rdObj();
@@ -313,7 +313,7 @@ namespace langX {
 ;						int j = (int)colNum;
 						for (int i = 0; i < j; i++)
 						{
-							String *str = getState()->getAllocator().allocateString(row[i]);
+							String *str = Allocator::allocateString(row[i]);
 							rowVec.push_back(str);
 
 							xRowObj->kvpair.insert(std::make_pair(cols.at(i), str));
@@ -331,7 +331,7 @@ namespace langX {
 			}
 		}
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 	Object * langX_MysqlClient_ExecUpdate(X3rdFunction *func, const X3rdArgs &args) {
@@ -343,7 +343,7 @@ namespace langX {
 
 		if (!args.object->getMember(isConnectedStr)->isTrue())
 		{
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 		MYSQL *mysql = (MYSQL*)args.object->get3rdObj();
@@ -354,18 +354,18 @@ namespace langX {
 		{
 			if (mysql_query(mysql, ((String*)a)->getValue()) == 0)
 			{
-				return getState()->getAllocator().allocateNumber(1);
+				return Allocator::allocateNumber(1);
 			}
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 
 	int regMysqlClient(langXState *state, XNameSpace* space) {
 
 		ClassInfo *mysqlClient = new ClassInfo("MysqlClient");
-		mysqlClient->addMember(isConnectedStr, getState()->getAllocator().allocateNumber(0));
+		mysqlClient->addMember(isConnectedStr, Allocator::allocateNumber(0));
 		mysqlClient->addFunction("MysqlClient", create3rdFunc("MysqlClient", langX_MysqlClient_MysqlClient));
 		mysqlClient->addFunction("~MysqlClient", create3rdFunc("~MysqlClient", langX_MysqlClient_MysqlClient));
 		mysqlClient->addFunction("connect", create3rdFunc("connect", langX_MysqlClient_Connect));

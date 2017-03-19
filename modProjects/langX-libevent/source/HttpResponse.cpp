@@ -43,11 +43,11 @@ namespace langX {
 			int ret = evhttp_add_header(reqInfo->evRequest->output_headers, "Content-Type", type);
 			if (ret == 0)
 			{
-				return getState()->getAllocator().allocateNumber(1);
+				return Allocator::allocateNumber(1);
 			}
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 
@@ -93,11 +93,11 @@ namespace langX {
 			int ret = evhttp_add_header(reqInfo->evRequest->output_headers, key, value);
 			if (ret == 0)
 			{
-				return getState()->getAllocator().allocateNumber(1);
+				return Allocator::allocateNumber(1);
 			}
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 

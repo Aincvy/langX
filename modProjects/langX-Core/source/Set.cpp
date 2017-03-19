@@ -35,7 +35,7 @@ namespace langX {
 		for (auto i = set->begin(); i != set->end(); i++)
 		{
 			Object *t = (*i);
-			getState()->getAllocator().free(t);
+			Allocator::free(t);
 		}
 
 		set->clear();
@@ -104,7 +104,7 @@ namespace langX {
 
 		std::set<Object*> * set = (std::set<Object*> *)args.object->get3rdObj();
 
-		return getState()->getAllocator().allocateNumber(set->size());
+		return Allocator::allocateNumber(set->size());
 	}
 
 

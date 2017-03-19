@@ -49,13 +49,13 @@ namespace langX {
 		DateTimeCoreX* time = (DateTimeCoreX*)args.object->get3rdObj();
 		updateTime(time);
 
-		args.object->setMember("millisecond", getState()->getAllocator().allocateNumber(time->millisecond));
-		args.object->setMember("second", getState()->getAllocator().allocateNumber(time->second));
-		args.object->setMember("minute", getState()->getAllocator().allocateNumber(time->minute));
-		args.object->setMember("hour", getState()->getAllocator().allocateNumber(time->hour));
-		args.object->setMember("date", getState()->getAllocator().allocateNumber(time->date));
-		args.object->setMember("month", getState()->getAllocator().allocateNumber(time->month));
-		args.object->setMember("year", getState()->getAllocator().allocateNumber(time->year));
+		args.object->setMember("millisecond", Allocator::allocateNumber(time->millisecond));
+		args.object->setMember("second", Allocator::allocateNumber(time->second));
+		args.object->setMember("minute", Allocator::allocateNumber(time->minute));
+		args.object->setMember("hour", Allocator::allocateNumber(time->hour));
+		args.object->setMember("date", Allocator::allocateNumber(time->date));
+		args.object->setMember("month", Allocator::allocateNumber(time->month));
+		args.object->setMember("year", Allocator::allocateNumber(time->year));
 
 		return nullptr;
 	}
@@ -97,13 +97,13 @@ namespace langX {
 	int regDateTime(langXState *state, XNameSpace* space) {
 
 		ClassInfo *info = new ClassInfo("DateTime");
-		info->addMember("millisecond", getState()->getAllocator().allocateNumber(0));
-		info->addMember("second", getState()->getAllocator().allocateNumber(0));
-		info->addMember("minute", getState()->getAllocator().allocateNumber(0));
-		info->addMember("hour", getState()->getAllocator().allocateNumber(0));
-		info->addMember("date", getState()->getAllocator().allocateNumber(0));
-		info->addMember("month", getState()->getAllocator().allocateNumber(0));
-		info->addMember("year", getState()->getAllocator().allocateNumber(0));
+		info->addMember("millisecond", Allocator::allocateNumber(0));
+		info->addMember("second", Allocator::allocateNumber(0));
+		info->addMember("minute", Allocator::allocateNumber(0));
+		info->addMember("hour", Allocator::allocateNumber(0));
+		info->addMember("date", Allocator::allocateNumber(0));
+		info->addMember("month", Allocator::allocateNumber(0));
+		info->addMember("year", Allocator::allocateNumber(0));
 		info->addFunction("update", create3rdFunc("update", langX_DateTime_update));
 		info->addFunction("~DateTime", create3rdFunc("~DateTime", langX_DateTime_DateTime_Dtor));
 		info->addFunction("DateTime", create3rdFunc("DateTime", langX_DateTime_DateTime));

@@ -36,7 +36,7 @@ namespace langX {
 		{
 			Object *t = queue->front();
 			queue->pop();
-			getState()->getAllocator().free(t);
+			Allocator::free(t);
 		}
 
 		delete queue;
@@ -54,10 +54,10 @@ namespace langX {
 		std::queue<Object*> * queue = (std::queue<Object*> *)args.object->get3rdObj();
 		if (queue->empty())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
-		return getState()->getAllocator().copy(queue->front());
+		return Allocator::copy(queue->front());
 	}
 
 	Object * langX_Queue_Pop(X3rdFunction *func, const X3rdArgs &args) {
@@ -70,7 +70,7 @@ namespace langX {
 		std::queue<Object*> * queue = (std::queue<Object*> *)args.object->get3rdObj();
 		if (queue->empty())
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		Object *obj = queue->front();
@@ -106,7 +106,7 @@ namespace langX {
 
 		std::queue<Object*> * queue = (std::queue<Object*> *)args.object->get3rdObj();
 
-		return getState()->getAllocator().allocateNumber(queue->size());
+		return Allocator::allocateNumber(queue->size());
 	}
 
 

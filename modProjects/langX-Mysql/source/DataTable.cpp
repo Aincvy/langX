@@ -73,15 +73,15 @@ namespace langX {
 			}
 		}
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
 	int regDataTable(langXState *state, XNameSpace* space) {
 		
 		ClassInfo *dataTable = new ClassInfo("DataTable");
-		dataTable->addMember("rowNum", getState()->getAllocator().allocateNumber(0));
-		dataTable->addMember("isEmpty", getState()->getAllocator().allocateNumber(0));
+		dataTable->addMember("rowNum", Allocator::allocateNumber(0));
+		dataTable->addMember("isEmpty", Allocator::allocateNumber(0));
 		dataTable->addFunction("DataTable", create3rdFunc("DataTable", langX_DataTable_DataTable));
 		dataTable->addFunction("~DataTable", create3rdFunc("~DataTable", langX_DataTable_DataTable_Dtor));
 		dataTable->addFunction("get", create3rdFunc("get", langX_DataTable_Get));

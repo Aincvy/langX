@@ -21,16 +21,16 @@ namespace langX {
 		}
 
 		if (root->type == cJSON_String) {
-			return getState()->getAllocator().allocateString(root->valuestring);
+			return Allocator::allocateString(root->valuestring);
 		}
 		else if (root->type == cJSON_Number) {
-			return getState()->getAllocator().allocateNumber(root->valuedouble);
+			return Allocator::allocateNumber(root->valuedouble);
 		}
 		else if (root->type == cJSON_True) {
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 		else if (root->type == cJSON_False) {
-			return getState()->getAllocator().allocateNumber(0);
+			return Allocator::allocateNumber(0);
 		}
 
 		return nullptr;
@@ -58,7 +58,7 @@ namespace langX {
 		//			{
 		//				array1->set(i, tmp2);
 		//			}
-		//			getState()->getAllocator().free(tmp2);
+		//			Allocator::free(tmp2);
 		//		}
 
 		//		obj = array1->addRef();
@@ -150,7 +150,7 @@ namespace langX {
 			cJSON *root = cJSON_Parse(str->getValue());
 			if (root == nullptr)
 			{
-				return getState()->getAllocator().allocate(NULLOBJECT);
+				return Allocator::allocate(NULLOBJECT);
 			}
 
 			if (root->type == cJSON_Object)
@@ -163,7 +163,7 @@ namespace langX {
 			}
 		}
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -208,7 +208,7 @@ namespace langX {
 		}
 		if (root == nullptr)
 		{
-			return getState()->getAllocator().allocate(NULLOBJECT);
+			return Allocator::allocate(NULLOBJECT);
 		}
 
 		Object * ret = nullptr;
@@ -224,14 +224,14 @@ namespace langX {
 				ret= createJsonObject(root)->addRef();
 			}
 			else {
-				ret = getState()->getAllocator().allocate(NULLOBJECT);
+				ret = Allocator::allocate(NULLOBJECT);
 			}
 		}
 		else {
 			// 返回字符串
 
 			char *p = cJSON_Print(root);
-			ret = getState()->getAllocator().allocateString(p);
+			ret = Allocator::allocateString(p);
 			free(p);
 
 		}

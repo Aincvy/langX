@@ -40,7 +40,7 @@ namespace langX {
 			for (auto i = list.begin(); i != list.end(); i++)
 			{
 				Object * a = (*i);
-				getState()->getAllocator().free(a);
+				Allocator::free(a);
 			}
 		}
 
@@ -80,7 +80,7 @@ namespace langX {
 				auto itr = row->kvpair.find(key);
 				if (itr == row->kvpair.end())
 				{
-					return getState()->getAllocator().allocate(NULLOBJECT);
+					return Allocator::allocate(NULLOBJECT);
 				}
 				
 				return itr->second->clone();
@@ -88,15 +88,15 @@ namespace langX {
 			
 		}
 
-		return getState()->getAllocator().allocate(NULLOBJECT);
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
 	int regDataRow(langXState *state, XNameSpace* space) {
 		
 		ClassInfo *dataRow = new ClassInfo("DataRow");	
-		dataRow->addMember("colNum", getState()->getAllocator().allocateNumber(0));
-		dataRow->addMember("rowIndex", getState()->getAllocator().allocateNumber(0));
+		dataRow->addMember("colNum", Allocator::allocateNumber(0));
+		dataRow->addMember("rowIndex", Allocator::allocateNumber(0));
 		dataRow->addFunction("DataRow", create3rdFunc("DataRow", langX_DataRow_DataRow));
 		dataRow->addFunction("~DataRow", create3rdFunc("~DataRow", langX_DataRow_DataRow_Dtor));
 		dataRow->addFunction("get", create3rdFunc("get", langX_DataRow_Get));

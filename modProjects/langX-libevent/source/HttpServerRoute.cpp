@@ -34,10 +34,10 @@ namespace langX {
 			FunctionRef *ref = (FunctionRef*)b;
 			server->routeMap[std::string(str->getValue())] = (FunctionRef *)ref->clone();
 
-			return getState()->getAllocator().allocateNumber(1);
+			return Allocator::allocateNumber(1);
 		}
 
-		return getState()->getAllocator().allocateNumber(0);
+		return Allocator::allocateNumber(0);
 	}
 
 
