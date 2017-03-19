@@ -2596,6 +2596,7 @@ namespace langX {
 
 						len = ((Number*)t->value)->getIntValue();
 						Allocator::free(t->value);
+						t->value = nullptr;
 					}
 					XArray *array1 = new XArray(len);
 					char *name = an->name;
