@@ -50,10 +50,6 @@ namespace langX {
 	{
 		this->m_disposing = true;
 
-		// 清理掉所有的线程
-		this->m_thread_mgr->freeAllThreads();
-		delete this->m_thread_mgr;
-
 		// 清理内存对象
 		Allocator::freeAllObjs();
 
@@ -72,6 +68,9 @@ namespace langX {
 		}
 		this->m_namespace_map.clear();
 
+		// 清理掉所有的线程
+		this->m_thread_mgr->freeAllThreads();
+		delete this->m_thread_mgr;
 		
 #ifdef WIN32
 		
