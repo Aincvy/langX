@@ -884,7 +884,7 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 40 "a.l"
-{ /* consume //-comment */  now_line++; }
+{ /* consume //-comment */  }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
@@ -914,7 +914,7 @@ YY_RULE_SETUP
 case 8:
 YY_RULE_SETUP
 #line 47 "a.l"
-{count(); count(); return DELETE;}
+{count(); return DELETE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
@@ -1245,7 +1245,7 @@ case 74:
 /* rule 74 can match eol */
 YY_RULE_SETUP
 #line 119 "a.l"
-{count(); yylineno++; }
+{count(); now_line++ ; }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 #line 121 "a.l"
@@ -2328,7 +2328,6 @@ void count(void)
 	for (i = 0; yytext[i] != '\0'; i++)
 		if (yytext[i] == '\n'){
 			column = 0;
-			now_line++ ;
 		} else if (yytext[i] == '\t')
 			column += 8 - (column % 8);
 		else

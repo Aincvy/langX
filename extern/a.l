@@ -37,14 +37,14 @@ int getParseLineNo();
 
 %%
 "/*"			{ comment(); }
-"//"[^\n]*      { /* consume //-comment */  now_line++; }
+"//"[^\n]*      { /* consume //-comment */  }
 
 "auto" {count(); return AUTO;}
 "if" {count(); return IF;}
 "else" {count(); return ELSE;}
 "while" {count(); return WHILE;}
 "for" {count(); return FOR;}
-"delete" {count(); count(); return DELETE;}
+"delete" {count(); return DELETE;}
 "false" {count();  yylval.iValue = 0.0; return TBOOL;}
 "true" {count();  yylval.iValue = 1.0; return TBOOL;}
 "break" {count(); return BREAK;}
@@ -116,7 +116,7 @@ operator([\+\-\*\/\.]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(yyt
 [+-/*()] {count(); return *yytext;}
 
 [ \t]  {count(); }
-[\n]   {count(); yylineno++; }
+[\n]   {count(); now_line++ ; }
 
 <<EOF>> { 
 	
@@ -199,7 +199,6 @@ void count(void)
 	for (i = 0; yytext[i] != '\0'; i++)
 		if (yytext[i] == '\n'){
 			column = 0;
-			now_line++ ;
 		} else if (yytext[i] == '\t')
 			column += 8 - (column % 8);
 		else
