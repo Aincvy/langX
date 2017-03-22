@@ -24,6 +24,98 @@
 
 namespace langX {
 
+
+	// 根据数组信息获得结果， 返回的结果为一个 nullptr 或者复制好的结果
+	Object * getValueFromArrayInfo(ArrayInfo *arrayInfo) {
+		Object *obj = NULL;
+		if (arrayInfo->name != NULL)
+		{
+			obj = getValue(arrayInfo->name);
+		}
+		else if (arrayInfo->objNode != NULL)
+		{
+			__execNode(arrayInfo->objNode);
+			obj = arrayInfo->objNode->value;
+		}
+
+		if (obj == NULL)
+		{
+			getState()->curThread()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
+			return nullptr;
+		}
+
+		if (obj->getType() == OBJECT) {
+			langXObjectRef * ref1 = (langXObjectRef*)obj;
+			Function *func1 = ref1->getFunction("operator[]");
+			if (func1)
+			{
+				// 处理参数
+				Object * arg1 = nullptr;
+				Number num1(0);
+				arg1 = &num1;
+				if (arrayInfo->indexNode != NULL)
+				{
+					Node *t = arrayInfo->indexNode;
+					__execNode(t);
+					if (t == nullptr)
+					{
+						getState()->curThread()->throwException(newException("error index !")->addRef());
+						return nullptr;
+					}
+					arg1 = t->value;
+				}
+				X3rdArgs _3rdArgs;
+				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+				_3rdArgs.args[0] = arg1;
+				_3rdArgs.index = 1;
+				return callFunction(obj, func1, &_3rdArgs);
+			}
+		}
+
+		if (obj->getType() != XARRAY)
+		{
+			getState()->curThread()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
+			return nullptr;
+		}
+
+		int index = arrayInfo->index;
+		if (arrayInfo->indexNode != NULL)
+		{
+			Node *t = arrayInfo->indexNode;
+			__execNode(t);
+
+			if (t->value == NULL || t->value->getType() != NUMBER)
+			{
+				getState()->curThread()->throwException(newException("error array length !")->addRef());
+				return nullptr;
+			}
+
+			index = ((Number*)t->value)->getIntValue();
+			Allocator::free(t->value);
+			t->value = NULL;
+		}
+
+		XArrayRef *ref = (XArrayRef*)obj;
+		if (index < 0 || index >= ref->getLength())
+		{
+			char tmp[1024] = { 0 };
+			sprintf(tmp, "index %d,array length %d", index, ref->getLength());
+			getState()->curThread()->throwException(newIndexOutOfBoundsException(tmp)->addRef());
+			return nullptr;
+		}
+
+		Object * ret = ref->at(index);
+		if (ret == nullptr)
+		{
+			// 内部异常
+			getState()->curThread()->throwException(newInnerException(" array element is null... ")->addRef());
+			return nullptr;
+		}
+
+		return ret->clone();
+	}
+
+
 	// 将节点的值更新到环境中
 	void setValueToEnv2(const char*name, Object *val, Environment *env) {
 
@@ -161,7 +253,7 @@ namespace langX {
 	}
 
 
-	//递归释放节点及子节点值的内存, 如果节点是 一个获得数组元素的节点， 同样释放 indexNode 节点的值内存
+	//递归释放节点及子节点值的内存  | 会遍历所有节点， 发现值都会进行释放操作
 	void recursiveFreeNodeValue(Node *n) {
 
 		if (n == NULL)
@@ -175,16 +267,6 @@ namespace langX {
 			n->value = NULL;
 		}
 
-		if (n->type == NODE_ARRAY_ELE)
-		{
-			Node * t = n->arr_obj->indexNode;
-			if (t != NULL && t->value != NULL)
-			{
-				Allocator::free(t->value);
-				t->value = NULL;
-			}
-		}
-
 		if (n->type == NODE_OPERATOR)
 		{
 			for (int i = 0; i < n->opr_obj->op_count; i++)
@@ -195,8 +277,19 @@ namespace langX {
 
 	}
 
+	// 释放数组信息
+	void freeArrayInfo(ArrayInfo *arrayInfo) {
+		if (arrayInfo == nullptr)
+		{
+			return;
+		}
+		recursiveFreeNodeValue(arrayInfo->objNode);
+		recursiveFreeNodeValue(arrayInfo->indexNode);
+	}
+
+
 	/*
-	  释放当前节点的子节点的值 内存
+	  释放当前节点的子节点的值 内存 | 只释放一层的值内存 
 	*/
 	void freeSubNodes(Node *n) {
 		if (n == NULL)
@@ -3577,82 +3670,8 @@ namespace langX {
 		else if (node->type == NODE_ARRAY_ELE)
 		{
 			ArrayInfo * arrayInfo = node->arr_obj;
-			Object *obj = NULL;
-			if (arrayInfo->name != NULL)
-			{
-				obj = getValue(arrayInfo->name);
-			}
-			else if (arrayInfo->objNode != NULL)
-			{
-				__execNode(arrayInfo->objNode);
-				obj = arrayInfo->objNode->value;
-			}
-
-			if (obj == NULL)
-			{
-				//printf("left value is not array with array operator!\n");
-				getState()->curThread()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
-				return;
-			}
-
-			int index = arrayInfo->index;
-			if (arrayInfo->indexNode != NULL)
-			{
-				Node *t = arrayInfo->indexNode;
-				__execNode(t);
-
-				if (t->value == NULL || t->value->getType() != NUMBER)
-				{
-					//printf("error array length !\n");
-					getState()->curThread()->throwException(newException("error array length !")->addRef());
-					return;
-				}
-
-				index = ((Number*)t->value)->getIntValue();
-				Allocator::free(t->value);
-				t->value = NULL;
-			}
-
-			if (obj->getType() == OBJECT) {
-				langXObjectRef * ref1 = (langXObjectRef*)obj;
-				Function *func1 = ref1->getFunction("operator/");
-				if (func1)
-				{
-					X3rdArgs _3rdArgs;
-					Number num1(index);
-					memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-					_3rdArgs.args[0] = &num1;
-					_3rdArgs.index = 1;
-					node->value = callFunction(obj, func1, &_3rdArgs);
-
-					//freeSubNodes(n);
-					return;
-				}
-			}
-
-			if (obj->getType() != XARRAY)
-			{
-				getState()->curThread()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
-				return;
-			}
-
-			XArrayRef *ref = (XArrayRef*)obj;
-			if (index < 0 || index >= ref->getLength())
-			{
-				char tmp[1024] = { 0 };
-				sprintf(tmp,"index %d,array length %d" ,index,ref->getLength());
-				getState()->curThread()->throwException(newIndexOutOfBoundsException(tmp)->addRef());
-				return;
-			}
-
-			Object * ret = ref->at(index);
-			if (ret == nullptr)
-			{
-				// 内部异常
-				getState()->curThread()->throwException(newInnerException(" array element is null... ")->addRef());
-				return;
-			}
-			node->value = ret->clone();
+			node->value = getValueFromArrayInfo(arrayInfo);
+			freeArrayInfo(arrayInfo);
 			return;
 		}
 		else if (node->type == NODE_CHANGE_NAMESPACE)

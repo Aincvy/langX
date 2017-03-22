@@ -68,6 +68,9 @@ namespace langX {
 		}
 		this->m_namespace_map.clear();
 
+		delete this->m_global_env;
+		this->m_global_env = nullptr;
+
 		// 清理掉所有的线程
 		this->m_thread_mgr->freeAllThreads();
 		delete this->m_thread_mgr;
