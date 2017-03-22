@@ -115,8 +115,10 @@ namespace langX {
 			backEnv();
 		}
 
-		////  下面那条语句的当前环境就是  m_global_env  ，所以无需释放 m_global_env
-		freeEnv(&this->m_current_env);
+		if (this->m_current_env != nullptr)
+		{
+			freeEnv(&this->m_current_env);
+		}
 
 	}
 
@@ -599,6 +601,7 @@ namespace langX {
 	void langXThread::kill()
 	{
 		// 暂不实现
+
 	}
 
 	void langXThread::backEnv()

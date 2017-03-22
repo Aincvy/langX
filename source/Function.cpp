@@ -418,10 +418,8 @@ namespace langX {
 
 			ret = function->call();
 			//printf("call function %s over in function ref." ,this->m_func->getName());
-			if (env != NULL)
-			{
-				getState()->curThread()->backEnv();
-			}
+			getState()->curThread()->backEnv();
+
 			if (tEnv != NULL)
 			{
 				getState()->curThread()->backEnv();
