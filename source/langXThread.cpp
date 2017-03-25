@@ -22,6 +22,7 @@
 
 #ifdef SHOW_DETAILS
 #include <iostream>
+#include <stdio.h>
 #endif
 
 
@@ -336,6 +337,7 @@ namespace langX {
 			return NULL;
 		}
 
+		//printf("newEnv %p , type: %d\n" , env,env->getType());
 		env->setParent(this->m_current_env);
 		env->setDeep((++this->m_current_deep));
 		this->m_current_env = env;
@@ -349,6 +351,7 @@ namespace langX {
 			return NULL;
 		}
 
+		//printf("newEnv2 %p , type: %d\n", env, env->getType());
 		EnvironmentBridgeEnv *bEnv = new EnvironmentBridgeEnv(env);
 		bEnv->setParent(this->m_current_env);
 		bEnv->setDeep((++this->m_current_deep));
@@ -612,10 +615,11 @@ namespace langX {
 	void langXThread::backEnv(bool flag)
 	{
 		Environment *env = this->m_current_env->getParent();
-		if (env == NULL)
-		{
-			return;
-		}
+		//if (env == NULL)
+		//{
+		//	return;
+		//}
+		//printf("backEnv %p,type: %d\n", m_current_env, m_current_env->getType());
 		if (flag)
 		{
 			//  子类
