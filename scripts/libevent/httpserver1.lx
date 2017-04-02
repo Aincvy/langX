@@ -1,8 +1,10 @@
+// 此脚本并没有经过测试， 请注意。。 
+
 ref langX.libevent ;
 ref langX.core.util;
 
 patternHello => (request,response){
-	response.header("Content-Type=text/plain;charset=utf8");
+	response.addHeader("Content-Type=text/plain;charset=utf8");
 	response.writeLine("hello, langX.libevent");
 	response.flush();
 }

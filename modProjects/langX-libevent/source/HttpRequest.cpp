@@ -58,6 +58,10 @@ namespace langX {
 			const char *key = ((String*)a)->getValue();
 			const char * value = evhttp_find_header(&reqInfo->params, key);
 
+			if (value == nullptr)
+			{
+				return Allocator::allocateString("");
+			}
 			return Allocator::allocateString(value);
 		}
 
