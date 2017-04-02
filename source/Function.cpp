@@ -357,7 +357,9 @@ namespace langX {
 		Function *function = this->m_func;
 		Object * ret = NULL;
 
-		getState()->curThread()->getStackTrace().newFrame(function->getClassInfo(), function, remark);
+		langXThread * thread = getState()->curThread();
+		bool returnFlag = thread->isInReturn();
+		thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
 		if (function->is3rd())
 		{
@@ -427,8 +429,11 @@ namespace langX {
 
 		}
 		
-
-		getState()->curThread()->getStackTrace().popFrame();
+		if (!returnFlag && thread->isInReturn())
+		{
+			thread->setInReturn(false);
+		}
+		thread->getStackTrace().popFrame();
 
 		return ret;
 	}

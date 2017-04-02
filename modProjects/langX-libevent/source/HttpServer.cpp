@@ -87,15 +87,21 @@ namespace langX {
 		reqInfo->buffer = evbuffer_new();
 		const char *uri = evhttp_request_get_uri(req);
 
-		char *decoded_uri;
-		decoded_uri = evhttp_decode_uri(uri);
-		evhttp_parse_query(decoded_uri, &reqInfo->params);
+
+		const char *httpsqs_query_part;
+		httpsqs_query_part = evhttp_uri_get_query(req->uri_elems);
+		evhttp_parse_query_str(httpsqs_query_part, &reqInfo->params);
+		//char *decoded_uri;
+		//decoded_uri = evhttp_decode_uri(uri);
+		//evhttp_parse_query(decoded_uri, &reqInfo->params);
+		//char tmp[1024] = { 0 };
+		//sprintf(tmp, "q=%s\n", evhttp_find_header(&reqInfo->params, "q"));
+		//printf("%s",tmp);
 
 		// 将请求传递到 langX 脚本内
 		langXObject *request = createHttpReq(reqInfo);
 		langXObject *response = createHttpRes(reqInfo);
 
-		
 		const evhttp_uri * conx_uri = evhttp_request_get_evhttp_uri(req);
 		const char * path = evhttp_uri_get_path(conx_uri);
 		auto it = server->routeMap.find(path);
@@ -125,16 +131,6 @@ namespace langX {
 		
 		evhttp_send_reply(req, HTTP_OK, "OK", reqInfo->buffer);
 		freeHttpRequestInfo(reqInfo);
-
-		
-		//输出的内容
-		/*struct evbuffer *buf;
-		buf = evbuffer_new();
-		char output[2048] = "\0";*/
-		//sprintf(output, "evhttp_uri_get_path=%s\nevhttp_uri_get_host=%s\nevhttp_uri_get_port=%d\nevhttp_uri_get_fragment=%s\n", evhttp_uri_get_path(conx_uri), evhttp_uri_get_host(conx_uri), evhttp_uri_get_port(conx_uri), evhttp_uri_get_fragment(conx_uri));
-		//evbuffer_add_printf(buf, "It works!\n%s\n", output);
-		//evhttp_send_reply(req, HTTP_OK, "OK", buf);
-		//evbuffer_free(buf);
 
 	}
 
