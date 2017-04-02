@@ -1,0 +1,31 @@
+ref langX.libevent ;
+ref langX.core.util;
+
+patternHello => (request,response){
+	response.header("Content-Type=text/plain;charset=utf8");
+	response.writeLine("hello, " + request.getParameter("abc") );
+	response.flush();
+}
+
+patternOther => (request,response){
+	response.setContentType(ContentType.HTML);
+	response.setCharset(Charset.UTF8);
+	response.writeLine("<html><body><h1>°¢ºô</h1></body></html>");
+	response.flush();
+}
+
+patternTestJson => (request , response) {
+	response.header("Content-Type=text/plain;charset=utf8");
+	response.writeLine("hello, " + request.getPostData() );
+	response.flush();
+}
+
+server =  new HttpServer();
+server.listen(6006);
+route = server.getRoute();
+route.route("/hello", patternHello);
+route.route("/testjson", patternTestJson);
+route.route("*" , patternOther) ;
+
+println("listen on ::6006");
+server.serv();
