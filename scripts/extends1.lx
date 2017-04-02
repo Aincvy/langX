@@ -15,14 +15,16 @@ Student extends Person{
 	this .no = no;
   }
   
-  printPeronInfo => {
+  getName => { return "hello123";}
+  
+  printPeronInfo => (){
     print("Person Info: \n");
 	print(" name: " + name + "\n");
 	print("  sex: " + sex + "\n");
 	print("  age: " + age + "\n");
   }
   
-  printStuInfo => {
+  printStuInfo => (){
     print("Student Info: \n");
 	print(" grade: " + grade + "\n");
 	print("    no: " + no + "\n");
