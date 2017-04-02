@@ -2691,7 +2691,7 @@ namespace langX {
 						Allocator::free(t->value);
 						t->value = nullptr;
 					}
-					XArray *array1 = new XArray(len);
+					XArray *array1 = Allocator::allocateArray(len);
 					char *name = an->name;
 					Object *arrayRef = array1->addRef();
 					arrayRef->setEmergeEnv(getState()->curThread()->getCurrentEnv());

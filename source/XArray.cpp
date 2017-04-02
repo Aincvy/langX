@@ -1,4 +1,5 @@
 #include <memory>
+#include <stdio.h>
 #include "../include/XArray.h"
 #include "../include/NullObject.h"
 #include "../include/Allocator.h"
@@ -19,6 +20,7 @@ namespace langX {
 			return;
 		}
 
+		this->m_ref_count = 0;
 		this->m_length = length;
 		this->m_array = (Object**)calloc(length, sizeof(Object*));
 
@@ -26,6 +28,8 @@ namespace langX {
 		{
 			this->m_array[i] = new NullObject();
 		}
+
+		//printf("new XArray\n");
 	}
 
 	XArray::~XArray()
@@ -87,13 +91,9 @@ namespace langX {
 		}
 	}
 
-	void XArray::justAddRef()
-	{
-		this->m_ref_count++;
-	}
-
 	XArrayRef * XArray::addRef()
 	{
+		m_ref_count++;
 		return new XArrayRef(this);
 	}
 
@@ -112,10 +112,12 @@ namespace langX {
 	XArrayRef::XArrayRef(XArray *a)
 	{
 		this->m_array = a;
+		//printf("new XArrayRef\n");
 	}
 
 	XArrayRef::~XArrayRef()
 	{
+		//printf("delete XArrayRef\n");
 		if (this->m_array != nullptr)
 		{
 			this->m_array->subRef();
@@ -193,6 +195,12 @@ namespace langX {
 			getState()->curThread()->throwException(newException("Inner Error! cannot update.. target is not array!")->addRef());
 			//printf("cannot update.. target is not array\n");
 			return;
+		}
+
+		if (this->m_array != nullptr)
+		{
+			this->m_array->subRef();
+			this->m_array = nullptr;
 		}
 
 		this->m_array = ((XArrayRef*)obj)->getArray();

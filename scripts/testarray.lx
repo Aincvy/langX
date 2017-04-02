@@ -1,0 +1,11 @@
+
+
+test => (){
+	for ( i = 0 ; i < 500; i++ ){
+		a[10] ;
+	}
+}
+
+test();
+a[10];
+println("script end.");
