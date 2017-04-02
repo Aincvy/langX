@@ -157,7 +157,7 @@ namespace langX {
 		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
 		int size = cJSON_GetArraySize(data->pJsonRoot);
 
-		XArray *array1 = new XArray(size);
+		XArray *array1 = Allocator::allocateArray(size);
 		NullObject nullObj;
 
 		for (size_t i = 0; i < size; i++)
@@ -188,7 +188,7 @@ namespace langX {
 		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
 		int size = cJSON_GetArraySize(data->pJsonRoot);
 
-		XArray *array1 = new XArray(size);
+		XArray *array1 = Allocator::allocateArray(size);
 		NullObject nullObj;
 
 		for (size_t i = 0; i < size; i++)

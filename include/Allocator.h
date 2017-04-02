@@ -50,8 +50,15 @@ namespace langX {
 		// 清理掉所有的对象
 		static void freeAllObjs();
 
+		// 检测数组是否有无引用的情况
+		static void checkArrayGC();
+
+		// 回收数组的垃圾
+		static void arrayGC();
+
 	private:
 		static std::list<langXObject*> m_objects;
+		static std::list<XArray*> m_arrays;
 
 		// 对象的申请次数
 		static int m_a_count;

@@ -11,6 +11,8 @@ namespace langX {
 	class XArray
 	{
 	public:
+
+		// 使用者应该使用 Allocator::allocateArray() 函数来申请一个数组， 而不是直接 new 
 		XArray(int length);
 		~XArray();
 
@@ -22,7 +24,7 @@ namespace langX {
 		void set(int index, Object *);
 
 		// 只是自增一个自己的引用次数
-		void justAddRef();
+		//void justAddRef();
 		// 生成一个引用， 引用到这个对象身上
 		XArrayRef * addRef();
 		//  减少一个引用

@@ -14,9 +14,10 @@
 
 namespace langX {
 
-	const int Allocator::GC_OBJECT_COUNT = 1500;
+	const int Allocator::GC_OBJECT_COUNT = 85000;
 	int Allocator::m_a_count = 0;
 	std::list<langXObject*> Allocator::m_objects;
+	std::list<XArray*> Allocator::m_arrays;
 
 	Allocator::Allocator()
 	{
@@ -148,7 +149,12 @@ namespace langX {
 
 	XArray * Allocator::allocateArray(int size)
 	{
-		return new XArray(size);
+		checkArrayGC();
+
+		XArray *a = new XArray(size);
+		m_arrays.push_back(a);
+
+		return a;
 	}
 
 	FunctionRef * Allocator::allocateFunctionRef(Function *f)
@@ -215,6 +221,31 @@ namespace langX {
 
 		m_objects.clear();
 		m_a_count = 0;
+	}
+
+	void Allocator::checkArrayGC()
+	{
+		if (m_arrays.size() > GC_OBJECT_COUNT)
+		{
+			arrayGC();
+		}
+	}
+
+	void Allocator::arrayGC()
+	{
+		int count = 0;
+		for (auto i = m_arrays.begin(); i != m_arrays.end(); i++)
+		{
+			XArray * a = *i;
+			if (a->getRefCount() <= 0)
+			{
+				delete a;
+				m_arrays.erase(i++);
+				count++;
+			}
+		}
+
+		printf("free %d array \n" , count);
 	}
 
 
