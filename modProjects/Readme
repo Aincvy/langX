@@ -1,1 +1,9 @@
 This is the readme file.
+
+mod projects.
+
+
+for more function to langX use. 
+
+简单来说就是， 直接使用c++ 或者langX实现这些东西有些困难
+直接用别人的库则会简单很多， 所以这些mod就是一个桥接， 桥接langX和第三方c++ 库
