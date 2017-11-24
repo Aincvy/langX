@@ -1,0 +1,7 @@
+使用了 cjson  这个库 实现langX操作json的能力。
+主要是在langX内使用以下类
+
+- JsonArray
+- JsonObject
+
+
