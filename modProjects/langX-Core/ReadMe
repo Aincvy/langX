@@ -1,0 +1,23 @@
+core 工程的一些说明。
+
+
+本身的langX 并没有支持过多的功能。
+所以这个是对 langX功能扩充的核心库。 
+主要是实现了下面的功能：
+大部分内容是直接使用了 c++ 库的内容
+
+- Math 
+- DateTime
+- Convert
+- Thread
+- Iterator
+- List
+- Map
+- Set
+- Queue
+- Stack
+- Vector
+- Random
+- File
+- Stream
+- FileStream
