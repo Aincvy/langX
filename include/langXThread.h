@@ -15,6 +15,7 @@ namespace langX {
 	class Function;
 	struct Node;
 	struct NodeFileInfo;
+	struct NodeLink;
 
 	// 线程状态
 	enum langXThreadStatus {
@@ -127,10 +128,6 @@ namespace langX {
 		// 设置函数的返回值   函数内部会自动尝试获得该值的副本
 		void setFunctionResult(Object *);
 		
-		// 设置正在执行的那个节点
-		void setExecNode(Node *n);
-		// 获得正在执行的那个节点
-		Node * getExecNode();
 		// 获得正在执行节点的文件信息
 		NodeFileInfo getCurrentNodeFileInfo();
 
@@ -143,6 +140,17 @@ namespace langX {
 
 		// 杀死当前线程
 		void kill();
+
+		//  推进当前的执行节点到一个新的节点
+		NodeLink * beginExecute(Node *);   
+		//  bool:  在执行结束之后是否回退
+		NodeLink * beginExecute(Node *,bool );
+		// 结束执行
+		void endExecute();
+		// 初始化根节点
+		NodeLink * initRootNode(Node *);
+		// 获取当前正在执行的节点链路
+		NodeLink * getCurrentExecute();
 
 	private:
 
@@ -165,10 +173,12 @@ namespace langX {
 		int m_current_deep = 0;
 		// 函数的返回值 | 可能用用不到这个值
 		Object *m_function_result = nullptr;
-		// 正在执行的节点
-		Node *m_current_node = NULL;
 		// 丢出来的那个对象
 		langXObjectRef * m_thrown_obj = nullptr;
+		//  执行节点的根节点
+		NodeLink * executeRoot;        
+		// 当前的执行节点
+		NodeLink * currentExecute;     
 
 	};
 

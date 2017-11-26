@@ -84,4 +84,31 @@ namespace langX {
 		this->m_characteristic = std::string(a);
 	}
 
+
+	NodeLink * newNodeLink(NodeLink *previous, Node *node) {
+		NodeLink *nodeLink = (NodeLink *)calloc(1,sizeof(NodeLink));
+		nodeLink->previous = previous;
+		nodeLink->node = node;
+		nodeLink->index = 0;
+		nodeLink->backAfterExec = false;
+		nodeLink->next = NULL; 
+		if (previous != NULL) {
+			previous->next = nodeLink;
+		}
+		return nodeLink;
+	}
+
+	void freeNodeLink(NodeLink *nodeLink) {
+		if (nodeLink == NULL) {
+			return;
+		}
+
+		NodeLink *previous = nodeLink->previous;
+		if (previous != NULL) {
+			previous->next = NULL;
+		}
+		nodeLink->previous = NULL;
+		free(nodeLink);
+	}
+
 }

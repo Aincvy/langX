@@ -269,4 +269,21 @@ namespace langX {
 		XArrayRef *arrayRef = nullptr;
 		langXObject * object = nullptr;
 	};
+
+	//  节点链， 主要是做执行链用的
+	struct NodeLink {
+		Node * node;
+		struct NodeLink *next;     // 下一个节点，此属性好像没什么用
+		struct NodeLink *previous;  // 上一个节点 ， 一般指调用这个节点的节点
+		int index;       // 索引， 可能针对于父节点使用的
+		bool backAfterExec;             // 执行结束之后 退回到父节点
+	};
+
+
+	// 申请一个 node link
+	NodeLink * newNodeLink(NodeLink *, Node *);
+	// 释放一个nodeLink 占用的内存
+	void freeNodeLink(NodeLink *);
+
+
 }
