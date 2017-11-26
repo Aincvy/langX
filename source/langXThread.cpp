@@ -564,26 +564,17 @@ namespace langX {
 		}
 	}
 
-	void langXThread::setExecNode(Node * n)
-	{
-		this->m_current_node = n;
-	}
-
-	Node * langXThread::getExecNode()
-	{
-		return this->m_current_node;
-	}
 
 	NodeFileInfo langXThread::getCurrentNodeFileInfo()
 	{
-		if (m_current_node == NULL)
+		if (this->currentExecute == NULL)
 		{
 			NodeFileInfo f;
 			f.lineno = -1;
 			f.filename = "No Current Node Info... ";
 			return (f);
 		}
-		return m_current_node->fileinfo;
+		return this->currentExecute->node->fileinfo;
 	}
 
 	langXObjectRef * langXThread::getThrownObj()
@@ -605,6 +596,42 @@ namespace langX {
 	{
 		// 暂不实现
 
+	}
+
+	NodeLink * langXThread::beginExecute(Node *node)
+	{
+		this->currentExecute = newNodeLink(this->currentExecute, node);
+		return this->currentExecute;
+	}
+
+	NodeLink * langXThread::beginExecute(Node *node, bool flag)
+	{
+		NodeLink * nl = this->beginExecute(node);
+		nl->backAfterExec = flag;
+		return nl;
+	}
+
+	void langXThread::endExecute()
+	{
+		if (this->currentExecute == NULL) {
+			return;
+		}
+
+		NodeLink * nodeLink = this->currentExecute;
+		this->currentExecute = this->currentExecute->previous;
+		freeNodeLink(nodeLink);
+	}
+
+	NodeLink * langXThread::initRootNode(Node *node)
+	{
+		this->executeRoot = newNodeLink(NULL, node);
+		this->currentExecute = this->executeRoot;
+		return this->executeRoot;
+	}
+
+	NodeLink * langXThread::getCurrentExecute()
+	{
+		return this->currentExecute;
 	}
 
 	void langXThread::backEnv()

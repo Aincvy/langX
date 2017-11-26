@@ -166,24 +166,8 @@ namespace langX {
 				continue;
 			}
 
-			// 不继承 suffix 状态
-			bool flag = run->state.isSuffix;
-			run->state = n->state;   //状态继承
-			run->state.isSuffix = flag;
-
-			__execNode(run);
-			if (thread->isInBreak())
-			{
-				return;
-			}
-			if (thread->isInReturn())
-			{
-				return;
-			}
-			if (thread->isInContinue())
-			{
-				return;
-			}
+			NodeLink * nodeLink = thread->beginExecute(run);
+			nodeLink->backAfterExec = true;
 		}
 	}
 
@@ -392,7 +376,7 @@ namespace langX {
 	}
 
 	/* 检测一下节点是否存在 值， 如果不存在， 则运算他 */
-	void checkValue(Node * node) {
+	void checkValue(Node * node, langXThread *thread) {
 		if (node == NULL)
 		{
 			return;
@@ -400,7 +384,7 @@ namespace langX {
 
 		if (node->value == NULL)
 		{
-			__execNode(node);
+			thread->beginExecute(node, true);
 		}
 	}
 
@@ -413,7 +397,7 @@ namespace langX {
 			return false;
 		}
 
-		checkValue(n);
+		checkValue(n, getState()->curThread());
 		if (n->value == NULL)
 		{
 			return false;
@@ -422,18 +406,7 @@ namespace langX {
 		return n->value->isTrue();
 	}
 
-	// +  
-	// 操作结果， 会将结果存储在当前节点中 
-	void __exec43(Node *n) {
-		doSubNodes(n);
-
-		// TODO  判定一下是否出现了异常
-		//if (getState()->curThread()->isInException())
-		//{
-		//	freeSubNodes(n);
-		//	return;
-		//}
-
+	void __realExec43(Node *n) {
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
 
@@ -452,6 +425,7 @@ namespace langX {
 		if (left->getType() == NUMBER && right->getType() == NUMBER)
 		{
 			n->value = Allocator::allocateNumber(((Number*)left)->getDoubleValue() + ((Number*)right)->getDoubleValue());
+			printf("number result: %.2f", ((Number*)n->value)->getDoubleValue());
 		}
 		else if (left != NULL && left->getType() == OBJECT) {
 			langXObjectRef * ref1 = (langXObjectRef*)left;
@@ -467,7 +441,8 @@ namespace langX {
 				freeSubNodes(n);
 				return;
 			}
-		}else if ((left != NULL && left->getType() == STRING) || (right != NULL  && right->getType() == STRING))
+		}
+		else if ((left != NULL && left->getType() == STRING) || (right != NULL  && right->getType() == STRING))
 		{
 			// 字符串拼接 
 			std::stringstream ss;
@@ -495,7 +470,7 @@ namespace langX {
 				else if (left->getType() == OBJECT)
 				{
 					//ss << "object";
-					char tmp[2048] = {0};
+					char tmp[2048] = { 0 };
 					objToString(left, tmp, 0, 2048);
 					ss << tmp;
 				}
@@ -543,20 +518,27 @@ namespace langX {
 		}
 
 		freeSubNodes(n);
+	}
 
-		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
+	// +  
+	// 操作结果， 会将结果存储在当前节点中 
+	void __exec43(NodeLink *nodeLink) {
+		Node *  n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
+		}
+		else {
+			__realExec43(n);
+			nodeLink->backAfterExec = true;
+		}
+
 	}
 
 	// -
 	void __exec45(Node *n) {
 		doSubNodes(n);
 
-		// TODO  判定一下是否出现了异常
-		/*if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
-			return;
-		}*/
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -1006,23 +988,36 @@ namespace langX {
 	}
 
 	// 赋值操作 = 
-	void __exec61(Node *n) {
+	void __exec61(NodeLink *nodeLink, langXThread *thread) {
+		Node *n = nodeLink->node;
 		//printf("__exec61 start\n");
 		Node *left = n->opr_obj->op[0];
 
 		langXObjectRef *objectRef = NULL;
 		ArrayInfo *arrayInfo = NULL;
+
 		if (left->type == NODE_OPERATOR)
 		{
 			if (left->opr_obj->opr == CLAXX_MEMBER)
 			{
-				__execNode(left);
-				objectRef = (langXObjectRef *)left->ptr_u;
-				left->ptr_u = NULL;
+				if (nodeLink->index == 0) {
+					thread->beginExecute(left, true);
+					nodeLink->index = 1;
+					return;
+				}
+				else {
+					objectRef = (langXObjectRef *)left->ptr_u;
+					left->ptr_u = NULL;
+				}
+				
 			}
 			else if (left->opr_obj->opr == THIS)
 			{
-				__execNode(left);
+				if (nodeLink->index == 0) {
+					thread->beginExecute(left, true);
+					nodeLink->index = 1;
+					return;
+				}
 			}
 			else {
 				//printf("left not the CLAXX_MEMBER! \n");
@@ -1034,6 +1029,7 @@ namespace langX {
 		else if (left->type == NODE_ARRAY_ELE)
 		{
 			arrayInfo = left->arr_obj;
+			nodeLink->index = 1;
 		}
 		else
 			if (left->type != NODE_VARIABLE)
@@ -1044,15 +1040,16 @@ namespace langX {
 				return;
 			}
 
-		if (getState()->curThread()->isInException()) {
+		if (thread->isInException()) {
 			return;
 		}
 
 		//printf("__exec61 left name: %s\n", left->var_obj->name);
 		Node *right = n->opr_obj->op[1];
 		//printf("right->value: %p\n", right->value);
-		checkValue(right);
-		if (getState()->curThread()->isInException()) {
+		if (nodeLink->index == 1) {
+			checkValue(right,thread);
+			nodeLink->index = 2;
 			return;
 		}
 
@@ -1062,11 +1059,11 @@ namespace langX {
 			// 判断是否是函数
 			if (right->type == NODE_VARIABLE)
 			{
-				Function *func = getState()->curThread()->getFunction(right->var_obj->name);
+				Function *func = thread->getFunction(right->var_obj->name);
 				if (func != nullptr)
 				{
 					FunctionRef * f = Allocator::allocateFunctionRef(func);
-					f->setEmergeEnv(getState()->curThread()->getCurrentEnv());
+					f->setEmergeEnv(thread->getCurrentEnv());
 					right->value = f;
 				}
 			}
@@ -1082,7 +1079,7 @@ namespace langX {
 		if (objectRef == NULL && arrayInfo == NULL)
 		{
 			checkVarValue(left, rightType);
-			if (getState()->curThread()->isInException()) {
+			if (thread->isInException()) {
 				return;
 			}
 
@@ -1119,8 +1116,14 @@ namespace langX {
 			}
 			else if (arrayInfo->objNode != NULL)
 			{
-				__execNode(arrayInfo->objNode);
-				obj = arrayInfo->objNode->value;
+				if (nodeLink->index == 2) {
+					thread->beginExecute(arrayInfo->objNode, true);
+					nodeLink->index = 3;
+					return;
+				}
+				else {
+					obj = arrayInfo->objNode->value;
+				}
 			}
 
 			if (obj == NULL || obj->getType() != XARRAY)
@@ -1135,7 +1138,11 @@ namespace langX {
 			if (arrayInfo->indexNode != NULL)
 			{
 				Node *t = arrayInfo->indexNode;
-				__execNode(t);
+				if (nodeLink->index == 3) {
+					thread->beginExecute(t, true);
+					nodeLink->index = 4;
+					return;
+				}
 
 				if (t->value == NULL || t->value->getType() != NUMBER)
 				{
@@ -1187,15 +1194,7 @@ namespace langX {
 			objectRef = NULL;
 		}
 
-		//if (left->type == NODE_OPERATOR && left->opr_obj->opr == THIS) {
-		//	if (left->var_obj != NULL)
-		//	{
-		//		free(left->var_obj);
-		//		left->var_obj = NULL;
-		//	}
-
-		//}
-
+		nodeLink->backAfterExec = true;
 		doSuffixOperation(n);
 	}
 
@@ -2550,14 +2549,16 @@ namespace langX {
 	}
 
 	// 执行一个函数
-	void __execFUNC_CALL(Node *n) {
-		if (n == NULL)
-		{
-			return;
-		}
+	void __execFUNC_CALL(NodeLink *nodeLink,langXThread *thread) {	
+		Node *n = nodeLink->node;
 
 		Node *n1 = n->opr_obj->op[0];
-		__execNode(n1);
+		if (nodeLink->index == 0) {
+			thread->beginExecute(n1, true);
+			nodeLink->index = 1;
+			return;
+		}
+		
 		if (getState()->curThread()->isInException())
 		{
 			Allocator::free(n1->value);
@@ -3489,36 +3490,15 @@ namespace langX {
 	/*
 	 * 执行节点，  节点的结果 将 放在  Node.value 上
 	 * 这是一个 Object 类型的指针    07-24
+	 * 由 void __execNode(Node *node)    修改为  __realExecNode()       2017年11月26日
 	 */
-	void __execNode(Node *node) {
-		if (node == NULL)
+	void __realExecNode(NodeLink *nodeLink, langXThread *thread) {
+		if (nodeLink == NULL)
 		{
 			return;
 		}
 
-		// 如果节点存在值， 那说明这个节点已经运算过了
-		if (node->value != NULL)
-		{
-			return;
-		}
-
-
-		langXThread * thread = getState()->curThread();
-		// 如果当前处于异常中， 则什么都不做
-		if (thread->isInException())
-		{
-			return;
-		}
-
-		
-
-		if (thread->isInBreak() || thread->isInReturn() || thread->isInContinue())
-		{
-			//  节点中断
-			return;
-		}
-
-		thread->setExecNode(node);
+		Node *node = nodeLink->node;
 		
 		//printf("__execNode 01x\n");
 		//printf("node addr: %p\n",node);
@@ -3726,7 +3706,7 @@ namespace langX {
 		switch (node->opr_obj->opr)
 		{
 		case '+':
-			__exec43(node);
+			__exec43(nodeLink);
 			break;
 		case '-':
 			__exec45(node);
@@ -3741,7 +3721,7 @@ namespace langX {
 			__exec37(node);
 			break;
 		case '=':
-			__exec61(node);
+			__exec61(nodeLink, thread);
 			break;
 		case ';':
 			__exec59(node);
@@ -3816,7 +3796,7 @@ namespace langX {
 			__execFOR(node);
 			break;
 		case FUNC_CALL:
-			__execFUNC_CALL(node);
+			__execFUNC_CALL(nodeLink, thread);
 			break;
 		case BREAK:
 			__execBREAK(node);
@@ -3898,6 +3878,28 @@ namespace langX {
 			break;
 		default:
 			break;
+		}
+
+	}
+
+
+	void __execNode(Node *node) {
+		if (node == NULL)
+		{
+			return;
+		}
+
+		langXThread * thread = getState()->curThread();
+		thread->initRootNode(node);
+
+		NodeLink *curLink = NULL;
+		while ((curLink = thread->getCurrentExecute()) != NULL) {
+			//  程序没还有结束
+
+			__realExecNode(curLink, thread);     // 将原来的内容丢到一个新的方法里面
+			if (curLink->backAfterExec) {
+				thread->endExecute();
+			}
 		}
 
 	}
