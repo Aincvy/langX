@@ -335,14 +335,14 @@ namespace langX {
 		return nullptr;
 	}
 
-	Object * FunctionRef::call(ArgsList * argsList, const char * remark)
+	Object * FunctionRef::call(ArgsList * argsList, const char * remark,NodeLink *nodeLink)
 	{
 		Environment *env = getFunctionEnv();
 		if (env != NULL)
 		{
 			getState()->curThread()->newEnv(env);
 		}
-		Object *ret = callFunc(getRefFunction(), argsList, remark);
+		Object *ret = callFunc(getRefFunction(), argsList, remark, nodeLink);
 		if (env != NULL)
 		{
 			getState()->curThread()->backEnv();

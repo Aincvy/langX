@@ -6,6 +6,7 @@ namespace langX {
 	class Environment;
 	class ScriptEnvironment;
 	class langXObject;
+	struct NodeLink;
 
 	/* 0924  现在函数不在继承自Object . 而是添加一个新的 类型 FunctionRef 继承自Object */
 	class Function 
@@ -116,7 +117,8 @@ namespace langX {
 		// 如果这个函数来自一个 对象， 则会返回一个对象环境， 如果来自类， 则返回类桥接环境
 		Environment *getFunctionEnv();
 
-		Object *call(ArgsList *argsList, const char *remark);
+		// 调用这个函数
+		Object *call(ArgsList *argsList, const char *remark, NodeLink *);
 
 		//  参数为1 参数数组， 参数2为数组的元素个数 参数3为 备注
 		//  此函数内部实现会对参数进行 克隆然后再使用

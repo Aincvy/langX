@@ -248,7 +248,7 @@ namespace langX {
 
 			getState()->curThread()->newEnv2(env);
 			getState()->curThread()->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
-			callFunc(func, args,remark);
+			callFunc(func, args,remark, nullptr);       // TODO  修改成正式数据
 
 			getState()->curThread()->getStackTrace().popFrame();
 			getState()->curThread()->backEnv();
