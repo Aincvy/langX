@@ -425,7 +425,6 @@ namespace langX {
 		if (left->getType() == NUMBER && right->getType() == NUMBER)
 		{
 			n->value = Allocator::allocateNumber(((Number*)left)->getDoubleValue() + ((Number*)right)->getDoubleValue());
-			printf("number result: %.2f", ((Number*)n->value)->getDoubleValue());
 		}
 		else if (left != NULL && left->getType() == OBJECT) {
 			langXObjectRef * ref1 = (langXObjectRef*)left;
@@ -1029,21 +1028,22 @@ namespace langX {
 		else if (left->type == NODE_ARRAY_ELE)
 		{
 			arrayInfo = left->arr_obj;
-			nodeLink->index = 1;
 		}
-		else
+		else {
 			if (left->type != NODE_VARIABLE)
 			{
 				//printf("left not the NODE_VARIABLE\n");
 				getState()->curThread()->throwException(newTypeErrorException("left not the NODE_VARIABLE")->addRef());
 				freeSubNodes(n);
 				return;
-			}
+			} 
 
-		if (thread->isInException()) {
-			return;
 		}
 
+		if (nodeLink->index == 0) {
+			nodeLink->index = 1;
+		}
+			
 		//printf("__exec61 left name: %s\n", left->var_obj->name);
 		Node *right = n->opr_obj->op[1];
 		//printf("right->value: %p\n", right->value);
@@ -2559,12 +2559,6 @@ namespace langX {
 			return;
 		}
 		
-		if (getState()->curThread()->isInException())
-		{
-			Allocator::free(n1->value);
-			n1->value = NULL;
-			return;
-		}
 
 		std::string remark = fileInfoString(n->fileinfo);
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
@@ -2575,7 +2569,21 @@ namespace langX {
 			if (n1->value->getType() == FUNCTION)
 			{
 				FunctionRef *f = (FunctionRef*)n1->value;
-				n->value = f->call(args, remark.c_str());
+				NodeLink *putNodeLink = nullptr;
+				if (nodeLink->ptr_u == NULL) {
+					// 第一次执行， 需要让函数确认所有的参数 
+					putNodeLink = newNodeLink(nullptr, n );
+					nodeLink->ptr_u = putNodeLink;
+					f->call(args, remark.c_str(), putNodeLink);
+					return;
+				}
+				else {
+					putNodeLink = (NodeLink*)nodeLink->ptr_u;
+					nodeLink->ptr_u = nullptr;
+				}
+
+				n->value = f->call(args, remark.c_str(), putNodeLink);
+				freeNodeLink(putNodeLink);
 				flag = false;
 			}
 			else if (n1->value->getType() == STRING)
@@ -2601,7 +2609,7 @@ namespace langX {
 		doSuffixOperationArgs(args);
 		Allocator::free(n1->value);
 		n1->value = NULL;
-
+		nodeLink->backAfterExec = true;
 	}
 
 	void __execNEW(Node *n) {
@@ -3000,11 +3008,9 @@ namespace langX {
 		//n->value->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 	}
 
-	void __execSCOPE_FUNC_CALL(Node *n) {
-		if (n == NULL)
-		{
-			return;
-		}
+	void __execSCOPE_FUNC_CALL(NodeLink *nodeLink) {
+
+		Node *n = nodeLink->node;
 
 		// 根据语法文件可知 n1 是一个SCOPE 类型
 		Node *n1 = n->opr_obj->op[0];
@@ -3033,7 +3039,7 @@ namespace langX {
 		// 根据语法解析文件得知， 第二个节点为参数节点
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
 		const char *remark = fileInfoString(n->fileinfo).c_str();
-		n->value = callFunc(t, args, remark);
+		n->value = callFunc(t, args, remark, nodeLink);
 
 		doSuffixOperationArgs(args);
 		//Allocator::free(n1->value);
@@ -3853,7 +3859,7 @@ namespace langX {
 			__execSCOPE(node);
 			break;
 		case SCOPE_FUNC_CALL:
-			__execSCOPE_FUNC_CALL(node);
+			__execSCOPE_FUNC_CALL(nodeLink);
 			break;
 		case REQUIRE:
 			__execREQUIRE(node);
@@ -3897,7 +3903,7 @@ namespace langX {
 			//  程序没还有结束
 
 			__realExecNode(curLink, thread);     // 将原来的内容丢到一个新的方法里面
-			if (curLink->backAfterExec) {
+			if (curLink->next == nullptr && curLink->backAfterExec) {
 				thread->endExecute();
 			}
 		}

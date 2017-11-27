@@ -19,6 +19,7 @@ typedef langX::ParamsList XParamsList;
 typedef langX::ArgsList XArgsList;
 typedef langX::Object XObject;
 typedef langX::Function XFunction;
+typedef langX::NodeLink NodeLink;
 
 
 //  lex/yacc 是C语言的
@@ -53,7 +54,7 @@ extern "C" {
 	// 使用一个函数
 	XObject * call(const char *, XArgsList *, const char *);
 	// 调用一个函数
-	XObject * callFunc(XFunction*, XArgsList *, const char *);
+	XObject * callFunc(XFunction*, XArgsList *, const char *, NodeLink*);
 	// 创建一个节点， 节点内容为实参列表
 	XNode * argsNode(XArgsList *);
 	// 创建一个数组元素节点

@@ -168,8 +168,8 @@ void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 		// 
 		FunctionRef aref(func1);
 		aref.setObj(ref1->getRefObject());
-		Object *retObj = aref.call(nullptr, "");
-		if (retObj->getType() == STRING)
+		Object *retObj = aref.call(nullptr, "", nullptr);    // TODO  修改成执行链
+ 		if (retObj->getType() == STRING)
 		{
 			ss << ((String*)retObj)->getValue();
 		}
@@ -446,10 +446,89 @@ XObject * call(const char *name, XArgsList* args, const char *remark)
 		return NULL;
 	}
 
-	return callFunc(function, args, remark);
+	return callFunc(function, args, remark,nullptr);
 }
 
-XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
+
+// 调用第三方函数
+XObject *call3rdFunc(X3rdFunction *x3rdfunc, langXThread * thread,XArgsList *args, NodeLink* nodeLink) {
+
+	X3rdArgs _3rdArgs;
+	memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+	if (args != NULL)
+	{
+		// 计算出参数节点的值。 然后克隆一份给 传参的那个数据结构。 然后再释放掉参数节点的值。 
+		if (nodeLink->index == 0) {
+			for (int i = 0; i < args->index; i++)
+			{
+				if (args->args[i] != NULL) {
+					thread->beginExecute(args->args[i]);
+				}
+			}
+			nodeLink->index = 1;
+			return nullptr;
+		}
+		else {
+			for (int i = 0; i < args->index; i++)
+			{
+				if (args->args[i] == NULL)
+				{
+					_3rdArgs.args[i] = NULL;
+					continue;
+				}
+
+				Object * tmp1 = args->args[i]->value;
+				if (tmp1)
+				{
+					_3rdArgs.args[i] = tmp1->clone();
+				}
+				else {
+					_3rdArgs.args[i] = Allocator::allocate(NULLOBJECT);
+				}
+
+				// 释放这个参数节点的值
+				Allocator::free(args->args[i]->value);
+				args->args[i]->value = NULL;
+			}
+		}
+
+		_3rdArgs.index = args->index;
+	}
+
+	// 确保 这个函数执行第二遍的时候才会获取到结果
+	if (nodeLink->index == 0) {
+		nodeLink->index = 1;
+		return nullptr;
+	}
+
+	Environment *currEnv1 = thread->getCurrentEnv();
+	if (currEnv1->isObjectEnvironment())
+	{
+		if (currEnv1->isEnvEnvironment())
+		{
+			_3rdArgs.object = ((ObjectBridgeEnv*)((EnvironmentBridgeEnv*)currEnv1)->getBridgeEnv())->getEnvObject();
+		}
+		else {
+			_3rdArgs.object = ((ObjectBridgeEnv*)currEnv1)->getEnvObject();
+		}
+	}
+
+	thread->setInFunction(true);
+	Object * ret1 = x3rdfunc->call(_3rdArgs);
+	thread->getStackTrace().popFrame();
+	thread->setInFunction(false);
+	thread->setInReturn(false);
+
+	for (size_t i = 0; i < _3rdArgs.index; i++)
+	{
+		Allocator::free(_3rdArgs.args[i]);
+	}
+
+	return ret1;
+
+}
+
+XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, NodeLink* nodeLink) {
 	if (function == NULL)
 	{
 		getState()->curThread()->throwException(newException("function is null when call function.")->addRef());
@@ -467,67 +546,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark) {
 	{
 		// 第三方函数 
 		X3rdFunction *x3rdfunc = (X3rdFunction*)function;
-		X3rdArgs _3rdArgs;
-		memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-		if (args != NULL)
-		{
-			for (int i = 0; i < args->index; i++)
-			{
-				if (args->args[i] == NULL)
-				{
-					_3rdArgs.args[i] = NULL;
-					continue;
-				}
-
-				// 计算出参数节点的值。 然后克隆一份给 传参的那个数据结构。 然后再释放掉参数节点的值。 
-				execNode(args->args[i]);
-
-				if (thread->isInException())
-				{
-					return NULL;
-				}
-
-				Object * tmp1 = args->args[i]->value;
-				if (tmp1)
-				{
-					_3rdArgs.args[i] = tmp1->clone();
-				}
-				else {
-					_3rdArgs.args[i] = Allocator::allocate(NULLOBJECT);
-				}
-				
-
-				// 释放这个参数节点的值
-				Allocator::free(args->args[i]->value);
-				args->args[i]->value = NULL;
-
-			}
-			_3rdArgs.index = args->index;
-		}
-		Environment *currEnv1 = thread->getCurrentEnv();
-		if (currEnv1->isObjectEnvironment())
-		{
-			if (currEnv1->isEnvEnvironment())
-			{
-				_3rdArgs.object = ((ObjectBridgeEnv*)((EnvironmentBridgeEnv*)currEnv1)->getBridgeEnv())->getEnvObject();
-			}
-			else {
-				_3rdArgs.object = ((ObjectBridgeEnv*)currEnv1)->getEnvObject();
-			}
-		}
-
-		thread->setInFunction(true);
-		Object * ret1 = x3rdfunc->call(_3rdArgs);
-		thread->getStackTrace().popFrame();
-		thread->setInFunction(false);
-		thread->setInReturn(false);
-
-		for (size_t i = 0; i < _3rdArgs.index; i++)
-		{
-			Allocator::free(_3rdArgs.args[i]);
-		}
-
-		return ret1;
+		return call3rdFunc(x3rdfunc, thread, args, nodeLink);
 	}
 
 	// 如果当前环境是一个对象环境， 则暂存他
