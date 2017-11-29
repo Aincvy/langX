@@ -277,6 +277,7 @@ namespace langX {
 		struct NodeLink *previous;  // 上一个节点 ， 一般指调用这个节点的节点
 		int index;       // 索引， 可能针对于父节点使用的
 		bool backAfterExec;             // 执行结束之后 退回到父节点
+		Environment *tryEnv;            // try 环境， 在try 节点下有值，其他为null 
 
 		void * ptr_u;              // 万能指针， 可以指向任何单位
 	};

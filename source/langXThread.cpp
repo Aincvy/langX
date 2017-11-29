@@ -1,12 +1,12 @@
 #include "../include/langXThread.h"
 #include "../include/Environment.h"
-#include "../include/langXObjectRef.h"
 #include "../include/Function.h"
 #include "../include/ExecNode.h"
 #include "../include/Allocator.h"
 #include "../include/langX.h"
 #include "../include/YLlangX.h"
 #include "../include/Object.h"
+#include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 #include "../include/Function.h"
 
@@ -364,107 +364,56 @@ namespace langX {
 		// 丢出一个异常
 		this->setInException(true);
 
-		if (m_thrown_obj != nullptr)
-		{
-			Allocator::free(m_thrown_obj);
-			m_thrown_obj = nullptr;
-		}
 		this->m_thrown_obj = obj;
 
-		if (this->m_current_deep == 0)
-		{
-			// 当前环境深度为0 ，说明当前只是在脚本中，并无别的情况了
+		// 找到一个存在tryEnv 的执行链节点
+		NodeLink *nodeLink = nullptr;
+		do {
+			nodeLink = this->currentExecute;
+			if (nodeLink == NULL || nodeLink->tryEnv != NULL) {
+				break;
+			}
 
+			this->endExecute();
+		} while (true);
+
+		if (nodeLink == NULL) {
+			// 没有找到一个try 节点
 			gTryCatchCB(this->m_thrown_obj);
+			printf("!!! [DEBUG] gTryCatchCB \n");
+		}
+		else {
+			// 找到了try 节点
+			TryEnvironment * tryEnv = (TryEnvironment *)nodeLink->tryEnv;
+			
+			// check call back first.
+			CBCatch c = tryEnv->getCatchCB();
+			if (c != NULL)
+			{
+				// 调用回调 
+				c(obj);
+			}
+			else {
+				// 将异常赋值
+				// 进入catch 环境
+				Environment* env = newEnv();
+				Node *cNode = tryEnv->getCatchNode();
+				env->putObject(cNode->opr_obj->op[0]->var_obj->name, obj);
+
+				// 执行 catch 块的语句
+				//__execNode(cNode->opr_obj->op[1]);
+
+				
+				backEnv();
+			}
+			
 		}
 
-		// 找到try环境
-		//TryEnvironment *tryEnv = NULL;
-		//Environment *env = this->m_current_env;
-		//while (1)
-		//{
-		//	if (env == NULL)
-		//	{
-		//		break;
-		//	}
-
-		//	if (env->isTryEnvironment())
-		//	{
-		//		if (env->isEnvEnvironment())
-		//		{
-		//			tryEnv = (TryEnvironment *)((EnvironmentBridgeEnv*)env)->getBridgeEnv();
-		//		}
-		//		else {
-		//			tryEnv = (TryEnvironment *)env;
-		//		}
-		//		break;
-		//	}
-
-		//	// 因为丢出了异常， 所以到 try 环境之前的所有环境都会变成死亡环境
-		//	//env->setDead(true);
-		//	Environment *p = env->getParent();
-
-		//	// 退回一级环境 ，直到退回try 环境
-		//	backEnv();
-
-		//	env = p;
-		//}
-
-		//if (tryEnv == NULL)
-		//{
-		//	printf("cannot find try env, throw error!\n");
-		//	return;
-		//}
-
-		////  退出try 环境
-		//backEnv(false);
-
-		//// check call back first.
-		//CBCatch c = tryEnv->getCatchCB();
-		//if (c != NULL)
-		//{
-		//	c(obj);
-
-		//	// 新建一个环境，并设置当前环境为 dead 环境
-		//	newEnv();
-
-		//	// 删除对象
-		//	delete obj->getRefObject();
-		//	delete obj;
-		//	obj = NULL;
-		//}
-		//else {
-		//	// 将异常赋值
-		//	// 进入catch 环境
-		//	env = newEnv();
-		//	Node *cNode = tryEnv->getCatchNode();
-		//	env->putObject(cNode->opr_obj->op[0]->var_obj->name, obj);
-
-		//	// 执行 catch 块的语句
-		//	__execNode(cNode->opr_obj->op[1]);
-
-		//	// 将环境back 到env
-		//	while (env != this->m_current_env)
-		//	{
-		//		if (this->m_current_env == NULL)
-		//		{
-		//			break;
-		//		}
-
-		//		backEnv();
-		//	}
-
-		//	// 主动进行 try-catch 操作的时候 ， try 执行后会释放一个环境，所以当前环境保留
-
-		//	// 删除对象
-		//	delete obj->getRefObject();
-		//	delete obj;
-		//	obj = NULL;
-		//}
-
-		//// 销毁try 环境
-		//delete tryEnv;
-		//tryEnv = NULL;
+		printf("!!! [DEBUG] delete object and ref. \n");
+		// 删除对象
+		delete obj->getRefObject();
+		freeThrownObj();
+		this->setInException(false);
 	}
 
 	Environment * langXThread::getNearestObjectEnv() const
@@ -632,6 +581,15 @@ namespace langX {
 	NodeLink * langXThread::getCurrentExecute()
 	{
 		return this->currentExecute;
+	}
+
+	void langXThread::freeThrownObj()
+	{
+		if (m_thrown_obj != nullptr)
+		{
+			Allocator::free(m_thrown_obj);
+			m_thrown_obj = nullptr;
+		}
 	}
 
 	void langXThread::backEnv()

@@ -98,6 +98,9 @@ namespace langX {
 		return nodeLink;
 	}
 
+	/*
+	 * 释放这个节点占用的内存
+	 */
 	void freeNodeLink(NodeLink *nodeLink) {
 		if (nodeLink == NULL) {
 			return;
@@ -108,6 +111,12 @@ namespace langX {
 			previous->next = NULL;
 		}
 		nodeLink->previous = NULL;
+		if (nodeLink->ptr_u != NULL)
+		{
+			free(nodeLink->ptr_u);
+			nodeLink->ptr_u = NULL;
+		}
+		nodeLink->tryEnv = NULL;
 		free(nodeLink);
 	}
 
