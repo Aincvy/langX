@@ -180,6 +180,8 @@ namespace langX {
 		// 当前的执行节点
 		NodeLink * currentExecute;     
 
+		// 释放掉丢出的对象
+		void freeThrownObj(); 
 	};
 
 
