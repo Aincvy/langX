@@ -25,6 +25,9 @@
 #include <stdio.h>
 #endif
 
+extern "C" {
+	extern void yyerror(char *msg);
+}
 
 // 释放环境内存
 void freeEnv(langX::Environment **env) {
@@ -33,7 +36,7 @@ void freeEnv(langX::Environment **env) {
 	{
 		return;
 	}
-
+	
 	langX::Environment *p = (*env);
 	switch (p->getType())
 	{
@@ -103,11 +106,7 @@ namespace langX {
 
 	langXThread::~langXThread()
 	{
-		if (m_thrown_obj != nullptr)
-		{
-			Allocator::free(m_thrown_obj);
-			m_thrown_obj = nullptr;
-		}
+		freeThrownObj();
 
 		// 清理掉环境 
 
@@ -379,7 +378,9 @@ namespace langX {
 
 		if (nodeLink == NULL) {
 			// 没有找到一个try 节点
-			gTryCatchCB(this->m_thrown_obj);
+			//gTryCatchCB(this->m_thrown_obj);
+
+			yyerror("Execption Get , end parse.");
 			printf("!!! [DEBUG] gTryCatchCB \n");
 		}
 		else {
