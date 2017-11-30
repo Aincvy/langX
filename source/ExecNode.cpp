@@ -397,7 +397,7 @@ namespace langX {
 			return false;
 		}
 
-		checkValue(n, getState()->curThread());
+		//checkValue(n, getState()->curThread());      // 2017年11月30日 在外层确保值是有的吧
 		if (n->value == NULL)
 		{
 			return false;
@@ -535,8 +535,14 @@ namespace langX {
 	}
 
 	// -
-	void __exec45(Node *n) {
-		doSubNodes(n);
+	void __exec45(NodeLink *nodeLink) {
+
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
+			return;
+		}
 
 
 		Node *n1 = n->opr_obj->op[0];
@@ -575,18 +581,17 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() - ((Number*)n2->value)->getDoubleValue());
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 	// *
-	void __exec42(Node *n) {
-		doSubNodes(n);
-
-		// TODO  判定一下是否出现了异常
-		//if (getState()->curThread()->isInException())
-		//{
-		//	freeSubNodes(n);
-		//	return;
-		//}
+	void __exec42(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -625,15 +630,15 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() * ((Number*)n2->value)->getDoubleValue());
 		freeSubNodes(n);
-
+		nodeLink->backAfterExec = true;
 	}
 
 	// /
-	void __exec47(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __exec47(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -682,16 +687,17 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() / d2);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 
 	}
 
 	// 按位或  |
-	void __exec124(Node *n) {
+	void __exec124(NodeLink *nodeLink) {
 
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -717,19 +723,18 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 
 	}
 
 	// 按位与  &
-	void __exec38(Node *n) {
-		doSubNodes(n);
-
-		// TODO  判定一下是否出现了异常
-		//if (getState()->curThread()->isInException())
-		//{
-		//	freeSubNodes(n);
-		//	return;
-		//}
+	void __exec38(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
+			return;
+		}
 
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -753,15 +758,16 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 
 	}
 
 	// 按位异或  ^
-	void __exec94(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __exec94(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -787,16 +793,17 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 
 	}
 
 	// 按位取反  ~
-	void __exec126(Node *n) {
+	void __exec126(NodeLink *nodeLink) {
 
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -820,16 +827,17 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 
 	}
 
 	// 向左移位
-	void __execLEFT_SHIFT(Node *n) {
+	void __execLEFT_SHIFT(NodeLink *nodeLink) {
 
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -876,15 +884,16 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 	// 向右移位
-	void __execRIGHT_SHIFT(Node *n) {
+	void __execRIGHT_SHIFT(NodeLink *nodeLink) {
 
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -929,16 +938,16 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
-
+		nodeLink->backAfterExec = true;
 	}
 
 	//  取模运算 %
-	void __exec37(Node *n) {
+	void __exec37(NodeLink *nodeLink) {
 
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -983,7 +992,7 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
-
+		nodeLink->backAfterExec = true;
 	}
 
 	// 赋值操作 = 
@@ -1198,11 +1207,11 @@ namespace langX {
 		doSuffixOperation(n);
 	}
 
-	void __execADD_EQ(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execADD_EQ(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1225,15 +1234,15 @@ namespace langX {
 		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() + ((Number*)n2->value)->getDoubleValue());
 
 		setValueToEnv(n1->var_obj->name, n->value);
-
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
-	void __execSUB_EQ(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execSUB_EQ(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1256,15 +1265,15 @@ namespace langX {
 		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() - ((Number*)n2->value)->getDoubleValue());
 
 		setValueToEnv(n1->var_obj->name, n->value);
-
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
-	void __execMUL_EQ(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execMUL_EQ(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1291,11 +1300,11 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
-	void __execDIV_EQ(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execDIV_EQ(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1326,15 +1335,15 @@ namespace langX {
 		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() / ((Number*)n2->value)->getDoubleValue());
 
 		setValueToEnv(n1->var_obj->name, n->value);
-
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
-	void __execMOD_EQ(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execMOD_EQ(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1361,17 +1370,12 @@ namespace langX {
 		n->value = Allocator::allocateNumber(i3);
 
 		setValueToEnv(n1->var_obj->name, n->value);
-
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
-	void __execBREAK(Node *n) {
-		if (n == NULL)
-		{
-			return;
-		}
-
-		langXThread * thread = getState()->curThread();
+	void __execBREAK(NodeLink *nodeLink, langXThread * thread) {
+		
 		if (!thread->isInLoop() && !thread->isInSwitch())
 		{
 			getState()->curThread()->throwException(newUnsupportedOperationException("invalid break stmt.")->addRef());
@@ -1379,18 +1383,29 @@ namespace langX {
 			return;
 		}
 
-		thread->setInBreak(true);
+		do {
+			if (nodeLink == nullptr) {
+				break;
+			}
+
+			Node *n = nodeLink->node;
+			nodeLink = nodeLink->previous;
+			thread->endExecute();
+
+			if (n->type == NodeType::NODE_OPERATOR) {
+				int opr = n->opr_obj->opr;
+				if (opr == WHILE || opr == FOR) {
+					// 找到了该节点
+					break;
+				}
+			}
+		} while (true);
+		
 	}
 
-	void __execRETURN(Node *n) {
-		if (n == NULL)
-		{
-			return;
-		}
+	void __execRETURN(NodeLink *nodeLink, langXThread * thread) {
+		Node *n = nodeLink->node;
 
-		// 不在函数内 也能使用 return 语句？
-		// 回头再调整吧， 这个 无伤大雅
-		langXThread * thread = getState()->curThread();
 		if (!thread->isInFunction())
 		{
 			getState()->curThread()->throwException(newUnsupportedOperationException("invalid return stmt.")->addRef());
@@ -1398,42 +1413,68 @@ namespace langX {
 			return;
 		}
 
-		if (n->opr_obj->op_count <= 0)
+		if (nodeLink->index == 0) {
+			// 确定返回值
+			if (n->opr_obj->op_count <= 0)
+			{
+				n->value = NULL;
+			}
+			else {
+				// 存在返回值
+				Node * a = n->opr_obj->op[0];
+				if (a == NULL)
+				{
+					n->value = NULL;
+				}
+				else {
+					thread->beginExecute(a, true);
+				}
+			}
+
+			nodeLink->index = 1;
+			return;
+		}
+		
+		Node * a = n->opr_obj->op[0];
+		if (a == NULL)
 		{
 			n->value = NULL;
 		}
 		else {
-			// 存在返回值
-			Node * a = n->opr_obj->op[0];
-			if (a == NULL)
-			{
-				n->value = NULL;
-				return;
-			}
-
-			__execNode(a);
-
-			if (getState()->curThread()->isInException() || a->value == NULL)
-			{
-				freeSubNodes(n);
-				return;
-			}
-
 			n->value = a->value->clone();
-
-			freeSubNodes(n);
 		}
 
-		thread->setInReturn(true);
+		freeSubNodes(n);
 		thread->setFunctionResult(n->value);
+
+		// 回退节点
+		do {
+			if (nodeLink == nullptr) {
+				break;
+			}
+
+			Node *n = nodeLink->node;
+			
+			if (n->type == NodeType::NODE_OPERATOR) {
+				int opr = n->opr_obj->opr;
+				if (opr == FUNC_CALL || opr == CLAXX_FUNC_CALL || opr == SCOPE_FUNC_CALL) {
+					// 找到了该节点
+					nodeLink->index = 1000;       // 函数已经获取到返回值
+					break;
+				}
+			}
+
+			nodeLink = nodeLink->previous;
+			thread->endExecute();
+		} while (true);
 	}
 
 	// 自增运算符 ++ 
-	void __execINC_OP(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execINC_OP(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1489,14 +1530,15 @@ namespace langX {
 		}
 
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 	// 自减运算符 -- 
-	void __execDEC_OP(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execDEC_OP(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1555,6 +1597,7 @@ namespace langX {
 		}
 
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 
@@ -1620,11 +1663,11 @@ namespace langX {
 	}
 
 	// 符号： >
-	void __exec62(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __exec62(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1657,14 +1700,15 @@ namespace langX {
 
 		doSuffixOperation(n);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 	// 大于等于
-	void __execGE_OP(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execGE_OP(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1697,14 +1741,15 @@ namespace langX {
 
 		doSuffixOperation(n);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 	// 符号： <
-	void __exec60(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __exec60(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1737,14 +1782,15 @@ namespace langX {
 
 		doSuffixOperation(n);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 	// 小于等于
-	void __execLE_OP(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execLE_OP(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1777,14 +1823,15 @@ namespace langX {
 
 		doSuffixOperation(n);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 	// 等于
-	void __execEQ_OP(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execEQ_OP(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -1921,14 +1968,15 @@ namespace langX {
 
 		doSuffixOperation(n);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 	// 不等于
-	void __execNE_OP(Node *n) {
-		doSubNodes(n);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execNE_OP(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -2072,11 +2120,14 @@ namespace langX {
 
 		doSuffixOperation(n);
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
-	void __execOPAND(Node *n) {
-		if (n == NULL)
-		{
+	void __execOPAND(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -2096,11 +2147,14 @@ namespace langX {
 		}
 
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
-	void __execOPOR(Node *n) {
-		if (n == NULL)
-		{
+	void __execOPOR(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -2121,61 +2175,52 @@ namespace langX {
 		}
 
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
-	void __execIF(Node *n) {
-		if (n == NULL)
-		{
+	void __execIF(NodeLink *nodeLink, langXThread *thread) {
+
+		Node *n = nodeLink->node;
+		Node *n1 = n->opr_obj->op[0];
+		if (nodeLink->index == 0) {
+			thread->beginExecute(n1, true);
+			nodeLink->index = 1;
 			return;
 		}
+		else if (nodeLink->index == 1) {
+			// 判断条件，确定 应该执行的点
+			
+			bool f = __tryConvertToBool(n1);
 
-		bool f = __tryConvertToBool(n->opr_obj->op[0]);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
-			return;
-		}
-
-		if (f)
-		{
-
-			Node * a = n->opr_obj->op[1];
-			if (a != NULL)
+			if (f)
 			{
-				__execNode(a);
 
-				if (a->value == NULL)
-				{
-					n->value = NULL;
-				}
-				else {
-					n->value = a->value->clone();
-				}
-			}
-
-		}
-		else {
-			if (n->opr_obj->op_count >= 3)
-			{
-				Node * a = n->opr_obj->op[2];
+				Node * a = n->opr_obj->op[1];
 				if (a != NULL)
 				{
-					__execNode(a);
-					if (a->value == NULL)
-					{
-						n->value = NULL;
-					}
-					else {
-						n->value = a->value->clone();
-					}
+					thread->beginExecute(a, true);
 				}
 
 			}
+			else {
+				if (n->opr_obj->op_count >= 3)
+				{
+					Node * a = n->opr_obj->op[2];
+					if (a != NULL)
+					{
+						thread->beginExecute(a, true);
+					}
+
+				}
+			}
+			nodeLink->index = 2;
+			return;
 		}
 
 		doSuffixOperation(n);
 		// 清理掉 所有复制  值 占用的内存
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 	void __execWHILE(Node *n) {
@@ -2510,17 +2555,11 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
-	void __execUMINUS(Node *n) {
-		if (n == NULL)
-		{
-			return;
-		}
-
-		doSubNodes(n);
-
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+	void __execUMINUS(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -2537,7 +2576,6 @@ namespace langX {
 			//printf("ERROR:  __execUMINUS is NOT NUMBER...  \n");
 			getState()->curThread()->throwException(newArithmeticException("type error on opr '-'! only can number!")->addRef());
 			freeSubNodes(n);
-
 			return;
 		}
 		else {
@@ -2545,6 +2583,7 @@ namespace langX {
 		}
 
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
 	}
 
@@ -2649,11 +2688,17 @@ namespace langX {
 		n->value = objectRef;
 	}
 
-	void __execCLAXX_BODY(Node *n) {
+	void __execCLAXX_BODY(NodeLink *nodeLink) {
 
-		doSubNodes(n);
-
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
+			return;
+		}
+		
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 	// 变量声明
@@ -3715,16 +3760,16 @@ namespace langX {
 			__exec43(nodeLink);
 			break;
 		case '-':
-			__exec45(node);
+			__exec45(nodeLink);
 			break;
 		case '*':
-			__exec42(node);
+			__exec42(nodeLink);
 			break;
 		case '/':
-			__exec47(node);
+			__exec47(nodeLink);
 			break;
 		case '%':
-			__exec37(node);
+			__exec37(nodeLink);
 			break;
 		case '=':
 			__exec61(nodeLink, thread);
@@ -3733,67 +3778,67 @@ namespace langX {
 			__exec59(node);
 			break;
 		case '>':
-			__exec62(node);
+			__exec62(nodeLink);
 			break;
 		case '<':
-			__exec60(node);
+			__exec60(nodeLink);
 			break;
 		case '&':
-			__exec38(node);
+			__exec38(nodeLink);
 			break;
 		case '|':
-			__exec124(node);
+			__exec124(nodeLink);
 			break;
 		case '^':
-			__exec94(node);
+			__exec94(nodeLink);
 			break;
 		case '~':
-			__exec126(node);
+			__exec126(nodeLink);
 			break;
 		case UMINUS:
-			__execUMINUS(node);
+			__execUMINUS(nodeLink);
 			break;
 		case INC_OP:
-			__execINC_OP(node);
+			__execINC_OP(nodeLink);
 			break;
 		case DEC_OP:
-			__execDEC_OP(node);
+			__execDEC_OP(nodeLink);
 			break;
 		case ADD_EQ:
-			__execADD_EQ(node);
+			__execADD_EQ(nodeLink);
 			break;
 		case SUB_EQ:
-			__execSUB_EQ(node);
+			__execSUB_EQ(nodeLink);
 			break;
 		case MUL_EQ:
-			__execMUL_EQ(node);
+			__execMUL_EQ(nodeLink);
 			break;
 		case DIV_EQ:
-			__execDIV_EQ(node);
+			__execDIV_EQ(nodeLink);
 			break;
 		case MOD_EQ:
-			__execMOD_EQ(node);
+			__execMOD_EQ(nodeLink);
 			break;
 		case LE_OP:
-			__execLE_OP(node);
+			__execLE_OP(nodeLink);
 			break;
 		case GE_OP:
-			__execGE_OP(node);
+			__execGE_OP(nodeLink);
 			break;
 		case EQ_OP:
-			__execEQ_OP(node);
+			__execEQ_OP(nodeLink);
 			break;
 		case NE_OP:
-			__execNE_OP(node);
+			__execNE_OP(nodeLink);
 			break;
 		case AND_OP:
-			__execOPAND(node);
+			__execOPAND(nodeLink);
 			break;
 		case OR_OP:
-			__execOPOR(node);
+			__execOPOR(nodeLink);
 			break;
 		case IF:
-			__execIF(node);
+			__execIF(nodeLink, thread);
 			break;
 		case WHILE:
 			__execWHILE(node);
@@ -3805,10 +3850,10 @@ namespace langX {
 			__execFUNC_CALL(nodeLink, thread);
 			break;
 		case BREAK:
-			__execBREAK(node);
+			__execBREAK(nodeLink, thread);
 			break;
 		case RETURN:
-			__execRETURN(node);
+			__execRETURN(nodeLink, thread);
 			break;
 		case SWITCH:
 			__execSWITCH(node);
@@ -3826,7 +3871,7 @@ namespace langX {
 			__execNEW(node);
 			break;
 		case CLAXX_BODY:
-			__execCLAXX_BODY(node);
+			__execCLAXX_BODY(nodeLink);
 			break;
 		case CLAXX_MEMBER:
 			__execCLAXX_MEMBER(node);
@@ -3847,10 +3892,10 @@ namespace langX {
 			__execXTRY(node);
 			break;
 		case LEFT_SHIFT:
-			__execLEFT_SHIFT(node);
+			__execLEFT_SHIFT(nodeLink);
 			break;
 		case RIGHT_SHIFT:
-			__execRIGHT_SHIFT(node);
+			__execRIGHT_SHIFT(nodeLink);
 			break;
 		case XIS:
 			__execXIS(node);
