@@ -222,25 +222,6 @@ namespace langX {
 		return m_exec_status.inException > 0;
 	}
 
-	void langXThread::setInBreak(bool flag)
-	{
-		if (flag)
-		{
-			m_exec_status.inBreak++;
-		}
-		else {
-			if (m_exec_status.inBreak > 0)
-			{
-				m_exec_status.inBreak--;
-			}
-		}
-	}
-
-	bool langXThread::isInBreak()
-	{
-		return m_exec_status.inBreak > 0;
-	}
-
 	void langXThread::setInReturn(bool flag)
 	{
 		if (flag)

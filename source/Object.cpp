@@ -91,6 +91,7 @@ namespace langX {
 		nodeLink->node = node;
 		nodeLink->index = 0;
 		nodeLink->backAfterExec = false;
+		nodeLink->flag = false;
 		nodeLink->next = NULL; 
 		if (previous != NULL) {
 			previous->next = nodeLink;

@@ -1401,6 +1401,9 @@ namespace langX {
 			}
 		} while (true);
 		
+		if (thread->isInLoop()) {
+			thread->setInLoop(false);
+		}
 	}
 
 	void __execRETURN(NodeLink *nodeLink, langXThread * thread) {
@@ -1630,10 +1633,6 @@ namespace langX {
 			}
 
 			if (thread->isInContinue())
-			{
-				break;
-			}
-			if (thread->isInBreak())
 			{
 				break;
 			}
@@ -2223,135 +2222,112 @@ namespace langX {
 		nodeLink->backAfterExec = true;
 	}
 
-	void __execWHILE(Node *n) {
-		if (n == NULL || n->opr_obj == NULL || n->opr_obj->op_count != 2)
-		{
-			return;
-		}
+	void __execWHILE(NodeLink *nodeLink, langXThread *thread) {
+		Node *n = nodeLink->node;
 
 		// 先执行条件 节点 ,然后判断条件 节点的值， 然后释放条件 节点的内存
 		// 循环执行结束 ， 释放掉  所有节点值 的内存
-		langXThread * thread = getState()->curThread();
-		thread->setInLoop(true);
-
 		Node *conNode = n->opr_obj->op[0];
-		while (__tryConvertToBool(conNode))
-		{
-			doSuffixOperation(conNode);
-			Allocator::free(conNode->value);
-			conNode->value = NULL;
-
-			Node *run = n->opr_obj->op[1];
-			if (run == NULL)
-			{
-				return;
-			}
-			__execNode(run);
-			
-			freeSubNodes(run);
-
-			if (thread->isInBreak())
-			{
-				break;
-			}
-			if (thread->isInReturn())
-			{
-				if (run->value == NULL)
-				{
-					n->value = NULL;
-				}
-				else {
-					n->value = run->value->clone();
-				}
-
-				break;
-			}
-
-			// 重置 run 节点以及其子节点的状态
-			recursiveFreeNodeValue(run);
-
-			// 如果当前环境为一个死亡环境， 则直接返回
-			// TODO 清理内存
-			if (getState()->curThread()->isInException())
-			{
-				return;
-			}
+		Node *run = n->opr_obj->op[1];
+		if (!nodeLink->flag) {
+			thread->setInLoop(true);
+			nodeLink->flag = true;
 		}
-
-		// 清理条件节点的内容
-		doSuffixOperation(conNode);
-		Allocator::free(conNode->value);
-		conNode->value = NULL;
-
-		thread->setInLoop(false);
-		doSuffixOperation(n);
-		freeSubNodes(n);
-	}
-
-	void __execFOR(Node *n) {
-		if (n == NULL || n->opr_obj == NULL || n->opr_obj->op_count != 4)
-		{
+		if (nodeLink->index == 0) {
+			// 需要计算条件节点
+			thread->beginExecute(conNode, true);
+			nodeLink->index = 1;
 			return;
 		}
+		else if (nodeLink->index == 1) {
+			// 已经计算了条件节点 
+			if (__tryConvertToBool(conNode)) {
+				doSuffixOperation(conNode);
+				thread->beginExecute(run, true);
+				nodeLink->index = 2;
+			}
+			else {
+				doSuffixOperation(conNode);
+				thread->setInLoop(false);
+				nodeLink->backAfterExec = true;
+				freeSubNodes(n);
+			}
+			
 
-		langXThread * thread = getState()->curThread();
-		thread->setInLoop(true);
+			// 重置条件节点的值
+			Allocator::free(conNode->value);
+			conNode->value = NULL;
+		}
+		else if (nodeLink->index == 2) {
+			// 循环内部的节点已经执行完毕， 现在做一些后续操作
+			freeSubNodes(run);
+			recursiveFreeNodeValue(run);
+			nodeLink->index = 0;    // 
+		}
+
+	}
+
+	void __execFOR(NodeLink *nodeLink, langXThread *thread) {
+
+		Node *n = nodeLink->node;
+		if (!nodeLink->flag) {
+			thread->setInLoop(true);
+			nodeLink->flag = true;
+		}
 
 		Node *conNode = n->opr_obj->op[1];
 		// 后置节点
 		Node *sNode = n->opr_obj->op[2];
-		for (__execNode(n->opr_obj->op[0]); __tryConvertToBool(conNode);  )
+		// 要执行的节点
+		Node *run = n->opr_obj->op[3];
+		if (nodeLink->index == 0) {
+			// 要求计算初始节点的值
+			thread->beginExecute(n->opr_obj->op[0],true);
+			nodeLink->index = 1;
+		}
+		else if (nodeLink->index == 1) {
+			thread->beginExecute(conNode, true);    // 执行条件节点
+			nodeLink->index = 2;
+		}
+		else if (nodeLink->index == 2)
 		{
+			// 判定条件
 			doSuffixOperation(conNode);
+			if (__tryConvertToBool(conNode))
+			{
+				// 满足条件，执行后续的节点
+				thread->beginExecute(run, true);
+				nodeLink->index = 3;
+			}
+			else {
+				// 不满足条件， 退出循环
+				thread->setInLoop(false);
+				nodeLink->backAfterExec = true;
+				freeSubNodes(n);
+			}
 			Allocator::free(conNode->value);
 			conNode->value = NULL;
-
-			Node *run = n->opr_obj->op[3];
-			if (run == NULL)
-			{
-				continue;
-			}
-			__execNode(run);
-			freeSubNodes(run);
-			if (thread->isInBreak())
-			{
-				break;
-			}
-			if (thread->isInReturn())
-			{
-				if (run->value == NULL)
-				{
-					n->value = NULL;
-				}
-				else {
-					n->value = run->value->clone();
-				}
-				break;
-			}
-
+		}
+		else if (nodeLink->index == 3)
+		{
+			// 重置run节点的状态
 			recursiveFreeNodeValue(run);
 
-			// 如果当前环境为一个死亡环境， 则直接返回
-			// TODO 清理内存
-			if (getState()->curThread()->isInException())
-			{
-				return;
-			}
-
-			__execNode(sNode);
+			// 执行后置节点
+			thread->beginExecute(sNode, true);
+			nodeLink->index = 4;
+		}
+		else if (nodeLink->index == 4)
+		{
+			// 对后置节点进行收尾，然后准备执行条件判定节点
 			doSuffixOperation(sNode);
 			freeSubNodes(sNode);
 			Allocator::free(sNode->value);
 			sNode->value = nullptr;
+
+			nodeLink->index = 1;
 		}
 
-		// 清理条件节点的内容
-		doSuffixOperation(conNode);
-		Allocator::free(conNode->value);
-		conNode->value = NULL;
-
-		thread->setInLoop(false);
-		freeSubNodes(n);
 	}
 
 	void __execSWITCH(Node *n) {
@@ -2408,7 +2384,7 @@ namespace langX {
 				flag = false;
 			}
 
-			if (thread->isInBreak() || thread->isInContinue())
+			if (thread->isInContinue())
 			{
 				break;
 			}
@@ -2474,7 +2450,7 @@ namespace langX {
 				flag = false;
 			}
 			
-			if (thread->isInBreak() || thread->isInContinue())
+			if (thread->isInContinue())
 			{
 				break;
 			}
@@ -2651,7 +2627,8 @@ namespace langX {
 		nodeLink->backAfterExec = true;
 	}
 
-	void __execNEW(Node *n) {
+	void __execNEW(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
 		// new 一个对象
 		char *className = n->opr_obj->op[0]->var_obj->name;
 		ClassInfo *claxxInfo = getState()->getClass(className);
@@ -2669,23 +2646,15 @@ namespace langX {
 		langXObjectRef * objectRef = object->addRef();
 		objectRef->setEmergeEnv(getState()->curThread()->getCurrentEnv());
 
-
-		//objectRef->setMembersEmergeEnv(env);
-		//getState()->addEnvToList(env);
-
 		Node *argNode = n->opr_obj->op[1];
 		if (argNode != NULL)
 		{
 			XArgsList *args = (XArgsList *)argNode->ptr_u;
 			object->callConstructor(args, fileInfoString(n->fileinfo).c_str());
-
-			if (getState()->curThread()->isInException())
-			{
-				return;
-			}
 		}
 
 		n->value = objectRef;
+		nodeLink->backAfterExec = true;
 	}
 
 	void __execCLAXX_BODY(NodeLink *nodeLink) {
@@ -2923,19 +2892,30 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
-	void __execRESTRICT(Node *n) {
+	void __execRESTRICT(NodeLink *nodeLink, langXThread * thread) {
+		Node *n = nodeLink->node;
 		// 对当前环境进行限定， 限定后，不去搜索父级环境内容
 
 		if (n->opr_obj->op_count <= 0)
 		{
-			getState()->curThread()->getCurrentEnv()->setRestrict(true);
+			thread->getCurrentEnv()->setRestrict(true);
 		}
 		else {
 
-			getState()->curThread()->getCurrentEnv()->setRestrict(__tryConvertToBool(n->opr_obj->op[0]));
+			Node *n1 = n->opr_obj->op[0];
+			if (nodeLink->index == 0) {
+				thread->beginExecute(n1, true);
+				nodeLink->index = 1;
+				return;
+			}
+			else {
+				thread->getCurrentEnv()->setRestrict(__tryConvertToBool(n1));
+			}
 
 			freeSubNodes(n);
 		}
+
+		nodeLink->backAfterExec = true;
 	}
 
 	// 执行 this.xxx
@@ -3841,10 +3821,10 @@ namespace langX {
 			__execIF(nodeLink, thread);
 			break;
 		case WHILE:
-			__execWHILE(node);
+			__execWHILE(nodeLink, thread);
 			break;
 		case FOR:
-			__execFOR(node);
+			__execFOR(nodeLink, thread);
 			break;
 		case FUNC_CALL:
 			__execFUNC_CALL(nodeLink, thread);
@@ -3868,7 +3848,7 @@ namespace langX {
 			__execDeafult(node);
 			break;
 		case NEW:
-			__execNEW(node);
+			__execNEW(nodeLink);
 			break;
 		case CLAXX_BODY:
 			__execCLAXX_BODY(nodeLink);
@@ -3883,7 +3863,7 @@ namespace langX {
 			__execVAR_DECLAR(node);
 			break;
 		case RESTRICT:
-			__execRESTRICT(node);
+			__execRESTRICT(nodeLink,thread);
 			break;
 		case THIS:
 			__execTHIS(node);
