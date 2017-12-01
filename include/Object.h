@@ -276,6 +276,7 @@ namespace langX {
 		struct NodeLink *next;     // 下一个节点，此属性好像没什么用
 		struct NodeLink *previous;  // 上一个节点 ， 一般指调用这个节点的节点
 		int index;       // 索引， 可能针对于父节点使用的
+		bool flag;       // 一个标记，不同的场景不同的含义
 		bool backAfterExec;             // 执行结束之后 退回到父节点
 		Environment *tryEnv;            // try 环境， 在try 节点下有值，其他为null 
 
