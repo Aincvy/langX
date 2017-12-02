@@ -148,17 +148,27 @@ namespace langX {
 
 		resetNodeState(this->m_node_root);
 
-		//m_node_root->state.in_func = true;
-		__execNode(m_node_root);
-		
+		langXThread *thread = getState()->curThread();
+		thread->setInFunction(true);
+		thread->beginExecute(this->m_node_root, true);
+		execNode(nullptr);
+		thread->setInFunction(false);
+
 
 		if (m_node_root->value != NULL)
 		{
-			Object * obj = m_node_root->value->clone();
 			Allocator::free(m_node_root->value);
 			m_node_root->value = NULL;
+		}
+
+		Object * tmp = thread->getFunctionResult();
+		if (tmp != nullptr) {
+			Object * obj = tmp->clone();
+			Allocator::free(tmp);
+			thread->setFunctionResult(nullptr);
 			return obj;
 		}
+
 		return nullptr;
 	}
 
@@ -353,12 +363,11 @@ namespace langX {
 
 	Object * FunctionRef::call(Object* args[], int len, const char * remark)
 	{
-		//Environment *env = getFunctionEnv();
+
 		Function *function = this->m_func;
 		Object * ret = NULL;
 
 		langXThread * thread = getState()->curThread();
-		bool returnFlag = thread->isInReturn();
 		thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
 		if (function->is3rd())
@@ -429,10 +438,6 @@ namespace langX {
 
 		}
 		
-		if (!returnFlag && thread->isInReturn())
-		{
-			thread->setInReturn(false);
-		}
 		thread->getStackTrace().popFrame();
 
 		return ret;

@@ -40,8 +40,6 @@ namespace langX {
 		short inSwitch = 0 ;
 		// 是否在异常内  发生异常之后会累加此值，遇到 try-catch 则会减少1
 		short inException = 0;
-		// 是否在 return 状态
-		short inReturn = 0;
 		// 是否执行了 continue 
 		short inContinue = 0;
 		// 在case 的时候是否需要计算case 的条件
@@ -81,8 +79,6 @@ namespace langX {
 		bool isInSwitch();
 		void setInException(bool);
 		bool isInException();
-		void setInReturn(bool);
-		bool isInReturn();
 		void setInContinue(bool);
 		bool isInContinue();
 		void setInCaseNeedCon(bool);
