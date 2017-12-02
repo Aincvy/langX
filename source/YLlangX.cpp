@@ -434,7 +434,7 @@ XNode * claxx(char *name, char *parent, XNode * node, bool flag) {
 	return nodeC;
 }
 
-XObject * call(const char *name, XArgsList* args, const char *remark)
+XObject * call(const char *name, XArgsList* args, const char *remark, NodeLink *nodeLink)
 {
 	Function *function = getState()->curThread()->getFunction(name);
 	if (function == NULL)
@@ -446,7 +446,7 @@ XObject * call(const char *name, XArgsList* args, const char *remark)
 		return NULL;
 	}
 
-	return callFunc(function, args, remark,nullptr);
+	return callFunc(function, args, remark, nodeLink);
 }
 
 
@@ -517,7 +517,6 @@ XObject *call3rdFunc(X3rdFunction *x3rdfunc, langXThread * thread,XArgsList *arg
 	Object * ret1 = x3rdfunc->call(_3rdArgs);
 	thread->getStackTrace().popFrame();
 	thread->setInFunction(false);
-	thread->setInReturn(false);
 
 	for (size_t i = 0; i < _3rdArgs.index; i++)
 	{
@@ -549,6 +548,34 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 		return call3rdFunc(x3rdfunc, thread, args, nodeLink);
 	}
 
+	if (!nodeLink->flag)
+	{
+		// 计算参数的值
+		if (args != NULL )
+		{
+			XParamsList *params = function->getParamsList();
+			NullObject nullobj;
+			for (int i = 0; i < args->index; i++)
+			{
+				// 如果给出的参数个数大于需要的参数个数， 则无视剩余给出的参数
+				if (i >= params->index)
+				{
+					break;
+				}
+
+				if (args->args[i] != NULL)
+				{
+					// 最初的时候， 参数的值应该是一个NULL 。 然后执行参数节点， 产生一个结果
+					thread->beginExecute(args->args[i], true);
+
+				}
+			}
+		}
+		
+		nodeLink->flag = true;
+		return nullptr;
+	}
+
 	// 如果当前环境是一个对象环境， 则暂存他
 	Environment *abcEnv = NULL;
 	Environment *currEnv1 = thread->getCurrentEnv();
@@ -560,6 +587,8 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 
 	Environment * env = new DefaultEnvironment();
 	Object * ret = NULL;
+
+
 	if (args != NULL)
 	{
 		XParamsList *params = function->getParamsList();
@@ -576,13 +605,8 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 			{
 
 				// 最初的时候， 参数的值应该是一个NULL 。 然后执行参数节点， 产生一个结果
-
+				thread->beginExecute(args->args[i], true);
 				execNode(args->args[i]);
-
-				if (thread->isInException())
-				{
-					return NULL;
-				}
 
 				if (args->args[i]->value)
 				{
@@ -600,7 +624,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 				// 释放这个参数节点的值
 				Allocator::free(args->args[i]->value);
 				args->args[i]->value = NULL;
-				
+
 				//printf("put param %s object: %d.on env: %p. number value: %f. \n", params->args[i] , t ,env, t == NUMBER ? ((Number*)args->args[i]->value)->getDoubleValue() : -1 );
 			}
 			else {
@@ -627,10 +651,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 	}
 
 	thread->newEnv(env);
-	thread->setInFunction(true);
 	ret = function->call();
-	thread->setInFunction(false);
-	thread->setInReturn(false);
 	thread->backEnv();
 
 	if (flagfsenv)

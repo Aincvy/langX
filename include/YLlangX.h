@@ -52,7 +52,7 @@ extern "C" {
 	// 创建一个 空引用节点
 	XNode * xnull();
 	// 使用一个函数
-	XObject * call(const char *, XArgsList *, const char *);
+	XObject * call(const char *, XArgsList *, const char *, NodeLink *);
 	// 调用一个函数
 	XObject * callFunc(XFunction*, XArgsList *, const char *, NodeLink*);
 	// 创建一个节点， 节点内容为实参列表

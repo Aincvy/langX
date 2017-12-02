@@ -25,9 +25,6 @@
 #include <stdio.h>
 #endif
 
-extern "C" {
-	extern void yyerror(char *msg);
-}
 
 // 释放环境内存
 void freeEnv(langX::Environment **env) {
@@ -222,25 +219,6 @@ namespace langX {
 		return m_exec_status.inException > 0;
 	}
 
-	void langXThread::setInReturn(bool flag)
-	{
-		if (flag)
-		{
-			m_exec_status.inReturn++;
-		}
-		else {
-			if (m_exec_status.inReturn > 0)
-			{
-				m_exec_status.inReturn--;
-			}
-		}
-	}
-
-	bool langXThread::isInReturn()
-	{
-		return m_exec_status.inReturn > 0;
-	}
-
 	void langXThread::setInContinue(bool flag)
 	{
 		if (flag)
@@ -359,10 +337,8 @@ namespace langX {
 
 		if (nodeLink == NULL) {
 			// 没有找到一个try 节点
-			//gTryCatchCB(this->m_thrown_obj);
-
-			yyerror("Execption Get , end parse.");
-			printf("!!! [DEBUG] gTryCatchCB \n");
+			gTryCatchCB(this->m_thrown_obj);
+			exit(1);      // 当前线程没主动进行 try-catch 强制退出
 		}
 		else {
 			// 找到了try 节点
@@ -391,7 +367,6 @@ namespace langX {
 			
 		}
 
-		printf("!!! [DEBUG] delete object and ref. \n");
 		// 删除对象
 		delete obj->getRefObject();
 		freeThrownObj();
