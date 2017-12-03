@@ -522,7 +522,7 @@ XObject *call3rdFunc(X3rdFunction *x3rdfunc, langXThread * thread,XArgsList *arg
 	{
 		Allocator::free(_3rdArgs.args[i]);
 	}
-
+	
 	return ret1;
 
 }
@@ -539,10 +539,12 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 #endif
 
 	langXThread * thread = getState()->curThread();
-	thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
 	if (function->is3rd())
 	{
+		if (nodeLink->index == 0) {
+			thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
+		}
 		// 第三方函数 
 		X3rdFunction *x3rdfunc = (X3rdFunction*)function;
 		return call3rdFunc(x3rdfunc, thread, args, nodeLink);
@@ -550,6 +552,8 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 
 	if (!nodeLink->flag)
 	{
+		thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
+
 		// 计算参数的值
 		if (args != NULL )
 		{
@@ -880,15 +884,12 @@ void doFile(const char *f)
 	state->doFile(f);
 }
 
+
+void execNodeButLimit(XNode *n, XNode *limit) {
+	langX::__execNode(n, limit);
+}
+
 void execNode(XNode *n) {
-
-	langXThread * thread = getState()->curThread();
-	if (thread->isInException())
-	{
-		// 当前在异常中， 不执行节点了
-		return;
-	}
-
 	langX::__execNode(n);
 }
 

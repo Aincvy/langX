@@ -337,8 +337,6 @@ namespace langX {
 
 			return;
 		}
-		
-		// TODO  判定一下是否出现了异常
 
 		Object *obj = getState()->curThread()->getObject(left->var_obj->name);
 		if (obj == NULL)
@@ -1088,9 +1086,6 @@ namespace langX {
 		if (objectRef == NULL && arrayInfo == NULL)
 		{
 			checkVarValue(left, rightType);
-			if (thread->isInException()) {
-				return;
-			}
 
 			if (left->value->isConst())
 			{
@@ -1394,15 +1389,19 @@ namespace langX {
 
 			if (n->type == NodeType::NODE_OPERATOR) {
 				int opr = n->opr_obj->opr;
-				if (opr == WHILE || opr == FOR) {
+				if (opr == WHILE || opr == FOR || opr == SWITCH) {
 					// 找到了该节点
 					break;
 				}
 			}
 		} while (true);
 		
+		thread->setBackInExec(true);
 		if (thread->isInLoop()) {
 			thread->setInLoop(false);
+		}
+		else {
+			thread->setInSwitch(false);
 		}
 	}
 
@@ -1449,22 +1448,20 @@ namespace langX {
 
 		freeSubNodes(n);
 		thread->setFunctionResult(n->value);
+		thread->setBackInExec(true);
 
 		// 回退节点
+		Node *funcRootNode = thread->getFuncRootNode();
 		do {
 			if (nodeLink == nullptr) {
 				break;
 			}
 
 			Node *n = nodeLink->node;
-			
-			if (n->type == NodeType::NODE_OPERATOR) {
-				int opr = n->opr_obj->opr;
-				if (opr == FUNC_CALL || opr == CLAXX_FUNC_CALL || opr == SCOPE_FUNC_CALL) {
-					// 找到了该节点
-					nodeLink->index = 1000;       // 函数已经获取到返回值
-					break;
-				}
+			if (funcRootNode == n) {
+				// 找到了该节点
+				nodeLink->index = 1000;       // 函数已经获取到返回值
+				break;
 			}
 
 			nodeLink = nodeLink->previous;
@@ -2422,10 +2419,6 @@ namespace langX {
 				flag = false;
 			}
 			
-			if (thread->isInContinue())
-			{
-				break;
-			}
 		}
 
 		Node *defaultNode = n->switch_info.defaultNode;
@@ -2647,13 +2640,12 @@ namespace langX {
 		nodeLink->backAfterExec = true;
 	}
 
-	// 变量声明
-	void __execVAR_DECLAR(Node *n) {
 
+	void __realExecVAR_DECLAR(Node *n, langXThread *thread) {
 		// 都初始为 null
 		// 数组要赋值
 		Object *obj = Allocator::allocate(NULLOBJECT);
-		obj->setEmergeEnv(getState()->curThread()->getCurrentEnv());
+		obj->setEmergeEnv(thread->getCurrentEnv());
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
 			Node *t = n->opr_obj->op[i];
@@ -2661,14 +2653,14 @@ namespace langX {
 			{
 				if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR)
 				{
-					__execVAR_DECLAR(t);
+					__realExecVAR_DECLAR(t,thread);
 				}
 				else if (t->type == NODE_ARRAY)
 				{
 					if (t->ptr_u == NULL)
 					{
 						//printf("delar array erorr!\n");
-						getState()->curThread()->throwException(newException("Inner Error! delar array erorr!")->addRef());
+						thread->throwException(newException("Inner Error! delar array erorr!")->addRef());
 						Allocator::free(obj);
 						return;
 					}
@@ -2678,12 +2670,11 @@ namespace langX {
 					if (an->lengthNode != NULL)
 					{
 						Node *t = an->lengthNode;
-						__execNode(t);
 
 						if (t->value == NULL || t->value->getType() != NUMBER)
 						{
 							//printf("error array length !\n");
-							getState()->curThread()->throwException(newException("error array length !")->addRef());
+							thread->throwException(newException("error array length !")->addRef());
 							return;
 						}
 
@@ -2694,7 +2685,7 @@ namespace langX {
 					XArray *array1 = Allocator::allocateArray(len);
 					char *name = an->name;
 					Object *arrayRef = array1->addRef();
-					arrayRef->setEmergeEnv(getState()->curThread()->getCurrentEnv());
+					arrayRef->setEmergeEnv(thread->getCurrentEnv());
 					setValueToEnv(name, arrayRef);
 
 				}
@@ -2707,18 +2698,76 @@ namespace langX {
 
 		Allocator::free(obj);
 	}
+	
+	// 确保变量声明里的数组 节点的值都运算出来
+	void __execVAR_DECLAR_CheckValue(Node *n, langXThread *thread) {
+		for (int i = 0; i < n->opr_obj->op_count; i++)
+		{
+			Node *t = n->opr_obj->op[i];
+			if (t == NULL || t->type != NODE_VARIABLE)
+			{
+				if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR)
+				{
+					__execVAR_DECLAR_CheckValue(t, thread);
+				}
+				else if (t->type == NODE_ARRAY)
+				{
+					if (t->ptr_u == NULL)
+					{
+						//printf("delar array erorr!\n");
+						thread->throwException(newException("Inner Error! delar array erorr!")->addRef());
+						return;
+					}
 
-	void __execCLAXX_MEMBER(Node *n) {
-		//  执行节点1， 获得 类对象
+					XArrayNode *an = (XArrayNode *)t->ptr_u;
+					int len = an->length;
+					if (an->lengthNode != NULL)
+					{
+						Node *t = an->lengthNode;
+						thread->beginExecute(t, true);
+					}
+
+				}
+				continue;
+			}
+		}
+	}
+
+	// 变量声明
+	void __execVAR_DECLAR(NodeLink *nodeLink, langXThread *thread) {
+
+		Node *n = nodeLink->node;
+		nodeLink->backAfterExec = false;
+		if (nodeLink->index == 0) {
+			// 检测数组节点，都给赋值了
+			__execVAR_DECLAR_CheckValue(n, thread);
+			nodeLink->index = 1;
+		}
+		else {
+			// 真正的声明变量
+			__realExecVAR_DECLAR(n, thread);
+			nodeLink->backAfterExec = true;
+		}
+		
+	}
+
+	void __execCLAXX_MEMBER(NodeLink *nodeLink, langXThread *thread) {
+		Node *n = nodeLink->node;
 		Node *n1 = n->opr_obj->op[0];
-		__execNode(n1);
+		if (nodeLink->index == 0) {
+			//  执行节点1， 获得 类对象
+			thread->beginExecute(n1, true);
+			nodeLink->index = 1;
+			return;
+		}
+		
 
 		if (n1->value == NULL)
 		{
 			//printf("left value %s is not class object or array  !\n", n1->var_obj->name);
 			char tmp[100] = { 0 };
 			sprintf(tmp, "left value %s is not class object or array  !\n", n1->var_obj->name);
-			getState()->curThread()->throwException(newTypeErrorException(tmp)->addRef());
+			thread->throwException(newTypeErrorException(tmp)->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -2737,7 +2786,7 @@ namespace langX {
 			else {
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no member %s in array.", memberName);
-				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
+				thread->throwException(newNoClassMemberException(tmp)->addRef());
 			}
 
 			freeSubNodes(n);
@@ -2754,7 +2803,7 @@ namespace langX {
 			else {
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no member %s in string.", memberName);
-				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
+				thread->throwException(newNoClassMemberException(tmp)->addRef());
 			}
 
 			freeSubNodes(n);
@@ -2763,7 +2812,7 @@ namespace langX {
 
 		if (n1->value->getType() != OBJECT)
 		{
-			getState()->curThread()->throwException(newTypeErrorException("left value is not a object.")->addRef());
+			thread->throwException(newTypeErrorException("left value is not a object.")->addRef());
 			//printf("left value %s is not class object or array  !\n", n1->var_obj->name);
 			freeSubNodes(n);
 			return;
@@ -2802,7 +2851,7 @@ namespace langX {
 			else {
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no member %s in class %s.", memberName, objectRef->getClassInfo()->getName());
-				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
+				thread->throwException(newNoClassMemberException(tmp)->addRef());
 				freeSubNodes(n);
 				return;
 			}
@@ -2817,15 +2866,21 @@ namespace langX {
 		n->ptr_u = objectRef->clone();
 
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
-	void __execCLAXX_FUNC_CALL(Node *n) {
+	void __execCLAXX_FUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
+		Node *n = nodeLink->node;
 		Node *n1 = n->opr_obj->op[0];
-		__execNode(n1);
-
+		if (nodeLink->index == 0) {
+			thread->beginExecute(n1, true);
+			nodeLink->index = 1;
+			return;
+		}
+		
 		if (n1->value == NULL)
 		{
-			getState()->curThread()->throwException(newTypeErrorException("left value is not class object !")->addRef());
+			thread->throwException(newTypeErrorException("left value is not class object !")->addRef());
 			freeSubNodes(n);
 			return;
 		}
@@ -2833,29 +2888,54 @@ namespace langX {
 		if (n1->value->getType() == STRING)
 		{
 			// 
-			n->value = callInnerFunc(n1->value, n->opr_obj->op[1]);
+			Node *n2 = n->opr_obj->op[1];
+			XArgsList *args = (XArgsList *) n2->ptr_u;
+			if (nodeLink->index == 1)
+			{
+				nodeLink->index = 2;
+				if (args) {
+					for (int i = 0; i < args->index; i++)
+					{
+						if (args->args[i] == NULL)
+						{
+							continue;
+						}
+
+						thread->beginExecute(args->args[i],true);
+					}
+					return;
+				}
+			}
+			//  上面的写法是为了确保 无论如何到这个地方 index都是2
+			n->value = callInnerFunc(n1->value,n2);
 			return;
 		}
 
 		if (n1->value->getType() != OBJECT)
 		{
-			getState()->curThread()->throwException(newTypeErrorException("left value is not class object !")->addRef());
+			thread->throwException(newTypeErrorException("left value is not class object !")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 
-		langXObjectRef* objectRef = (langXObjectRef*)n1->value;
-		Environment *env = objectRef->getRefObject()->getObjectEnvironment();
-		getState()->curThread()->newEnv2(env);
 
+		// 2017年12月3日   首次执行到这里的时候 把当前object的环境丢进去
+		if (!nodeLink->flag) {
+			nodeLink->flag = true;
+
+			langXObjectRef* objectRef = (langXObjectRef*)n1->value;
+			Environment *env = objectRef->getRefObject()->getObjectEnvironment();
+			thread->newEnv2(env);
+		}
+		
 		// 根据语法解析文件可知， 第二个节点为一个函数调用节点
 		Node *n2 = n->opr_obj->op[1];
-		__execNode(n2);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+		if (nodeLink->index == 1) {
+			thread->beginExecute(n2, true);
+			nodeLink->index = 2;
 			return;
 		}
+
 		if (n2->value != NULL)
 		{
 			n->value = n2->value->clone();
@@ -2864,9 +2944,9 @@ namespace langX {
 			n->value = NULL;
 		}
 
-		getState()->curThread()->backEnv();
-
+		thread->backEnv();
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 	void __execRESTRICT(NodeLink *nodeLink, langXThread * thread) {
@@ -2896,13 +2976,13 @@ namespace langX {
 	}
 
 	// 执行 this.xxx
-	void __execTHIS(Node *n) {
-
-		Environment * env = getState()->curThread()->getNearestObjectEnv();
+	void __execTHIS(NodeLink *nodeLink,  langXThread *thread) {
+		Node *n = nodeLink->node;
+		Environment * env = thread->getNearestObjectEnv();
 		if (!env)
 		{
 			//printf("cannot find the object on use this!\n");
-			getState()->curThread()->throwException(newUnsupportedOperationException("invalid this stmt! cannot find the object on use this!")->addRef());
+			thread->throwException(newUnsupportedOperationException("invalid this stmt! cannot find the object on use this!")->addRef());
 			return;
 		}
 
@@ -2914,9 +2994,7 @@ namespace langX {
 			return;
 		}
 
-		// 限定好像没什么卵用。。 
-		//env->setRestrict(true);
-		getState()->curThread()->newEnv2(env);
+		thread->newEnv2(env);
 
 		langXObject *thisObj = objEnv->getEnvObject();
 		Node *n1 = n->opr_obj->op[0];
@@ -2944,7 +3022,7 @@ namespace langX {
 				// 没有那个成员
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no class member %s in class %s!", n->var_obj->name, thisObj->getClassName());
-				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
+				thread->throwException(newNoClassMemberException(tmp)->addRef());
 				free(n->var_obj->name);
 				free(n->var_obj);
 				n->var_obj = NULL;
@@ -2957,46 +3035,47 @@ namespace langX {
 			n->var_obj->name = strdup(n1->opr_obj->op[1]->var_obj->name);
 		}
 
-		__execNode(n1);
+		if (nodeLink->index == 0) {
+			thread->beginExecute(n1, true);
+			nodeLink->index = 1;
+			return;
+		}
 
 		if (n1->value == NULL)
 		{
 			//printf("error in __execTHIS, n1->value == NULL");
-			getState()->curThread()->throwException(newException("error in __execTHIS, n1->value == NULL")->addRef());
+			thread->throwException(newException("error in __execTHIS, n1->value == NULL")->addRef());
 		}
 		else {
 			n->value = n1->value->clone();
 		}
 
-		getState()->curThread()->backEnv();
+		thread->backEnv();
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
-	void __execSCOPE(Node *n) {
-
-		if (n == NULL)
-		{
-			return;
-		}
+	void __execSCOPE(NodeLink *nodeLink, langXThread *thread) {
+		Node *n = nodeLink->node;
 
 		char *className = n->opr_obj->op[0]->var_obj->name;
 		ClassInfo *claxxInfo = getState()->getClass(className);
 		if (claxxInfo == NULL)
 		{
-			getState()->curThread()->throwException(newClassNotFoundException(className)->addRef());
+			thread->throwException(newClassNotFoundException(className)->addRef());
 			return;
 		}
 
 		char *memberName = n->opr_obj->op[1]->var_obj->name;
 		Object *t = claxxInfo->getMember(memberName);
-		if (t == NULL || (t!=NULL &&t->isLocal()))
+		if (t == NULL || (t != NULL && t->isLocal()))
 		{
 			Function * tf = claxxInfo->getFunction(memberName);
 			if (tf == NULL)
 			{
 				char tmp[100] = { 0 };
 				sprintf(tmp, "no member %s in class %s.", memberName, className);
-				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
+				thread->throwException(newNoClassMemberException(tmp)->addRef());
 				return;
 			}
 
@@ -3007,88 +3086,101 @@ namespace langX {
 		}
 
 		n->value = t->clone();
-		//n->value->setEmergeEnv(getState()->curThread()->getCurrentEnv());
+		nodeLink->backAfterExec = true;
 	}
 
-	void __execSCOPE_FUNC_CALL(NodeLink *nodeLink) {
+	void __execSCOPE_FUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
 
 		Node *n = nodeLink->node;
 
 		// 根据语法文件可知 n1 是一个SCOPE 类型
 		Node *n1 = n->opr_obj->op[0];
-
+		ClassInfo *claxxInfo = nullptr;
 		char *className = n1->opr_obj->op[0]->var_obj->name;
-		ClassInfo *claxxInfo = getState()->getClass(className);
-		if (claxxInfo == NULL)
-		{
-			getState()->curThread()->throwException(newClassNotFoundException(className)->addRef());
-			return;
-		}
-
 		char *memberName = n1->opr_obj->op[1]->var_obj->name;
-		Function *t = claxxInfo->getFunction(memberName);
-		if (t == NULL)
-		{
-			char tmp[100] = { 0 };
-			sprintf(tmp, "no function %s in class %s.", memberName, className);
-			getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
+		NodeLink *putNodeLink = nullptr;
+
+		if (nodeLink->index == 0) {
+			// 进行一些检测和处理参数
+			nodeLink->index = 1;
+			putNodeLink = newNodeLink(nullptr, n);
+			nodeLink->ptr_u = putNodeLink;
+
+			claxxInfo = getState()->getClass(className);
+			if (claxxInfo == NULL)
+			{
+				thread->throwException(newClassNotFoundException(className)->addRef());
+				return;
+			}
+
+			Function *t = claxxInfo->getFunction(memberName);
+			if (t == NULL)
+			{
+				char tmp[100] = { 0 };
+				sprintf(tmp, "no function %s in class %s.", memberName, className);
+				thread->throwException(newNoClassMemberException(tmp)->addRef());
+				return;
+			}
+
+			ClassBridgeEnv *env = new ClassBridgeEnv(claxxInfo);
+			getState()->curThread()->newEnv(env);
+
+			// 根据语法解析文件得知， 第二个节点为参数节点
+			XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
+			callFunc(t, args, nullptr, putNodeLink);        // 首次执行 确定参数
 			return;
 		}
-
-		ClassBridgeEnv *env = new ClassBridgeEnv(claxxInfo);
-		getState()->curThread()->newEnv(env);
+		else {
+			putNodeLink = (NodeLink*)nodeLink->ptr_u;
+		}
+		
+		claxxInfo = getState()->getClass(className);
+		Function *t = claxxInfo->getFunction(memberName);
 
 		// 根据语法解析文件得知， 第二个节点为参数节点
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
 		const char *remark = fileInfoString(n->fileinfo).c_str();
-		n->value = callFunc(t, args, remark, nodeLink);
+		n->value = callFunc(t, args, remark, putNodeLink);
 
 		doSuffixOperationArgs(args);
 		//Allocator::free(n1->value);
 		n1->value = NULL;
 
 		getState()->curThread()->backEnv();
+		nodeLink->backAfterExec = true;
 	}
 
 	// 执行 try {}
-	void __execXTRY(Node *n) {
-		if (n == NULL)
-		{
+	void __execXTRY(NodeLink *nodeLink, langXThread *thread) {
+		
+		Node *n = nodeLink->node;
+
+		if (nodeLink->index == 0) {
+			nodeLink->index = 1;
+			TryEnvironment * tryEnv = new TryEnvironment();
+			tryEnv->setCatchNode(n->opr_obj->op[1]);    // 设置catch 节点
+			thread->newEnv(tryEnv);
+			thread->beginExecute(n->opr_obj->op[0], true);
 			return;
 		}
-
-		langXThread *thread = getState()->curThread();
-		TryEnvironment * tryEnv = new TryEnvironment();
-		//tryEnv->setCatchNode(n->opr_obj->op[1]);
-		thread->newEnv(tryEnv);
-		__execNode(n->opr_obj->op[0]);
-		thread->backEnv();
-
-		if (thread->isInException() )
-		{
-			// 发生了异常， 走 catch 节点
-			thread->setInException(false);
-
-			Environment *env = thread->newEnv();
-			Node *cNode = n->opr_obj->op[1];
-			env->putObject(cNode->opr_obj->op[0]->var_obj->name, thread->getThrownObj());
-			// 执行catch 内的语句
-			__execNode(cNode->opr_obj->op[1]);
+		
+		if (nodeLink->index == 1) {
 			thread->backEnv();
 		}
 
+		nodeLink->backAfterExec = true;
 	}
 
 	//  类型判断语句， 返回一个 true/false
-	void __execXIS(Node *n) {
+	void __execXIS(NodeLink *nodeLink,langXThread *thread) {
 
+		Node *n = nodeLink->node;
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
 
-		__execNode(n1);
-		if (getState()->curThread()->isInException())
-		{
-			freeSubNodes(n);
+		if (nodeLink->index == 0) {
+			thread->beginExecute(n1, true);
+			nodeLink->index = 1;
 			return;
 		}
 
@@ -3147,15 +3239,14 @@ namespace langX {
 		}
 
 		freeSubNodes(n);
+		nodeLink->backAfterExec = true;
 	}
 
 
 	// 包含其他文件
-	void __execINCLUDE(Node *n) {
-		if (n == NULL)
-		{
-			return;
-		}
+	void __execINCLUDE(NodeLink *nodeLink) {
+		
+		Node *n = nodeLink->node;
 
 		char *tmp = n->opr_obj->op[0]->con_obj->sValue;
 
@@ -3189,7 +3280,7 @@ namespace langX {
 
 
 		getState()->includeFile(filename);
-
+		nodeLink->backAfterExec = true;
 	}
 
 	// 执行 require 其他文件
@@ -3487,19 +3578,46 @@ namespace langX {
 	}
 
 	//  continue 关键字
-	void __execCONTINUE(Node *n) {
-		if (!n) {
-			return;
-		}
+	void __execCONTINUE(NodeLink *nodeLink,langXThread* thread) {
+		Node *n = nodeLink->node;
 
-		if (!getState()->curThread()->isInLoop() )
+		if (!thread->isInLoop() )
 		{
 			getState()->curThread()->throwException(newUnsupportedOperationException("invalid continue stmt.")->addRef());
 			//printf("无效的CONTINUE 语句 ");
 			return;
 		}
 
-		getState()->curThread()->setInContinue(true);
+		// 
+		do {
+			if (nodeLink == nullptr) {
+				break;
+			}
+
+			Node *n = nodeLink->node;
+
+			if (n->type == NodeType::NODE_OPERATOR) {
+				int opr = n->opr_obj->opr;
+				if (opr == WHILE || opr == FOR) {
+					// 找到了该节点
+					if (opr == WHILE) {
+						// 跳到判定条件的地方
+						nodeLink->index = 2;
+					}
+					else if (opr == FOR) {
+						// 跳到后置节点的地方
+						nodeLink->index = 3;
+					}
+					break;
+				}
+			}
+
+			nodeLink = nodeLink->previous;
+			thread->endExecute();
+
+		} while (true);
+
+		thread->setBackInExec(true);
 	}
 
 
@@ -3637,10 +3755,12 @@ namespace langX {
 			Function *func = (Function*)node->ptr_u;
 			if (!func->hasName())
 			{
-				// 匿名函数
+				// 匿名函数    ...  wtf ???  当初匿名函数到底是怎么进行处理的- - 
+				//  2017年12月3日   当运算一个匿名函数的时候， 就把改该节点的值 做成一个函数指针指向这个匿名函数
+				node->value = Allocator::allocateFunctionRef(func);
 				return;
 			}
-			if (getState()->curThread()->getCurrentEnv()->getFunctionSelf(func->getName()) != NULL)
+			if (thread->getCurrentEnv()->getFunctionSelf(func->getName()) != NULL)
 			{
 				char tmp[100] = { 0 };
 				sprintf(tmp, "function %s already declared.", func->getName());
@@ -3843,22 +3963,22 @@ namespace langX {
 			__execCLAXX_BODY(nodeLink);
 			break;
 		case CLAXX_MEMBER:
-			__execCLAXX_MEMBER(node);
+			__execCLAXX_MEMBER(nodeLink, thread);
 			break;
 		case CLAXX_FUNC_CALL:
-			__execCLAXX_FUNC_CALL(node);
+			__execCLAXX_FUNC_CALL(nodeLink, thread);
 			break;
 		case VAR_DECLAR:
-			__execVAR_DECLAR(node);
+			__execVAR_DECLAR(nodeLink, thread);
 			break;
 		case RESTRICT:
 			__execRESTRICT(nodeLink,thread);
 			break;
 		case THIS:
-			__execTHIS(node);
+			__execTHIS(nodeLink, thread);
 			break;
 		case XTRY:
-			__execXTRY(node);
+			__execXTRY(nodeLink, thread);
 			break;
 		case LEFT_SHIFT:
 			__execLEFT_SHIFT(nodeLink);
@@ -3867,13 +3987,13 @@ namespace langX {
 			__execRIGHT_SHIFT(nodeLink);
 			break;
 		case XIS:
-			__execXIS(node);
+			__execXIS(nodeLink, thread);
 			break;
 		case SCOPE:
-			__execSCOPE(node);
+			__execSCOPE(nodeLink, thread);
 			break;
 		case SCOPE_FUNC_CALL:
-			__execSCOPE_FUNC_CALL(nodeLink);
+			__execSCOPE_FUNC_CALL(nodeLink, thread);
 			break;
 		case REQUIRE:
 			__execREQUIRE(nodeLink);
@@ -3882,7 +4002,7 @@ namespace langX {
 			__execREQUIRE_ONCE(nodeLink);
 			break;
 		case XINCLUDE:
-			__execINCLUDE(node);
+			__execINCLUDE(nodeLink);
 			break;
 		case REF:
 			__execREF(nodeLink);
@@ -3891,7 +4011,7 @@ namespace langX {
 			__execCONST(nodeLink, thread);
 			break ;
 		case XCONTINUE :
-			__execCONTINUE(node);
+			__execCONTINUE(nodeLink,thread);
 			break;
 		case XLOCAL:
 			__execLOCAL(nodeLink, thread);
@@ -3902,8 +4022,11 @@ namespace langX {
 
 	}
 
-
 	void __execNode(Node *node) {
+		__execNode(node, nullptr);
+	}
+
+	void __execNode(Node *node, Node *limitNode) {
 
 		langXThread * thread = getState()->curThread();
 		if (node != NULL)
@@ -3917,9 +4040,35 @@ namespace langX {
 			//  程序没还有结束
 
 			__realExecNode(curLink, thread);     // 将原来的内容丢到一个新的方法里面
-			if (curLink->next == nullptr && curLink->backAfterExec) {
-				thread->endExecute();
+			if (thread->isBackInExec()) {
+				// 上面方法可能会将  curLink 指向的位置内存被删除， 判定下两个值是否一致， 不一致则重新执行
+				thread->setBackInExec(false);
+				NodeLink *tmpNodeLink = thread->getCurrentExecute();
+				if (tmpNodeLink == nullptr) {
+					break;            // 栈顶已经没有元素
+				}
+				if (tmpNodeLink != curLink) {
+					// tmpNodeLink 是最新的数据
+					if (tmpNodeLink->node == limitNode) {
+						// 强制跳跃到 限制节点了， 直接退出循环
+						thread->endExecute();
+						break;
+					}
+
+					continue;
+				}
 			}
+			
+			if (curLink->next == nullptr && curLink->backAfterExec) {
+				// will end execute .
+				Node *tmpNode = curLink->node;
+				thread->endExecute();
+
+				if (tmpNode == limitNode) {
+					break; 
+				}
+			}
+
 		}
 
 	}
