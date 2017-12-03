@@ -44,6 +44,11 @@ namespace langX {
 		short inContinue = 0;
 		// 在case 的时候是否需要计算case 的条件
 		short inCaseNeedCon = 0;
+
+		// 是否内部执行中回退了节点， 这样会导致最外层的curLink 变量失效
+		bool backInExec = false;   
+		// 正在执行的函数的根节点
+		Node * funcRootNode = nullptr;
 	};
 	
 
@@ -79,10 +84,12 @@ namespace langX {
 		bool isInSwitch();
 		void setInException(bool);
 		bool isInException();
-		void setInContinue(bool);
-		bool isInContinue();
 		void setInCaseNeedCon(bool);
 		bool isInCaseNeedCon();
+		void setBackInExec(bool);
+		bool isBackInExec();
+		void setFuncRootNode(Node*);
+		Node* getFuncRootNode();
 
 		void putObject(const char*, Object*);
 		void putObject(const std::string &, Object*);

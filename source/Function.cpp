@@ -150,8 +150,10 @@ namespace langX {
 
 		langXThread *thread = getState()->curThread();
 		thread->setInFunction(true);
+		thread->setFuncRootNode(this->m_node_root);
 		thread->beginExecute(this->m_node_root, true);
-		execNode(nullptr);
+		execNodeButLimit(nullptr, this->m_node_root);
+		//execNode(nullptr);
 		thread->setInFunction(false);
 
 
@@ -164,7 +166,7 @@ namespace langX {
 		Object * tmp = thread->getFunctionResult();
 		if (tmp != nullptr) {
 			Object * obj = tmp->clone();
-			Allocator::free(tmp);
+			//Allocator::free(tmp);
 			thread->setFunctionResult(nullptr);
 			return obj;
 		}

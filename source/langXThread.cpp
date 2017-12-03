@@ -219,25 +219,6 @@ namespace langX {
 		return m_exec_status.inException > 0;
 	}
 
-	void langXThread::setInContinue(bool flag)
-	{
-		if (flag)
-		{
-			m_exec_status.inContinue++;
-		}
-		else {
-			if (m_exec_status.inContinue > 0)
-			{
-				m_exec_status.inContinue--;
-			}
-		}
-	}
-
-	bool langXThread::isInContinue()
-	{
-		return m_exec_status.inContinue > 0;
-	}
-
 	void langXThread::setInCaseNeedCon(bool flag)
 	{
 		if (flag)
@@ -255,6 +236,26 @@ namespace langX {
 	bool langXThread::isInCaseNeedCon()
 	{
 		return m_exec_status.inCaseNeedCon > 0;
+	}
+
+	void langXThread::setBackInExec(bool flag)
+	{
+		this->m_exec_status.backInExec = flag;
+	}
+
+	bool langXThread::isBackInExec()
+	{
+		return this->m_exec_status.backInExec;
+	}
+
+	void langXThread::setFuncRootNode(Node *node)
+	{
+		this->m_exec_status.funcRootNode = node;
+	}
+
+	Node * langXThread::getFuncRootNode()
+	{
+		return this->m_exec_status.funcRootNode;
 	}
 
 	Environment * langXThread::getCurrentEnv() const

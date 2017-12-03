@@ -79,6 +79,8 @@ extern "C" {
 
 	// 运算这个节点
 	void execNode(XNode *);
+	// 运算这个节点，但是会截止到某个执行链路
+	void execNodeButLimit(XNode *n, XNode *limit);
 
 	// 先运算，然后释放这个节点占用的内存
 	void execAndFreeNode(XNode *);
