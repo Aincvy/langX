@@ -238,20 +238,29 @@ namespace langX {
 		return getFunction(this->m_class_info->getName());
 	}
 
-	void langXObject::callConstructor(ArgsList *args, const char *remark)
+	void langXObject::callConstructor(ArgsList *args, const char *remark, NodeLink *nodeLink, langXThread *thread)
 	{
 		Function *func = getConstructor();
 		if (func)
 		{
+			NodeLink *putNodeLink = nullptr;
+			if (!nodeLink->flag) {
+				nodeLink->flag = true;
+				putNodeLink = newNodeLink(nullptr, nodeLink->node);
+				nodeLink->ptr_u = putNodeLink;
+				thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
+				callFunc(func, args, remark, putNodeLink);
+				return;
+			}
+			else {
+				putNodeLink = (NodeLink *)nodeLink->ptr_u;
+			}
 
 			Environment *env = getObjectEnvironment();
-
-			getState()->curThread()->newEnv2(env);
-			getState()->curThread()->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
-			callFunc(func, args,remark, nullptr);       // TODO  修改成正式数据
-
-			getState()->curThread()->getStackTrace().popFrame();
-			getState()->curThread()->backEnv();
+			thread->newEnv2(env);
+			callFunc(func, args, remark, putNodeLink);
+			thread->getStackTrace().popFrame();
+			thread->backEnv();
 		}
 	}
 
@@ -301,7 +310,7 @@ namespace langX {
 
 	const char * langXObject::characteristic() const
 	{
-		return nullptr;
+		return this->m_characteristic.c_str();
 	}
 
 	bool langXObject::isDisposing() const

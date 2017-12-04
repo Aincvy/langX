@@ -16,8 +16,8 @@ namespace langX {
 
 	const int Allocator::GC_OBJECT_COUNT = 85000;
 	int Allocator::m_a_count = 0;
-	std::list<langXObject*> Allocator::m_objects;
 	std::list<XArray*> Allocator::m_arrays;
+	std::map<std::string, langXObject*> Allocator::m_object_map;
 
 	Allocator::Allocator()
 	{
@@ -173,24 +173,37 @@ namespace langX {
 
 		//printf("new object %s . now object count: %d\n" ,c->getName(), m_a_count);
 		langXObject *p = new langXObject(c);
-		m_objects.push_back(p);
+		m_object_map[std::string(p->characteristic())] = p;
 		m_a_count++;
 		
 		return p;
 	}
 
+	void Allocator::freeObject(langXObject *obj)
+	{
+		if (obj == nullptr) {
+			return;
+		}
+
+		std::string str(obj->characteristic());
+		m_object_map.erase(str);
+
+		delete obj;       // 解放对象占用的内存
+	}
+
 	void Allocator::gc()
 	{
 		printf("gc start \n");
+		
 
 		int count = 0;
-		for (auto i = m_objects.begin(); i != m_objects.end(); i++)
+		for (auto i = m_object_map.begin(); i != m_object_map.end(); i++)
 		{
-			langXObject *obj = (*i);
+			langXObject *obj = i->second;
 			if (obj->getRefCount() <= 0)
 			{
 				delete obj;
-				m_objects.erase(i++);
+				m_object_map.erase(i++);
 				count++;
 			}
 		}
@@ -213,13 +226,13 @@ namespace langX {
 
 	void Allocator::freeAllObjs()
 	{
-		for (auto i = m_objects.begin(); i != m_objects.end(); i++)
+		for (auto i = m_object_map.begin(); i != m_object_map.end(); i++)
 		{
-			langXObject *obj = (*i);
+			langXObject *obj = i->second;
 			delete obj;
 		}
 
-		m_objects.clear();
+		m_object_map.clear();
 		m_a_count = 0;
 	}
 

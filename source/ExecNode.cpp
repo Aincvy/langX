@@ -26,7 +26,29 @@ namespace langX {
 
 
 	// 根据数组信息获得结果， 返回的结果为一个 nullptr 或者复制好的结果
-	Object * getValueFromArrayInfo(ArrayInfo *arrayInfo) {
+	Object * getValueFromArrayInfo(ArrayInfo *arrayInfo, NodeLink *nodeLink, langXThread *thread) {
+		if (nodeLink->index == 0) {
+			nodeLink->index = 1;
+			bool flag = false;
+			if (arrayInfo->objNode != NULL)
+			{
+				thread->beginExecute(arrayInfo->objNode, true);
+				flag = true;
+			}
+			//  计算数组的 索引节点
+			if (arrayInfo->indexNode != NULL)
+			{
+				Node *t = arrayInfo->indexNode;
+				thread->beginExecute(t, true);
+				flag = true;
+			}
+
+			if (flag) {
+				nodeLink->backAfterExec = false;
+				return nullptr;
+			}
+		}
+
 		Object *obj = NULL;
 		if (arrayInfo->name != NULL)
 		{
@@ -34,13 +56,12 @@ namespace langX {
 		}
 		else if (arrayInfo->objNode != NULL)
 		{
-			__execNode(arrayInfo->objNode);
 			obj = arrayInfo->objNode->value;
 		}
 
 		if (obj == NULL)
 		{
-			getState()->curThread()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
+			thread->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
 			return nullptr;
 		}
 
@@ -56,10 +77,9 @@ namespace langX {
 				if (arrayInfo->indexNode != NULL)
 				{
 					Node *t = arrayInfo->indexNode;
-					__execNode(t);
-					if (t == nullptr)
+					if (t->value == nullptr)
 					{
-						getState()->curThread()->throwException(newException("error index !")->addRef());
+						thread->throwException(newException("error index !")->addRef());
 						return nullptr;
 					}
 					arg1 = t->value;
@@ -74,7 +94,7 @@ namespace langX {
 
 		if (obj->getType() != XARRAY)
 		{
-			getState()->curThread()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
+			thread->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
 			return nullptr;
 		}
 
@@ -82,11 +102,10 @@ namespace langX {
 		if (arrayInfo->indexNode != NULL)
 		{
 			Node *t = arrayInfo->indexNode;
-			__execNode(t);
 
 			if (t->value == NULL || t->value->getType() != NUMBER)
 			{
-				getState()->curThread()->throwException(newException("error array length !")->addRef());
+				thread->throwException(newException("error array length !")->addRef());
 				return nullptr;
 			}
 
@@ -100,7 +119,7 @@ namespace langX {
 		{
 			char tmp[1024] = { 0 };
 			sprintf(tmp, "index %d,array length %d", index, ref->getLength());
-			getState()->curThread()->throwException(newIndexOutOfBoundsException(tmp)->addRef());
+			thread->throwException(newIndexOutOfBoundsException(tmp)->addRef());
 			return nullptr;
 		}
 
@@ -108,7 +127,7 @@ namespace langX {
 		if (ret == nullptr)
 		{
 			// 内部异常
-			getState()->curThread()->throwException(newInnerException(" array element is null... ")->addRef());
+			thread->throwException(newInnerException(" array element is null... ")->addRef());
 			return nullptr;
 		}
 
@@ -1011,11 +1030,6 @@ namespace langX {
 					nodeLink->index = 1;
 					return;
 				}
-				else {
-					objectRef = (langXObjectRef *)left->ptr_u;
-					left->ptr_u = NULL;
-				}
-				
 			}
 			else if (left->opr_obj->opr == THIS)
 			{
@@ -1051,9 +1065,8 @@ namespace langX {
 			nodeLink->index = 1;
 		}
 			
-		//printf("__exec61 left name: %s\n", left->var_obj->name);
 		Node *right = n->opr_obj->op[1];
-		//printf("right->value: %p\n", right->value);
+		//   要把右侧的值检出， 然后对比类型，更新左侧的值
 		if (nodeLink->index == 1) {
 			checkValue(right,thread);
 			nodeLink->index = 2;
@@ -1081,7 +1094,16 @@ namespace langX {
 			}
 		}
 
-
+		// 尝试获取下左值是否是一个对象
+		if (left->type == NODE_OPERATOR)
+		{
+			if (left->opr_obj->opr == CLAXX_MEMBER)
+			{
+				objectRef = (langXObjectRef *)left->ptr_u;
+				left->ptr_u = NULL;
+			}
+		}
+		
 		ObjectType rightType = right->value->getType();
 		if (objectRef == NULL && arrayInfo == NULL)
 		{
@@ -1134,8 +1156,12 @@ namespace langX {
 			{
 				getState()->curThread()->throwException(newUnsupportedOperationException("left value is not array with array operator!")->addRef());
 				freeSubNodes(n);
-				//printf("left value is not array with array operator!\n");
 				return;
+			}
+
+			// 强制更新index的值
+			if (nodeLink->index == 2) {
+				nodeLink->index = 3;
 			}
 
 			int index = arrayInfo->index;
@@ -1152,7 +1178,6 @@ namespace langX {
 				{
 					getState()->curThread()->throwException(newException("error array length!")->addRef());
 					freeSubNodes(n);
-					//printf("error array length !\n");
 					return;
 				}
 
@@ -2597,33 +2622,55 @@ namespace langX {
 		nodeLink->backAfterExec = true;
 	}
 
-	void __execNEW(NodeLink *nodeLink) {
+	void __execNEW(NodeLink *nodeLink ,langXThread *thread) {
 		Node *n = nodeLink->node;
 		// new 一个对象
-		char *className = n->opr_obj->op[0]->var_obj->name;
-		ClassInfo *claxxInfo = getState()->getClass(className);
-		if (claxxInfo == NULL)
-		{
-			getState()->curThread()->throwException(newClassNotFoundException(className)->addRef());
-			return;
-		}
-		langXObject *object = claxxInfo->newObject();
-		if (object == NULL)
-		{
-			getState()->curThread()->throwException(newClassNotFoundException(className)->addRef());
-			return;
-		}
-		langXObjectRef * objectRef = object->addRef();
-		objectRef->setEmergeEnv(getState()->curThread()->getCurrentEnv());
-
+		nodeLink->backAfterExec = false;
 		Node *argNode = n->opr_obj->op[1];
-		if (argNode != NULL)
-		{
-			XArgsList *args = (XArgsList *)argNode->ptr_u;
-			object->callConstructor(args, fileInfoString(n->fileinfo).c_str());
-		}
+		if (nodeLink->index == 0) {
+			nodeLink->index = 1;
 
-		n->value = objectRef;
+			char *className = n->opr_obj->op[0]->var_obj->name;
+			ClassInfo *claxxInfo = getState()->getClass(className);
+			if (claxxInfo == NULL)
+			{
+				thread->throwException(newClassNotFoundException(className)->addRef());
+				return;
+			}
+			langXObject *object = claxxInfo->newObject();
+			if (object == NULL)
+			{
+				thread->throwException(newClassNotFoundException(className)->addRef());
+				return;
+			}
+			langXObjectRef * objectRef = object->addRef();
+			objectRef->setEmergeEnv(thread->getCurrentEnv());
+			n->value = objectRef;
+
+			if (argNode != NULL)
+			{
+				XArgsList *args = (XArgsList *)argNode->ptr_u;
+				object->callConstructor(args, fileInfoString(n->fileinfo).c_str(), nodeLink, thread);
+			}
+			else {
+				object->callConstructor(nullptr, fileInfoString(n->fileinfo).c_str(), nodeLink, thread);
+			}
+
+			return;        // 先出去运算参数
+		}
+		else {
+			langXObjectRef * objectRef = (langXObjectRef *)n->value;
+			langXObject *object = objectRef->getRefObject();
+			if (argNode != NULL)
+			{
+				XArgsList *args = (XArgsList *)argNode->ptr_u;
+				object->callConstructor(args, fileInfoString(n->fileinfo).c_str(), nodeLink, thread);
+			}
+			else {
+				object->callConstructor(nullptr, fileInfoString(n->fileinfo).c_str(), nodeLink, thread);
+			}
+		}
+		
 		nodeLink->backAfterExec = true;
 	}
 
@@ -2774,6 +2821,7 @@ namespace langX {
 
 		char *memberName = n->opr_obj->op[1]->var_obj->name;
 
+		//    先处理数组和字符串的情况 
 		if (n1->value->getType() == XARRAY)
 		{
 			XArrayRef *arrayRef = (XArrayRef*)n1->value;
@@ -2810,6 +2858,7 @@ namespace langX {
 			return;
 		}
 
+		//  处理 object 的情况
 		if (n1->value->getType() != OBJECT)
 		{
 			thread->throwException(newTypeErrorException("left value is not a object.")->addRef());
@@ -2887,9 +2936,9 @@ namespace langX {
 
 		if (n1->value->getType() == STRING)
 		{
-			// 
-			Node *n2 = n->opr_obj->op[1];
-			XArgsList *args = (XArgsList *) n2->ptr_u;
+			// 从语法解析文件可知 此节点是一个函数调用节点
+			Node *n2 = n->opr_obj->op[1];     
+			XArgsList *args = (XArgsList *) n2->opr_obj->op[1]->ptr_u;    
 			if (nodeLink->index == 1)
 			{
 				nodeLink->index = 2;
@@ -2978,64 +3027,66 @@ namespace langX {
 	// 执行 this.xxx
 	void __execTHIS(NodeLink *nodeLink,  langXThread *thread) {
 		Node *n = nodeLink->node;
-		Environment * env = thread->getNearestObjectEnv();
-		if (!env)
-		{
-			//printf("cannot find the object on use this!\n");
-			thread->throwException(newUnsupportedOperationException("invalid this stmt! cannot find the object on use this!")->addRef());
-			return;
-		}
-
-		ObjectBridgeEnv *objEnv = (ObjectBridgeEnv*)env;
-		if (n->opr_obj->op_count <= 0)
-		{
-			// no args.  获得自己就好了
-			n->value = objEnv->getEnvObject()->addRef();
-			return;
-		}
-
-		thread->newEnv2(env);
-
-		langXObject *thisObj = objEnv->getEnvObject();
 		Node *n1 = n->opr_obj->op[0];
-
-		// 如果重复调用这个节点，则释放之前产生的内存 ， 以防内存泄漏
-		if (n->var_obj != NULL)
-		{
-			if (n->var_obj->name != NULL)
-			{
-				free(n->var_obj->name);
-				n->var_obj->name = NULL;
-			}
-
-			free(n->var_obj);
-			n->var_obj = NULL;
-		}
-
-		//  产生变量的名字
-		n->var_obj = (Variable*)calloc(1, sizeof(Variable));
-		if (n1->type == NODE_VARIABLE)
-		{
-			n->var_obj->name = strdup(n1->var_obj->name);
-			if (!thisObj->hasMember(n->var_obj->name))
-			{
-				// 没有那个成员
-				char tmp[100] = { 0 };
-				sprintf(tmp, "no class member %s in class %s!", n->var_obj->name, thisObj->getClassName());
-				thread->throwException(newNoClassMemberException(tmp)->addRef());
-				free(n->var_obj->name);
-				free(n->var_obj);
-				n->var_obj = NULL;
-				return;
-			}
-		}
-		else if (n1->type == NODE_OPERATOR)
-		{
-			// 语法解释器并没有实现这部分， 所以暂时先不管。
-			n->var_obj->name = strdup(n1->opr_obj->op[1]->var_obj->name);
-		}
+		nodeLink->backAfterExec = false;
 
 		if (nodeLink->index == 0) {
+			Environment * env = thread->getNearestObjectEnv();
+			if (!env)
+			{
+				thread->throwException(newUnsupportedOperationException("invalid this stmt! cannot find the object on use this!")->addRef());
+				return;
+			}
+
+			ObjectBridgeEnv *objEnv = (ObjectBridgeEnv*)env;
+			if (n->opr_obj->op_count <= 0)
+			{
+				// no args.  获得自己就好了
+				n->value = objEnv->getEnvObject()->addRef();
+				nodeLink->backAfterExec = true;
+				return;
+			}
+
+			thread->newEnv2(env);
+
+			langXObject *thisObj = objEnv->getEnvObject();
+
+			// 如果重复调用这个节点，则释放之前产生的内存 ， 以防内存泄漏
+			if (n->var_obj != NULL)
+			{
+				if (n->var_obj->name != NULL)
+				{
+					free(n->var_obj->name);
+					n->var_obj->name = NULL;
+				}
+
+				free(n->var_obj);
+				n->var_obj = NULL;
+			}
+
+			//  产生变量的名字
+			n->var_obj = (Variable*)calloc(1, sizeof(Variable));
+			if (n1->type == NODE_VARIABLE)
+			{
+				n->var_obj->name = strdup(n1->var_obj->name);
+				if (!thisObj->hasMember(n->var_obj->name))
+				{
+					// 没有那个成员
+					char tmp[100] = { 0 };
+					sprintf(tmp, "no class member %s in class %s!", n->var_obj->name, thisObj->getClassName());
+					thread->throwException(newNoClassMemberException(tmp)->addRef());
+					free(n->var_obj->name);
+					free(n->var_obj);
+					n->var_obj = NULL;
+					return;
+				}
+			}
+			else if (n1->type == NODE_OPERATOR)
+			{
+				// 语法解释器并没有实现这部分， 所以暂时先不管。
+				n->var_obj->name = strdup(n1->opr_obj->op[1]->var_obj->name);
+			}
+
 			thread->beginExecute(n1, true);
 			nodeLink->index = 1;
 			return;
@@ -3161,6 +3212,7 @@ namespace langX {
 			tryEnv->setCatchNode(n->opr_obj->op[1]);    // 设置catch 节点
 			thread->newEnv(tryEnv);
 			thread->beginExecute(n->opr_obj->op[0], true);
+			nodeLink->tryEnv = tryEnv;     // 设置环境到节点是上
 			return;
 		}
 		
@@ -3561,7 +3613,10 @@ namespace langX {
 			{
 				// 类声明
 				t->state.isLocal = true;
-				__execNode(t);
+				NodeLink tmpNodeLink;
+				memset(&tmpNodeLink, 0, sizeof(NodeLink));
+				tmpNodeLink.node = t;
+				__realExecNode(&tmpNodeLink,thread);
 			}
 			
 		}
@@ -3789,8 +3844,19 @@ namespace langX {
 		else if (node->type == NODE_ARRAY_ELE)
 		{
 			ArrayInfo * arrayInfo = node->arr_obj;
-			node->value = getValueFromArrayInfo(arrayInfo);
-			freeArrayInfo(arrayInfo);
+			if (nodeLink->index == 0) {
+				// 获取一些参数值
+				Object *tmpValue = getValueFromArrayInfo(arrayInfo, nodeLink, thread);
+				if (tmpValue != nullptr) {
+					// 可能上面的执行中没需要参数，一次就成功了，直接将值处理了就好
+					node->value = tmpValue;
+					freeArrayInfo(arrayInfo);
+				}
+			}
+			else {
+				node->value = getValueFromArrayInfo(arrayInfo, nodeLink, thread);
+				freeArrayInfo(arrayInfo);
+			}
 			return;
 		}
 		else if (node->type == NODE_CHANGE_NAMESPACE)
@@ -3957,7 +4023,7 @@ namespace langX {
 			__execDeafult(node);
 			break;
 		case NEW:
-			__execNEW(nodeLink);
+			__execNEW(nodeLink, thread);
 			break;
 		case CLAXX_BODY:
 			__execCLAXX_BODY(nodeLink);

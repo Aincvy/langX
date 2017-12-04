@@ -168,7 +168,11 @@ void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 		// 
 		FunctionRef aref(func1);
 		aref.setObj(ref1->getRefObject());
-		Object *retObj = aref.call(nullptr, "", nullptr);    // TODO  修改成执行链
+		NodeLink tmpNodeLink;
+		memset(&tmpNodeLink, 0, sizeof(NodeLink));
+		//  因为本参数无参，所以只修改 index为1， 这样的话，一次就可以获取到结果
+		tmpNodeLink.index = 1;
+		Object *retObj = aref.call(nullptr, "<call toString()>", &tmpNodeLink);
  		if (retObj->getType() == STRING)
 		{
 			ss << ((String*)retObj)->getValue();
@@ -422,7 +426,7 @@ XNode * claxx(char *name, char *parent, XNode * node, bool flag) {
 	{
 		ClassBridgeEnv *env = claxxInfo->getClassEnv();
 		state->curThread()->newEnv(env);
-		__execNode(node);
+		__execNode(node, node);         // 理解处理掉这个节点，但是也仅仅只是处理到这个节点
 		state->curThread()->backEnv(false);
 	}
 
@@ -528,17 +532,17 @@ XObject *call3rdFunc(X3rdFunction *x3rdfunc, langXThread * thread,XArgsList *arg
 }
 
 XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, NodeLink* nodeLink) {
-	if (function == NULL)
-	{
-		getState()->curThread()->throwException(newException("function is null when call function.")->addRef());
-		return NULL;
-	}
-
+	
 #ifdef SHOW_DETAILS
 	//printf("callFunc %s %s\n" , function->getName(), remark );
 #endif
 
 	langXThread * thread = getState()->curThread();
+	if (function == NULL)
+	{
+		thread->throwException(newException("function is null when call function.")->addRef());
+		return NULL;
+	}
 
 	if (function->is3rd())
 	{
@@ -550,8 +554,9 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 		return call3rdFunc(x3rdfunc, thread, args, nodeLink);
 	}
 
-	if (!nodeLink->flag)
+	if (nodeLink->index == 0)
 	{
+		// 
 		thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
 		// 计算参数的值
@@ -576,7 +581,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 			}
 		}
 		
-		nodeLink->flag = true;
+		nodeLink->index = 1;
 		return nullptr;
 	}
 
@@ -607,10 +612,6 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 
 			if (args->args[i] != NULL)
 			{
-
-				// 最初的时候， 参数的值应该是一个NULL 。 然后执行参数节点， 产生一个结果
-				thread->beginExecute(args->args[i], true);
-				execNode(args->args[i]);
 
 				if (args->args[i]->value)
 				{

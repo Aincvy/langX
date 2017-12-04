@@ -153,7 +153,6 @@ namespace langX {
 		thread->setFuncRootNode(this->m_node_root);
 		thread->beginExecute(this->m_node_root, true);
 		execNodeButLimit(nullptr, this->m_node_root);
-		//execNode(nullptr);
 		thread->setInFunction(false);
 
 
@@ -349,6 +348,13 @@ namespace langX {
 
 	Object * FunctionRef::call(ArgsList * argsList, const char * remark,NodeLink *nodeLink)
 	{
+		// 获取参数
+		if (nodeLink->index == 0) {
+			callFunc(getRefFunction(), argsList, remark, nodeLink);
+			return nullptr;
+		}
+
+		// 实际调用
 		Environment *env = getFunctionEnv();
 		if (env != NULL)
 		{
