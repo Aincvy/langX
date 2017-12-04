@@ -344,6 +344,7 @@ namespace langX {
 		else {
 			// 找到了try 节点
 			TryEnvironment * tryEnv = (TryEnvironment *)nodeLink->tryEnv;
+			nodeLink->tryEnv = nullptr;
 			
 			// check call back first.
 			CBCatch c = tryEnv->getCatchCB();
@@ -361,15 +362,18 @@ namespace langX {
 
 				// 执行 catch 块的语句
 				//__execNode(cNode->opr_obj->op[1]);
+				Node *tmpNode = cNode->opr_obj->op[1];
+				this->beginExecute(tmpNode, true);
+				//  同步执行
+				execNodeButLimit(nullptr, tmpNode);
 
-				
 				backEnv();
 			}
 			
 		}
 
 		// 删除对象
-		delete obj->getRefObject();
+		Allocator::freeObject(obj->getRefObject());
 		freeThrownObj();
 		this->setInException(false);
 	}

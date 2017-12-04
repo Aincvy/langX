@@ -1,5 +1,7 @@
 #pragma once
 #include <list>
+#include <map>
+
 
 namespace langX {
 	class Object;
@@ -39,7 +41,8 @@ namespace langX {
 		static FunctionRef *allocateFunctionRef(Function *);
 		static void freeFunctionRef(FunctionRef *);
 
-		static langXObject * newObject(ClassInfo *) ;
+		static langXObject * newObject(ClassInfo *) ;                              //  创建一个对象
+		static void freeObject(langXObject *);                                     //  释放掉一个对象
 
 		// 垃圾回收
 		static void gc();
@@ -57,7 +60,8 @@ namespace langX {
 		static void arrayGC();
 
 	private:
-		static std::list<langXObject*> m_objects;
+		// key: 对象的特征字符串, value:  对象
+		static std::map<std::string, langXObject*> m_object_map;
 		static std::list<XArray*> m_arrays;
 
 		// 对象的申请次数

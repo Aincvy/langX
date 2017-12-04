@@ -29,6 +29,7 @@ namespace langX {
 		// 获取参数个数
 		int getArgsCount() const;
 		
+		// 调用这个函数， 在调用这个方法之前得确保参数都放入了最近的一个环境里面 
 		Object *call() const;
 
 		// 是否是第三方函数
@@ -117,7 +118,7 @@ namespace langX {
 		// 如果这个函数来自一个 对象， 则会返回一个对象环境， 如果来自类， 则返回类桥接环境
 		Environment *getFunctionEnv();
 
-		// 调用这个函数
+		// 调用这个函数  更多解释请查看   YLlangX.h 中 callFunction 函数的说明！
 		Object *call(ArgsList *argsList, const char *remark, NodeLink *);
 
 		//  参数为1 参数数组， 参数2为数组的元素个数 参数3为 备注

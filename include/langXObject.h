@@ -11,6 +11,8 @@ namespace langX {
 	class ObjectBridgeEnv;
 	class Environment;
 	class Function;
+	class langXThread;
+	struct NodeLink;
 
 	/*
 	 * langXObject  与object 独立分开
@@ -61,7 +63,7 @@ namespace langX {
 		// 获得构造函数
 		Function * getConstructor() const;
 		// 调用这个类的构造函数
-		void callConstructor(ArgsList *, const char *);
+		void callConstructor(ArgsList *, const char *, NodeLink *, langXThread *);
 
 		// 调用无参函数 ,如果找不到函数，直接返回NULL
 		Object * callFunction(const char*) const;
