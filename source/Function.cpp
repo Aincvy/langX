@@ -14,11 +14,9 @@
 #include "../include/langXThread.h"
 
 extern void deal_state(langX::NodeState * state);
-extern void deal_switch_info(langX::SwitchInfo *si);
 
 void resetNodeState(langX::Node *n) {
 	deal_state(&n->state);
-	deal_switch_info(&n->switch_info);
 	if (n->value != NULL)
 	{
 		langX::Allocator::free(n->value);

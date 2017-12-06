@@ -74,6 +74,8 @@ extern "C" {
 	XParamsList * params2(char *,char *);
 	// 创建一个实参列表 ， 或者追加一个实参到列表中
 	XArgsList * xArgs(XArgsList *, XNode *);
+	// 预处理 switch 节点
+	void pretreatSwitch(XNode *);
 
 	// 释放参数列表的 内存
 	void freeArgsList(XArgsList *);

@@ -38,11 +38,6 @@ void initLangX()
 		regExceptions();
 
 		state->loadConfig("/etc/langX.properties");
-
-		//state->loadModule("mod/core.so");
-		//state->loadModule("mod/mysql.so");
-		//state->loadModule("mod/mod_libevent.so");
-		//state->loadModule("mod/python3_x.so");
 	}
 }
 
@@ -95,12 +90,6 @@ void deal_state(NodeState * state) {
 	state->isLocal = false;
 }
 
-void deal_switch_info(SwitchInfo *si) {
-	si->defaultNode = NULL;
-	si->isDefault = false;
-	si->isInCase = false;
-	si->doDefault = false;
-}
 
 void deal_fileinfo(NodeFileInfo *f) {
 	f->lineno = getParseLineNo();
@@ -118,7 +107,6 @@ XNode *newNode() {
 	node->freeOnExeced = true;
 	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
 	node->value = NULL;
 	node->postposition = NULL;
 	node->ptr_u = NULL;
@@ -680,7 +668,6 @@ XNode * argsNode(XArgsList * args) {
 	node->ptr_u = args;
 	deal_fileinfo(&node->fileinfo);
 	deal_state(&node->state);
-	deal_switch_info(&node->switch_info);
 
 	return node;
 }
@@ -736,6 +723,89 @@ XArgsList * xArgs(XArgsList *args, XNode *node) {
 	return list;
 }
 
+// 预处理case list
+void pretreatCaseList(XNode *node,SwitchInfo *switchInfo) {
+	if (node == nullptr || node->type != NodeType::NODE_OPERATOR) {
+		return;
+	}
+
+	int opr = node->opr_obj->opr;
+	if (opr == CASE_LIST) {
+		for (size_t i = 0; i < node->opr_obj->op_count; i++)
+		{
+			pretreatCaseList(node->opr_obj->op[i], switchInfo);
+		}
+	}
+	else if (opr == CASE) {
+		// case 节点
+		int index = switchInfo->nowIndex++;
+		NodeLink nodeLink;
+		memset(&nodeLink, 0, sizeof(NodeLink));
+		Node *checkValueNode = node->opr_obj->op[0];    // 从语法解析文件可知， 此值是一个判定值
+		switchInfo->caseList[index] = node->opr_obj->op[1];    // 从语法解析文件可知， 此值是一个具体的执行值
+		nodeLink.node = checkValueNode;
+		__realExecNode(&nodeLink, getState()->curThread());
+		
+		// 释放值
+		Object *obj = checkValueNode->value;
+		if (obj->getType() == ObjectType::NUMBER) {
+			Number  *number = (Number*)obj;
+			char tmp[1024] = { 0 };
+			if (number->isInteger()) {
+				// 正数
+				sprintf(tmp, "%d", number->getIntValue());
+			}
+			else {
+				sprintf(tmp, "%f", number->getDoubleValue());
+			}
+			printf("index: %d, check value: %s\n", index, tmp);
+			std::string key(tmp);
+			switchInfo->keyIndexMap.insert(std::pair<std::string, int>(key, index));
+		}
+		else if (obj->getType() == ObjectType::STRING) {
+			String *str = (String*)obj;
+			switchInfo->keyIndexMap[std::string(str->getStrValue())] = index;
+		}
+		else {
+			// error value
+
+		}
+
+		Allocator::free(obj);
+		checkValueNode->value = nullptr;
+	}
+	else if (opr == DEFAULT) {
+		switchInfo->defaultNode = node;
+	}
+
+}
+
+void pretreatSwitch(XNode *node) {
+	if (node->type != NodeType::NODE_OPERATOR) {
+		return;
+	}
+	
+	if (node->opr_obj->opr != SWITCH) {
+		return;
+	}
+
+	SwitchInfo* switchInfo = new SwitchInfo();
+	switchInfo->nowIndex = 0;
+	XNode *nodes[235] = { NULL };
+	switchInfo->caseList = nodes;
+	node->ptr_u = switchInfo;
+	
+	for (size_t i = 0; i < node->opr_obj->op_count; i++)
+	{
+		pretreatCaseList(node->opr_obj->op[i], switchInfo);
+	}
+
+	// 重做 caseList
+	int memSize = switchInfo->nowIndex * sizeof(XNode*);
+	XNode **caseList = (XNode **)calloc(1, memSize);
+	memcpy(caseList, nodes, memSize);
+	switchInfo->caseList = caseList;
+}
 
 
 void freeArgsList(XArgsList *alist) {

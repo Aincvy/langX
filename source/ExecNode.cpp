@@ -2323,11 +2323,9 @@ namespace langX {
 
 	}
 
-
 	void __execSWITCH(NodeLink *nodeLink, langXThread *thread) {
 		Node* n = nodeLink->node;
 
-		bool flag = true;
 		Node * id_expr = n->opr_obj->op[0];
 		if (nodeLink->index == 0) {
 			// 运算id表达式
@@ -2338,165 +2336,171 @@ namespace langX {
 		
 		if (id_expr->value == NULL)
 		{
-			getState()->curThread()->throwException(newUnsupportedOperationException("null condition value in switch()!")->addRef());
+			thread->throwException(newUnsupportedOperationException("null condition value in switch()!")->addRef());
 			return;
 		}
-		//printf("switch id_expr value: %f\n" , ((Number*)id_expr->value)->getDoubleValue());
 	
 		if (!nodeLink->flag) {
 			thread->setInSwitch(true);
 			nodeLink->flag = true;
 		}
-		Node * case_list = n->opr_obj->op[1];
-		//printf("case_list op_count: %d\n", case_list->opr_obj->op_count);
 
-		// 2017年12月2日    我现在楞是没看懂这部分的逻辑是怎么写的了- - 
-		// 只好重写了 
+		if (nodeLink->index == 1) {
+			nodeLink->index = 2;
 
-		int shouldIndex = 0;
-		if (nodeLink->index >= 100) {
-			shouldIndex = nodeLink->index - 100;
+			char tmp[1024] = { 0 };
+			Object *obj = id_expr->value;
+			if (obj->getType() == ObjectType::NUMBER) {
+				Number  *number = (Number*)obj;
+				if (number->isInteger()) {
+					// 正数
+					sprintf(tmp, "%d", number->getIntValue());
+				}
+				else {
+					sprintf(tmp, "%f", number->getDoubleValue());
+				}
+
+			}
+			else if (obj->getType() == ObjectType::STRING) {
+				String *str = (String*)obj;
+				sprintf(tmp,"%s", str->getValue());
+			}
+
+			SwitchInfo *switchInfo = (SwitchInfo *)n->ptr_u;
+			auto it = switchInfo->keyIndexMap.find(tmp);
+			if (it == switchInfo->keyIndexMap.end()) {
+				// 未找到  执行default
+				thread->beginExecute(switchInfo->defaultNode, true);
+			}
+			else {
+				// 找到
+				thread->beginExecute(switchInfo->caseList[it->second], true);
+			}
+
+			return;
+		}
+		
+		thread->setInSwitch(false);
+		nodeLink->backAfterExec = true;
+
+		//Node * case_list = n->opr_obj->op[1];
+
+		//// 2017年12月2日    我现在楞是没看懂这部分的逻辑是怎么写的了- - 
+		//// 只好重写了 
+
+		//int shouldIndex = 0;
+		//if (nodeLink->index >= 100) {
+		//	shouldIndex = nodeLink->index - 100;
+		//}
+		//else {
+		//	nodeLink->index = 100;
+		//}
+		//if (shouldIndex >= case_list->opr_obj->op_count) {
+		//	// 已经遍历完所有的节点，执行default 
+
+		//	thread->setInSwitch(false);
+		//	freeSubNodes(n);
+		//	nodeLink->backAfterExec = true;
+		//	return;
+		//}
+
+		//nodeLink->index++;
+		//// 检测是否是这个节点，然后执行
+		//Node * t = case_list->opr_obj->op[shouldIndex];
+		//if (nodeLink->ptr_u == NULL) {
+		//	t->ptr_u = id_expr->value;
+		//	thread->beginExecute(t, true);
+		//	nodeLink->ptr_u = n;      // 设置成非null 
+		//}
+		//else {
+		//	// 节点已经运算过了， 现在做一些判定
+		//	nodeLink->ptr_u = NULL;
+		//}
+
+	}
+
+	void __execCASE_LIST(NodeLink *nodeLink, langXThread *thread) {
+
+		//  2017年12月4日  defaultNode 交给 switch 进行执行
+		//  
+
+		//Node *n = nodeLink->node;
+		//nodeLink->backAfterExec = false;
+		//int shouldIndex = 0;
+		//if (nodeLink->index >= 100) {
+		//	shouldIndex = nodeLink->index - 100;
+		//}
+		//else {
+		//	nodeLink->index = 100;
+		//}
+		//if (shouldIndex >= n->opr_obj->op_count) {
+		//	// 已经遍历完所有的节点
+		//	nodeLink->backAfterExec = true;
+		//	freeSubNodes(n);
+		//	return;
+		//}
+
+		//nodeLink->index++;
+
+		//Node *t = n->opr_obj->op[shouldIndex];
+		//if (t == nullptr) {
+		//	return;
+		//}
+
+		//t->ptr_u = n->ptr_u;
+		//t->switch_info.doDefault = false;     // 如果节点是一个default节点 则不做什么
+		//thread->beginExecute(t, true);
+
+	}
+
+	void __execCASE(NodeLink *nodeLink, langXThread *thread) {
+		// TODO  优化， 如果不需要判定条件， 可以不运算条件节点的
+
+		//Node * n = nodeLink->node;
+		//if (n == NULL || n->ptr_u == NULL)
+		//{
+		//	return;
+		//}
+		//Node * con = n->opr_obj->op[0];
+		//if (nodeLink->index == 0) {
+		//	// 执行条件节点
+		//	nodeLink->index = 1;
+		//	thread->beginExecute(con, true);
+		//	return;
+		//}
+		//else if (nodeLink->index == 1) {
+		//	//  
+		//	nodeLink->index = 2;
+		//	double a = ((Number*)n->ptr_u)->getDoubleValue();
+		//	if (a == ((Number*)con->value)->getDoubleValue() || !thread->isInCaseNeedCon())
+		//	{
+		//		thread->setInCaseNeedCon(false);
+		//		n->switch_info.isInCase = true;
+		//		Node * t = n->opr_obj->op[1];
+		//		if (t != NULL)
+		//		{
+		//			thread->beginExecute(t, true);
+		//			return;
+		//		}
+		//	}
+		//}
+
+		//freeSubNodes(n);
+		nodeLink->backAfterExec = true; 
+	}
+
+	void __execDeafult(NodeLink *nodeLink, langXThread *thread) {
+		
+		Node *n = nodeLink->node;
+
+		if (nodeLink->index == 0) {
+			thread->beginExecute(n->opr_obj->op[0], true);
+			nodeLink->index = 1;
 		}
 		else {
-			nodeLink->index = 100;
-		}
-		if (shouldIndex >= case_list->opr_obj->op_count) {
-			// 已经遍历完所有的节点，执行default 
-
-			thread->setInSwitch(false);
 			freeSubNodes(n);
-			nodeLink->backAfterExec = true;
-			return;
 		}
 
-		nodeLink->index++;
-		// 检测是否是这个节点，然后执行
-		Node * t = case_list->opr_obj->op[shouldIndex];
-		if (nodeLink->ptr_u == NULL) {
-			t->ptr_u = id_expr->value;
-			t->switch_info.doDefault = false;
-			thread->beginExecute(t, true);
-			nodeLink->ptr_u = n;      // 设置成非null 
-		}
-		else {
-			// 节点已经运算过了， 现在做一些判定
-			nodeLink->ptr_u = NULL;
-			// 设置default 节点
-			if (t->switch_info.isDefault)
-			{
-				n->switch_info.defaultNode = t;
-			}
-			else if (t->switch_info.defaultNode != NULL)
-			{
-				n->switch_info.defaultNode = t->switch_info.defaultNode;
-			}
-
-			if (t->switch_info.isInCase)
-			{
-				flag = false;
-			}
-		}
-
-		if (flag && n->switch_info.defaultNode != NULL)
-		{
-			n->switch_info.defaultNode->switch_info.doDefault = true;
-			__execNode(n->switch_info.defaultNode);
-		}
-
-	}
-
-	void __execCASE_LIST(Node *n) {
-
-		langXThread * thread = getState()->curThread();
-		bool flag = true;
-		for (int i = 0; i < n->opr_obj->op_count; i++)
-		{
-			// 如果当前环境为一个死亡环境， 则直接返回
-			// TODO 清理内存
-			if (getState()->curThread()->isInException())
-			{
-				return;
-			}
-
-			Node * t = n->opr_obj->op[i];
-			if (t == NULL)
-			{
-				continue;
-			}
-
-			// case 语句中  ptr_u 属性保存的是 指向 switch(a)  a 的值
-			t->ptr_u = n->ptr_u;
-			t->switch_info.doDefault = false;
-			__execNode(t);
-
-			// 设置default 节点
-			if (t->switch_info.isDefault)
-			{
-				n->switch_info.defaultNode = t;
-			}
-			else if (t->switch_info.defaultNode != NULL)
-			{
-				n->switch_info.defaultNode = t->switch_info.defaultNode;
-			}
-
-			if (t->switch_info.isInCase)
-			{
-				flag = false;
-			}
-			
-		}
-
-		Node *defaultNode = n->switch_info.defaultNode;
-		if (flag && defaultNode != NULL)
-		{
-			defaultNode->switch_info.doDefault = true;
-			__execNode(n->switch_info.defaultNode);
-		}
-
-		freeSubNodes(n);
-	}
-
-	void __execCASE(Node *n) {
-		if (n == NULL || n->ptr_u == NULL)
-		{
-			return;
-		}
-
-		double a = ((Number*)n->ptr_u)->getDoubleValue();
-
-		Node * con = n->opr_obj->op[0];
-		__execNode(con);
-
-		langXThread * thread = getState()->curThread();
-
-		if (a == ((Number*)con->value)->getDoubleValue() || !thread->isInCaseNeedCon())
-		{
-			thread->setInCaseNeedCon(false);
-			n->switch_info.isInCase = true;
-			Node * t = n->opr_obj->op[1];
-			if (t != NULL)
-			{
-				__execNode(t);
-			}
-
-		}
-
-		freeSubNodes(n);
-	}
-
-	void __execDeafult(Node *n) {
-		//printf("\ngoin default\n");
-
-		if (!n->switch_info.doDefault)
-		{
-			n->switch_info.isDefault = true;
-			return;
-		}
-
-		stateExtends(n);
-		__execNode(n->opr_obj->op[0]);
-
-		freeSubNodes(n);
 	}
 
 	void __execUMINUS(NodeLink *nodeLink) {
@@ -3682,7 +3686,7 @@ namespace langX {
 	 * 由 void __execNode(Node *node)    修改为  __realExecNode()       2017年11月26日
 	 */
 	void __realExecNode(NodeLink *nodeLink, langXThread *thread) {
-		if (nodeLink == NULL)
+		if (nodeLink == NULL || nodeLink->node == NULL)
 		{
 			return;
 		}
@@ -4014,13 +4018,13 @@ namespace langX {
 			__execSWITCH(nodeLink,thread);
 			break;
 		case CASE_LIST:
-			__execCASE_LIST(node);
+			__execCASE_LIST(nodeLink, thread);
 			break;
 		case CASE:
-			__execCASE(node);
+			__execCASE(nodeLink, thread);
 			break;
 		case DEFAULT:
-			__execDeafult(node);
+			__execDeafult(nodeLink, thread);
 			break;
 		case NEW:
 			__execNEW(nodeLink, thread);
