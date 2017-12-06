@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <map>
 
 #define SHOW_DETAILS 1
 
@@ -157,13 +158,12 @@ namespace langX {
 	{
 		// default 语句的节点所在位置
 		Node *defaultNode;
-
-		// 当前结点是否是 default 语句
-		bool isDefault;
-		// case 语句是否进入内容
-		bool isInCase;
-		// 如果当前节点是 default ,是否执行
-		bool doDefault;
+		// case 列表  
+		Node **caseList;
+		// key: case 'key'  , value: caseList 的索引
+		std::map<std::string, int>  keyIndexMap;
+		// 当前索引
+		int nowIndex;
 	};
 
 	// 节点的文件信息
@@ -229,8 +229,6 @@ namespace langX {
 		Object *value;
 		// 万能指针 ， 主要用于放置参数什么的
 		void *ptr_u;
-		// switch 相关的内容
-		SwitchInfo switch_info;
 		// 节点状态
 		NodeState state;
 		// 文件信息

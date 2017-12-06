@@ -1,0 +1,19 @@
+tmp = 0 ;
+
+switch ( tmp ){
+case 0:
+case 1:
+	print("0 and 1 \n");
+	break ;
+case 2 :
+	print("2\n");
+case 3 :
+	print("3\n");
+case 4 :
+	print("4\n");
+default:
+	print("default \n");
+	break;
+}
+
+print("script end !\n");
