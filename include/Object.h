@@ -164,6 +164,8 @@ namespace langX {
 		std::map<std::string, int>  keyIndexMap;
 		// 当前索引
 		int nowIndex;
+		// 一个list指针
+		void *list_ptr;
 	};
 
 	// 节点的文件信息

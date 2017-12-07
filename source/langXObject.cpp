@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <string.h>
 #include "../include/Object.h"
 #include "../include/ClassInfo.h"
 #include "../include/Function.h"
@@ -261,7 +262,44 @@ namespace langX {
 			callFunc(func, args, remark, putNodeLink);
 			thread->getStackTrace().popFrame();
 			thread->backEnv();
+			freeNodeLink(putNodeLink);
+			nodeLink->ptr_u = NULL;
 		}
+	}
+
+	void langXObject::callConstructor(ArgsList *args, const char *remark)
+	{
+		// 强行执行构造函数  
+		Function *func = getConstructor();
+		if (func)
+		{
+			langXThread *thread = getState()->curThread();
+			NodeLink *curNodeLink = thread->getCurrentExecute();
+			NodeLink tmpNodeLink;
+			memset(&tmpNodeLink, 0, sizeof(NodeLink));
+			NodeLink *nodeLink = &tmpNodeLink;
+
+			// 运算参数
+			NodeLink *putNodeLink = newNodeLink(nullptr, nodeLink->node);
+			nodeLink->ptr_u = putNodeLink;
+			thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
+			callFunc(func, args, remark, putNodeLink);
+			if (curNodeLink->next != nullptr)
+			{
+				Node *t = curNodeLink->next->node;
+				execNodeButLimit(t, t);
+			}
+
+			// 运算函数
+			Environment *env = getObjectEnvironment();
+			thread->newEnv2(env);
+			callFunc(func, args, remark, putNodeLink);
+			thread->getStackTrace().popFrame();
+			thread->backEnv();
+			freeNodeLink(putNodeLink);
+			nodeLink->ptr_u = NULL;
+		}
+
 	}
 
 	Object * langXObject::callFunction(const char *name) const
