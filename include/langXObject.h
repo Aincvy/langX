@@ -65,6 +65,9 @@ namespace langX {
 		// 调用这个类的构造函数
 		void callConstructor(ArgsList *, const char *, NodeLink *, langXThread *);
 
+		// 调用这个类的构造函数  | 给第三方库使用的，强制执行构造函数
+		void callConstructor(ArgsList *, const char * );
+
 		// 调用无参函数 ,如果找不到函数，直接返回NULL
 		Object * callFunction(const char*) const;
 

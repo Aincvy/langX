@@ -1,5 +1,9 @@
-tmp = 0 ;
+tmp = 20;
 
+
+// switch 的单项case 是单一的
+// 写不写break 无所谓， 没有break   2的语句也不会到3里面
+// 但是 0，1 这种写法是ok 的
 switch ( tmp ){
 case 0:
 case 1:

@@ -729,6 +729,7 @@ void pretreatCaseList(XNode *node,SwitchInfo *switchInfo) {
 		return;
 	}
 
+	std::list<std::string> *list = (std::list<std::string>*)switchInfo->list_ptr;
 	int opr = node->opr_obj->opr;
 	if (opr == CASE_LIST) {
 		for (size_t i = 0; i < node->opr_obj->op_count; i++)
@@ -742,10 +743,22 @@ void pretreatCaseList(XNode *node,SwitchInfo *switchInfo) {
 		NodeLink nodeLink;
 		memset(&nodeLink, 0, sizeof(NodeLink));
 		Node *checkValueNode = node->opr_obj->op[0];    // 从语法解析文件可知， 此值是一个判定值
-		switchInfo->caseList[index] = node->opr_obj->op[1];    // 从语法解析文件可知， 此值是一个具体的执行值
+		Node *execNode = node->opr_obj->op[1];    // 从语法解析文件可知， 此值是一个具体的执行值
+		
 		nodeLink.node = checkValueNode;
 		__realExecNode(&nodeLink, getState()->curThread());
 		
+		if (execNode != nullptr) {
+			switchInfo->caseList[index] = execNode;
+
+			if (!list->empty()) {
+				for (auto i = list->begin(); i != list->end(); i++)
+				{
+					switchInfo->keyIndexMap.insert(std::pair<std::string, int>((*i), index));
+				}
+			}
+		} 
+
 		// 释放值
 		Object *obj = checkValueNode->value;
 		if (obj->getType() == ObjectType::NUMBER) {
@@ -758,17 +771,30 @@ void pretreatCaseList(XNode *node,SwitchInfo *switchInfo) {
 			else {
 				sprintf(tmp, "%f", number->getDoubleValue());
 			}
-			printf("index: %d, check value: %s\n", index, tmp);
+			//printf("index: %d, check value: %s\n", index, tmp);
 			std::string key(tmp);
-			switchInfo->keyIndexMap.insert(std::pair<std::string, int>(key, index));
+			if (execNode == nullptr) {
+				list->push_back(key);
+			}
+			else {
+				switchInfo->keyIndexMap.insert(std::pair<std::string, int>(key, index));
+			}
 		}
 		else if (obj->getType() == ObjectType::STRING) {
 			String *str = (String*)obj;
-			switchInfo->keyIndexMap[std::string(str->getStrValue())] = index;
+			std::string key(str->getStrValue());
+			if (execNode == nullptr) {
+				list->push_back(key);
+			}
+			else {
+				switchInfo->keyIndexMap[key] = index;
+			}
+			
 		}
 		else {
 			// error value
-
+			printf("error object type in switch. \n");
+			exit(1);
 		}
 
 		Allocator::free(obj);
@@ -794,7 +820,8 @@ void pretreatSwitch(XNode *node) {
 	XNode *nodes[235] = { NULL };
 	switchInfo->caseList = nodes;
 	node->ptr_u = switchInfo;
-	
+	std::list<std::string> list;
+	switchInfo->list_ptr = &list;
 	for (size_t i = 0; i < node->opr_obj->op_count; i++)
 	{
 		pretreatCaseList(node->opr_obj->op[i], switchInfo);
@@ -915,6 +942,15 @@ void freeNode(XNode * n) {
 			{
 				free(n->var_obj);
 				n->var_obj = NULL;
+			}
+		}
+		else if (n->opr_obj->opr == SWITCH)
+		{
+			SwitchInfo *switchInfo = (SwitchInfo *)n->ptr_u;
+			if (switchInfo != NULL)
+			{
+				delete switchInfo;
+				n->ptr_u = NULL;
 			}
 		}
 		//printf("00001\n");

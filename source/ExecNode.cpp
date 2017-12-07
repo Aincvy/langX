@@ -1409,6 +1409,7 @@ namespace langX {
 			}
 
 			Node *n = nodeLink->node;
+			freeSubNodes(n);      //  释放节点的值的内存
 			nodeLink = nodeLink->previous;
 			thread->endExecute();
 
@@ -1483,6 +1484,7 @@ namespace langX {
 			}
 
 			Node *n = nodeLink->node;
+			freeSubNodes(n);
 			if (funcRootNode == n) {
 				// 找到了该节点
 				nodeLink->index = 1000;       // 函数已经获取到返回值
@@ -1492,6 +1494,7 @@ namespace langX {
 			nodeLink = nodeLink->previous;
 			thread->endExecute();
 		} while (true);
+
 	}
 
 	// 自增运算符 ++ 
@@ -3154,6 +3157,7 @@ namespace langX {
 		char *className = n1->opr_obj->op[0]->var_obj->name;
 		char *memberName = n1->opr_obj->op[1]->var_obj->name;
 		NodeLink *putNodeLink = nullptr;
+		const char *remark = fileInfoString(n->fileinfo).c_str();
 
 		if (nodeLink->index == 0) {
 			// 进行一些检测和处理参数
@@ -3182,7 +3186,7 @@ namespace langX {
 
 			// 根据语法解析文件得知， 第二个节点为参数节点
 			XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
-			callFunc(t, args, nullptr, putNodeLink);        // 首次执行 确定参数
+			callFunc(t, args, remark, putNodeLink);        // 首次执行 确定参数
 			return;
 		}
 		else {
@@ -3194,7 +3198,6 @@ namespace langX {
 
 		// 根据语法解析文件得知， 第二个节点为参数节点
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
-		const char *remark = fileInfoString(n->fileinfo).c_str();
 		n->value = callFunc(t, args, remark, putNodeLink);
 
 		doSuffixOperationArgs(args);
@@ -3654,7 +3657,7 @@ namespace langX {
 			}
 
 			Node *n = nodeLink->node;
-
+			freeSubNodes(n);
 			if (n->type == NodeType::NODE_OPERATOR) {
 				int opr = n->opr_obj->opr;
 				if (opr == WHILE || opr == FOR) {
