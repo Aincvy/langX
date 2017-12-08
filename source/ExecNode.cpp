@@ -2221,6 +2221,7 @@ namespace langX {
 
 	void __execWHILE(NodeLink *nodeLink, langXThread *thread) {
 		Node *n = nodeLink->node;
+		nodeLink->backAfterExec = false;
 
 		// 先执行条件 节点 ,然后判断条件 节点的值， 然后释放条件 节点的内存
 		// 循环执行结束 ， 释放掉  所有节点值 的内存
@@ -2264,6 +2265,8 @@ namespace langX {
 	}
 
 	void __execFOR(NodeLink *nodeLink, langXThread *thread) {
+
+		nodeLink->backAfterExec = false;
 
 		Node *n = nodeLink->node;
 		if (!nodeLink->flag) {
@@ -2329,6 +2332,8 @@ namespace langX {
 	void __execSWITCH(NodeLink *nodeLink, langXThread *thread) {
 		Node* n = nodeLink->node;
 
+		nodeLink->backAfterExec = false;
+
 		Node * id_expr = n->opr_obj->op[0];
 		if (nodeLink->index == 0) {
 			// 运算id表达式
@@ -2386,109 +2391,19 @@ namespace langX {
 		thread->setInSwitch(false);
 		nodeLink->backAfterExec = true;
 
-		//Node * case_list = n->opr_obj->op[1];
-
-		//// 2017年12月2日    我现在楞是没看懂这部分的逻辑是怎么写的了- - 
-		//// 只好重写了 
-
-		//int shouldIndex = 0;
-		//if (nodeLink->index >= 100) {
-		//	shouldIndex = nodeLink->index - 100;
-		//}
-		//else {
-		//	nodeLink->index = 100;
-		//}
-		//if (shouldIndex >= case_list->opr_obj->op_count) {
-		//	// 已经遍历完所有的节点，执行default 
-
-		//	thread->setInSwitch(false);
-		//	freeSubNodes(n);
-		//	nodeLink->backAfterExec = true;
-		//	return;
-		//}
-
-		//nodeLink->index++;
-		//// 检测是否是这个节点，然后执行
-		//Node * t = case_list->opr_obj->op[shouldIndex];
-		//if (nodeLink->ptr_u == NULL) {
-		//	t->ptr_u = id_expr->value;
-		//	thread->beginExecute(t, true);
-		//	nodeLink->ptr_u = n;      // 设置成非null 
-		//}
-		//else {
-		//	// 节点已经运算过了， 现在做一些判定
-		//	nodeLink->ptr_u = NULL;
-		//}
 
 	}
 
 	void __execCASE_LIST(NodeLink *nodeLink, langXThread *thread) {
 
-		//  2017年12月4日  defaultNode 交给 switch 进行执行
-		//  
-
-		//Node *n = nodeLink->node;
-		//nodeLink->backAfterExec = false;
-		//int shouldIndex = 0;
-		//if (nodeLink->index >= 100) {
-		//	shouldIndex = nodeLink->index - 100;
-		//}
-		//else {
-		//	nodeLink->index = 100;
-		//}
-		//if (shouldIndex >= n->opr_obj->op_count) {
-		//	// 已经遍历完所有的节点
-		//	nodeLink->backAfterExec = true;
-		//	freeSubNodes(n);
-		//	return;
-		//}
-
-		//nodeLink->index++;
-
-		//Node *t = n->opr_obj->op[shouldIndex];
-		//if (t == nullptr) {
-		//	return;
-		//}
-
-		//t->ptr_u = n->ptr_u;
-		//t->switch_info.doDefault = false;     // 如果节点是一个default节点 则不做什么
-		//thread->beginExecute(t, true);
+		// 2017年12月8日  switch 内处理这些事情
+		nodeLink->backAfterExec = true;
 
 	}
 
 	void __execCASE(NodeLink *nodeLink, langXThread *thread) {
-		// TODO  优化， 如果不需要判定条件， 可以不运算条件节点的
-
-		//Node * n = nodeLink->node;
-		//if (n == NULL || n->ptr_u == NULL)
-		//{
-		//	return;
-		//}
-		//Node * con = n->opr_obj->op[0];
-		//if (nodeLink->index == 0) {
-		//	// 执行条件节点
-		//	nodeLink->index = 1;
-		//	thread->beginExecute(con, true);
-		//	return;
-		//}
-		//else if (nodeLink->index == 1) {
-		//	//  
-		//	nodeLink->index = 2;
-		//	double a = ((Number*)n->ptr_u)->getDoubleValue();
-		//	if (a == ((Number*)con->value)->getDoubleValue() || !thread->isInCaseNeedCon())
-		//	{
-		//		thread->setInCaseNeedCon(false);
-		//		n->switch_info.isInCase = true;
-		//		Node * t = n->opr_obj->op[1];
-		//		if (t != NULL)
-		//		{
-		//			thread->beginExecute(t, true);
-		//			return;
-		//		}
-		//	}
-		//}
-
-		//freeSubNodes(n);
+		
+		// 2017年12月8日  switch 内处理这些事情
 		nodeLink->backAfterExec = true; 
 	}
 
@@ -2517,14 +2432,12 @@ namespace langX {
 		Node *n1 = n->opr_obj->op[0];
 
 		if (n1->value == NULL) {
-			//printf("__execUMINUS n1->value is NULL\n");
 			getState()->curThread()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 		if (n1->value->getType() != NUMBER)
 		{
-			//printf("ERROR:  __execUMINUS is NOT NUMBER...  \n");
 			getState()->curThread()->throwException(newArithmeticException("type error on opr '-'! only can number!")->addRef());
 			freeSubNodes(n);
 			return;
@@ -2535,7 +2448,7 @@ namespace langX {
 
 		freeSubNodes(n);
 		nodeLink->backAfterExec = true;
-		//printf("%.2f\n", ((Number*)n->value)->getDoubleValue());
+
 	}
 
 	// 执行一个函数
