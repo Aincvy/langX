@@ -1433,15 +1433,16 @@ namespace langX {
 
 	void __execRETURN(NodeLink *nodeLink, langXThread * thread) {
 		Node *n = nodeLink->node;
-
-		if (!thread->isInFunction())
-		{
-			getState()->curThread()->throwException(newUnsupportedOperationException("invalid return stmt.")->addRef());
-			//printf("无效的 return 语句");
-			return;
-		}
+		//printf("call return %p\n", n);
+		nodeLink->backAfterExec = false;
 
 		if (nodeLink->index == 0) {
+			if (!thread->isInFunction())
+			{
+				getState()->curThread()->throwException(newUnsupportedOperationException("invalid return stmt.")->addRef());
+				return;
+			}
+
 			// 确定返回值
 			if (n->opr_obj->op_count <= 0)
 			{
@@ -1472,9 +1473,13 @@ namespace langX {
 			n->value = a->value->clone();
 		}
 
+		//printf("return %p\n",n->value);
 		freeSubNodes(n);
 		thread->setFunctionResult(n->value);
+		Allocator::free(n->value);
+		n->value = nullptr;
 		thread->setBackInExec(true);
+		nodeLink->backAfterExec = true;
 
 		// 回退节点
 		Node *funcRootNode = thread->getFuncRootNode();
@@ -1494,7 +1499,18 @@ namespace langX {
 			nodeLink = nodeLink->previous;
 			thread->endExecute();
 		} while (true);
-
+		
+#ifdef SHOW_DETAILS
+		//printf("want back to %p,cmd %d \n", funcRootNode, funcRootNode == nullptr ? -1 : funcRootNode->opr_obj->opr);
+		//if (nodeLink == nullptr)
+		//{
+		//	printf("after return back. nodeLink is null.\n");
+		//}
+		//else {
+		//	Node *tmpNode1 = nodeLink->node;
+		//	printf("after return back. on node %p cmd %d\n", tmpNode1, tmpNode1->type == NodeType::NODE_OPERATOR ? tmpNode1->opr_obj->opr : -1);
+		//}
+#endif
 	}
 
 	// 自增运算符 ++ 

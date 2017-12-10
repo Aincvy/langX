@@ -147,11 +147,13 @@ namespace langX {
 		resetNodeState(this->m_node_root);
 
 		langXThread *thread = getState()->curThread();
+		Node *lastFuncCallRoot = thread->getFuncRootNode();
 		thread->setInFunction(true);
 		thread->setFuncRootNode(this->m_node_root);
 		thread->beginExecute(this->m_node_root, true);
 		execNodeButLimit(nullptr, this->m_node_root);
 		thread->setInFunction(false);
+		thread->setFuncRootNode(lastFuncCallRoot);
 
 
 		if (m_node_root->value != NULL)

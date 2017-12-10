@@ -1,0 +1,12 @@
+func1 => (x) {
+	if (x > 5) {
+		return ;
+	}  
+	
+	println("x is " + x);
+	func1(x + 1 ) ;
+}
+
+func1( 1 ) ;
+
+println("script end!");
