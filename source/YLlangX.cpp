@@ -651,10 +651,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 	{
 		thread->backEnv();
 	}
-	if (thread->isInException())
-	{
-		return NULL;
-	}
+
 	thread->getStackTrace().popFrame();
 
 	return ret;

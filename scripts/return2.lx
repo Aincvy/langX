@@ -1,0 +1,27 @@
+
+
+func1 => (a){
+	println("func1");
+	return 1 + a ;
+}
+
+func2 => (){
+	println("func2");
+	return func1(1);
+}
+
+func3 => (){
+	println("func3");
+	c1 = func2();
+	println("c1: " + c1);
+	return 5 ;
+}
+
+func4 => () {
+	println("func4");
+	return func3();
+}
+
+
+tmp = func4();
+println("tmp: " + tmp );
