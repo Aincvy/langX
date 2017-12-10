@@ -1,0 +1,119 @@
+modProjects   文件夹下存放了所有的第三方库， 库的命名应该以  langX-[Name] 的方式来定义
+
+新增库工程，或者类文件的时候 需要自己新建/修改 makefile 
+库工程应该生成出一个 so/dll 动态库。
+
+比如， 新增一个JSON库的时候。
+新建一个工程叫做  langX-Json
+建立两个文件夹，  include 和 source 
+include 文件夹存放一些 .h 头文件
+source  文件夹存放一些 .cpp 实现文件 
+建立一个 makefile 脚本
+
+使 langX-Json 项目 依赖 langX 项目
+
+新增 两个文件  JsonModule.h   和 JsonModule.cpp
+
+JsonModule.h  示例代码
+
+namespace langX {
+
+	class JsonModule : public X3rdModule
+	{
+	public:
+		JsonModule();
+		~JsonModule();
+
+
+		// 初始化 json模块
+		int init(langXState *);
+
+		// 卸载 json模块
+		int unload(langXState *);
+
+	private:
+
+	};
+
+
+}
+
+需要定义一个 类 继承 X3rdModule 类， 表示这是一个langX的第三方库
+需要实现 init 和 unload 两个方法
+
+需要在 JsonModule.cpp 文件内实现这样一个方法
+示例如下： 
+
+int loadModule(langX::X3rdModule *& mod)
+{
+	mod = new langX::JsonModule();
+
+	return 0;
+}
+
+
+langX 内部会调用 这个mod 的init 方法来初始化他
+
+完成上述操作之后 编译出一个 .so 动态库 
+在你的 langX.properties 文件里面添加 一行
+JSON=json.so
+
+并且将你生成的 .so 库赋值到 LIB_DIR 文件夹下
+启动 langX ,应该就会自动加载了你写的第三方库 
+
+===========================================================
+
+修改/扩充第三方库的指南
+
+langX 内存在命名空间的说法， 一般一个第三方库都会新建一个命名空间来存放他的类。
+命名空间的含义就相当于 java 里面的包，  c# 里面的命名空间。
+
+比如  
+XNameSpace *space = state->getNameSpaceOrCreate("langX.json");
+
+这行代码就会 找到，或者新建一个叫做 langX.json 的命名空间
+
+
+ClassInfo *info = new ClassInfo("JsonObject");
+space->putClass(info);
+
+这两行代码就是声明一个叫做 JsonObject 的类
+然后将该类注册到 langX.json 命名空间里面
+
+在脚本里面使用的时候使用下面代码
+ref langX.json.JsonObject ;
+
+就可以引用这个第三方的类了。
+ref 语句相当于 java 的import , c#的 using 吧。
+
+
+=================================
+
+如何给自定义的类添加 属性和方法
+示例代码：
+
+Object * langX_JsonObject_JsonObject(X3rdFunction *func, const X3rdArgs &args) {
+	if (args.object == nullptr)
+	{
+		printf("langX_JsonObject_JsonObject error! NO OBJ!\n");
+		return nullptr;
+	}
+
+	MyJsonData *data = new MyJsonData();
+	data->pJsonRoot = cJSON_CreateObject();
+
+	args.object->set3rdObj(data);
+
+	return nullptr;
+}
+
+// 添加一个函数给自定义的类    | 如何添加属性 可看下 ClassInfo 这个类的接口
+info->addFunction("JsonObject", create3rdFunc("JsonObject", langX_JsonObject_JsonObject));
+
+
+==============================================
+
+
+基本上就是这样， 更深层次的逻辑需要自己考虑和实现了。
+这是使用c++ 写第三方库的指南  。
+
