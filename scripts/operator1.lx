@@ -31,6 +31,9 @@ Class1 {
   operator-- => (right){
     print("operator-- " + right + "\n");
   }
+  operator= => (field, value){
+    print("operator= " + field + "=" + value + "\n");
+  }
 }
 
 c = new Class1();
@@ -42,3 +45,6 @@ r1 = c.a5;
 r1 = c[6];
 r1 = c++;
 r1 = c--;
+c.abc = 1 ;
+c.abc = 2 ;
+c.key = "hello" ;
