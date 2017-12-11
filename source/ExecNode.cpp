@@ -27,7 +27,7 @@ namespace langX {
 
 	// 根据数组信息获得结果， 返回的结果为一个 nullptr 或者复制好的结果
 	Object * getValueFromArrayInfo(ArrayInfo *arrayInfo, NodeLink *nodeLink, langXThread *thread) {
-		if (nodeLink->index == 0) {
+		if (nodeLink->index == 0) {	
 			nodeLink->index = 1;
 			bool flag = false;
 			if (arrayInfo->objNode != NULL)
@@ -83,6 +83,10 @@ namespace langX {
 						return nullptr;
 					}
 					arg1 = t->value;
+				}
+				else {
+					// use arrayInfo's index
+					num1.setValue(arrayInfo->index);
 				}
 				X3rdArgs _3rdArgs;
 				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
@@ -1196,25 +1200,47 @@ namespace langX {
 		else {
 			// 这里的Left 已经被执行过了   
 			char * name = left->opr_obj->op[1]->var_obj->name;
-			if (!objectRef->getClassInfo()->hasMember(name))
-			{
-				char tmp[100] = { 0 };
-				sprintf(tmp, "cannot find member %s in class %s!", name, objectRef->getClassInfo()->getName());
-				getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
-
-			}
-			else {
-				if (left->value != NULL && left->value->isConst())
+			
+			do {
+				// 判定一下操作符 = 是否进行重载了   
+				// 操作符= 重载的结果是 属性赋值， 而非当前对象 
+				Function *func1 = objectRef->getFunction("operator=");
+				if (func1)
 				{
-					char tmp[1024] = { 0 };
-					sprintf(tmp, "cannot change %s value, because it is a const value.", left->value->getName());
-					getState()->curThread()->throwException(newUnsupportedOperationException(tmp)->addRef());
-					return;
-				}
+					X3rdArgs _3rdArgs;
+					memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+					langX::String str1(name);
+					_3rdArgs.args[0] = &str1;
+					_3rdArgs.args[1] = right->value;
+					_3rdArgs.index = 2;
+					n->value = callFunction(objectRef, func1, &_3rdArgs);
 
-				objectRef->setMember(name, right->value);
-				n->value = Allocator::copy(right->value);
-			}
+					freeSubNodes(n);
+					break;
+				}
+				
+				// 属性的正常赋值
+				if (!objectRef->getClassInfo()->hasMember(name))
+				{
+					char tmp[100] = { 0 };
+					sprintf(tmp, "cannot find member %s in class %s!", name, objectRef->getClassInfo()->getName());
+					getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
+
+				}
+				else {
+					if (left->value != NULL && left->value->isConst())
+					{
+						char tmp[1024] = { 0 };
+						sprintf(tmp, "cannot change %s value, because it is a const value.", left->value->getName());
+						getState()->curThread()->throwException(newUnsupportedOperationException(tmp)->addRef());
+						return;
+					}
+
+					objectRef->setMember(name, right->value);
+					n->value = Allocator::copy(right->value);
+				}
+			} while (false);
+			
 
 			Allocator::free(right->value);
 			right->value = NULL;
@@ -2805,6 +2831,14 @@ namespace langX {
 
 		langXObjectRef* objectRef = (langXObjectRef*)n1->value;
 
+		// set ptr_u first,  等号的处理部分会用这个属性
+		if (n->ptr_u != NULL)
+		{
+			delete ((langXObjectRef*)n->ptr_u);
+			n->ptr_u = NULL;
+		}
+		n->ptr_u = objectRef->clone();
+
 		Function *func1 = objectRef->getFunction("operator.");
 		if (func1)
 		{
@@ -2843,12 +2877,6 @@ namespace langX {
 
 		}
 		n->value = t->clone();
-		if (n->ptr_u != NULL)
-		{
-			delete ((langXObjectRef*)n->ptr_u);
-			n->ptr_u = NULL;
-		}
-		n->ptr_u = objectRef->clone();
 
 		freeSubNodes(n);
 		nodeLink->backAfterExec = true;
