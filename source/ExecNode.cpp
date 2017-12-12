@@ -565,7 +565,6 @@ namespace langX {
 			return;
 		}
 
-
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
 
@@ -575,6 +574,8 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		nodeLink->backAfterExec = true;
 
 		Object * left = n1->value;
 		Object * right = n2->value;
@@ -602,7 +603,7 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() - ((Number*)n2->value)->getDoubleValue());
 		freeSubNodes(n);
-		nodeLink->backAfterExec = true;
+		
 	}
 
 	// *
@@ -623,6 +624,8 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		nodeLink->backAfterExec = true;
 
 		Object * left = n1->value;
 		Object * right = n2->value;
@@ -651,7 +654,7 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() * ((Number*)n2->value)->getDoubleValue());
 		freeSubNodes(n);
-		nodeLink->backAfterExec = true;
+		
 	}
 
 	// /
@@ -672,6 +675,8 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		nodeLink->backAfterExec = true;
 
 		Object * left = n1->value;
 		Object * right = n2->value;
@@ -872,6 +877,8 @@ namespace langX {
 			return;
 		}
 
+		nodeLink->backAfterExec = true;
+
 		Object * left = n1->value;
 		Object * right = n2->value;
 		if (left != NULL && left->getType() == OBJECT) {
@@ -905,7 +912,6 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
-		nodeLink->backAfterExec = true;
 	}
 
 	// 向右移位
@@ -927,6 +933,8 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		nodeLink->backAfterExec = true;
 
 		Object * left = n1->value;
 		Object * right = n2->value;
@@ -959,7 +967,6 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
-		nodeLink->backAfterExec = true;
 	}
 
 	//  取模运算 %
@@ -981,6 +988,8 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		nodeLink->backAfterExec = true;
 
 		Object * left = n1->value;
 		Object * right = n2->value;
@@ -1013,7 +1022,6 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
-		nodeLink->backAfterExec = true;
 	}
 
 	// 赋值操作 = 
@@ -1564,6 +1572,8 @@ namespace langX {
 			return;
 		}
 
+		nodeLink->backAfterExec = true;
+
 		Object * left = n1->value;
 		if (left != NULL && left->getType() == OBJECT) {
 			langXObjectRef * ref1 = (langXObjectRef*)left;
@@ -1600,7 +1610,6 @@ namespace langX {
 		}
 
 		freeSubNodes(n);
-		nodeLink->backAfterExec = true;
 	}
 
 	// 自减运算符 -- 
@@ -1630,6 +1639,8 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
+
+		nodeLink->backAfterExec = true;
 
 		Object * left = n1->value;
 		if (left != NULL && left->getType() == OBJECT) {
@@ -1667,7 +1678,6 @@ namespace langX {
 		}
 
 		freeSubNodes(n);
-		nodeLink->backAfterExec = true;
 	}
 
 
@@ -1946,6 +1956,7 @@ namespace langX {
 				n->value = callFunction(left, func1, &_3rdArgs);
 
 				freeSubNodes(n);
+				nodeLink->backAfterExec = true;
 				return;
 			}
 
@@ -2099,6 +2110,7 @@ namespace langX {
 				n->value = callFunction(left, func1, &_3rdArgs);
 
 				freeSubNodes(n);
+				nodeLink->backAfterExec = true;
 				return;
 			}
 
@@ -2763,6 +2775,7 @@ namespace langX {
 	void __execCLAXX_MEMBER(NodeLink *nodeLink, langXThread *thread) {
 		Node *n = nodeLink->node;
 		Node *n1 = n->opr_obj->op[0];
+		nodeLink->backAfterExec = false;
 		if (nodeLink->index == 0) {
 			//  执行节点1， 获得 类对象
 			thread->beginExecute(n1, true);
@@ -2783,6 +2796,7 @@ namespace langX {
 
 		char *memberName = n->opr_obj->op[1]->var_obj->name;
 
+		nodeLink->backAfterExec = true;
 		//    先处理数组和字符串的情况 
 		if (n1->value->getType() == XARRAY)
 		{
@@ -2824,7 +2838,6 @@ namespace langX {
 		if (n1->value->getType() != OBJECT)
 		{
 			thread->throwException(newTypeErrorException("left value is not a object.")->addRef());
-			//printf("left value %s is not class object or array  !\n", n1->var_obj->name);
 			freeSubNodes(n);
 			return;
 		}
@@ -2879,7 +2892,6 @@ namespace langX {
 		n->value = t->clone();
 
 		freeSubNodes(n);
-		nodeLink->backAfterExec = true;
 	}
 
 	void __execCLAXX_FUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
