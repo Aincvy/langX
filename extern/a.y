@@ -502,10 +502,13 @@ class_member_assign_stmt
 array_ele_stmt
 	: IDENTIFIER '[' XINTEGER ']'    { $$ = arr($1, $3, NULL); }
 	| IDENTIFIER '[' IDENTIFIER ']'  { $$ = arr($1, -1, var($3)) ; }
+	| IDENTIFIER '[' TSTRING ']'  { $$ = arr($1, -1, string($3)) ; }
 	| class_member_stmt '[' XINTEGER ']'  {  $$ = arr2($1, $3, NULL) ; }
 	| class_member_stmt '[' IDENTIFIER ']'  {  $$ = arr2($1, -1, var($3)) ; }
+	| class_member_stmt '[' TSTRING ']'  {  $$ = arr2($1, -1, string($3)) ; }
 	| call_statement '[' XINTEGER ']'  {  $$ = arr2($1,  $3, NULL ) ; }
 	| call_statement '[' IDENTIFIER ']'  {  $$ = arr2($1, -1, var($3)) ; }
+	| call_statement '[' TSTRING ']'  {  $$ = arr2($1, -1, string($3)) ; }
 	;
 
 // ARRAY_ELE 意思是获得数组元素
