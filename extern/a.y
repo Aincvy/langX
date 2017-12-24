@@ -192,6 +192,7 @@ class_member_stmt
 //  类的成员函数调用 
 class_member_func_stmt
 	: id_expr '.' id_expr '(' args_list ')'  { $$ = opr(CLAXX_FUNC_CALL , 2, $1, opr(FUNC_CALL,2, $3, argsNode($5) ) );}
+	| array_ele_stmt '.' id_expr '(' args_list ')'  { $$ = opr(CLAXX_FUNC_CALL , 2, $1, opr(FUNC_CALL,2, $3, argsNode($5) ) );}
 	| IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list ')' { $$ = opr(CLAXX_FUNC_CALL ,2, opr(FUNC_CALL,2, var($1), argsNode($3) ) , opr(FUNC_CALL,2, $6, argsNode($8) )); }
 	| class_member_stmt '.' id_expr '(' args_list ')'         { $$ = opr(CLAXX_FUNC_CALL,2,$1,opr(FUNC_CALL,2, $3, argsNode($5) ) ); }
 	| class_member_func_stmt '.' id_expr '(' args_list ')'    { $$ = opr(CLAXX_FUNC_CALL,2,$1,opr(FUNC_CALL,2, $3, argsNode($5) ) ); }
@@ -311,7 +312,8 @@ interrupt_stmt
 
 //  函数调用
 call_statement
-	: IDENTIFIER '(' args_list ')' { /*$$ = call($1,$3 );*/  $$ = opr(FUNC_CALL,2, var($1), argsNode($3) ); }
+	: array_ele_stmt '(' args_list ')' { $$ = opr(FUNC_CALL,2, $1, argsNode($3) ); }
+	| IDENTIFIER '(' args_list ')' { $$ = opr(FUNC_CALL,2, var($1), argsNode($3) ); }
 	| class_member_func_stmt  { $$ = $1; }
 	| static_member_stmt '(' args_list ')' { $$ = opr(SCOPE_FUNC_CALL,2,$1,argsNode($3)); }
 	;
