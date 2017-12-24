@@ -2520,8 +2520,6 @@ namespace langX {
 
 		std::string remark = fileInfoString(n->fileinfo);
 		XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
-		char * name = n1->var_obj->name;
-		//printf("do function: %s\n" , name);
 		bool flag = true;
 		if (n1->value != NULL)
 		{
@@ -2551,7 +2549,13 @@ namespace langX {
 				String *n1Str = (String*)n1->value;
 				str += n1Str->getValue();
 				str += " by var ";
-				str += name;
+				if (n1 ->var_obj)
+				{
+					str += n1->var_obj->name;;
+				}
+				else {
+					str += " [array,do not know name]";
+				}
 				str += " ";
 				str += remark;
 
@@ -2574,6 +2578,7 @@ namespace langX {
 
 		if (flag)
 		{
+			char * name = n1->var_obj->name;
 			NodeLink *putNodeLink = nullptr;
 			if (nodeLink->ptr_u == NULL) {
 				// 第一次执行， 需要让函数确认所有的参数 
