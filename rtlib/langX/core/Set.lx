@@ -1,0 +1,15 @@
+/*
+ * 2018.01.13 create
+ * author    world
+ *
+ * 基础容器 Set 
+ *
+ */
+ 
+Set {
+	
+	add => ( e ) {
+		
+	}
+
+}
