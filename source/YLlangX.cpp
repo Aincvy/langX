@@ -20,6 +20,7 @@
 #include "../include/String.h"
 #include "../extern/y.tab.h"
 #include "../include/langXThread.h"
+#include "../include/LogManager.h"
 
 extern int getParseLineNo();
 
@@ -31,7 +32,7 @@ void initLangX()
 {
 	if (state == NULL)
 	{
-		printf("initLangX\n");
+		logger->info("initLangX\n");
 		state = new langXState();
 
 		regFunctions(state);
