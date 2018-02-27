@@ -21,6 +21,7 @@
 #include "../include/XNameSpace.h"
 #include "../include/X3rdModule.h"
 #include "../include/langXThread.h"
+#include "../include/LogManager.h"
 
 #ifdef WIN32
 //  win32 库
@@ -43,13 +44,15 @@ namespace langX {
 		this->m_disposing = false;
 		this->m_thread_mgr = new langXThreadMgr();
 		this->m_thread_mgr->initMainThreadInfo();
+    this->m_log_manager = new LogManager();
+    this->m_log_manager->init();
 
 	}
 
 	langXState::~langXState()
 	{
 		this->m_disposing = true;
-
+    delete this->m_log_manager;
 		// 清理内存对象
 		Allocator::freeAllObjs();
 
@@ -300,6 +303,7 @@ namespace langX {
 			return -1;
 		}
 
+    logger->info("do file: %s", filename);
 		FILE *fp = fopen(filename, "r");
 		if (fp == NULL)
 		{

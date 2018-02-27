@@ -3,7 +3,7 @@
 #include "../include/RegCoreModule.h"
 #include "../../../include/XNameSpace.h"
 #include "../../../include/ClassInfo.h"
-
+#include "../../../include/LogManager.h"
 
 namespace langX {
 
@@ -15,7 +15,8 @@ namespace langX {
 	}
 	int CoreModule::init(langXState *state)
 	{
-		printf("init langX-Core 库\n");
+		//printf("init langX-Core 库\n");
+    logger->info("init langX-core 库");
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.core.util");
 		regIterator(state, space);
 		regList(state, space);
