@@ -20,6 +20,7 @@ namespace langX {
 	class X3rdModule;
 	class langXThreadMgr;
 	class langXThread;
+  class LogManager;
 
 	/*
 	  所有的脚本环境最后在释放内存。 
@@ -114,6 +115,8 @@ namespace langX {
 		// 当前的脚本环境， 可能是一个脚本环境， 可能是一个命名空间环境
 		Environment *m_script_env = nullptr;
 		ConfigX m_config;
+    // 日志管理器
+    LogManager *m_log_manager = nullptr;
 
 		std::map<std::string, XNameSpace*> m_namespace_map;
 		//  执行过文件列表

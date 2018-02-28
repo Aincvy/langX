@@ -1,5 +1,6 @@
 #include "../include/MysqlModule.h"
 #include "../include/RegMysqlModule.h"
+#include "../../../include/LogManager.h"
 
 namespace langX {
 
@@ -16,7 +17,7 @@ namespace langX {
 
 	int MysqlModule::init(langXState *state)
 	{
-		printf("init langX-Mysql 库\n");
+		logger->debug("init langX-Mysql 库");
 
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.mysql");
 

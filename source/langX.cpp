@@ -21,6 +21,7 @@
 #include "../include/XNameSpace.h"
 #include "../include/X3rdModule.h"
 #include "../include/langXThread.h"
+#include "../include/LogManager.h"
 
 #ifdef WIN32
 //  win32 库
@@ -43,13 +44,15 @@ namespace langX {
 		this->m_disposing = false;
 		this->m_thread_mgr = new langXThreadMgr();
 		this->m_thread_mgr->initMainThreadInfo();
+    this->m_log_manager = new LogManager();
+    this->m_log_manager->init();
 
 	}
 
 	langXState::~langXState()
 	{
 		this->m_disposing = true;
-
+    delete this->m_log_manager;
 		// 清理内存对象
 		Allocator::freeAllObjs();
 
@@ -300,6 +303,7 @@ namespace langX {
 			return -1;
 		}
 
+    logger->info("do file: %s", filename);
 		FILE *fp = fopen(filename, "r");
 		if (fp == NULL)
 		{
@@ -392,6 +396,7 @@ namespace langX {
 			return -1;
 		}
 
+    logger->debug("requireFile %s", filename);
 		FILE *fp = fopen(filename, "r");
 		if (fp == NULL)
 		{
@@ -454,6 +459,7 @@ namespace langX {
 			return -1;
 		}
 
+    logger->debug("require_onceFile %s ", filename);
 		FILE *fp = fopen(filename, "r");
 		if (fp == NULL)
 		{
@@ -538,7 +544,7 @@ namespace langX {
 	void langXState::fileEOF()
 	{
 
-		//printf("file %s eof!\n", m_parsing_file);
+		logger->debug("file %s eof!", m_parsing_file);
 		free(this->m_parsing_file);
 		this->m_parsing_file = NULL;
 
@@ -575,6 +581,7 @@ namespace langX {
 			return -1;
 		}
 
+    logger->debug("load module: %s", path);
 		LoadModuleFunPtr fptr = (LoadModuleFunPtr)dlsym(soObj, "loadModule");
 		if (fptr == NULL) {
 			return -1;
@@ -589,9 +596,8 @@ namespace langX {
 
 		int ret = mod->init(this);
 
-		// TODO  等待 langX 卸载的时候 在卸载动态库
-		//dlclose(soObj);
 		this->m_load_libs[soObj] = mod;
+    logger->debug("load module %s over", path);
 
 		return ret;
 	}
@@ -601,6 +607,7 @@ namespace langX {
 
 	int langXState::loadConfig(const char * path)
 	{
+    logger->debug("using config file %s", path);
 		int a = this->m_config.loadFrom(path);
 		if (a < 0)
 		{
@@ -618,6 +625,8 @@ namespace langX {
 				return -1;
 			}
 		}
+
+    logger->debug("load config file over.");
 		return 0;
 	}
 

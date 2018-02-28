@@ -5,6 +5,7 @@
 
 #include "../../../include/langX.h"
 #include "../../../include/XNameSpace.h"
+#include "../../../include/LogManager.h"
 
 namespace langX {
 
@@ -20,7 +21,7 @@ namespace langX {
 
 	int PythonModule::init(langXState *state)
 	{
-		printf("init langX-Python 库\n");
+		logger->debug("init langX-Python 库");
 
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.python");
 

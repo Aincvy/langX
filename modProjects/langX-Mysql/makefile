@@ -1,7 +1,7 @@
 .PHONY: clean
 
-MYSQL_H_F = /opt/lampp/include
-MYSQL_L_F = /opt/lampp/lib
+MYSQL_H_F = /usr/include/mysql
+MYSQL_L_F = /usr/lib64/mysql
 
 TARGET = ../../mod/mysql.so
 
