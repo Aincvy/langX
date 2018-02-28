@@ -1,0 +1,17 @@
+
+funa => (x ){
+	if (x ) {
+		println("x is : " + x );
+	} else {
+		println("in func ");
+	}
+}
+
+a[10] ;
+
+a[0] = funa ;
+
+a[0]();
+a[0]("hello");
+
+println("script end!");

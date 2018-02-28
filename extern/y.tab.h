@@ -58,12 +58,13 @@
 #define CLAXX_FUNC_CALL 314
 #define XNULL 315
 #define XINCLUDE 316
-#define NONASSOC 317
-#define IFX 318
-#define PRIORITY3 319
-#define PRIORITY2 320
-#define PRIORITY1 321
-#define UMINUS 322
+#define ANNOTATION 317
+#define NONASSOC 318
+#define IFX 319
+#define PRIORITY3 320
+#define PRIORITY2 321
+#define PRIORITY1 322
+#define UMINUS 323
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

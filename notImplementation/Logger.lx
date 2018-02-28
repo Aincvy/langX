@@ -1,0 +1,20 @@
+/*
+ * 待实现的部分 
+ * 系统自带的类
+ * 输出会定位到 langX自动的调试文件
+ *
+ */
+Logger {
+	
+	error => ( msg ) {} 
+	
+	// 
+	warn => ( msg ) {}
+	
+	// info 
+	info => ( msg ) {}
+	
+	debug => ( msg ) {}
+	
+}
+
