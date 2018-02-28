@@ -3,6 +3,7 @@
 #include "../include/JsonModule.h"
 #include "../include/RegJsonModule.h"
 #include "../../../include/XNameSpace.h"
+#include "../../../include/LogManager.h"
 
 namespace langX {
 
@@ -16,7 +17,7 @@ namespace langX {
 
 	int JsonModule::init(langXState *state)
 	{
-		printf("init langX-Json库\n");
+		logger->debug("init langX-Json库 ");
 
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.json");
 

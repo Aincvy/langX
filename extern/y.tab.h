@@ -65,6 +65,12 @@
 #define PRIORITY2 321
 #define PRIORITY1 322
 #define UMINUS 323
+#ifdef YYSTYPE
+#undef  YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
+#endif
+#ifndef YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
 typedef union {
  int intValue;
  double iValue; /* double value */
@@ -73,4 +79,5 @@ typedef union {
  XParamsList* params; /* params value */
  XArgsList *args;    /* args value */
 } YYSTYPE;
+#endif /* !YYSTYPE_IS_DECLARED */
 extern YYSTYPE yylval;

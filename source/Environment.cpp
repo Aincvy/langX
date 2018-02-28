@@ -11,10 +11,9 @@
 #include "../include/Exception.h"
 #include "../include/Allocator.h"
 #include "../include/langXThread.h"
+#include "../include/LogManager.h"
 
 namespace langX {
-
-
 
 	Environment::Environment()
 	{
@@ -1055,7 +1054,7 @@ namespace langX {
 	{
 		// 释放内存
 		this->m_parent = NULL;
-		printf("~ScriptEnvironment: %p\n", this);
+		logger->debug("~ScriptEnvironment: %p", this);
 		if (!m_objects_map.empty())
 		{
 			for (auto a = m_objects_map.begin(); a != m_objects_map.end(); a++) {

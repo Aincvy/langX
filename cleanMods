@@ -3,3 +3,4 @@ cd modProjects/langX-Core && make clean
 cd ../langX-libevent && make clean
 cd ../langX-Mysql && make clean
 cd ../langX-Python && make clean
+cd ../langX-Json && make clean
