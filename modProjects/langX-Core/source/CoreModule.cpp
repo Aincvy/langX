@@ -15,8 +15,7 @@ namespace langX {
 	}
 	int CoreModule::init(langXState *state)
 	{
-		//printf("init langX-Core 库\n");
-    logger->info("init langX-core 库");
+    logger->debug("init langX-core 库");
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.core.util");
 		regIterator(state, space);
 		regList(state, space);

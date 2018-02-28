@@ -1,12 +1,14 @@
 funa => {
 	a = 1 ;
 	funb();
-	print("funa" + a);
+	println("funa" + a);
 }
 
 funb => {
-  print("funb: " + a);
+  println("funb: " + a);
   a = 101 ;
 }
 
 funa(); 
+
+// this is the comment. 
