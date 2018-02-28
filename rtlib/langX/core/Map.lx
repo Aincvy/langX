@@ -1,0 +1,12 @@
+/*
+ *  map   具体实现在c++ 内
+ */
+Map{
+	
+	
+	put => ( k , v ) {}
+	
+
+	get => ( k ) { return null ;}  
+
+}

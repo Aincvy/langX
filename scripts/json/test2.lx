@@ -1,2 +1,18 @@
 ref langX.json;
 
+obj = new JsonObject();
+obj.put("name", "alice");
+obj.put("age", 15 );
+obj1 = new JsonObject();
+obj1.put("class","2");
+obj1.put("grade","1");
+obj.put("schoolinfo" , obj1);
+
+
+array1 = new JsonArray();
+array1.put(obj);
+array1.put("one");
+array1.put("two");
+array1.put("three");
+
+println("xxx: " + array1[0].toJSONString());

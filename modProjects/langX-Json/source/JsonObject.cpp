@@ -119,7 +119,6 @@ namespace langX {
 			printf("langX_JsonObject_put error! NO OBJ!\n");
 			return nullptr;
 		}
-
 		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
 
 		Object * a = args.args[0];
@@ -136,6 +135,47 @@ namespace langX {
 		}
 
 		return Allocator::allocateNumber(0);
+	}
+
+
+	Object * langX_JsonObject_get(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_JsonObject_put error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+
+		Object * a = args.args[0];
+		if (a)
+		{
+			// a 为有效值
+			if (a->getType() == ObjectType::STRING)
+			{
+				String *keyStr = (String*)a;
+				langXObject *obj = NULL;
+				cJSON *cjson = cJSON_GetObjectItem(data->pJsonRoot, keyStr->getValue());
+				if (cjson == nullptr)
+					return Allocator::allocate(NULLOBJECT);
+				switch (cjson->type)
+				{
+				case cJSON_NULL:
+					return Allocator::allocate(NULLOBJECT);
+				case cJSON_Number:
+					return Allocator::allocateNumber(cjson->valuedouble);
+				case cJSON_String:case cJSON_Raw:
+					return Allocator::allocateString(cjson->valuestring);
+				case cJSON_Array:case cJSON_Object:case cJSON_True:case cJSON_False:
+					obj = createJsonObject(cjson);
+					return obj->addRef();
+				default:
+					break;
+				}
+			}
+		}
+
+		return Allocator::allocate(NULLOBJECT);
 	}
 
 
@@ -273,6 +313,10 @@ namespace langX {
 		ClassInfo *info = new ClassInfo("JsonObject");
 		info->addFunction("getJsonArray", create3rdFunc("getJsonArray", langX_JsonObject_getJsonArray));
 		info->addFunction("put", create3rdFunc("put", langX_JsonObject_put));
+		info->addFunction("operator=", create3rdFunc("operator=", langX_JsonObject_put));
+		info->addFunction("get", create3rdFunc("get", langX_JsonObject_get));
+		info->addFunction("operator.", create3rdFunc("operator.", langX_JsonObject_get));
+		info->addFunction("operator[]", create3rdFunc("operator[]", langX_JsonObject_get));
 		info->addFunction("getString", create3rdFunc("getString", langX_JsonObject_getString));
 		info->addFunction("getNumber", create3rdFunc("getNumber", langX_JsonObject_getNumber));
 		info->addFunction("getJsonObject", create3rdFunc("getJsonObject", langX_JsonObject_getJsonObject));

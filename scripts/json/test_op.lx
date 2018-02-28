@@ -1,0 +1,21 @@
+ref langX.json;
+
+obj = new JsonObject();
+obj.name="alice";
+obj.age=15;
+println("obj.name = "+obj.name);
+println("obj.age = "+obj.age);
+println("obj[\"name\"] = "+obj["name"]);
+println("obj[\"age\"] = "+obj["age"]);
+
+obj2 = new JsonObject();
+obj2.obj = obj;
+temp = obj2["obj"];
+println("obj2[\"obj\"] = "+temp.toJSONString());
+
+arr = new JsonArray();
+arr.put(obj2);
+temp = arr[0];
+println("arr[0] = "+temp.toJSONString());
+arr.put(0,"10");
+println("arr = "+arr.toJSONString());

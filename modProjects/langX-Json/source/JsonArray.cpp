@@ -32,6 +32,35 @@ namespace langX {
 		return obj;
 	}
 
+
+	Object* jsonInsertItemToArray(cJSON *root,int which, Object *b) {
+		if (b->getType() == ObjectType::STRING)
+		{
+			String *str = (String*)b;
+
+			cJSON_InsertItemInArray(root, which, cJSON_CreateString(str->getValue()));
+			return Allocator::allocateNumber(1);
+		}
+		else if (b->getType() == ObjectType::NUMBER)
+		{
+			Number * num = (Number*)b;
+			cJSON_InsertItemInArray(root, which, cJSON_CreateNumber(num->getDoubleValue()));
+			return Allocator::allocateNumber(1);
+		}
+		else if (b->getType() == ObjectType::OBJECT)
+		{
+			langXObjectRef *ref = (langXObjectRef*)b;
+			if (ref->getClassInfo()->isInstanceOf("JsonObject") || ref->getClassInfo()->isInstanceOf("JsonArray"))
+			{
+				MyJsonData *thedata = (MyJsonData*)ref->getRefObject()->get3rdObj();
+				cJSON_InsertItemInArray(root, which, thedata->pJsonRoot);
+				return Allocator::allocateNumber(1);
+			}
+		}
+
+		return Allocator::allocateNumber(0);
+	}
+
 	Object* jsonAddItemToArray(cJSON *root, Object *b) {
 		if (b->getType() == ObjectType::STRING)
 		{
@@ -68,17 +97,25 @@ namespace langX {
 		}
 
 		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
-
-		Object * b = args.args[0];
-		if (b)
-		{
-			// a 为有效值
-			return jsonAddItemToArray(data->pJsonRoot, b);
+		if (args.index == 2) {
+			Object * a = args.args[0];
+			Object * b = args.args[1];
+			if (a&&b)
+			{
+				if(a->getType() == ObjectType::NUMBER)
+					return jsonInsertItemToArray(data->pJsonRoot, ((Number*)a)->getIntValue(),b);
+			}
+		}else{
+			Object * b = args.args[0];
+			if (b)
+			{
+				// b 为有效值
+				return jsonAddItemToArray(data->pJsonRoot, b);
+			}
 		}
 
 		return Allocator::allocateNumber(0);
 	}
-
 
 	Object * langX_JsonArray_setItem(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
@@ -90,6 +127,42 @@ namespace langX {
 		return langX_JsonArray_put(func, args);
 	}
 
+
+	Object * langX_JsonArray_get(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_JsonArray_getString error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		MyJsonData *data = (MyJsonData*)args.object->get3rdObj();
+		Object * a = args.args[0];
+
+		if (a && a->getType() == ObjectType::NUMBER)
+		{
+			int index = ((Number*)a)->getIntValue();
+
+			cJSON *cjson = cJSON_GetArrayItem(data->pJsonRoot, index);
+			langXObject *obj = NULL;
+			if (cjson == nullptr)
+				return Allocator::allocate(NULLOBJECT);
+			switch (cjson->type)
+			{
+			case cJSON_NULL:
+				return Allocator::allocate(NULLOBJECT);
+			case cJSON_Number:
+				return Allocator::allocateNumber(cjson->valuedouble);
+			case cJSON_String:case cJSON_Raw:
+				return Allocator::allocateString(cjson->valuestring);
+			case cJSON_Array:case cJSON_Object:case cJSON_True:case cJSON_False:
+				obj = createJsonObject(cjson);
+				return obj->addRef();
+			default:
+				break;
+			}
+		}
+		return Allocator::allocate(NULLOBJECT);
+	}
 
 	Object * langX_JsonArray_getString(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
@@ -340,6 +413,8 @@ namespace langX {
 		ClassInfo *info = new ClassInfo("JsonArray");
 		info->addFunction("setItem", create3rdFunc("setItem", langX_JsonArray_setItem));
 		info->addFunction("put", create3rdFunc("put", langX_JsonArray_put));
+		info->addFunction("get", create3rdFunc("get", langX_JsonArray_get));
+		info->addFunction("operator[]", create3rdFunc("operator[]", langX_JsonArray_get));
 		info->addFunction("getString", create3rdFunc("getString", langX_JsonArray_getString));
 		info->addFunction("getNumber", create3rdFunc("getNumber", langX_JsonArray_getNumber));
 		info->addFunction("toStringArray", create3rdFunc("toStringArray", langX_JsonArray_toStringArray));
