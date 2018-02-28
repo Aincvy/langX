@@ -16,8 +16,7 @@ static const char yysccsid[] = "@(#)yaccpar	1.9 (Berkeley) 02/21/93";
 
 #define YYPURE 0
 
-#line 1 "a.y"
-
+#line 2 "a.y"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,7 +52,7 @@ typedef union {
  XArgsList *args;    /* args value */
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 56 "y.tab.c"
+#line 55 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -1126,8 +1125,7 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 529 "a.y"
-
+#line 530 "a.y"
 
 void yyerror(char *s) {
 	fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , getParseLineNo(),column , yytext  );
@@ -1159,10 +1157,10 @@ int main(int argc, char *argv[]){
 	
 	closeLangX();
 	
-	printf("parse over!\n");
+	//printf("parse over!\n");
 	return 0;
 }
-#line 1165 "y.tab.c"
+#line 1163 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -1682,7 +1680,7 @@ case 80:
 break;
 case 81:
 #line 263 "a.y"
-	{ yyval.node = opr(SWITCH, 2 , yystack.l_mark[-4].node,yystack.l_mark[-1].node); }
+	{ yyval.node = opr(SWITCH, 2 , yystack.l_mark[-4].node,yystack.l_mark[-1].node); pretreatSwitch( yyval.node ) ; }
 break;
 case 82:
 #line 267 "a.y"
@@ -2224,7 +2222,7 @@ case 216:
 #line 526 "a.y"
 	{ yyval.node = opr(MOD_EQ,2,yystack.l_mark[-2].node,yystack.l_mark[0].node);}
 break;
-#line 2227 "y.tab.c"
+#line 2225 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

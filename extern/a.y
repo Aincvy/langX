@@ -558,6 +558,6 @@ int main(int argc, char *argv[]){
 	
 	closeLangX();
 	
-	printf("parse over!\n");
+	//printf("parse over!\n");
 	return 0;
 }

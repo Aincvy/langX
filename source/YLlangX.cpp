@@ -32,8 +32,8 @@ void initLangX()
 {
 	if (state == NULL)
 	{
-		logger->info("initLangX\n");
 		state = new langXState();
+		logger->debug("initLangX");
 
 		regFunctions(state);
 		regExceptions();
@@ -46,7 +46,7 @@ void closeLangX()
 {
 	if (state != NULL)
 	{
-		printf("closeLangX\n");
+		logger->debug("closeLangX");
 		delete state;
 		state = NULL;
 	}

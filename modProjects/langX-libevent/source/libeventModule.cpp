@@ -4,6 +4,7 @@
 #include "../include/ReglibeventModule.h"
 #include "../include/RegHttpServer.h"
 #include "../../../include/XNameSpace.h"
+#include "../../../include/LogManager.h"
 
 namespace langX {
 
@@ -20,7 +21,8 @@ namespace langX {
 	int libeventModule::init(langXState *state)
 	{
 		// 初始化 libevent 库
-		printf("初始化libevent库 \n");
+		logger->debug("初始化libevent库 ");
+    
 		initServerSupportTools();
 
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.libevent");
