@@ -1,7 +1,0 @@
-﻿  Validating architecture
-  Validating sources
-  Copying sources remotely to '120.27.200.228'
-  Starting remote build
-  Compiling sources:
-  default.cpp
-F:\hideDragon\langX\langX\modProjects\langX-Json\source\..\include\RegJsonModule.h(7,44): error : ../../../lib/cJSON-1.3.0/cJSON.h: No such file or directory
