@@ -11,6 +11,7 @@
 #include "../../../include/Number.h"
 #include "../../../include/String.h"
 #include "../../../include/XArray.h"
+#include "../../../include/LogManager.h"
 
 namespace langX {
 
@@ -138,7 +139,7 @@ namespace langX {
   Object * langX_default_jsonDecode(X3rdFunction *func, const X3rdArgs &args) {
     if (args.object == nullptr)
     {
-      printf("langX_default_jsonDecode error! NO OBJ!\n");
+      logger->error("langX_default_jsonDecode error! NO OBJ!\n");
       return nullptr;
     }
 
@@ -171,7 +172,7 @@ namespace langX {
   Object * langX_default_jsonEncode(X3rdFunction *func, const X3rdArgs &args) {
     if (args.object == nullptr)
     {
-      printf("langX_default_jsonEncode error! NO OBJ!\n");
+      logger->error("langX_default_jsonEncode error! NO OBJ!\n");
       return nullptr;
     }
 
