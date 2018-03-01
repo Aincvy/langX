@@ -1,0 +1,5 @@
+ref langX.core;
+
+println("workdir=" + Application::ExecutablePath);
+println("start time=" + Application::StartTime);
+println("os=" + Application::RunPlatform);
