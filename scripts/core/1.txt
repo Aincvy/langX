@@ -1,0 +1,12 @@
+1.txt   --   2.txt
+
+:Author: root
+:Email: root@tc.reecho.cc
+:Date: 2018-03-01 19:32
+
+a = 1;
+now = 8 ;
+
+
+.. vim: expandtab filetype=rst shiftwidth=4 tabstop=4
+

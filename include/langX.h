@@ -57,6 +57,9 @@ namespace langX {
 		// 获得类信息。  会先搜索当前脚本环境， 如果不存在， 则去搜索全局环境
 		ClassInfo *getClass(const char *) const;
 
+    // 根据类的全名获取一个类的信息
+    ClassInfo *getClassByFullName(const char *);
+
 		// 获得一个命名空间[单一]， 如果该命名空间不存在， 则会添加一个进去 不能使用 a.b.c 这样的名字。。 因为不会解析出来
 		XNameSpace *singleGetNameSpaceOrCreate(const char *);
 

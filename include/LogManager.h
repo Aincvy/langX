@@ -23,11 +23,9 @@ namespace langX{
       ~LogManager();
 
       // 初始化日志管理器
-      void init();
+      void init(const char*);
 
     private:
-      log4cpp::Layout* m_layout;
-      log4cpp::Appender* m_appender;
       log4cpp::Category* m_category;
 
   };

@@ -1,0 +1,12 @@
+ref langX.core.io;
+
+a = File::readLines("1.txt");
+println("first line: " + a.get(0));
+
+println("=========================");
+
+for( i = 0; i < a.size(); i++){
+  println(a.get(i));
+}
+
+println("script over");
