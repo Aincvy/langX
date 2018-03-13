@@ -1,0 +1,21 @@
+[2018-03-02 18:17:53,357] [DEBUG] initLangX
+[2018-03-02 18:17:53,358] [DEBUG] using config file /etc/langX/langX.properties
+[2018-03-02 18:17:53,359] [DEBUG] load module: /root/workspace/langX/mod/core.so
+[2018-03-02 18:17:53,359] [DEBUG] init langX-core 库
+[2018-03-02 18:17:53,360] [DEBUG] load module /root/workspace/langX/mod/core.so over
+[2018-03-02 18:17:53,362] [DEBUG] load module: /root/workspace/langX/mod/mysql.so
+[2018-03-02 18:17:53,362] [DEBUG] init langX-Mysql 库
+[2018-03-02 18:17:53,362] [DEBUG] load module /root/workspace/langX/mod/mysql.so over
+[2018-03-02 18:17:53,363] [DEBUG] load module: /root/workspace/langX/mod/mod_libevent.so
+[2018-03-02 18:17:53,363] [DEBUG] 初始化libevent库 
+[2018-03-02 18:17:53,363] [DEBUG] load module /root/workspace/langX/mod/mod_libevent.so over
+[2018-03-02 18:17:53,365] [DEBUG] load module: /root/workspace/langX/mod/python3_x.so
+[2018-03-02 18:17:53,365] [DEBUG] init langX-Python 库
+[2018-03-02 18:17:53,365] [DEBUG] load module /root/workspace/langX/mod/python3_x.so over
+[2018-03-02 18:17:53,366] [DEBUG] load module: /root/workspace/langX/mod/json.so
+[2018-03-02 18:17:53,366] [DEBUG] init langX-Json库 
+[2018-03-02 18:17:53,366] [DEBUG] load module /root/workspace/langX/mod/json.so over
+[2018-03-02 18:17:53,366] [DEBUG] load config file over.
+[2018-03-02 18:17:53,366] [INFO] do file: file2.lx
+[2018-03-02 18:17:53,370] [DEBUG] closeLangX
+[2018-03-02 18:17:53,370] [DEBUG] ~ScriptEnvironment: 0x1a64b10

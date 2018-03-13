@@ -11,255 +11,274 @@
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 #include "../include/XArray.h"
+#include "../include/YLlangX.h"
+#include "../include/XNameSpace.h"
 
 namespace langX {
 
-	const int Allocator::GC_OBJECT_COUNT = 85000;
-	int Allocator::m_a_count = 0;
-	std::list<XArray*> Allocator::m_arrays;
-	std::map<std::string, langXObject*> Allocator::m_object_map;
+  const int Allocator::GC_OBJECT_COUNT = 85000;
+  int Allocator::m_a_count = 0;
+  std::list<XArray*> Allocator::m_arrays;
+  std::map<std::string, langXObject*> Allocator::m_object_map;
 
-	Allocator::Allocator()
-	{
-	}
-	Allocator::~Allocator()
-	{
-	}
+  Allocator::Allocator()
+  {
+  }
+  Allocator::~Allocator()
+  {
+  }
 
-	Object * Allocator::copy(Object *obj)
-	{
-		if (obj == NULL)
-		{
-			return NULL; 
-		}
+  Object * Allocator::copy(Object *obj)
+  {
+    if (obj == NULL)
+    {
+      return NULL; 
+    }
 
-		Object *ret = allocate(obj->getType());
-		if (ret == NULL)
-		{
-			return NULL;
-		}
+    Object *ret = allocate(obj->getType());
+    if (ret == NULL)
+    {
+      return NULL;
+    }
 
-		ret->setEmergeEnv(obj->getEmergeEnv());
-		ret->setCharacteristic(obj->characteristic());
-		ret->setLocal(obj->isLocal());
-		ret->setConst(obj->isConst());
-		ret->update(obj);
-		return ret;
-	}
+    ret->setEmergeEnv(obj->getEmergeEnv());
+    ret->setCharacteristic(obj->characteristic());
+    ret->setLocal(obj->isLocal());
+    ret->setConst(obj->isConst());
+    ret->update(obj);
+    return ret;
+  }
 
-	Object * Allocator::allocate(ObjectType t)
-	{
-		if (t == ObjectType::UNKNOWN)
-		{
-			return NULL;
-		}
-		else if (t == ObjectType::NUMBER)
-		{
-			return new Number();
-		}
-		else if (t == ObjectType::STRING)
-		{
-			return new String("");
-		}
-		else if (t == ObjectType::NULLOBJECT )
-		{
-			return new NullObject();
-		}
-		else if (t == ObjectType::OBJECT)
-		{
-			return new langXObjectRef(NULL);
-		}
-		else if (t == ObjectType::XARRAY)
-		{
-			return new XArrayRef(NULL);
-		}
-		else if (t == ObjectType::FUNCTION)
-		{
-			return new FunctionRef(NULL);
-		}
+  Object * Allocator::allocate(ObjectType t)
+  {
+    if (t == ObjectType::UNKNOWN)
+    {
+      return NULL;
+    }
+    else if (t == ObjectType::NUMBER)
+    {
+      return new Number();
+    }
+    else if (t == ObjectType::STRING)
+    {
+      return new String("");
+    }
+    else if (t == ObjectType::NULLOBJECT )
+    {
+      return new NullObject();
+    }
+    else if (t == ObjectType::OBJECT)
+    {
+      return new langXObjectRef(NULL);
+    }
+    else if (t == ObjectType::XARRAY)
+    {
+      return new XArrayRef(NULL);
+    }
+    else if (t == ObjectType::FUNCTION)
+    {
+      return new FunctionRef(NULL);
+    }
 
-		return NULL;
-	}
+    return NULL;
+  }
 
-	void Allocator::free(Object *obj)
-	{
-		if (obj == NULL)
-		{
-			return;
-		}
-		if (obj->getType() == NUMBER)
-		{
-			delete (Number*)obj;
-		}
-		else if (obj->getType() == STRING)
-		{
-			delete (String*)obj;
-		}else if(obj->getType() == OBJECT){
-			delete (langXObjectRef*)obj;
-		}
-		else if (obj->getType() == NULLOBJECT)
-		{
-			delete (NullObject*)obj;
-		}
-		else if (obj->getType() == FUNCTION)
-		{
-			delete (FunctionRef*) obj;
-		}
-		else if (obj->getType() == XARRAY)
-		{
-			delete (XArrayRef *) obj;
-		}
-	}
-	
-	Number * Allocator::allocateNumber()
-	{
-		return new Number();
-	}
-	Number * Allocator::allocateNumber(double v)
-	{
-		return new Number(v);
-	}
-	void Allocator::freeNumber(Number *v)
-	{
-		if (v == NULL)
-		{
-			return;
-		}
-		delete v;
-	}
+  void Allocator::free(Object *obj)
+  {
+    if (obj == NULL)
+    {
+      return;
+    }
+    if (obj->getType() == NUMBER)
+    {
+      delete (Number*)obj;
+    }
+    else if (obj->getType() == STRING)
+    {
+      delete (String*)obj;
+    }else if(obj->getType() == OBJECT){
+      delete (langXObjectRef*)obj;
+    }
+    else if (obj->getType() == NULLOBJECT)
+    {
+      delete (NullObject*)obj;
+    }
+    else if (obj->getType() == FUNCTION)
+    {
+      delete (FunctionRef*) obj;
+    }
+    else if (obj->getType() == XARRAY)
+    {
+      delete (XArrayRef *) obj;
+    }
+  }
 
-	String * Allocator::allocateString()
-	{
-		return new String("");
-	}
+  Number * Allocator::allocateNumber()
+  {
+    return new Number();
+  }
+  Number * Allocator::allocateNumber(double v)
+  {
+    return new Number(v);
+  }
+  void Allocator::freeNumber(Number *v)
+  {
+    if (v == NULL)
+    {
+      return;
+    }
+    delete v;
+  }
 
-	String * Allocator::allocateString(const char *str)
-	{
-		return new String(str);
-	}
+  String * Allocator::allocateString()
+  {
+    return new String("");
+  }
 
-	void Allocator::freeString(String *str)
-	{
-		if (str == NULL)
-		{
-			return;
-		}
-		delete str;
-	}
+  String * Allocator::allocateString(const char *str)
+  {
+    return new String(str);
+  }
 
-	XArray * Allocator::allocateArray(int size)
-	{
-		checkArrayGC();
+  void Allocator::freeString(String *str)
+  {
+    if (str == NULL)
+    {
+      return;
+    }
+    delete str;
+  }
 
-		XArray *a = new XArray(size);
-		m_arrays.push_back(a);
+  XArray * Allocator::allocateArray(int size)
+  {
+    checkArrayGC();
 
-		return a;
-	}
+    XArray *a = new XArray(size);
+    m_arrays.push_back(a);
 
-	FunctionRef * Allocator::allocateFunctionRef(Function *f)
-	{
-		return new FunctionRef(f);
-	}
+    return a;
+  }
 
-	void Allocator::freeFunctionRef(FunctionRef *f)
-	{
-		delete f;
-	}
+  FunctionRef * Allocator::allocateFunctionRef(Function *f)
+  {
+    return new FunctionRef(f);
+  }
 
-	langXObject * Allocator::newObject(ClassInfo *c)
-	{
-		checkGC();
+  void Allocator::freeFunctionRef(FunctionRef *f)
+  {
+    delete f;
+  }
 
-		//printf("new object %s . now object count: %d\n" ,c->getName(), m_a_count);
-		langXObject *p = new langXObject(c);
-		m_object_map[std::string(p->characteristic())] = p;
-		m_a_count++;
-		
-		return p;
-	}
+  langXObject * Allocator::newObject(const char *path){
+    return Allocator::newObject(path, false);
+  }
 
-	void Allocator::freeObject(langXObject *obj)
-	{
-		if (obj == nullptr) {
-			return;
-		}
+  langXObject * Allocator::newObject(const char *path, bool callCtor){
+    ClassInfo *c = getState()->getClassByFullName(path);
+    return Allocator::newObject(c, callCtor);
+  }
 
-		std::string str(obj->characteristic());
-		m_object_map.erase(str);
+  langXObject * Allocator::newObject(ClassInfo *c){
+    return Allocator::newObject(c, false) ;
+  }
 
-		delete obj;       // 解放对象占用的内存
-	}
+  langXObject * Allocator::newObject(ClassInfo *c, bool callCtor)
+  {
+    checkGC();
 
-	void Allocator::gc()
-	{
-		printf("gc start \n");
-		
+    //printf("new object %s . now object count: %d\n" ,c->getName(), m_a_count);
+    langXObject *p = new langXObject(c);
+    m_object_map[std::string(p->characteristic())] = p;
+    m_a_count++;
 
-		int count = 0;
-		for (auto i = m_object_map.begin(); i != m_object_map.end(); i++)
-		{
-			langXObject *obj = i->second;
-			if (obj->getRefCount() <= 0)
-			{
-				delete obj;
-				m_object_map.erase(i++);
-				count++;
-			}
-		}
+    if(callCtor){
+      p->callConstructor(nullptr, "default initialization by Allocator");
+    }
 
-		m_a_count -= count;
-		printf("free %d object(s)\n" , count);
-	}
+    return p;
+  }
+
+  void Allocator::freeObject(langXObject *obj)
+  {
+    if (obj == nullptr) {
+      return;
+    }
+
+    std::string str(obj->characteristic());
+    m_object_map.erase(str);
+
+    delete obj;       // 解放对象占用的内存
+  }
+
+  void Allocator::gc()
+  {
+    printf("gc start \n");
+
+
+    int count = 0;
+    for (auto i = m_object_map.begin(); i != m_object_map.end(); i++)
+    {
+      langXObject *obj = i->second;
+      if (obj->getRefCount() <= 0)
+      {
+        delete obj;
+        m_object_map.erase(i++);
+        count++;
+      }
+    }
+
+    m_a_count -= count;
+    printf("free %d object(s)\n" , count);
+  }
 
 
 
-	void Allocator::checkGC()
-	{
+  void Allocator::checkGC()
+  {
 
-		if (m_a_count >= GC_OBJECT_COUNT)
-		{
-			gc();
-		}
-		
-	}
+    if (m_a_count >= GC_OBJECT_COUNT)
+    {
+      gc();
+    }
 
-	void Allocator::freeAllObjs()
-	{
-		for (auto i = m_object_map.begin(); i != m_object_map.end(); i++)
-		{
-			langXObject *obj = i->second;
-			delete obj;
-		}
+  }
 
-		m_object_map.clear();
-		m_a_count = 0;
-	}
+  void Allocator::freeAllObjs()
+  {
+    for (auto i = m_object_map.begin(); i != m_object_map.end(); i++)
+    {
+      langXObject *obj = i->second;
+      delete obj;
+    }
 
-	void Allocator::checkArrayGC()
-	{
-		if (m_arrays.size() > GC_OBJECT_COUNT)
-		{
-			arrayGC();
-		}
-	}
+    m_object_map.clear();
+    m_a_count = 0;
+  }
 
-	void Allocator::arrayGC()
-	{
-		int count = 0;
-		for (auto i = m_arrays.begin(); i != m_arrays.end(); i++)
-		{
-			XArray * a = *i;
-			if (a->getRefCount() <= 0)
-			{
-				delete a;
-				m_arrays.erase(i++);
-				count++;
-			}
-		}
+  void Allocator::checkArrayGC()
+  {
+    if (m_arrays.size() > GC_OBJECT_COUNT)
+    {
+      arrayGC();
+    }
+  }
 
-		printf("free %d array \n" , count);
-	}
+  void Allocator::arrayGC()
+  {
+    int count = 0;
+    for (auto i = m_arrays.begin(); i != m_arrays.end(); i++)
+    {
+      XArray * a = *i;
+      if (a->getRefCount() <= 0)
+      {
+        delete a;
+        m_arrays.erase(i++);
+        count++;
+      }
+    }
+
+    printf("free %d array \n" , count);
+  }
 
 
 }

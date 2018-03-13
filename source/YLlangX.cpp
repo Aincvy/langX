@@ -38,7 +38,7 @@ void initLangX()
 		regFunctions(state);
 		regExceptions();
 
-		state->loadConfig("/etc/langX.properties");
+		state->loadConfig("/etc/langX/langX.properties");
 	}
 }
 

@@ -27,6 +27,7 @@ namespace langX {
 	private:
 
 		std::string m_lib_dir;
+    std::string m_log4cpp_path;
 		std::vector<std::string> m_lib_list;
 
 	};

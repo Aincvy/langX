@@ -45,7 +45,7 @@ namespace langX {
 		this->m_thread_mgr = new langXThreadMgr();
 		this->m_thread_mgr->initMainThreadInfo();
     this->m_log_manager = new LogManager();
-    this->m_log_manager->init();
+    this->m_log_manager->init("/etc/langX/log4cpp.properties");
 
 	}
 
@@ -151,6 +151,24 @@ namespace langX {
 
 		return classinfo->newObject();
 	}
+
+  ClassInfo * langXState::getClassByFullName(const char *path) {
+    std::string str(path);
+    auto i = str.find_last_of('.');
+    if( i == std::string::npos){
+      return getClass(path);
+    }
+
+    // 获取命名空间
+    std::string str1 = str.substr(0, i);
+    XNameSpace *space = getNameSpace(str1.c_str());
+    if(space == nullptr){
+      return nullptr;
+    }
+
+    str1 = str.substr(i + 1);
+    return space->getClass(str1.c_str());
+  }
 
 	ClassInfo * langXState::getClass(const char *name) const
 	{

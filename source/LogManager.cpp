@@ -15,8 +15,6 @@ namespace langX{
   log4cpp::Category *logger = NULL;
 
   LogManager::LogManager(){
-    this->m_layout = NULL;
-    this->m_appender = NULL;
     this->m_category = NULL;
   }; 
 
@@ -25,8 +23,8 @@ namespace langX{
     
   };
 
-  void LogManager::init(){
-    log4cpp::PropertyConfigurator::configure("log4cpp.properties");
+  void LogManager::init(const char *path){
+    log4cpp::PropertyConfigurator::configure(path);
     log4cpp::Category& root = log4cpp::Category::getRoot();
     this->m_category = &root;
     langX::logger = this->m_category;

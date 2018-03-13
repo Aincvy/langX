@@ -45,9 +45,13 @@ namespace langX {
 			{
 				continue;
 			}
-			if (key == "LIB_DIR")
+			if (key == "LIB_DIR" || key == "XX")
 			{
-				this->m_lib_dir = std::string(value);
+        if( key == "LIB_DIR"){
+          this->m_lib_dir = std::string(value);
+        } else if(key == "log4cpp"){
+          this->m_log4cpp_path = std::string(value);
+        }
 
 				char tmpChar = value[value.length() - 1];
 				if (tmpChar == '\r' || tmpChar == '\n')

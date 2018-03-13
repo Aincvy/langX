@@ -41,6 +41,9 @@ namespace langX {
 		static FunctionRef *allocateFunctionRef(Function *);
 		static void freeFunctionRef(FunctionRef *);
 
+    static langXObject * newObject(const char *);
+    static langXObject * newObject(const char*, bool );
+    static langXObject * newObject(ClassInfo *,bool );
 		static langXObject * newObject(ClassInfo *) ;                              //  创建一个对象
 		static void freeObject(langXObject *);                                     //  释放掉一个对象
 
