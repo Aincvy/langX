@@ -21,6 +21,9 @@
   <ItemGroup>
     <ClInclude Include="include\ZlibModule.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\ZlibModule.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2682DDC3-6AA5-496D-967F-996706CFFA24}</ProjectGuid>
     <RootNamespace>langXZlib</RootNamespace>

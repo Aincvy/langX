@@ -43,4 +43,9 @@ namespace langX {
 
 	int regFileStream(langXState *state, XNameSpace* space, ClassInfo *stream);
 
+	// regex 库里面的
+	int regPattern(langXState *state, XNameSpace* space);
+
+	int regMatcher(langXState *state, XNameSpace* space);
+
 }

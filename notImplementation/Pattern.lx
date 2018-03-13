@@ -1,0 +1,14 @@
+set public = langX.core.regex;
+
+// 正则表达式的一个类 模仿java的实现
+// @date:  2018.03.12 
+Pattern {
+	
+	// 构造方法
+	Pattern => ( s ) {}
+
+	// 对一个字符串进行匹配
+	// @return 一个 Matcher 
+	match => ( s ) { return null ;}
+	
+}
