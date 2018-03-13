@@ -13,9 +13,10 @@ namespace langX {
 	CoreModule::~CoreModule()
 	{
 	}
+
 	int CoreModule::init(langXState *state)
 	{
-    logger->debug("init langX-core 库");
+		logger->debug("init langX-core 库");
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.core.util");
 		regIterator(state, space);
 		regList(state, space);
@@ -33,14 +34,21 @@ namespace langX {
 		regFile(state, space);
 		regByteArray(state, space);
 		ClassInfo * stream = regStream(state, space);
-		regFileStream(state, space , stream);
+		regFileStream(state, space, stream);
+
+		// regex
+		space = state->getNameSpaceOrCreate("langX.core.regex");
+		regMatcher(state, space);
+		regPattern(state, space);
 
 		return 0;
 	}
+
 	int CoreModule::unload(langXState *state)
 	{
 		return 0;
 	}
+
 }
 
 

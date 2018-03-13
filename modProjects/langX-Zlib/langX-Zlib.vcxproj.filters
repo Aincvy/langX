@@ -4,10 +4,18 @@
     <Filter Include="include">
       <UniqueIdentifier>{71311b76-9982-49d8-b0c4-279cf0b8e3c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{46230347-5c25-4931-ba36-ac93d0443d43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ZlibModule.h">
       <Filter>include</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\ZlibModule.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

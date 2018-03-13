@@ -1,0 +1,13 @@
+set public = langX.core.regex;
+
+// 匹配到的结果， 模仿java的实现
+// @date 2018.03.12
+Matcher {
+
+	// 是否匹配到了字符串
+	find => () { return false ;}
+	
+	// 获取组内的第几个元素
+	group => ( index ) { return null ;}
+	
+}

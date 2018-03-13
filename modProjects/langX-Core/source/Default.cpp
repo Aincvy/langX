@@ -10,7 +10,8 @@ namespace langX {
 		regDateTime(state, space);
 		regConvert(state, space);
 		regThread(state, space);
-    regApplication(state, space);
+		regApplication(state, space);
+		regStringBuilder(state, space);
 
 		return 0;
 	}
