@@ -2,26 +2,40 @@
 注：   langX 现在不支持 windows， 有兴趣的朋友可以自己研究下怎么编译
 =======================================================================
 
-本文使用 CentOS 7  系统
+本文使用 CentOS 7/macOS 系统
 
 1. 安装词法解析器和语法解析器   lex&yacc
 yum install -y flex byacc flex-devel 
+[mac下可以使用 homebrew]
 
-2. make
-**   此步骤可能会出错，当出现 cannot find liblangX.so  等字样的时候
-**      将mod目录下的liblangX.so 建立一个软连接到 /usr/local/lib(64)   
-**      lib 和 lib64 取决于你是不是64位系统
-**      执行 ldconfig -v    更新动态库缓存
-**      如果还不行， 说明你的文件夹可能没有被加载
-**      此时修改 /etc/ld.so.conf   文件， 将 上面的目录添加进文件。
-**      执行 ldconfig -v      
-**   上面步骤执行结束之后 继续 make 
+2. log4cpp 库, cmake 库
+如果你已经安装了， 就可以直接下一步了。
+没安装的话，请看。
+log4cpp 主页： http://log4cpp.sourceforge.net/
+cmake 主页： https://cmake.org/
+从这个主页里面下载最新版本的源码包， 然后执行下面命令
+./configure
+make
+sudo make install
 
+3.  使用cmake 进行编译和安装
+在源代码顶层目录执行下面的命令
+mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. 
+make 
+sudo make install
 
-3.   编译成功之后应该会获得一个  langX  的执行文件
-     不过此程序只有一些基本的功能，需要更多功能要编译第三方库
+这样就可以编译然后安装了
+
+4. 如果你执行langX 命令之后 得到下面的错误
+langX: error while loading shared libraries: liblangX.so: cannot open shared object file: No such file or directory
+则需要编辑 /etc/ld.so.conf  文件
+把 /usr/local/lib  添加进去
+然后执行  ldconfig -v   命令
+
+5.  现在程序只有一些基本的功能，需要更多功能要编译第三方库
 	 
-4.  使用方法为  langX [脚本文件]  
+6.  使用方法为  langX [脚本文件]  
 	 
 ====================================================================
 
