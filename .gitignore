@@ -32,3 +32,4 @@ langX.VC.db
 langX.vcxproj.user
 .vs/langX/v14/.suo
 extern/y.dot
+build/
