@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.11)
+
+PROJECT(LANGX_MYSQL)
+
+SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
+SET(CMAKE_VERBOSE_MAKEFILE on)
+SET(CMAKE_C_COMPILER       g++ )
+ADD_DEFINITIONS(-std=c++11)
+
+ADD_SUBDIRECTORY(source target)
