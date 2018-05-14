@@ -4,7 +4,7 @@ PythonLib::load();
 
 py = new PythonHook();
 py.doSString("import sys");
-py.doSString("sys.path.append('/root/projects/langX/scripts/python/')");
+py.doSString("sys.path.append('/Users/alias/langX/scripts/python')");
 
 pModule = py.importModule("pytest1");
 pFunc = pModule.get("add");

@@ -1,4 +1,4 @@
-﻿#include <string>
+#include <string>
 
 #include "../include/RegCoreModule.h"
 #include "../include/CoreFileStream.h"
@@ -100,7 +100,7 @@ namespace langX {
 			const char * str = ((String*)a)->getValue();
 			long l = cfs->cppFStream.tellp();
 			cfs->cppFStream << str << std::endl;
-			long b = cfs->cppFStream.tellp() - l;
+			long b = ((long)cfs->cppFStream.tellp()) - l;
 			return Allocator::allocateNumber(b);
 		}
 
