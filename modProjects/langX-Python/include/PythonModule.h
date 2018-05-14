@@ -5,7 +5,7 @@
 #ifdef WIN32 
 #include "../../../lib/Python-3.5.2/Include/Python.h"
 #else
-#include <python3.5m/Python.h>
+#include <python/Python.h>
 #endif
 
 namespace langX {

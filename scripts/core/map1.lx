@@ -14,9 +14,9 @@ a.put(key4,"value4");
 
 print("size: " + a.size() + "\n");
 print("key1=" + a.get(key1) + "\n");
-print("key1=" + a.get(key2) + "\n");
-print("key1=" + a.get(key3) + "\n");
-print("key1=" + a.get(key4) + "\n");
+print("key2=" + a.get(key2) + "\n");
+print("key3=" + a.get(key3) + "\n");
+print("key4=" + a.get(key4) + "\n");
 
 b = a.remove(key1);
 print("b=" + b + ",key1=" + a.get(key1) + "\n");

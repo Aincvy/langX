@@ -1,4 +1,4 @@
-﻿#include "../include/RegPythonModule.h"
+#include "../include/RegPythonModule.h"
 #include "../include/PythonModule.h"
 
 #include "../../../include/Function.h"
@@ -14,7 +14,7 @@
 #ifdef WIN32 
 #include "../../../lib/Python-3.5.2/Include/Python.h"
 #else
-#include <python3.5m/Python.h>
+#include <python/Python.h>
 #endif
 
 langX::ClassInfo *claxxPyObj = NULL;
