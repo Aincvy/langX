@@ -225,102 +225,101 @@ Grammar
   157               | id_expr
 
   158 arithmetic_stmt_factor: assign_stmt_value_eq
-  159                       | string_expr
-  160                       | arithmetic_stmt
-  161                       | '(' arithmetic_stmt ')'
+  159                       | arithmetic_stmt
+  160                       | '(' arithmetic_stmt ')'
 
-  162 new_expr: NEW id_expr '(' args_list ')'
+  161 new_expr: NEW id_expr '(' args_list ')'
 
-  163 id_expr: IDENTIFIER
+  162 id_expr: IDENTIFIER
 
-  164 t_bool_expr: TBOOL
+  163 t_bool_expr: TBOOL
 
-  165 double_expr: TDOUBLE
-  166            | XINTEGER
+  164 double_expr: TDOUBLE
+  165            | XINTEGER
 
-  167 uminus_expr: '-' double_or_ps_expr
-  168            | '-' id_expr
+  166 uminus_expr: '-' double_or_ps_expr
+  167            | '-' id_expr
 
-  169 string_expr: TSTRING
+  168 string_expr: TSTRING
 
-  170 null_expr: XNULL
+  169 null_expr: XNULL
 
-  171 bool_param_expr: assign_stmt_value_eq
-  172                | arithmetic_stmt
-  173                | t_bool_expr
-  174                | string_expr
-  175                | null_expr
+  170 bool_param_expr: assign_stmt_value_eq
+  171                | arithmetic_stmt
+  172                | t_bool_expr
+  173                | null_expr
 
-  176 logic_stmt: bool_param_expr
-  177           | type_judge_stmt
-  178           | bool_param_expr '>' bool_param_expr
-  179           | bool_param_expr '<' bool_param_expr
-  180           | bool_param_expr LE_OP bool_param_expr
-  181           | bool_param_expr GE_OP bool_param_expr
-  182           | bool_param_expr EQ_OP bool_param_expr
-  183           | bool_param_expr NE_OP bool_param_expr
-  184           | logic_stmt AND_OP logic_stmt
-  185           | logic_stmt OR_OP logic_stmt
+  174 logic_stmt: bool_param_expr
+  175           | type_judge_stmt
+  176           | bool_param_expr '>' bool_param_expr
+  177           | bool_param_expr '<' bool_param_expr
+  178           | bool_param_expr LE_OP bool_param_expr
+  179           | bool_param_expr GE_OP bool_param_expr
+  180           | bool_param_expr EQ_OP bool_param_expr
+  181           | bool_param_expr NE_OP bool_param_expr
+  182           | logic_stmt AND_OP logic_stmt
+  183           | logic_stmt OR_OP logic_stmt
 
-  186 type_judge_stmt: id_expr XIS id_expr
+  184 type_judge_stmt: id_expr XIS id_expr
 
-  187 self_inc_dec_stmt: INC_OP id_expr
-  188                  | DEC_OP id_expr
-  189                  | id_expr INC_OP
-  190                  | id_expr DEC_OP
+  185 self_inc_dec_stmt: INC_OP id_expr
+  186                  | DEC_OP id_expr
+  187                  | id_expr INC_OP
+  188                  | id_expr DEC_OP
 
-  191 assign_stmt_value: double_expr
-  192                  | uminus_expr
-  193                  | t_bool_expr
-  194                  | arithmetic_stmt
-  195                  | call_statement
-  196                  | lambda_stmt
-  197                  | id_expr
-  198                  | string_expr
-  199                  | self_inc_dec_stmt
-  200                  | new_expr
-  201                  | class_member_stmt
-  202                  | null_expr
-  203                  | this_stmt
-  204                  | array_ele_stmt
-  205                  | static_member_stmt
+  189 assign_stmt_value: double_expr
+  190                  | uminus_expr
+  191                  | t_bool_expr
+  192                  | arithmetic_stmt
+  193                  | call_statement
+  194                  | lambda_stmt
+  195                  | id_expr
+  196                  | string_expr
+  197                  | self_inc_dec_stmt
+  198                  | new_expr
+  199                  | class_member_stmt
+  200                  | null_expr
+  201                  | this_stmt
+  202                  | array_ele_stmt
+  203                  | static_member_stmt
 
-  206 assign_stmt_value_eq: double_expr
-  207                     | uminus_expr
-  208                     | call_statement
-  209                     | id_expr
-  210                     | self_inc_dec_stmt
-  211                     | class_member_stmt
-  212                     | static_member_stmt
-  213                     | this_stmt
-  214                     | array_ele_stmt
+  204 assign_stmt_value_eq: double_expr
+  205                     | uminus_expr
+  206                     | string_expr
+  207                     | call_statement
+  208                     | id_expr
+  209                     | self_inc_dec_stmt
+  210                     | class_member_stmt
+  211                     | static_member_stmt
+  212                     | this_stmt
+  213                     | array_ele_stmt
 
-  215 single_assign_stmt: id_expr '=' assign_stmt_value
-  216                   | id_expr '=' single_assign_stmt
+  214 single_assign_stmt: id_expr '=' assign_stmt_value
+  215                   | id_expr '=' single_assign_stmt
 
-  217 class_member_assign_stmt: class_member_stmt '=' assign_stmt_value
-  218                         | this_member_stmt '=' assign_stmt_value
+  216 class_member_assign_stmt: class_member_stmt '=' assign_stmt_value
+  217                         | this_member_stmt '=' assign_stmt_value
 
-  219 array_ele_stmt: IDENTIFIER '[' XINTEGER ']'
-  220               | IDENTIFIER '[' IDENTIFIER ']'
-  221               | IDENTIFIER '[' TSTRING ']'
-  222               | class_member_stmt '[' XINTEGER ']'
-  223               | class_member_stmt '[' IDENTIFIER ']'
-  224               | class_member_stmt '[' TSTRING ']'
-  225               | call_statement '[' XINTEGER ']'
-  226               | call_statement '[' IDENTIFIER ']'
-  227               | call_statement '[' TSTRING ']'
+  218 array_ele_stmt: IDENTIFIER '[' XINTEGER ']'
+  219               | IDENTIFIER '[' IDENTIFIER ']'
+  220               | IDENTIFIER '[' TSTRING ']'
+  221               | class_member_stmt '[' XINTEGER ']'
+  222               | class_member_stmt '[' IDENTIFIER ']'
+  223               | class_member_stmt '[' TSTRING ']'
+  224               | call_statement '[' XINTEGER ']'
+  225               | call_statement '[' IDENTIFIER ']'
+  226               | call_statement '[' TSTRING ']'
 
-  228 array_ele_assign_stmt: array_ele_stmt '=' assign_stmt_value
+  227 array_ele_assign_stmt: array_ele_stmt '=' assign_stmt_value
 
-  229 assign_stmt: single_assign_stmt
-  230            | class_member_assign_stmt
-  231            | array_ele_assign_stmt
-  232            | id_expr ADD_EQ assign_stmt_value_eq
-  233            | id_expr SUB_EQ assign_stmt_value_eq
-  234            | id_expr MUL_EQ assign_stmt_value_eq
-  235            | id_expr DIV_EQ assign_stmt_value_eq
-  236            | id_expr MOD_EQ assign_stmt_value_eq
+  228 assign_stmt: single_assign_stmt
+  229            | class_member_assign_stmt
+  230            | array_ele_assign_stmt
+  231            | id_expr ADD_EQ assign_stmt_value_eq
+  232            | id_expr SUB_EQ assign_stmt_value_eq
+  233            | id_expr MUL_EQ assign_stmt_value_eq
+  234            | id_expr DIV_EQ assign_stmt_value_eq
+  235            | id_expr MOD_EQ assign_stmt_value_eq
 
 
 Terminals, with rules where they appear
@@ -330,23 +329,23 @@ $end (0) 0
 '%' (37) 149
 '&' (38) 150
 '(' (40) 16 51 56 58 59 60 61 62 67 73 89 90 91 96 97 116 117 119 144
-    161 162
+    160 161
 ')' (41) 16 51 56 58 59 60 61 62 67 73 89 90 91 96 97 116 117 119 144
-    161 162
+    160 161
 '*' (42) 147
 '+' (43) 145
 ',' (44) 70 71 75 80 82 84 86 126
-'-' (45) 146 167 168
+'-' (45) 146 166 167
 '.' (46) 33 50 51 52 53 54 55 56 57 58 59 60 61 62
 '/' (47) 148
 ':' (58) 94 95
 ';' (59) 4 7 13 20 47 79 81 83 85 97
-'<' (60) 179
-'=' (61) 31 215 216 217 218 228
-'>' (62) 178
+'<' (60) 177
+'=' (61) 31 214 215 216 217 227
+'>' (62) 176
 '@' (64) 24 27
-'[' (91) 81 82 83 84 85 86 219 220 221 222 223 224 225 226 227
-']' (93) 81 82 83 84 85 86 219 220 221 222 223 224 225 226 227
+'[' (91) 81 82 83 84 85 86 218 219 220 221 222 223 224 225 226
+']' (93) 81 82 83 84 85 86 218 219 220 221 222 223 224 225 226
 '^' (94) 152
 '{' (123) 14 15 16 34 35 36 37 38 39 40 41 64 65 66 67 68 69 91 115
     140
@@ -355,23 +354,23 @@ $end (0) 0
     140
 '~' (126) 64 153
 error (256)
-XINTEGER (258) 81 82 156 166 219 222 225
-TDOUBLE (259) 165
-TBOOL (260) 164
+XINTEGER (258) 81 82 156 165 218 221 224
+TDOUBLE (259) 164
+TBOOL (260) 163
 IDENTIFIER (261) 27 32 33 34 35 36 37 38 39 40 41 43 56 60 64 65 68
-    70 71 74 75 81 82 83 84 85 86 104 117 130 163 219 220 221 223 226
-TSTRING (262) 169 221 224 227
+    70 71 74 75 81 82 83 84 85 86 104 117 130 162 218 219 220 222 225
+TSTRING (262) 168 220 223 226
 OPERATOR_X__ (263) 66
 OP_CALC (264)
-AND_OP (265) 184
-OR_OP (266) 185
-LE_OP (267) 180
-GE_OP (268) 181
-EQ_OP (269) 182
-NE_OP (270) 183
+AND_OP (265) 182
+OR_OP (266) 183
+LE_OP (267) 178
+GE_OP (268) 179
+EQ_OP (269) 180
+NE_OP (270) 181
 FUNC_OP (271) 64 65 66 67 68 69
-INC_OP (272) 187 189
-DEC_OP (273) 188 190
+INC_OP (272) 185 187
+DEC_OP (273) 186 188
 FUNC_CALL (274)
 VAR_DECLAR (275)
 RESTRICT (276) 110 111
@@ -380,16 +379,16 @@ EXTENDS (278) 43
 ARRAY_ELE (279)
 XTRY (280) 14 15
 XCATCH (281) 16
-ADD_EQ (282) 232
-SUB_EQ (283) 233
-MUL_EQ (284) 234
-DIV_EQ (285) 235
+ADD_EQ (282) 231
+SUB_EQ (283) 232
+MUL_EQ (284) 233
+DIV_EQ (285) 234
 LEFT_SHIFT (286) 154
 RIGHT_SHIFT (287) 155
-MOD_EQ (288) 236
+MOD_EQ (288) 235
 XPUBLIC (289) 31
 XSET (290) 31
-XIS (291) 186
+XIS (291) 184
 SCOPE (292) 63
 SCOPE_FUNC_CALL (293)
 REQUIRE (294) 10
@@ -411,10 +410,10 @@ CASE (309) 94
 DEFAULT (310) 95
 CASE_LIST (311)
 CLAXX_BODY (312)
-NEW (313) 162
+NEW (313) 161
 CLAXX_MEMBER (314)
 CLAXX_FUNC_CALL (315)
-XNULL (316) 170
+XNULL (316) 169
 XINCLUDE (317) 12
 ANNOTATION (318)
 NONASSOC (319)
@@ -466,20 +465,20 @@ class_body (111)
 class_body_stmt (112)
     on left: 46 47 48, on right: 44 45
 this_stmt (113)
-    on left: 49 50 51, on right: 203 213
+    on left: 49 50 51, on right: 201 212
 this_member_stmt (114)
-    on left: 52 53, on right: 218
+    on left: 52 53, on right: 217
 class_member_stmt (115)
-    on left: 54 55 56 57, on right: 53 57 61 136 201 211 217 222 223
-    224
+    on left: 54 55 56 57, on right: 53 57 61 136 199 210 216 221 222
+    223
 class_member_func_stmt (116)
     on left: 58 59 60 61 62, on right: 55 62 118
 static_member_stmt (117)
-    on left: 63, on right: 119 137 205 212
+    on left: 63, on right: 119 137 203 211
 func_declar_stmt (118)
     on left: 64 65 66, on right: 17 48
 lambda_stmt (119)
-    on left: 67 68 69, on right: 127 196
+    on left: 67 68 69, on right: 127 194
 lambda_args_stmt (120)
     on left: 70 71, on right: 69 71
 param_list (121)
@@ -510,14 +509,14 @@ restrict_stmt (132)
 interrupt_stmt (133)
     on left: 112 113 114 115, on right: 105
 call_statement (134)
-    on left: 116 117 118 119, on right: 85 86 103 121 122 133 195 208
-    225 226 227
+    on left: 116 117 118 119, on right: 85 86 103 121 122 133 193 207
+    224 225 226
 call_statement_piping (135)
     on left: 120 121, on right: 109
 call_statement_piping_single (136)
     on left: 122, on right: 120 121
 args_list (137)
-    on left: 123 124, on right: 51 56 58 59 60 61 62 116 117 119 162
+    on left: 123 124, on right: 51 56 58 59 60 61 62 116 117 119 161
 args_expr (138)
     on left: 125 126, on right: 115 124 126
 args_expr_collection (139)
@@ -526,59 +525,58 @@ args_expr_collection (139)
 block (140)
     on left: 140 141, on right: 89 90 96 97
 double_or_ps_expr (141)
-    on left: 142 143, on right: 167
+    on left: 142 143, on right: 166
 parentheses_stmt (142)
     on left: 144, on right: 143
 arithmetic_stmt (143)
     on left: 145 146 147 148 149 150 151 152 153 154 155,
-    on right: 134 160 161 172 194
+    on right: 134 159 160 171 192
 bit_opr_factor (144)
     on left: 156 157, on right: 150 151 152 153 154 155
 arithmetic_stmt_factor (145)
-    on left: 158 159 160 161, on right: 145 146 147 148 149
+    on left: 158 159 160, on right: 145 146 147 148 149
 new_expr (146)
-    on left: 162, on right: 106 138 200
+    on left: 161, on right: 106 138 198
 id_expr (147)
-    on left: 163, on right: 16 50 51 52 54 55 56 57 58 59 60 61 62
-    63 79 80 91 157 162 168 186 187 188 189 190 197 209 215 216 232
-    233 234 235 236
+    on left: 162, on right: 16 50 51 52 54 55 56 57 58 59 60 61 62
+    63 79 80 91 157 161 167 184 185 186 187 188 195 208 214 215 231
+    232 233 234 235
 t_bool_expr (148)
-    on left: 164, on right: 111 128 173 193
+    on left: 163, on right: 111 128 172 191
 double_expr (149)
-    on left: 165 166, on right: 94 129 142 191 206
+    on left: 164 165, on right: 94 129 142 189 204
 uminus_expr (150)
-    on left: 167 168, on right: 132 192 207
+    on left: 166 167, on right: 132 190 205
 string_expr (151)
-    on left: 169, on right: 10 11 12 131 159 174 198
+    on left: 168, on right: 10 11 12 131 196 206
 null_expr (152)
-    on left: 170, on right: 175 202
+    on left: 169, on right: 173 200
 bool_param_expr (153)
-    on left: 171 172 173 174 175, on right: 176 178 179 180 181 182
-    183
+    on left: 170 171 172 173, on right: 174 176 177 178 179 180 181
 logic_stmt (154)
-    on left: 176 177 178 179 180 181 182 183 184 185,
-    on right: 89 90 96 97 184 185
+    on left: 174 175 176 177 178 179 180 181 182 183,
+    on right: 89 90 96 97 182 183
 type_judge_stmt (155)
-    on left: 186, on right: 177
+    on left: 184, on right: 175
 self_inc_dec_stmt (156)
-    on left: 187 188 189 190, on right: 101 199 210
+    on left: 185 186 187 188, on right: 101 197 209
 assign_stmt_value (157)
-    on left: 191 192 193 194 195 196 197 198 199 200 201 202 203 204
-    205, on right: 114 215 217 218 228
+    on left: 189 190 191 192 193 194 195 196 197 198 199 200 201 202
+    203, on right: 114 214 216 217 227
 assign_stmt_value_eq (158)
-    on left: 206 207 208 209 210 211 212 213 214, on right: 144 158
-    171 232 233 234 235 236
+    on left: 204 205 206 207 208 209 210 211 212 213,
+    on right: 144 158 170 231 232 233 234 235
 single_assign_stmt (159)
-    on left: 215 216, on right: 47 216 229
+    on left: 214 215, on right: 47 215 228
 class_member_assign_stmt (160)
-    on left: 217 218, on right: 230
+    on left: 216 217, on right: 229
 array_ele_stmt (161)
-    on left: 219 220 221 222 223 224 225 226 227, on right: 59 116
-    135 204 214 228
+    on left: 218 219 220 221 222 223 224 225 226, on right: 59 116
+    135 202 213 227
 array_ele_assign_stmt (162)
-    on left: 228, on right: 231
+    on left: 227, on right: 230
 assign_stmt (163)
-    on left: 229 230 231 232 233 234 235 236, on right: 99 102
+    on left: 228 229 230 231 232 233 234 235, on right: 99 102
 
 
 state 0
@@ -687,10 +685,10 @@ state 4
    85                | IDENTIFIER . '[' call_statement ']' ';'
    86                | IDENTIFIER . '[' call_statement ']' ',' var_declar_stmt
   117 call_statement: IDENTIFIER . '(' args_list ')'
-  163 id_expr: IDENTIFIER .
-  219 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
-  220               | IDENTIFIER . '[' IDENTIFIER ']'
-  221               | IDENTIFIER . '[' TSTRING ']'
+  162 id_expr: IDENTIFIER .
+  218 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
+  219               | IDENTIFIER . '[' IDENTIFIER ']'
+  220               | IDENTIFIER . '[' TSTRING ']'
 
     FUNC_OP  shift, and go to state 62
     EXTENDS  shift, and go to state 63
@@ -698,7 +696,7 @@ state 4
     '['      shift, and go to state 65
 
     '{'       reduce using rule 42 (extends_stmt)
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
     extends_stmt  go to state 66
 
@@ -904,7 +902,7 @@ state 23
 
 state 24
 
-  162 new_expr: NEW . id_expr '(' args_list ')'
+  161 new_expr: NEW . id_expr '(' args_list ')'
 
     IDENTIFIER  shift, and go to state 122
 
@@ -1035,7 +1033,7 @@ state 39
 
 state 40
 
-  218 class_member_assign_stmt: this_member_stmt . '=' assign_stmt_value
+  217 class_member_assign_stmt: this_member_stmt . '=' assign_stmt_value
 
     '='  shift, and go to state 132
 
@@ -1044,10 +1042,10 @@ state 41
 
    57 class_member_stmt: class_member_stmt . '.' id_expr
    61 class_member_func_stmt: class_member_stmt . '.' id_expr '(' args_list ')'
-  217 class_member_assign_stmt: class_member_stmt . '=' assign_stmt_value
-  222 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
-  223               | class_member_stmt . '[' IDENTIFIER ']'
-  224               | class_member_stmt . '[' TSTRING ']'
+  216 class_member_assign_stmt: class_member_stmt . '=' assign_stmt_value
+  221 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
+  222               | class_member_stmt . '[' IDENTIFIER ']'
+  223               | class_member_stmt . '[' TSTRING ']'
 
     '='  shift, and go to state 133
     '.'  shift, and go to state 134
@@ -1133,9 +1131,9 @@ state 52
   103 simple_stmt: call_statement .
   121 call_statement_piping: call_statement . '|' call_statement_piping_single
   122 call_statement_piping_single: call_statement . '|' call_statement
-  225 array_ele_stmt: call_statement . '[' XINTEGER ']'
-  226               | call_statement . '[' IDENTIFIER ']'
-  227               | call_statement . '[' TSTRING ']'
+  224 array_ele_stmt: call_statement . '[' XINTEGER ']'
+  225               | call_statement . '[' IDENTIFIER ']'
+  226               | call_statement . '[' TSTRING ']'
 
     '|'  shift, and go to state 139
     '['  shift, and go to state 140
@@ -1171,13 +1169,13 @@ state 56
    63 static_member_stmt: id_expr . SCOPE id_expr
    79 var_declar_stmt: id_expr . ';'
    80                | id_expr . ',' var_declar_stmt
-  215 single_assign_stmt: id_expr . '=' assign_stmt_value
-  216                   | id_expr . '=' single_assign_stmt
-  232 assign_stmt: id_expr . ADD_EQ assign_stmt_value_eq
-  233            | id_expr . SUB_EQ assign_stmt_value_eq
-  234            | id_expr . MUL_EQ assign_stmt_value_eq
-  235            | id_expr . DIV_EQ assign_stmt_value_eq
-  236            | id_expr . MOD_EQ assign_stmt_value_eq
+  214 single_assign_stmt: id_expr . '=' assign_stmt_value
+  215                   | id_expr . '=' single_assign_stmt
+  231 assign_stmt: id_expr . ADD_EQ assign_stmt_value_eq
+  232            | id_expr . SUB_EQ assign_stmt_value_eq
+  233            | id_expr . MUL_EQ assign_stmt_value_eq
+  234            | id_expr . DIV_EQ assign_stmt_value_eq
+  235            | id_expr . MOD_EQ assign_stmt_value_eq
 
     ADD_EQ  shift, and go to state 141
     SUB_EQ  shift, and go to state 142
@@ -1193,23 +1191,23 @@ state 56
 
 state 57
 
-  229 assign_stmt: single_assign_stmt .
+  228 assign_stmt: single_assign_stmt .
 
-    $default  reduce using rule 229 (assign_stmt)
+    $default  reduce using rule 228 (assign_stmt)
 
 
 state 58
 
-  230 assign_stmt: class_member_assign_stmt .
+  229 assign_stmt: class_member_assign_stmt .
 
-    $default  reduce using rule 230 (assign_stmt)
+    $default  reduce using rule 229 (assign_stmt)
 
 
 state 59
 
    59 class_member_func_stmt: array_ele_stmt . '.' id_expr '(' args_list ')'
   116 call_statement: array_ele_stmt . '(' args_list ')'
-  228 array_ele_assign_stmt: array_ele_stmt . '=' assign_stmt_value
+  227 array_ele_assign_stmt: array_ele_stmt . '=' assign_stmt_value
 
     '='  shift, and go to state 151
     '.'  shift, and go to state 152
@@ -1218,9 +1216,9 @@ state 59
 
 state 60
 
-  231 assign_stmt: array_ele_assign_stmt .
+  230 assign_stmt: array_ele_assign_stmt .
 
-    $default  reduce using rule 231 (assign_stmt)
+    $default  reduce using rule 230 (assign_stmt)
 
 
 state 61
@@ -1302,9 +1300,9 @@ state 65
    84                | IDENTIFIER '[' . IDENTIFIER ']' ',' var_declar_stmt
    85                | IDENTIFIER '[' . call_statement ']' ';'
    86                | IDENTIFIER '[' . call_statement ']' ',' var_declar_stmt
-  219 array_ele_stmt: IDENTIFIER '[' . XINTEGER ']'
-  220               | IDENTIFIER '[' . IDENTIFIER ']'
-  221               | IDENTIFIER '[' . TSTRING ']'
+  218 array_ele_stmt: IDENTIFIER '[' . XINTEGER ']'
+  219               | IDENTIFIER '[' . IDENTIFIER ']'
+  220               | IDENTIFIER '[' . TSTRING ']'
 
     XINTEGER    shift, and go to state 176
     IDENTIFIER  shift, and go to state 177
@@ -1339,9 +1337,9 @@ state 67
 
 state 68
 
-  164 t_bool_expr: TBOOL .
+  163 t_bool_expr: TBOOL .
 
-    $default  reduce using rule 164 (t_bool_expr)
+    $default  reduce using rule 163 (t_bool_expr)
 
 
 state 69
@@ -1385,9 +1383,9 @@ state 72
 
 state 73
 
-  169 string_expr: TSTRING .
+  168 string_expr: TSTRING .
 
-    $default  reduce using rule 169 (string_expr)
+    $default  reduce using rule 168 (string_expr)
 
 
 state 74
@@ -1428,11 +1426,11 @@ state 78
    84                | IDENTIFIER . '[' IDENTIFIER ']' ',' var_declar_stmt
    85                | IDENTIFIER . '[' call_statement ']' ';'
    86                | IDENTIFIER . '[' call_statement ']' ',' var_declar_stmt
-  163 id_expr: IDENTIFIER .
+  162 id_expr: IDENTIFIER .
 
     '['  shift, and go to state 193
 
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
 
 state 79
@@ -1461,13 +1459,13 @@ state 81
    84                | IDENTIFIER . '[' IDENTIFIER ']' ',' var_declar_stmt
    85                | IDENTIFIER . '[' call_statement ']' ';'
    86                | IDENTIFIER . '[' call_statement ']' ',' var_declar_stmt
-  163 id_expr: IDENTIFIER .
+  162 id_expr: IDENTIFIER .
 
     EXTENDS  shift, and go to state 63
     '['      shift, and go to state 193
 
     '{'       reduce using rule 42 (extends_stmt)
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
     extends_stmt  go to state 66
 
@@ -1621,21 +1619,21 @@ state 89
 state 90
 
   156 bit_opr_factor: XINTEGER .
-  166 double_expr: XINTEGER .
+  165 double_expr: XINTEGER .
 
     LEFT_SHIFT   reduce using rule 156 (bit_opr_factor)
     RIGHT_SHIFT  reduce using rule 156 (bit_opr_factor)
     '|'          reduce using rule 156 (bit_opr_factor)
     '^'          reduce using rule 156 (bit_opr_factor)
     '&'          reduce using rule 156 (bit_opr_factor)
-    $default     reduce using rule 166 (double_expr)
+    $default     reduce using rule 165 (double_expr)
 
 
 state 91
 
-  165 double_expr: TDOUBLE .
+  164 double_expr: TDOUBLE .
 
-    $default  reduce using rule 165 (double_expr)
+    $default  reduce using rule 164 (double_expr)
 
 
 state 92
@@ -1645,22 +1643,22 @@ state 92
    68 lambda_stmt: IDENTIFIER . FUNC_OP '{' expr_list '}'
    70 lambda_args_stmt: IDENTIFIER . ',' IDENTIFIER
   117 call_statement: IDENTIFIER . '(' args_list ')'
-  163 id_expr: IDENTIFIER .
-  219 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
-  220               | IDENTIFIER . '[' IDENTIFIER ']'
-  221               | IDENTIFIER . '[' TSTRING ']'
+  162 id_expr: IDENTIFIER .
+  218 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
+  219               | IDENTIFIER . '[' IDENTIFIER ']'
+  220               | IDENTIFIER . '[' TSTRING ']'
 
     FUNC_OP  shift, and go to state 219
     ','      shift, and go to state 220
     '('      shift, and go to state 64
     '['      shift, and go to state 221
 
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
 
 state 93
 
-  187 self_inc_dec_stmt: INC_OP . id_expr
+  185 self_inc_dec_stmt: INC_OP . id_expr
 
     IDENTIFIER  shift, and go to state 122
 
@@ -1669,7 +1667,7 @@ state 93
 
 state 94
 
-  188 self_inc_dec_stmt: DEC_OP . id_expr
+  186 self_inc_dec_stmt: DEC_OP . id_expr
 
     IDENTIFIER  shift, and go to state 122
 
@@ -1689,15 +1687,15 @@ state 95
 
 state 96
 
-  170 null_expr: XNULL .
+  169 null_expr: XNULL .
 
-    $default  reduce using rule 170 (null_expr)
+    $default  reduce using rule 169 (null_expr)
 
 
 state 97
 
-  167 uminus_expr: '-' . double_or_ps_expr
-  168            | '-' . id_expr
+  166 uminus_expr: '-' . double_or_ps_expr
+  167            | '-' . id_expr
 
     XINTEGER    shift, and go to state 225
     TDOUBLE     shift, and go to state 91
@@ -1724,7 +1722,7 @@ state 98
 state 99
 
    67 lambda_stmt: '(' . parameter ')' FUNC_OP '{' expr_list '}'
-  161 arithmetic_stmt_factor: '(' . arithmetic_stmt ')'
+  160 arithmetic_stmt_factor: '(' . arithmetic_stmt ')'
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -1751,7 +1749,7 @@ state 99
     id_expr                 go to state 169
     double_expr             go to state 203
     uminus_expr             go to state 204
-    string_expr             go to state 237
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
     assign_stmt_value_eq    go to state 119
     array_ele_stmt          go to state 211
@@ -1782,7 +1780,7 @@ state 100
     lambda_stmt             go to state 162
     lambda_args_stmt        go to state 105
     call_statement          go to state 163
-    args_expr               go to state 238
+    args_expr               go to state 237
     args_expr_collection    go to state 166
     arithmetic_stmt         go to state 167
     bit_opr_factor          go to state 108
@@ -1800,50 +1798,50 @@ state 100
 
 state 101
 
-  203 assign_stmt_value: this_stmt .
-  213 assign_stmt_value_eq: this_stmt .
+  201 assign_stmt_value: this_stmt .
+  212 assign_stmt_value_eq: this_stmt .
 
-    ')'       reduce using rule 203 (assign_stmt_value)
-    ';'       reduce using rule 203 (assign_stmt_value)
-    $default  reduce using rule 213 (assign_stmt_value_eq)
+    ')'       reduce using rule 201 (assign_stmt_value)
+    ';'       reduce using rule 201 (assign_stmt_value)
+    $default  reduce using rule 212 (assign_stmt_value_eq)
 
 
 state 102
 
    57 class_member_stmt: class_member_stmt . '.' id_expr
    61 class_member_func_stmt: class_member_stmt . '.' id_expr '(' args_list ')'
-  201 assign_stmt_value: class_member_stmt .
-  211 assign_stmt_value_eq: class_member_stmt .
-  222 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
-  223               | class_member_stmt . '[' IDENTIFIER ']'
-  224               | class_member_stmt . '[' TSTRING ']'
+  199 assign_stmt_value: class_member_stmt .
+  210 assign_stmt_value_eq: class_member_stmt .
+  221 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
+  222               | class_member_stmt . '[' IDENTIFIER ']'
+  223               | class_member_stmt . '[' TSTRING ']'
 
     '.'  shift, and go to state 134
     '['  shift, and go to state 135
 
-    ')'       reduce using rule 201 (assign_stmt_value)
-    ';'       reduce using rule 201 (assign_stmt_value)
-    $default  reduce using rule 211 (assign_stmt_value_eq)
+    ')'       reduce using rule 199 (assign_stmt_value)
+    ';'       reduce using rule 199 (assign_stmt_value)
+    $default  reduce using rule 210 (assign_stmt_value_eq)
 
 
 state 103
 
   119 call_statement: static_member_stmt . '(' args_list ')'
-  205 assign_stmt_value: static_member_stmt .
-  212 assign_stmt_value_eq: static_member_stmt .
+  203 assign_stmt_value: static_member_stmt .
+  211 assign_stmt_value_eq: static_member_stmt .
 
     '('  shift, and go to state 137
 
-    ')'       reduce using rule 205 (assign_stmt_value)
-    ';'       reduce using rule 205 (assign_stmt_value)
-    $default  reduce using rule 212 (assign_stmt_value_eq)
+    ')'       reduce using rule 203 (assign_stmt_value)
+    ';'       reduce using rule 203 (assign_stmt_value)
+    $default  reduce using rule 211 (assign_stmt_value_eq)
 
 
 state 104
 
-  196 assign_stmt_value: lambda_stmt .
+  194 assign_stmt_value: lambda_stmt .
 
-    $default  reduce using rule 196 (assign_stmt_value)
+    $default  reduce using rule 194 (assign_stmt_value)
 
 
 state 105
@@ -1851,33 +1849,33 @@ state 105
    69 lambda_stmt: lambda_args_stmt . FUNC_OP '{' expr_list '}'
    71 lambda_args_stmt: lambda_args_stmt . ',' IDENTIFIER
 
-    FUNC_OP  shift, and go to state 239
-    ','      shift, and go to state 240
+    FUNC_OP  shift, and go to state 238
+    ','      shift, and go to state 239
 
 
 state 106
 
-  195 assign_stmt_value: call_statement .
-  208 assign_stmt_value_eq: call_statement .
-  225 array_ele_stmt: call_statement . '[' XINTEGER ']'
-  226               | call_statement . '[' IDENTIFIER ']'
-  227               | call_statement . '[' TSTRING ']'
+  193 assign_stmt_value: call_statement .
+  207 assign_stmt_value_eq: call_statement .
+  224 array_ele_stmt: call_statement . '[' XINTEGER ']'
+  225               | call_statement . '[' IDENTIFIER ']'
+  226               | call_statement . '[' TSTRING ']'
 
     '['  shift, and go to state 140
 
-    ')'       reduce using rule 195 (assign_stmt_value)
-    ';'       reduce using rule 195 (assign_stmt_value)
-    $default  reduce using rule 208 (assign_stmt_value_eq)
+    ')'       reduce using rule 193 (assign_stmt_value)
+    ';'       reduce using rule 193 (assign_stmt_value)
+    $default  reduce using rule 207 (assign_stmt_value_eq)
 
 
 state 107
 
-  160 arithmetic_stmt_factor: arithmetic_stmt .
-  194 assign_stmt_value: arithmetic_stmt .
+  159 arithmetic_stmt_factor: arithmetic_stmt .
+  192 assign_stmt_value: arithmetic_stmt .
 
-    ')'       reduce using rule 194 (assign_stmt_value)
-    ';'       reduce using rule 194 (assign_stmt_value)
-    $default  reduce using rule 160 (arithmetic_stmt_factor)
+    ')'       reduce using rule 192 (assign_stmt_value)
+    ';'       reduce using rule 192 (assign_stmt_value)
+    $default  reduce using rule 159 (arithmetic_stmt_factor)
 
 
 state 108
@@ -1888,11 +1886,11 @@ state 108
   154                | bit_opr_factor . LEFT_SHIFT bit_opr_factor
   155                | bit_opr_factor . RIGHT_SHIFT bit_opr_factor
 
-    LEFT_SHIFT   shift, and go to state 241
-    RIGHT_SHIFT  shift, and go to state 242
-    '|'          shift, and go to state 243
-    '^'          shift, and go to state 244
-    '&'          shift, and go to state 245
+    LEFT_SHIFT   shift, and go to state 240
+    RIGHT_SHIFT  shift, and go to state 241
+    '|'          shift, and go to state 242
+    '^'          shift, and go to state 243
+    '&'          shift, and go to state 244
 
 
 state 109
@@ -1903,18 +1901,18 @@ state 109
   148                | arithmetic_stmt_factor . '/' arithmetic_stmt_factor
   149                | arithmetic_stmt_factor . '%' arithmetic_stmt_factor
 
-    '+'  shift, and go to state 246
-    '-'  shift, and go to state 247
-    '*'  shift, and go to state 248
-    '/'  shift, and go to state 249
-    '%'  shift, and go to state 250
+    '+'  shift, and go to state 245
+    '-'  shift, and go to state 246
+    '*'  shift, and go to state 247
+    '/'  shift, and go to state 248
+    '%'  shift, and go to state 249
 
 
 state 110
 
-  200 assign_stmt_value: new_expr .
+  198 assign_stmt_value: new_expr .
 
-    $default  reduce using rule 200 (assign_stmt_value)
+    $default  reduce using rule 198 (assign_stmt_value)
 
 
 state 111
@@ -1923,78 +1921,78 @@ state 111
    58 class_member_func_stmt: id_expr . '.' id_expr '(' args_list ')'
    63 static_member_stmt: id_expr . SCOPE id_expr
   157 bit_opr_factor: id_expr .
-  189 self_inc_dec_stmt: id_expr . INC_OP
-  190                  | id_expr . DEC_OP
-  197 assign_stmt_value: id_expr .
-  209 assign_stmt_value_eq: id_expr .
+  187 self_inc_dec_stmt: id_expr . INC_OP
+  188                  | id_expr . DEC_OP
+  195 assign_stmt_value: id_expr .
+  208 assign_stmt_value_eq: id_expr .
 
-    INC_OP  shift, and go to state 251
-    DEC_OP  shift, and go to state 252
+    INC_OP  shift, and go to state 250
+    DEC_OP  shift, and go to state 251
     SCOPE   shift, and go to state 146
     '.'     shift, and go to state 149
 
-    '+'       reduce using rule 209 (assign_stmt_value_eq)
-    '-'       reduce using rule 209 (assign_stmt_value_eq)
-    '*'       reduce using rule 209 (assign_stmt_value_eq)
-    '/'       reduce using rule 209 (assign_stmt_value_eq)
-    '%'       reduce using rule 209 (assign_stmt_value_eq)
-    ')'       reduce using rule 197 (assign_stmt_value)
-    ';'       reduce using rule 197 (assign_stmt_value)
+    '+'       reduce using rule 208 (assign_stmt_value_eq)
+    '-'       reduce using rule 208 (assign_stmt_value_eq)
+    '*'       reduce using rule 208 (assign_stmt_value_eq)
+    '/'       reduce using rule 208 (assign_stmt_value_eq)
+    '%'       reduce using rule 208 (assign_stmt_value_eq)
+    ')'       reduce using rule 195 (assign_stmt_value)
+    ';'       reduce using rule 195 (assign_stmt_value)
     $default  reduce using rule 157 (bit_opr_factor)
 
 
 state 112
 
-  193 assign_stmt_value: t_bool_expr .
+  191 assign_stmt_value: t_bool_expr .
 
-    $default  reduce using rule 193 (assign_stmt_value)
+    $default  reduce using rule 191 (assign_stmt_value)
 
 
 state 113
 
-  191 assign_stmt_value: double_expr .
-  206 assign_stmt_value_eq: double_expr .
+  189 assign_stmt_value: double_expr .
+  204 assign_stmt_value_eq: double_expr .
 
-    ')'       reduce using rule 191 (assign_stmt_value)
-    ';'       reduce using rule 191 (assign_stmt_value)
-    $default  reduce using rule 206 (assign_stmt_value_eq)
+    ')'       reduce using rule 189 (assign_stmt_value)
+    ';'       reduce using rule 189 (assign_stmt_value)
+    $default  reduce using rule 204 (assign_stmt_value_eq)
 
 
 state 114
 
-  192 assign_stmt_value: uminus_expr .
-  207 assign_stmt_value_eq: uminus_expr .
+  190 assign_stmt_value: uminus_expr .
+  205 assign_stmt_value_eq: uminus_expr .
 
-    ')'       reduce using rule 192 (assign_stmt_value)
-    ';'       reduce using rule 192 (assign_stmt_value)
-    $default  reduce using rule 207 (assign_stmt_value_eq)
+    ')'       reduce using rule 190 (assign_stmt_value)
+    ';'       reduce using rule 190 (assign_stmt_value)
+    $default  reduce using rule 205 (assign_stmt_value_eq)
 
 
 state 115
 
-  159 arithmetic_stmt_factor: string_expr .
-  198 assign_stmt_value: string_expr .
+  196 assign_stmt_value: string_expr .
+  206 assign_stmt_value_eq: string_expr .
 
-    ')'       reduce using rule 198 (assign_stmt_value)
-    ';'       reduce using rule 198 (assign_stmt_value)
-    $default  reduce using rule 159 (arithmetic_stmt_factor)
+    ')'       reduce using rule 196 (assign_stmt_value)
+    ';'       reduce using rule 196 (assign_stmt_value)
+    $default  reduce using rule 206 (assign_stmt_value_eq)
 
 
 state 116
 
-  202 assign_stmt_value: null_expr .
+  200 assign_stmt_value: null_expr .
 
-    $default  reduce using rule 202 (assign_stmt_value)
+    $default  reduce using rule 200 (assign_stmt_value)
 
 
 state 117
 
-  199 assign_stmt_value: self_inc_dec_stmt .
-  210 assign_stmt_value_eq: self_inc_dec_stmt .
+  197 assign_stmt_value: self_inc_dec_stmt .
+  209 assign_stmt_value_eq: self_inc_dec_stmt .
 
-    ')'       reduce using rule 199 (assign_stmt_value)
-    ';'       reduce using rule 199 (assign_stmt_value)
-    $default  reduce using rule 210 (assign_stmt_value_eq)
+    ')'       reduce using rule 197 (assign_stmt_value)
+    ';'       reduce using rule 197 (assign_stmt_value)
+    $default  reduce using rule 209 (assign_stmt_value_eq)
 
 
 state 118
@@ -2015,15 +2013,15 @@ state 120
 
    59 class_member_func_stmt: array_ele_stmt . '.' id_expr '(' args_list ')'
   116 call_statement: array_ele_stmt . '(' args_list ')'
-  204 assign_stmt_value: array_ele_stmt .
-  214 assign_stmt_value_eq: array_ele_stmt .
+  202 assign_stmt_value: array_ele_stmt .
+  213 assign_stmt_value_eq: array_ele_stmt .
 
     '.'  shift, and go to state 152
     '('  shift, and go to state 153
 
-    ')'       reduce using rule 204 (assign_stmt_value)
-    ';'       reduce using rule 204 (assign_stmt_value)
-    $default  reduce using rule 214 (assign_stmt_value_eq)
+    ')'       reduce using rule 202 (assign_stmt_value)
+    ';'       reduce using rule 202 (assign_stmt_value)
+    $default  reduce using rule 213 (assign_stmt_value_eq)
 
 
 state 121
@@ -2032,21 +2030,21 @@ state 121
 
     IDENTIFIER  shift, and go to state 122
 
-    id_expr  go to state 253
+    id_expr  go to state 252
 
 
 state 122
 
-  163 id_expr: IDENTIFIER .
+  162 id_expr: IDENTIFIER .
 
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
 
 state 123
 
-  162 new_expr: NEW id_expr . '(' args_list ')'
+  161 new_expr: NEW id_expr . '(' args_list ')'
 
-    '('  shift, and go to state 254
+    '('  shift, and go to state 253
 
 
 state 124
@@ -2060,7 +2058,7 @@ state 125
 
    64 func_declar_stmt: '~' IDENTIFIER . FUNC_OP param_list '{' expr_list '}'
 
-    FUNC_OP  shift, and go to state 255
+    FUNC_OP  shift, and go to state 254
 
 
 state 126
@@ -2093,7 +2091,7 @@ state 128
 
     $default  reduce using rule 42 (extends_stmt)
 
-    extends_stmt  go to state 256
+    extends_stmt  go to state 255
 
 
 state 129
@@ -2101,7 +2099,7 @@ state 129
    40 class_declar_stmt: annotation_use_stmt AUTO . IDENTIFIER extends_stmt '{' '}'
    41                  | annotation_use_stmt AUTO . IDENTIFIER extends_stmt '{' class_body '}'
 
-    IDENTIFIER  shift, and go to state 257
+    IDENTIFIER  shift, and go to state 256
 
 
 state 130
@@ -2120,7 +2118,48 @@ state 131
 
 state 132
 
-  218 class_member_assign_stmt: this_member_stmt '=' . assign_stmt_value
+  217 class_member_assign_stmt: this_member_stmt '=' . assign_stmt_value
+
+    XINTEGER    shift, and go to state 90
+    TDOUBLE     shift, and go to state 91
+    TBOOL       shift, and go to state 68
+    IDENTIFIER  shift, and go to state 92
+    TSTRING     shift, and go to state 73
+    INC_OP      shift, and go to state 93
+    DEC_OP      shift, and go to state 94
+    THIS        shift, and go to state 95
+    NEW         shift, and go to state 24
+    XNULL       shift, and go to state 96
+    '-'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '('         shift, and go to state 99
+
+    this_stmt               go to state 101
+    class_member_stmt       go to state 102
+    class_member_func_stmt  go to state 42
+    static_member_stmt      go to state 103
+    lambda_stmt             go to state 104
+    lambda_args_stmt        go to state 105
+    call_statement          go to state 106
+    arithmetic_stmt         go to state 107
+    bit_opr_factor          go to state 108
+    arithmetic_stmt_factor  go to state 109
+    new_expr                go to state 110
+    id_expr                 go to state 111
+    t_bool_expr             go to state 112
+    double_expr             go to state 113
+    uminus_expr             go to state 114
+    string_expr             go to state 115
+    null_expr               go to state 116
+    self_inc_dec_stmt       go to state 117
+    assign_stmt_value       go to state 257
+    assign_stmt_value_eq    go to state 119
+    array_ele_stmt          go to state 120
+
+
+state 133
+
+  216 class_member_assign_stmt: class_member_stmt '=' . assign_stmt_value
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -2159,47 +2198,6 @@ state 132
     array_ele_stmt          go to state 120
 
 
-state 133
-
-  217 class_member_assign_stmt: class_member_stmt '=' . assign_stmt_value
-
-    XINTEGER    shift, and go to state 90
-    TDOUBLE     shift, and go to state 91
-    TBOOL       shift, and go to state 68
-    IDENTIFIER  shift, and go to state 92
-    TSTRING     shift, and go to state 73
-    INC_OP      shift, and go to state 93
-    DEC_OP      shift, and go to state 94
-    THIS        shift, and go to state 95
-    NEW         shift, and go to state 24
-    XNULL       shift, and go to state 96
-    '-'         shift, and go to state 97
-    '~'         shift, and go to state 98
-    '('         shift, and go to state 99
-
-    this_stmt               go to state 101
-    class_member_stmt       go to state 102
-    class_member_func_stmt  go to state 42
-    static_member_stmt      go to state 103
-    lambda_stmt             go to state 104
-    lambda_args_stmt        go to state 105
-    call_statement          go to state 106
-    arithmetic_stmt         go to state 107
-    bit_opr_factor          go to state 108
-    arithmetic_stmt_factor  go to state 109
-    new_expr                go to state 110
-    id_expr                 go to state 111
-    t_bool_expr             go to state 112
-    double_expr             go to state 113
-    uminus_expr             go to state 114
-    string_expr             go to state 115
-    null_expr               go to state 116
-    self_inc_dec_stmt       go to state 117
-    assign_stmt_value       go to state 259
-    assign_stmt_value_eq    go to state 119
-    array_ele_stmt          go to state 120
-
-
 state 134
 
    57 class_member_stmt: class_member_stmt '.' . id_expr
@@ -2207,18 +2205,18 @@ state 134
 
     IDENTIFIER  shift, and go to state 122
 
-    id_expr  go to state 260
+    id_expr  go to state 259
 
 
 state 135
 
-  222 array_ele_stmt: class_member_stmt '[' . XINTEGER ']'
-  223               | class_member_stmt '[' . IDENTIFIER ']'
-  224               | class_member_stmt '[' . TSTRING ']'
+  221 array_ele_stmt: class_member_stmt '[' . XINTEGER ']'
+  222               | class_member_stmt '[' . IDENTIFIER ']'
+  223               | class_member_stmt '[' . TSTRING ']'
 
-    XINTEGER    shift, and go to state 261
-    IDENTIFIER  shift, and go to state 262
-    TSTRING     shift, and go to state 263
+    XINTEGER    shift, and go to state 260
+    IDENTIFIER  shift, and go to state 261
+    TSTRING     shift, and go to state 262
 
 
 state 136
@@ -2228,7 +2226,7 @@ state 136
 
     IDENTIFIER  shift, and go to state 122
 
-    id_expr  go to state 264
+    id_expr  go to state 263
 
 
 state 137
@@ -2258,7 +2256,7 @@ state 137
     lambda_stmt             go to state 162
     lambda_args_stmt        go to state 105
     call_statement          go to state 163
-    args_list               go to state 265
+    args_list               go to state 264
     args_expr               go to state 165
     args_expr_collection    go to state 166
     arithmetic_stmt         go to state 167
@@ -2292,30 +2290,31 @@ state 139
     class_member_stmt             go to state 179
     class_member_func_stmt        go to state 42
     static_member_stmt            go to state 43
-    call_statement                go to state 266
-    call_statement_piping_single  go to state 267
+    call_statement                go to state 265
+    call_statement_piping_single  go to state 266
     id_expr                       go to state 181
     array_ele_stmt                go to state 182
 
 
 state 140
 
-  225 array_ele_stmt: call_statement '[' . XINTEGER ']'
-  226               | call_statement '[' . IDENTIFIER ']'
-  227               | call_statement '[' . TSTRING ']'
+  224 array_ele_stmt: call_statement '[' . XINTEGER ']'
+  225               | call_statement '[' . IDENTIFIER ']'
+  226               | call_statement '[' . TSTRING ']'
 
-    XINTEGER    shift, and go to state 268
-    IDENTIFIER  shift, and go to state 269
-    TSTRING     shift, and go to state 270
+    XINTEGER    shift, and go to state 267
+    IDENTIFIER  shift, and go to state 268
+    TSTRING     shift, and go to state 269
 
 
 state 141
 
-  232 assign_stmt: id_expr ADD_EQ . assign_stmt_value_eq
+  231 assign_stmt: id_expr ADD_EQ . assign_stmt_value_eq
 
     XINTEGER    shift, and go to state 225
     TDOUBLE     shift, and go to state 91
     IDENTIFIER  shift, and go to state 185
+    TSTRING     shift, and go to state 73
     INC_OP      shift, and go to state 93
     DEC_OP      shift, and go to state 94
     THIS        shift, and go to state 95
@@ -2326,21 +2325,23 @@ state 141
     class_member_func_stmt  go to state 42
     static_member_stmt      go to state 198
     call_statement          go to state 199
-    id_expr                 go to state 271
+    id_expr                 go to state 270
     double_expr             go to state 203
     uminus_expr             go to state 204
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
-    assign_stmt_value_eq    go to state 272
+    assign_stmt_value_eq    go to state 271
     array_ele_stmt          go to state 211
 
 
 state 142
 
-  233 assign_stmt: id_expr SUB_EQ . assign_stmt_value_eq
+  232 assign_stmt: id_expr SUB_EQ . assign_stmt_value_eq
 
     XINTEGER    shift, and go to state 225
     TDOUBLE     shift, and go to state 91
     IDENTIFIER  shift, and go to state 185
+    TSTRING     shift, and go to state 73
     INC_OP      shift, and go to state 93
     DEC_OP      shift, and go to state 94
     THIS        shift, and go to state 95
@@ -2351,21 +2352,23 @@ state 142
     class_member_func_stmt  go to state 42
     static_member_stmt      go to state 198
     call_statement          go to state 199
-    id_expr                 go to state 271
+    id_expr                 go to state 270
     double_expr             go to state 203
     uminus_expr             go to state 204
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
-    assign_stmt_value_eq    go to state 273
+    assign_stmt_value_eq    go to state 272
     array_ele_stmt          go to state 211
 
 
 state 143
 
-  234 assign_stmt: id_expr MUL_EQ . assign_stmt_value_eq
+  233 assign_stmt: id_expr MUL_EQ . assign_stmt_value_eq
 
     XINTEGER    shift, and go to state 225
     TDOUBLE     shift, and go to state 91
     IDENTIFIER  shift, and go to state 185
+    TSTRING     shift, and go to state 73
     INC_OP      shift, and go to state 93
     DEC_OP      shift, and go to state 94
     THIS        shift, and go to state 95
@@ -2376,21 +2379,23 @@ state 143
     class_member_func_stmt  go to state 42
     static_member_stmt      go to state 198
     call_statement          go to state 199
-    id_expr                 go to state 271
+    id_expr                 go to state 270
     double_expr             go to state 203
     uminus_expr             go to state 204
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
-    assign_stmt_value_eq    go to state 274
+    assign_stmt_value_eq    go to state 273
     array_ele_stmt          go to state 211
 
 
 state 144
 
-  235 assign_stmt: id_expr DIV_EQ . assign_stmt_value_eq
+  234 assign_stmt: id_expr DIV_EQ . assign_stmt_value_eq
 
     XINTEGER    shift, and go to state 225
     TDOUBLE     shift, and go to state 91
     IDENTIFIER  shift, and go to state 185
+    TSTRING     shift, and go to state 73
     INC_OP      shift, and go to state 93
     DEC_OP      shift, and go to state 94
     THIS        shift, and go to state 95
@@ -2401,21 +2406,23 @@ state 144
     class_member_func_stmt  go to state 42
     static_member_stmt      go to state 198
     call_statement          go to state 199
-    id_expr                 go to state 271
+    id_expr                 go to state 270
     double_expr             go to state 203
     uminus_expr             go to state 204
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
-    assign_stmt_value_eq    go to state 275
+    assign_stmt_value_eq    go to state 274
     array_ele_stmt          go to state 211
 
 
 state 145
 
-  236 assign_stmt: id_expr MOD_EQ . assign_stmt_value_eq
+  235 assign_stmt: id_expr MOD_EQ . assign_stmt_value_eq
 
     XINTEGER    shift, and go to state 225
     TDOUBLE     shift, and go to state 91
     IDENTIFIER  shift, and go to state 185
+    TSTRING     shift, and go to state 73
     INC_OP      shift, and go to state 93
     DEC_OP      shift, and go to state 94
     THIS        shift, and go to state 95
@@ -2426,11 +2433,12 @@ state 145
     class_member_func_stmt  go to state 42
     static_member_stmt      go to state 198
     call_statement          go to state 199
-    id_expr                 go to state 271
+    id_expr                 go to state 270
     double_expr             go to state 203
     uminus_expr             go to state 204
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
-    assign_stmt_value_eq    go to state 276
+    assign_stmt_value_eq    go to state 275
     array_ele_stmt          go to state 211
 
 
@@ -2440,7 +2448,7 @@ state 146
 
     IDENTIFIER  shift, and go to state 122
 
-    id_expr  go to state 277
+    id_expr  go to state 276
 
 
 state 147
@@ -2449,14 +2457,14 @@ state 147
 
     IDENTIFIER  shift, and go to state 78
 
-    var_declar_stmt  go to state 278
+    var_declar_stmt  go to state 277
     id_expr          go to state 80
 
 
 state 148
 
-  215 single_assign_stmt: id_expr '=' . assign_stmt_value
-  216                   | id_expr '=' . single_assign_stmt
+  214 single_assign_stmt: id_expr '=' . assign_stmt_value
+  215                   | id_expr '=' . single_assign_stmt
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -2483,16 +2491,16 @@ state 148
     bit_opr_factor          go to state 108
     arithmetic_stmt_factor  go to state 109
     new_expr                go to state 110
-    id_expr                 go to state 279
+    id_expr                 go to state 278
     t_bool_expr             go to state 112
     double_expr             go to state 113
     uminus_expr             go to state 114
     string_expr             go to state 115
     null_expr               go to state 116
     self_inc_dec_stmt       go to state 117
-    assign_stmt_value       go to state 280
+    assign_stmt_value       go to state 279
     assign_stmt_value_eq    go to state 119
-    single_assign_stmt      go to state 281
+    single_assign_stmt      go to state 280
     array_ele_stmt          go to state 120
 
 
@@ -2503,7 +2511,7 @@ state 149
 
     IDENTIFIER  shift, and go to state 122
 
-    id_expr  go to state 282
+    id_expr  go to state 281
 
 
 state 150
@@ -2515,7 +2523,7 @@ state 150
 
 state 151
 
-  228 array_ele_assign_stmt: array_ele_stmt '=' . assign_stmt_value
+  227 array_ele_assign_stmt: array_ele_stmt '=' . assign_stmt_value
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -2549,7 +2557,7 @@ state 151
     string_expr             go to state 115
     null_expr               go to state 116
     self_inc_dec_stmt       go to state 117
-    assign_stmt_value       go to state 283
+    assign_stmt_value       go to state 282
     assign_stmt_value_eq    go to state 119
     array_ele_stmt          go to state 120
 
@@ -2560,7 +2568,7 @@ state 152
 
     IDENTIFIER  shift, and go to state 122
 
-    id_expr  go to state 284
+    id_expr  go to state 283
 
 
 state 153
@@ -2590,7 +2598,7 @@ state 153
     lambda_stmt             go to state 162
     lambda_args_stmt        go to state 105
     call_statement          go to state 163
-    args_list               go to state 285
+    args_list               go to state 284
     args_expr               go to state 165
     args_expr_collection    go to state 166
     arithmetic_stmt         go to state 167
@@ -2611,18 +2619,18 @@ state 154
 
    73 param_list: '(' . parameter ')'
 
-    IDENTIFIER  shift, and go to state 286
+    IDENTIFIER  shift, and go to state 285
 
     $default  reduce using rule 76 (parameter)
 
-    parameter  go to state 287
+    parameter  go to state 286
 
 
 state 155
 
    65 func_declar_stmt: IDENTIFIER FUNC_OP param_list . '{' expr_list '}'
 
-    '{'  shift, and go to state 288
+    '{'  shift, and go to state 287
 
 
 state 156
@@ -2640,10 +2648,10 @@ state 157
    70 lambda_args_stmt: IDENTIFIER . ',' IDENTIFIER
   117 call_statement: IDENTIFIER . '(' args_list ')'
   130 args_expr_collection: IDENTIFIER .
-  163 id_expr: IDENTIFIER .
-  219 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
-  220               | IDENTIFIER . '[' IDENTIFIER ']'
-  221               | IDENTIFIER . '[' TSTRING ']'
+  162 id_expr: IDENTIFIER .
+  218 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
+  219               | IDENTIFIER . '[' IDENTIFIER ']'
+  220               | IDENTIFIER . '[' TSTRING ']'
 
     FUNC_OP  shift, and go to state 219
     '('      shift, and go to state 64
@@ -2652,7 +2660,7 @@ state 157
     ','       reduce using rule 130 (args_expr_collection)
     ')'       reduce using rule 130 (args_expr_collection)
     '}'       reduce using rule 130 (args_expr_collection)
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
 
 state 158
@@ -2664,9 +2672,9 @@ state 158
 
 state 159
 
-  213 assign_stmt_value_eq: this_stmt .
+  212 assign_stmt_value_eq: this_stmt .
 
-    $default  reduce using rule 213 (assign_stmt_value_eq)
+    $default  reduce using rule 212 (assign_stmt_value_eq)
 
 
 state 160
@@ -2674,10 +2682,10 @@ state 160
    57 class_member_stmt: class_member_stmt . '.' id_expr
    61 class_member_func_stmt: class_member_stmt . '.' id_expr '(' args_list ')'
   136 args_expr_collection: class_member_stmt .
-  211 assign_stmt_value_eq: class_member_stmt .
-  222 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
-  223               | class_member_stmt . '[' IDENTIFIER ']'
-  224               | class_member_stmt . '[' TSTRING ']'
+  210 assign_stmt_value_eq: class_member_stmt .
+  221 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
+  222               | class_member_stmt . '[' IDENTIFIER ']'
+  223               | class_member_stmt . '[' TSTRING ']'
 
     '.'  shift, and go to state 134
     '['  shift, and go to state 135
@@ -2685,21 +2693,21 @@ state 160
     ','       reduce using rule 136 (args_expr_collection)
     ')'       reduce using rule 136 (args_expr_collection)
     '}'       reduce using rule 136 (args_expr_collection)
-    $default  reduce using rule 211 (assign_stmt_value_eq)
+    $default  reduce using rule 210 (assign_stmt_value_eq)
 
 
 state 161
 
   119 call_statement: static_member_stmt . '(' args_list ')'
   137 args_expr_collection: static_member_stmt .
-  212 assign_stmt_value_eq: static_member_stmt .
+  211 assign_stmt_value_eq: static_member_stmt .
 
     '('  shift, and go to state 137
 
     ','       reduce using rule 137 (args_expr_collection)
     ')'       reduce using rule 137 (args_expr_collection)
     '}'       reduce using rule 137 (args_expr_collection)
-    $default  reduce using rule 212 (assign_stmt_value_eq)
+    $default  reduce using rule 211 (assign_stmt_value_eq)
 
 
 state 162
@@ -2712,17 +2720,17 @@ state 162
 state 163
 
   133 args_expr_collection: call_statement .
-  208 assign_stmt_value_eq: call_statement .
-  225 array_ele_stmt: call_statement . '[' XINTEGER ']'
-  226               | call_statement . '[' IDENTIFIER ']'
-  227               | call_statement . '[' TSTRING ']'
+  207 assign_stmt_value_eq: call_statement .
+  224 array_ele_stmt: call_statement . '[' XINTEGER ']'
+  225               | call_statement . '[' IDENTIFIER ']'
+  226               | call_statement . '[' TSTRING ']'
 
     '['  shift, and go to state 140
 
     ','       reduce using rule 133 (args_expr_collection)
     ')'       reduce using rule 133 (args_expr_collection)
     '}'       reduce using rule 133 (args_expr_collection)
-    $default  reduce using rule 208 (assign_stmt_value_eq)
+    $default  reduce using rule 207 (assign_stmt_value_eq)
 
 
 state 164
@@ -2731,7 +2739,7 @@ state 164
    60 class_member_func_stmt: IDENTIFIER '(' args_list . ')' '.' id_expr '(' args_list ')'
   117 call_statement: IDENTIFIER '(' args_list . ')'
 
-    ')'  shift, and go to state 289
+    ')'  shift, and go to state 288
 
 
 state 165
@@ -2739,7 +2747,7 @@ state 165
   124 args_list: args_expr .
   126 args_expr: args_expr . ',' args_expr_collection
 
-    ','  shift, and go to state 290
+    ','  shift, and go to state 289
 
     $default  reduce using rule 124 (args_list)
 
@@ -2754,12 +2762,12 @@ state 166
 state 167
 
   134 args_expr_collection: arithmetic_stmt .
-  160 arithmetic_stmt_factor: arithmetic_stmt .
+  159 arithmetic_stmt_factor: arithmetic_stmt .
 
     ','       reduce using rule 134 (args_expr_collection)
     ')'       reduce using rule 134 (args_expr_collection)
     '}'       reduce using rule 134 (args_expr_collection)
-    $default  reduce using rule 160 (arithmetic_stmt_factor)
+    $default  reduce using rule 159 (arithmetic_stmt_factor)
 
 
 state 168
@@ -2775,12 +2783,12 @@ state 169
    58 class_member_func_stmt: id_expr . '.' id_expr '(' args_list ')'
    63 static_member_stmt: id_expr . SCOPE id_expr
   157 bit_opr_factor: id_expr .
-  189 self_inc_dec_stmt: id_expr . INC_OP
-  190                  | id_expr . DEC_OP
-  209 assign_stmt_value_eq: id_expr .
+  187 self_inc_dec_stmt: id_expr . INC_OP
+  188                  | id_expr . DEC_OP
+  208 assign_stmt_value_eq: id_expr .
 
-    INC_OP  shift, and go to state 251
-    DEC_OP  shift, and go to state 252
+    INC_OP  shift, and go to state 250
+    DEC_OP  shift, and go to state 251
     SCOPE   shift, and go to state 146
     '.'     shift, and go to state 149
 
@@ -2789,7 +2797,7 @@ state 169
     '|'          reduce using rule 157 (bit_opr_factor)
     '^'          reduce using rule 157 (bit_opr_factor)
     '&'          reduce using rule 157 (bit_opr_factor)
-    $default     reduce using rule 209 (assign_stmt_value_eq)
+    $default     reduce using rule 208 (assign_stmt_value_eq)
 
 
 state 170
@@ -2802,41 +2810,41 @@ state 170
 state 171
 
   129 args_expr_collection: double_expr .
-  206 assign_stmt_value_eq: double_expr .
+  204 assign_stmt_value_eq: double_expr .
 
     ','       reduce using rule 129 (args_expr_collection)
     ')'       reduce using rule 129 (args_expr_collection)
     '}'       reduce using rule 129 (args_expr_collection)
-    $default  reduce using rule 206 (assign_stmt_value_eq)
+    $default  reduce using rule 204 (assign_stmt_value_eq)
 
 
 state 172
 
   132 args_expr_collection: uminus_expr .
-  207 assign_stmt_value_eq: uminus_expr .
+  205 assign_stmt_value_eq: uminus_expr .
 
     ','       reduce using rule 132 (args_expr_collection)
     ')'       reduce using rule 132 (args_expr_collection)
     '}'       reduce using rule 132 (args_expr_collection)
-    $default  reduce using rule 207 (assign_stmt_value_eq)
+    $default  reduce using rule 205 (assign_stmt_value_eq)
 
 
 state 173
 
   131 args_expr_collection: string_expr .
-  159 arithmetic_stmt_factor: string_expr .
+  206 assign_stmt_value_eq: string_expr .
 
     ','       reduce using rule 131 (args_expr_collection)
     ')'       reduce using rule 131 (args_expr_collection)
     '}'       reduce using rule 131 (args_expr_collection)
-    $default  reduce using rule 159 (arithmetic_stmt_factor)
+    $default  reduce using rule 206 (assign_stmt_value_eq)
 
 
 state 174
 
-  210 assign_stmt_value_eq: self_inc_dec_stmt .
+  209 assign_stmt_value_eq: self_inc_dec_stmt .
 
-    $default  reduce using rule 210 (assign_stmt_value_eq)
+    $default  reduce using rule 209 (assign_stmt_value_eq)
 
 
 state 175
@@ -2844,7 +2852,7 @@ state 175
    59 class_member_func_stmt: array_ele_stmt . '.' id_expr '(' args_list ')'
   116 call_statement: array_ele_stmt . '(' args_list ')'
   135 args_expr_collection: array_ele_stmt .
-  214 assign_stmt_value_eq: array_ele_stmt .
+  213 assign_stmt_value_eq: array_ele_stmt .
 
     '.'  shift, and go to state 152
     '('  shift, and go to state 153
@@ -2852,16 +2860,16 @@ state 175
     ','       reduce using rule 135 (args_expr_collection)
     ')'       reduce using rule 135 (args_expr_collection)
     '}'       reduce using rule 135 (args_expr_collection)
-    $default  reduce using rule 214 (assign_stmt_value_eq)
+    $default  reduce using rule 213 (assign_stmt_value_eq)
 
 
 state 176
 
    81 var_declar_stmt: IDENTIFIER '[' XINTEGER . ']' ';'
    82                | IDENTIFIER '[' XINTEGER . ']' ',' var_declar_stmt
-  219 array_ele_stmt: IDENTIFIER '[' XINTEGER . ']'
+  218 array_ele_stmt: IDENTIFIER '[' XINTEGER . ']'
 
-    ']'  shift, and go to state 291
+    ']'  shift, and go to state 290
 
 
 state 177
@@ -2871,33 +2879,33 @@ state 177
    83 var_declar_stmt: IDENTIFIER '[' IDENTIFIER . ']' ';'
    84                | IDENTIFIER '[' IDENTIFIER . ']' ',' var_declar_stmt
   117 call_statement: IDENTIFIER . '(' args_list ')'
-  163 id_expr: IDENTIFIER .
-  219 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
-  220               | IDENTIFIER . '[' IDENTIFIER ']'
-  220               | IDENTIFIER '[' IDENTIFIER . ']'
-  221               | IDENTIFIER . '[' TSTRING ']'
+  162 id_expr: IDENTIFIER .
+  218 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
+  219               | IDENTIFIER . '[' IDENTIFIER ']'
+  219               | IDENTIFIER '[' IDENTIFIER . ']'
+  220               | IDENTIFIER . '[' TSTRING ']'
 
     '('  shift, and go to state 64
     '['  shift, and go to state 221
-    ']'  shift, and go to state 292
+    ']'  shift, and go to state 291
 
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
 
 state 178
 
-  221 array_ele_stmt: IDENTIFIER '[' TSTRING . ']'
+  220 array_ele_stmt: IDENTIFIER '[' TSTRING . ']'
 
-    ']'  shift, and go to state 293
+    ']'  shift, and go to state 292
 
 
 state 179
 
    57 class_member_stmt: class_member_stmt . '.' id_expr
    61 class_member_func_stmt: class_member_stmt . '.' id_expr '(' args_list ')'
-  222 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
-  223               | class_member_stmt . '[' IDENTIFIER ']'
-  224               | class_member_stmt . '[' TSTRING ']'
+  221 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
+  222               | class_member_stmt . '[' IDENTIFIER ']'
+  223               | class_member_stmt . '[' TSTRING ']'
 
     '.'  shift, and go to state 134
     '['  shift, and go to state 135
@@ -2907,12 +2915,12 @@ state 180
 
    85 var_declar_stmt: IDENTIFIER '[' call_statement . ']' ';'
    86                | IDENTIFIER '[' call_statement . ']' ',' var_declar_stmt
-  225 array_ele_stmt: call_statement . '[' XINTEGER ']'
-  226               | call_statement . '[' IDENTIFIER ']'
-  227               | call_statement . '[' TSTRING ']'
+  224 array_ele_stmt: call_statement . '[' XINTEGER ']'
+  225               | call_statement . '[' IDENTIFIER ']'
+  226               | call_statement . '[' TSTRING ']'
 
     '['  shift, and go to state 140
-    ']'  shift, and go to state 294
+    ']'  shift, and go to state 293
 
 
 state 181
@@ -2939,24 +2947,24 @@ state 183
    34 class_declar_stmt: IDENTIFIER extends_stmt '{' . '}'
    35                  | IDENTIFIER extends_stmt '{' . class_body '}'
 
-    IDENTIFIER    shift, and go to state 295
+    IDENTIFIER    shift, and go to state 294
     OPERATOR_X__  shift, and go to state 5
     '~'           shift, and go to state 26
-    '}'           shift, and go to state 296
+    '}'           shift, and go to state 295
 
-    class_body          go to state 297
-    class_body_stmt     go to state 298
-    func_declar_stmt    go to state 299
-    var_declar_stmt     go to state 300
-    id_expr             go to state 301
-    single_assign_stmt  go to state 302
+    class_body          go to state 296
+    class_body_stmt     go to state 297
+    func_declar_stmt    go to state 298
+    var_declar_stmt     go to state 299
+    id_expr             go to state 300
+    single_assign_stmt  go to state 301
 
 
 state 184
 
    66 func_declar_stmt: OPERATOR_X__ FUNC_OP param_list . '{' expr_list '}'
 
-    '{'  shift, and go to state 303
+    '{'  shift, and go to state 302
 
 
 state 185
@@ -2964,15 +2972,15 @@ state 185
    56 class_member_stmt: IDENTIFIER . '(' args_list ')' '.' id_expr
    60 class_member_func_stmt: IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'
   117 call_statement: IDENTIFIER . '(' args_list ')'
-  163 id_expr: IDENTIFIER .
-  219 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
-  220               | IDENTIFIER . '[' IDENTIFIER ']'
-  221               | IDENTIFIER . '[' TSTRING ']'
+  162 id_expr: IDENTIFIER .
+  218 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
+  219               | IDENTIFIER . '[' IDENTIFIER ']'
+  220               | IDENTIFIER . '[' TSTRING ']'
 
     '('  shift, and go to state 64
     '['  shift, and go to state 221
 
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
 
 state 186
@@ -2980,9 +2988,9 @@ state 186
    53 this_member_stmt: THIS '.' class_member_stmt .
    57 class_member_stmt: class_member_stmt . '.' id_expr
    61 class_member_func_stmt: class_member_stmt . '.' id_expr '(' args_list ')'
-  222 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
-  223               | class_member_stmt . '[' IDENTIFIER ']'
-  224               | class_member_stmt . '[' TSTRING ']'
+  221 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
+  222               | class_member_stmt . '[' IDENTIFIER ']'
+  223               | class_member_stmt . '[' TSTRING ']'
 
     '.'  shift, and go to state 134
     '['  shift, and go to state 135
@@ -2992,9 +3000,9 @@ state 186
 
 state 187
 
-  225 array_ele_stmt: call_statement . '[' XINTEGER ']'
-  226               | call_statement . '[' IDENTIFIER ']'
-  227               | call_statement . '[' TSTRING ']'
+  224 array_ele_stmt: call_statement . '[' XINTEGER ']'
+  225               | call_statement . '[' IDENTIFIER ']'
+  226               | call_statement . '[' TSTRING ']'
 
     '['  shift, and go to state 140
 
@@ -3042,10 +3050,10 @@ state 189
     XINCLUDE      shift, and go to state 25
     '~'           shift, and go to state 26
     ';'           shift, and go to state 27
-    '}'           shift, and go to state 304
+    '}'           shift, and go to state 303
     '@'           shift, and go to state 28
 
-    statement                     go to state 305
+    statement                     go to state 304
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -3086,14 +3094,14 @@ state 190
 
     IDENTIFIER  shift, and go to state 76
 
-    namespace_name_stmt  go to state 306
+    namespace_name_stmt  go to state 305
 
 
 state 191
 
    33 namespace_name_stmt: namespace_name_stmt '.' . IDENTIFIER
 
-    IDENTIFIER  shift, and go to state 307
+    IDENTIFIER  shift, and go to state 306
 
 
 state 192
@@ -3112,8 +3120,8 @@ state 193
    85                | IDENTIFIER '[' . call_statement ']' ';'
    86                | IDENTIFIER '[' . call_statement ']' ',' var_declar_stmt
 
-    XINTEGER    shift, and go to state 308
-    IDENTIFIER  shift, and go to state 309
+    XINTEGER    shift, and go to state 307
+    IDENTIFIER  shift, and go to state 308
 
     class_member_stmt       go to state 179
     class_member_func_stmt  go to state 42
@@ -3135,12 +3143,12 @@ state 195
    36 class_declar_stmt: AUTO IDENTIFIER extends_stmt . '{' '}'
    37                  | AUTO IDENTIFIER extends_stmt . '{' class_body '}'
 
-    '{'  shift, and go to state 310
+    '{'  shift, and go to state 309
 
 
 state 196
 
-  161 arithmetic_stmt_factor: '(' . arithmetic_stmt ')'
+  160 arithmetic_stmt_factor: '(' . arithmetic_stmt ')'
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -3164,7 +3172,7 @@ state 196
     id_expr                 go to state 169
     double_expr             go to state 203
     uminus_expr             go to state 204
-    string_expr             go to state 237
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
     assign_stmt_value_eq    go to state 119
     array_ele_stmt          go to state 211
@@ -3174,50 +3182,50 @@ state 197
 
    57 class_member_stmt: class_member_stmt . '.' id_expr
    61 class_member_func_stmt: class_member_stmt . '.' id_expr '(' args_list ')'
-  211 assign_stmt_value_eq: class_member_stmt .
-  222 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
-  223               | class_member_stmt . '[' IDENTIFIER ']'
-  224               | class_member_stmt . '[' TSTRING ']'
+  210 assign_stmt_value_eq: class_member_stmt .
+  221 array_ele_stmt: class_member_stmt . '[' XINTEGER ']'
+  222               | class_member_stmt . '[' IDENTIFIER ']'
+  223               | class_member_stmt . '[' TSTRING ']'
 
     '.'  shift, and go to state 134
     '['  shift, and go to state 135
 
-    $default  reduce using rule 211 (assign_stmt_value_eq)
+    $default  reduce using rule 210 (assign_stmt_value_eq)
 
 
 state 198
 
   119 call_statement: static_member_stmt . '(' args_list ')'
-  212 assign_stmt_value_eq: static_member_stmt .
+  211 assign_stmt_value_eq: static_member_stmt .
 
     '('  shift, and go to state 137
 
-    $default  reduce using rule 212 (assign_stmt_value_eq)
+    $default  reduce using rule 211 (assign_stmt_value_eq)
 
 
 state 199
 
-  208 assign_stmt_value_eq: call_statement .
-  225 array_ele_stmt: call_statement . '[' XINTEGER ']'
-  226               | call_statement . '[' IDENTIFIER ']'
-  227               | call_statement . '[' TSTRING ']'
+  207 assign_stmt_value_eq: call_statement .
+  224 array_ele_stmt: call_statement . '[' XINTEGER ']'
+  225               | call_statement . '[' IDENTIFIER ']'
+  226               | call_statement . '[' TSTRING ']'
 
     '['  shift, and go to state 140
 
-    $default  reduce using rule 208 (assign_stmt_value_eq)
+    $default  reduce using rule 207 (assign_stmt_value_eq)
 
 
 state 200
 
-  160 arithmetic_stmt_factor: arithmetic_stmt .
-  172 bool_param_expr: arithmetic_stmt .
+  159 arithmetic_stmt_factor: arithmetic_stmt .
+  171 bool_param_expr: arithmetic_stmt .
 
-    '+'       reduce using rule 160 (arithmetic_stmt_factor)
-    '-'       reduce using rule 160 (arithmetic_stmt_factor)
-    '*'       reduce using rule 160 (arithmetic_stmt_factor)
-    '/'       reduce using rule 160 (arithmetic_stmt_factor)
-    '%'       reduce using rule 160 (arithmetic_stmt_factor)
-    $default  reduce using rule 172 (bool_param_expr)
+    '+'       reduce using rule 159 (arithmetic_stmt_factor)
+    '-'       reduce using rule 159 (arithmetic_stmt_factor)
+    '*'       reduce using rule 159 (arithmetic_stmt_factor)
+    '/'       reduce using rule 159 (arithmetic_stmt_factor)
+    '%'       reduce using rule 159 (arithmetic_stmt_factor)
+    $default  reduce using rule 171 (bool_param_expr)
 
 
 state 201
@@ -3226,14 +3234,14 @@ state 201
    58 class_member_func_stmt: id_expr . '.' id_expr '(' args_list ')'
    63 static_member_stmt: id_expr . SCOPE id_expr
   157 bit_opr_factor: id_expr .
-  186 type_judge_stmt: id_expr . XIS id_expr
-  189 self_inc_dec_stmt: id_expr . INC_OP
-  190                  | id_expr . DEC_OP
-  209 assign_stmt_value_eq: id_expr .
+  184 type_judge_stmt: id_expr . XIS id_expr
+  187 self_inc_dec_stmt: id_expr . INC_OP
+  188                  | id_expr . DEC_OP
+  208 assign_stmt_value_eq: id_expr .
 
-    INC_OP  shift, and go to state 251
-    DEC_OP  shift, and go to state 252
-    XIS     shift, and go to state 311
+    INC_OP  shift, and go to state 250
+    DEC_OP  shift, and go to state 251
+    XIS     shift, and go to state 310
     SCOPE   shift, and go to state 146
     '.'     shift, and go to state 149
 
@@ -3242,123 +3250,117 @@ state 201
     '|'          reduce using rule 157 (bit_opr_factor)
     '^'          reduce using rule 157 (bit_opr_factor)
     '&'          reduce using rule 157 (bit_opr_factor)
-    $default     reduce using rule 209 (assign_stmt_value_eq)
+    $default     reduce using rule 208 (assign_stmt_value_eq)
 
 
 state 202
 
-  173 bool_param_expr: t_bool_expr .
+  172 bool_param_expr: t_bool_expr .
 
-    $default  reduce using rule 173 (bool_param_expr)
+    $default  reduce using rule 172 (bool_param_expr)
 
 
 state 203
 
-  206 assign_stmt_value_eq: double_expr .
+  204 assign_stmt_value_eq: double_expr .
 
-    $default  reduce using rule 206 (assign_stmt_value_eq)
+    $default  reduce using rule 204 (assign_stmt_value_eq)
 
 
 state 204
 
-  207 assign_stmt_value_eq: uminus_expr .
+  205 assign_stmt_value_eq: uminus_expr .
 
-    $default  reduce using rule 207 (assign_stmt_value_eq)
+    $default  reduce using rule 205 (assign_stmt_value_eq)
 
 
 state 205
 
-  159 arithmetic_stmt_factor: string_expr .
-  174 bool_param_expr: string_expr .
+  206 assign_stmt_value_eq: string_expr .
 
-    '+'       reduce using rule 159 (arithmetic_stmt_factor)
-    '-'       reduce using rule 159 (arithmetic_stmt_factor)
-    '*'       reduce using rule 159 (arithmetic_stmt_factor)
-    '/'       reduce using rule 159 (arithmetic_stmt_factor)
-    '%'       reduce using rule 159 (arithmetic_stmt_factor)
-    $default  reduce using rule 174 (bool_param_expr)
+    $default  reduce using rule 206 (assign_stmt_value_eq)
 
 
 state 206
 
-  175 bool_param_expr: null_expr .
+  173 bool_param_expr: null_expr .
 
-    $default  reduce using rule 175 (bool_param_expr)
+    $default  reduce using rule 173 (bool_param_expr)
 
 
 state 207
 
-  176 logic_stmt: bool_param_expr .
-  178           | bool_param_expr . '>' bool_param_expr
-  179           | bool_param_expr . '<' bool_param_expr
-  180           | bool_param_expr . LE_OP bool_param_expr
-  181           | bool_param_expr . GE_OP bool_param_expr
-  182           | bool_param_expr . EQ_OP bool_param_expr
-  183           | bool_param_expr . NE_OP bool_param_expr
+  174 logic_stmt: bool_param_expr .
+  176           | bool_param_expr . '>' bool_param_expr
+  177           | bool_param_expr . '<' bool_param_expr
+  178           | bool_param_expr . LE_OP bool_param_expr
+  179           | bool_param_expr . GE_OP bool_param_expr
+  180           | bool_param_expr . EQ_OP bool_param_expr
+  181           | bool_param_expr . NE_OP bool_param_expr
 
-    LE_OP  shift, and go to state 312
-    GE_OP  shift, and go to state 313
-    EQ_OP  shift, and go to state 314
-    NE_OP  shift, and go to state 315
-    '>'    shift, and go to state 316
-    '<'    shift, and go to state 317
+    LE_OP  shift, and go to state 311
+    GE_OP  shift, and go to state 312
+    EQ_OP  shift, and go to state 313
+    NE_OP  shift, and go to state 314
+    '>'    shift, and go to state 315
+    '<'    shift, and go to state 316
 
-    $default  reduce using rule 176 (logic_stmt)
+    $default  reduce using rule 174 (logic_stmt)
 
 
 state 208
 
    89 selection_stmt: IF '(' logic_stmt . ')' block
    90               | IF '(' logic_stmt . ')' block ELSE block
-  184 logic_stmt: logic_stmt . AND_OP logic_stmt
-  185           | logic_stmt . OR_OP logic_stmt
+  182 logic_stmt: logic_stmt . AND_OP logic_stmt
+  183           | logic_stmt . OR_OP logic_stmt
 
-    AND_OP  shift, and go to state 318
-    OR_OP   shift, and go to state 319
-    ')'     shift, and go to state 320
+    AND_OP  shift, and go to state 317
+    OR_OP   shift, and go to state 318
+    ')'     shift, and go to state 319
 
 
 state 209
 
-  177 logic_stmt: type_judge_stmt .
+  175 logic_stmt: type_judge_stmt .
 
-    $default  reduce using rule 177 (logic_stmt)
+    $default  reduce using rule 175 (logic_stmt)
 
 
 state 210
 
   158 arithmetic_stmt_factor: assign_stmt_value_eq .
-  171 bool_param_expr: assign_stmt_value_eq .
+  170 bool_param_expr: assign_stmt_value_eq .
 
     '+'       reduce using rule 158 (arithmetic_stmt_factor)
     '-'       reduce using rule 158 (arithmetic_stmt_factor)
     '*'       reduce using rule 158 (arithmetic_stmt_factor)
     '/'       reduce using rule 158 (arithmetic_stmt_factor)
     '%'       reduce using rule 158 (arithmetic_stmt_factor)
-    $default  reduce using rule 171 (bool_param_expr)
+    $default  reduce using rule 170 (bool_param_expr)
 
 
 state 211
 
    59 class_member_func_stmt: array_ele_stmt . '.' id_expr '(' args_list ')'
   116 call_statement: array_ele_stmt . '(' args_list ')'
-  214 assign_stmt_value_eq: array_ele_stmt .
+  213 assign_stmt_value_eq: array_ele_stmt .
 
     '.'  shift, and go to state 152
     '('  shift, and go to state 153
 
-    $default  reduce using rule 214 (assign_stmt_value_eq)
+    $default  reduce using rule 213 (assign_stmt_value_eq)
 
 
 state 212
 
    96 loop_stmt: WHILE '(' logic_stmt . ')' block
-  184 logic_stmt: logic_stmt . AND_OP logic_stmt
-  185           | logic_stmt . OR_OP logic_stmt
+  182 logic_stmt: logic_stmt . AND_OP logic_stmt
+  183           | logic_stmt . OR_OP logic_stmt
 
-    AND_OP  shift, and go to state 318
-    OR_OP   shift, and go to state 319
-    ')'     shift, and go to state 321
+    AND_OP  shift, and go to state 317
+    OR_OP   shift, and go to state 318
+    ')'     shift, and go to state 320
 
 
 state 213
@@ -3372,15 +3374,15 @@ state 213
    85                | IDENTIFIER . '[' call_statement ']' ';'
    86                | IDENTIFIER . '[' call_statement ']' ',' var_declar_stmt
   117 call_statement: IDENTIFIER . '(' args_list ')'
-  163 id_expr: IDENTIFIER .
-  219 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
-  220               | IDENTIFIER . '[' IDENTIFIER ']'
-  221               | IDENTIFIER . '[' TSTRING ']'
+  162 id_expr: IDENTIFIER .
+  218 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
+  219               | IDENTIFIER . '[' IDENTIFIER ']'
+  220               | IDENTIFIER . '[' TSTRING ']'
 
     '('  shift, and go to state 64
     '['  shift, and go to state 65
 
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
 
 state 214
@@ -3394,7 +3396,7 @@ state 215
 
    97 loop_stmt: FOR '(' for_1_stmt . ';' logic_stmt ';' for_1_stmt ')' block
 
-    ';'  shift, and go to state 322
+    ';'  shift, and go to state 321
 
 
 state 216
@@ -3404,18 +3406,18 @@ state 216
    63 static_member_stmt: id_expr . SCOPE id_expr
    79 var_declar_stmt: id_expr . ';'
    80                | id_expr . ',' var_declar_stmt
-  189 self_inc_dec_stmt: id_expr . INC_OP
-  190                  | id_expr . DEC_OP
-  215 single_assign_stmt: id_expr . '=' assign_stmt_value
-  216                   | id_expr . '=' single_assign_stmt
-  232 assign_stmt: id_expr . ADD_EQ assign_stmt_value_eq
-  233            | id_expr . SUB_EQ assign_stmt_value_eq
-  234            | id_expr . MUL_EQ assign_stmt_value_eq
-  235            | id_expr . DIV_EQ assign_stmt_value_eq
-  236            | id_expr . MOD_EQ assign_stmt_value_eq
+  187 self_inc_dec_stmt: id_expr . INC_OP
+  188                  | id_expr . DEC_OP
+  214 single_assign_stmt: id_expr . '=' assign_stmt_value
+  215                   | id_expr . '=' single_assign_stmt
+  231 assign_stmt: id_expr . ADD_EQ assign_stmt_value_eq
+  232            | id_expr . SUB_EQ assign_stmt_value_eq
+  233            | id_expr . MUL_EQ assign_stmt_value_eq
+  234            | id_expr . DIV_EQ assign_stmt_value_eq
+  235            | id_expr . MOD_EQ assign_stmt_value_eq
 
-    INC_OP  shift, and go to state 251
-    DEC_OP  shift, and go to state 252
+    INC_OP  shift, and go to state 250
+    DEC_OP  shift, and go to state 251
     ADD_EQ  shift, and go to state 141
     SUB_EQ  shift, and go to state 142
     MUL_EQ  shift, and go to state 143
@@ -3446,39 +3448,39 @@ state 219
 
    68 lambda_stmt: IDENTIFIER FUNC_OP . '{' expr_list '}'
 
-    '{'  shift, and go to state 323
+    '{'  shift, and go to state 322
 
 
 state 220
 
    70 lambda_args_stmt: IDENTIFIER ',' . IDENTIFIER
 
-    IDENTIFIER  shift, and go to state 324
+    IDENTIFIER  shift, and go to state 323
 
 
 state 221
 
-  219 array_ele_stmt: IDENTIFIER '[' . XINTEGER ']'
-  220               | IDENTIFIER '[' . IDENTIFIER ']'
-  221               | IDENTIFIER '[' . TSTRING ']'
+  218 array_ele_stmt: IDENTIFIER '[' . XINTEGER ']'
+  219               | IDENTIFIER '[' . IDENTIFIER ']'
+  220               | IDENTIFIER '[' . TSTRING ']'
 
-    XINTEGER    shift, and go to state 325
-    IDENTIFIER  shift, and go to state 326
+    XINTEGER    shift, and go to state 324
+    IDENTIFIER  shift, and go to state 325
     TSTRING     shift, and go to state 178
 
 
 state 222
 
-  187 self_inc_dec_stmt: INC_OP id_expr .
+  185 self_inc_dec_stmt: INC_OP id_expr .
 
-    $default  reduce using rule 187 (self_inc_dec_stmt)
+    $default  reduce using rule 185 (self_inc_dec_stmt)
 
 
 state 223
 
-  188 self_inc_dec_stmt: DEC_OP id_expr .
+  186 self_inc_dec_stmt: DEC_OP id_expr .
 
-    $default  reduce using rule 188 (self_inc_dec_stmt)
+    $default  reduce using rule 186 (self_inc_dec_stmt)
 
 
 state 224
@@ -3488,14 +3490,14 @@ state 224
 
     IDENTIFIER  shift, and go to state 122
 
-    id_expr  go to state 327
+    id_expr  go to state 326
 
 
 state 225
 
-  166 double_expr: XINTEGER .
+  165 double_expr: XINTEGER .
 
-    $default  reduce using rule 166 (double_expr)
+    $default  reduce using rule 165 (double_expr)
 
 
 state 226
@@ -3505,6 +3507,7 @@ state 226
     XINTEGER    shift, and go to state 225
     TDOUBLE     shift, and go to state 91
     IDENTIFIER  shift, and go to state 185
+    TSTRING     shift, and go to state 73
     INC_OP      shift, and go to state 93
     DEC_OP      shift, and go to state 94
     THIS        shift, and go to state 95
@@ -3515,19 +3518,20 @@ state 226
     class_member_func_stmt  go to state 42
     static_member_stmt      go to state 198
     call_statement          go to state 199
-    id_expr                 go to state 271
+    id_expr                 go to state 270
     double_expr             go to state 203
     uminus_expr             go to state 204
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
-    assign_stmt_value_eq    go to state 328
+    assign_stmt_value_eq    go to state 327
     array_ele_stmt          go to state 211
 
 
 state 227
 
-  167 uminus_expr: '-' double_or_ps_expr .
+  166 uminus_expr: '-' double_or_ps_expr .
 
-    $default  reduce using rule 167 (uminus_expr)
+    $default  reduce using rule 166 (uminus_expr)
 
 
 state 228
@@ -3539,9 +3543,9 @@ state 228
 
 state 229
 
-  168 uminus_expr: '-' id_expr .
+  167 uminus_expr: '-' id_expr .
 
-    $default  reduce using rule 168 (uminus_expr)
+    $default  reduce using rule 167 (uminus_expr)
 
 
 state 230
@@ -3578,17 +3582,17 @@ state 234
    60 class_member_func_stmt: IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'
    74 parameter: IDENTIFIER .
   117 call_statement: IDENTIFIER . '(' args_list ')'
-  163 id_expr: IDENTIFIER .
-  219 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
-  220               | IDENTIFIER . '[' IDENTIFIER ']'
-  221               | IDENTIFIER . '[' TSTRING ']'
+  162 id_expr: IDENTIFIER .
+  218 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
+  219               | IDENTIFIER . '[' IDENTIFIER ']'
+  220               | IDENTIFIER . '[' TSTRING ']'
 
     '('  shift, and go to state 64
     '['  shift, and go to state 221
 
     ','       reduce using rule 74 (parameter)
     ')'       reduce using rule 74 (parameter)
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
 
 state 235
@@ -3596,53 +3600,57 @@ state 235
    67 lambda_stmt: '(' parameter . ')' FUNC_OP '{' expr_list '}'
    75 parameter: parameter . ',' IDENTIFIER
 
-    ','  shift, and go to state 329
-    ')'  shift, and go to state 330
+    ','  shift, and go to state 328
+    ')'  shift, and go to state 329
 
 
 state 236
 
-  160 arithmetic_stmt_factor: arithmetic_stmt .
-  161                       | '(' arithmetic_stmt . ')'
+  159 arithmetic_stmt_factor: arithmetic_stmt .
+  160                       | '(' arithmetic_stmt . ')'
 
-    ')'  shift, and go to state 331
-
-    $default  reduce using rule 160 (arithmetic_stmt_factor)
-
-
-state 237
-
-  159 arithmetic_stmt_factor: string_expr .
+    ')'  shift, and go to state 330
 
     $default  reduce using rule 159 (arithmetic_stmt_factor)
 
 
-state 238
+state 237
 
   115 interrupt_stmt: RETURN '{' args_expr . '}'
   126 args_expr: args_expr . ',' args_expr_collection
 
-    ','  shift, and go to state 290
-    '}'  shift, and go to state 332
+    ','  shift, and go to state 289
+    '}'  shift, and go to state 331
+
+
+state 238
+
+   69 lambda_stmt: lambda_args_stmt FUNC_OP . '{' expr_list '}'
+
+    '{'  shift, and go to state 332
 
 
 state 239
 
-   69 lambda_stmt: lambda_args_stmt FUNC_OP . '{' expr_list '}'
+   71 lambda_args_stmt: lambda_args_stmt ',' . IDENTIFIER
 
-    '{'  shift, and go to state 333
+    IDENTIFIER  shift, and go to state 333
 
 
 state 240
 
-   71 lambda_args_stmt: lambda_args_stmt ',' . IDENTIFIER
+  154 arithmetic_stmt: bit_opr_factor LEFT_SHIFT . bit_opr_factor
 
-    IDENTIFIER  shift, and go to state 334
+    XINTEGER    shift, and go to state 231
+    IDENTIFIER  shift, and go to state 122
+
+    bit_opr_factor  go to state 334
+    id_expr         go to state 233
 
 
 state 241
 
-  154 arithmetic_stmt: bit_opr_factor LEFT_SHIFT . bit_opr_factor
+  155 arithmetic_stmt: bit_opr_factor RIGHT_SHIFT . bit_opr_factor
 
     XINTEGER    shift, and go to state 231
     IDENTIFIER  shift, and go to state 122
@@ -3653,7 +3661,7 @@ state 241
 
 state 242
 
-  155 arithmetic_stmt: bit_opr_factor RIGHT_SHIFT . bit_opr_factor
+  151 arithmetic_stmt: bit_opr_factor '|' . bit_opr_factor
 
     XINTEGER    shift, and go to state 231
     IDENTIFIER  shift, and go to state 122
@@ -3664,7 +3672,7 @@ state 242
 
 state 243
 
-  151 arithmetic_stmt: bit_opr_factor '|' . bit_opr_factor
+  152 arithmetic_stmt: bit_opr_factor '^' . bit_opr_factor
 
     XINTEGER    shift, and go to state 231
     IDENTIFIER  shift, and go to state 122
@@ -3675,7 +3683,7 @@ state 243
 
 state 244
 
-  152 arithmetic_stmt: bit_opr_factor '^' . bit_opr_factor
+  150 arithmetic_stmt: bit_opr_factor '&' . bit_opr_factor
 
     XINTEGER    shift, and go to state 231
     IDENTIFIER  shift, and go to state 122
@@ -3685,17 +3693,6 @@ state 244
 
 
 state 245
-
-  150 arithmetic_stmt: bit_opr_factor '&' . bit_opr_factor
-
-    XINTEGER    shift, and go to state 231
-    IDENTIFIER  shift, and go to state 122
-
-    bit_opr_factor  go to state 339
-    id_expr         go to state 233
-
-
-state 246
 
   145 arithmetic_stmt: arithmetic_stmt_factor '+' . arithmetic_stmt_factor
 
@@ -3715,19 +3712,19 @@ state 246
     class_member_func_stmt  go to state 42
     static_member_stmt      go to state 198
     call_statement          go to state 199
-    arithmetic_stmt         go to state 340
+    arithmetic_stmt         go to state 339
     bit_opr_factor          go to state 108
-    arithmetic_stmt_factor  go to state 341
+    arithmetic_stmt_factor  go to state 340
     id_expr                 go to state 169
     double_expr             go to state 203
     uminus_expr             go to state 204
-    string_expr             go to state 237
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
     assign_stmt_value_eq    go to state 119
     array_ele_stmt          go to state 211
 
 
-state 247
+state 246
 
   146 arithmetic_stmt: arithmetic_stmt_factor '-' . arithmetic_stmt_factor
 
@@ -3747,19 +3744,19 @@ state 247
     class_member_func_stmt  go to state 42
     static_member_stmt      go to state 198
     call_statement          go to state 199
-    arithmetic_stmt         go to state 340
+    arithmetic_stmt         go to state 339
     bit_opr_factor          go to state 108
-    arithmetic_stmt_factor  go to state 342
+    arithmetic_stmt_factor  go to state 341
     id_expr                 go to state 169
     double_expr             go to state 203
     uminus_expr             go to state 204
-    string_expr             go to state 237
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
     assign_stmt_value_eq    go to state 119
     array_ele_stmt          go to state 211
 
 
-state 248
+state 247
 
   147 arithmetic_stmt: arithmetic_stmt_factor '*' . arithmetic_stmt_factor
 
@@ -3779,19 +3776,19 @@ state 248
     class_member_func_stmt  go to state 42
     static_member_stmt      go to state 198
     call_statement          go to state 199
-    arithmetic_stmt         go to state 340
+    arithmetic_stmt         go to state 339
     bit_opr_factor          go to state 108
-    arithmetic_stmt_factor  go to state 343
+    arithmetic_stmt_factor  go to state 342
     id_expr                 go to state 169
     double_expr             go to state 203
     uminus_expr             go to state 204
-    string_expr             go to state 237
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
     assign_stmt_value_eq    go to state 119
     array_ele_stmt          go to state 211
 
 
-state 249
+state 248
 
   148 arithmetic_stmt: arithmetic_stmt_factor '/' . arithmetic_stmt_factor
 
@@ -3811,19 +3808,19 @@ state 249
     class_member_func_stmt  go to state 42
     static_member_stmt      go to state 198
     call_statement          go to state 199
-    arithmetic_stmt         go to state 340
+    arithmetic_stmt         go to state 339
     bit_opr_factor          go to state 108
-    arithmetic_stmt_factor  go to state 344
+    arithmetic_stmt_factor  go to state 343
     id_expr                 go to state 169
     double_expr             go to state 203
     uminus_expr             go to state 204
-    string_expr             go to state 237
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
     assign_stmt_value_eq    go to state 119
     array_ele_stmt          go to state 211
 
 
-state 250
+state 249
 
   149 arithmetic_stmt: arithmetic_stmt_factor '%' . arithmetic_stmt_factor
 
@@ -3843,42 +3840,42 @@ state 250
     class_member_func_stmt  go to state 42
     static_member_stmt      go to state 198
     call_statement          go to state 199
-    arithmetic_stmt         go to state 340
+    arithmetic_stmt         go to state 339
     bit_opr_factor          go to state 108
-    arithmetic_stmt_factor  go to state 345
+    arithmetic_stmt_factor  go to state 344
     id_expr                 go to state 169
     double_expr             go to state 203
     uminus_expr             go to state 204
-    string_expr             go to state 237
+    string_expr             go to state 205
     self_inc_dec_stmt       go to state 174
     assign_stmt_value_eq    go to state 119
     array_ele_stmt          go to state 211
 
 
+state 250
+
+  187 self_inc_dec_stmt: id_expr INC_OP .
+
+    $default  reduce using rule 187 (self_inc_dec_stmt)
+
+
 state 251
 
-  189 self_inc_dec_stmt: id_expr INC_OP .
+  188 self_inc_dec_stmt: id_expr DEC_OP .
 
-    $default  reduce using rule 189 (self_inc_dec_stmt)
+    $default  reduce using rule 188 (self_inc_dec_stmt)
 
 
 state 252
 
-  190 self_inc_dec_stmt: id_expr DEC_OP .
+   91 selection_stmt: SWITCH '(' id_expr . ')' '{' case_stmt_list '}'
 
-    $default  reduce using rule 190 (self_inc_dec_stmt)
+    ')'  shift, and go to state 345
 
 
 state 253
 
-   91 selection_stmt: SWITCH '(' id_expr . ')' '{' case_stmt_list '}'
-
-    ')'  shift, and go to state 346
-
-
-state 254
-
-  162 new_expr: NEW id_expr '(' . args_list ')'
+  161 new_expr: NEW id_expr '(' . args_list ')'
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -3903,7 +3900,7 @@ state 254
     lambda_stmt             go to state 162
     lambda_args_stmt        go to state 105
     call_statement          go to state 163
-    args_list               go to state 347
+    args_list               go to state 346
     args_expr               go to state 165
     args_expr_collection    go to state 166
     arithmetic_stmt         go to state 167
@@ -3920,7 +3917,7 @@ state 254
     array_ele_stmt          go to state 175
 
 
-state 255
+state 254
 
    64 func_declar_stmt: '~' IDENTIFIER FUNC_OP . param_list '{' expr_list '}'
 
@@ -3928,18 +3925,18 @@ state 255
 
     $default  reduce using rule 72 (param_list)
 
-    param_list  go to state 348
+    param_list  go to state 347
 
 
-state 256
+state 255
 
    38 class_declar_stmt: annotation_use_stmt IDENTIFIER extends_stmt . '{' '}'
    39                  | annotation_use_stmt IDENTIFIER extends_stmt . '{' class_body '}'
 
-    '{'  shift, and go to state 349
+    '{'  shift, and go to state 348
 
 
-state 257
+state 256
 
    40 class_declar_stmt: annotation_use_stmt AUTO IDENTIFIER . extends_stmt '{' '}'
    41                  | annotation_use_stmt AUTO IDENTIFIER . extends_stmt '{' class_body '}'
@@ -3948,290 +3945,290 @@ state 257
 
     $default  reduce using rule 42 (extends_stmt)
 
-    extends_stmt  go to state 350
+    extends_stmt  go to state 349
 
 
-state 258
+state 257
 
-  218 class_member_assign_stmt: this_member_stmt '=' assign_stmt_value .
-
-    $default  reduce using rule 218 (class_member_assign_stmt)
-
-
-state 259
-
-  217 class_member_assign_stmt: class_member_stmt '=' assign_stmt_value .
+  217 class_member_assign_stmt: this_member_stmt '=' assign_stmt_value .
 
     $default  reduce using rule 217 (class_member_assign_stmt)
 
 
-state 260
+state 258
+
+  216 class_member_assign_stmt: class_member_stmt '=' assign_stmt_value .
+
+    $default  reduce using rule 216 (class_member_assign_stmt)
+
+
+state 259
 
    57 class_member_stmt: class_member_stmt '.' id_expr .
    61 class_member_func_stmt: class_member_stmt '.' id_expr . '(' args_list ')'
 
-    '('  shift, and go to state 351
+    '('  shift, and go to state 350
 
     $default  reduce using rule 57 (class_member_stmt)
 
 
+state 260
+
+  221 array_ele_stmt: class_member_stmt '[' XINTEGER . ']'
+
+    ']'  shift, and go to state 351
+
+
 state 261
 
-  222 array_ele_stmt: class_member_stmt '[' XINTEGER . ']'
+  222 array_ele_stmt: class_member_stmt '[' IDENTIFIER . ']'
 
     ']'  shift, and go to state 352
 
 
 state 262
 
-  223 array_ele_stmt: class_member_stmt '[' IDENTIFIER . ']'
+  223 array_ele_stmt: class_member_stmt '[' TSTRING . ']'
 
     ']'  shift, and go to state 353
 
 
 state 263
 
-  224 array_ele_stmt: class_member_stmt '[' TSTRING . ']'
-
-    ']'  shift, and go to state 354
-
-
-state 264
-
    55 class_member_stmt: class_member_func_stmt '.' id_expr .
    62 class_member_func_stmt: class_member_func_stmt '.' id_expr . '(' args_list ')'
 
-    '('  shift, and go to state 355
+    '('  shift, and go to state 354
 
     $default  reduce using rule 55 (class_member_stmt)
 
 
-state 265
+state 264
 
   119 call_statement: static_member_stmt '(' args_list . ')'
 
-    ')'  shift, and go to state 356
+    ')'  shift, and go to state 355
 
 
-state 266
+state 265
 
   122 call_statement_piping_single: call_statement . '|' call_statement
   122                             | call_statement '|' call_statement .
-  225 array_ele_stmt: call_statement . '[' XINTEGER ']'
-  226               | call_statement . '[' IDENTIFIER ']'
-  227               | call_statement . '[' TSTRING ']'
+  224 array_ele_stmt: call_statement . '[' XINTEGER ']'
+  225               | call_statement . '[' IDENTIFIER ']'
+  226               | call_statement . '[' TSTRING ']'
 
-    '|'  shift, and go to state 357
+    '|'  shift, and go to state 356
     '['  shift, and go to state 140
 
     $default  reduce using rule 122 (call_statement_piping_single)
 
 
-state 267
+state 266
 
   121 call_statement_piping: call_statement '|' call_statement_piping_single .
 
     $default  reduce using rule 121 (call_statement_piping)
 
 
+state 267
+
+  224 array_ele_stmt: call_statement '[' XINTEGER . ']'
+
+    ']'  shift, and go to state 357
+
+
 state 268
 
-  225 array_ele_stmt: call_statement '[' XINTEGER . ']'
+  225 array_ele_stmt: call_statement '[' IDENTIFIER . ']'
 
     ']'  shift, and go to state 358
 
 
 state 269
 
-  226 array_ele_stmt: call_statement '[' IDENTIFIER . ']'
+  226 array_ele_stmt: call_statement '[' TSTRING . ']'
 
     ']'  shift, and go to state 359
 
 
 state 270
 
-  227 array_ele_stmt: call_statement '[' TSTRING . ']'
+   54 class_member_stmt: id_expr . '.' id_expr
+   58 class_member_func_stmt: id_expr . '.' id_expr '(' args_list ')'
+   63 static_member_stmt: id_expr . SCOPE id_expr
+  187 self_inc_dec_stmt: id_expr . INC_OP
+  188                  | id_expr . DEC_OP
+  208 assign_stmt_value_eq: id_expr .
 
-    ']'  shift, and go to state 360
+    INC_OP  shift, and go to state 250
+    DEC_OP  shift, and go to state 251
+    SCOPE   shift, and go to state 146
+    '.'     shift, and go to state 149
+
+    $default  reduce using rule 208 (assign_stmt_value_eq)
 
 
 state 271
 
-   54 class_member_stmt: id_expr . '.' id_expr
-   58 class_member_func_stmt: id_expr . '.' id_expr '(' args_list ')'
-   63 static_member_stmt: id_expr . SCOPE id_expr
-  189 self_inc_dec_stmt: id_expr . INC_OP
-  190                  | id_expr . DEC_OP
-  209 assign_stmt_value_eq: id_expr .
+  231 assign_stmt: id_expr ADD_EQ assign_stmt_value_eq .
 
-    INC_OP  shift, and go to state 251
-    DEC_OP  shift, and go to state 252
-    SCOPE   shift, and go to state 146
-    '.'     shift, and go to state 149
-
-    $default  reduce using rule 209 (assign_stmt_value_eq)
+    $default  reduce using rule 231 (assign_stmt)
 
 
 state 272
 
-  232 assign_stmt: id_expr ADD_EQ assign_stmt_value_eq .
+  232 assign_stmt: id_expr SUB_EQ assign_stmt_value_eq .
 
     $default  reduce using rule 232 (assign_stmt)
 
 
 state 273
 
-  233 assign_stmt: id_expr SUB_EQ assign_stmt_value_eq .
+  233 assign_stmt: id_expr MUL_EQ assign_stmt_value_eq .
 
     $default  reduce using rule 233 (assign_stmt)
 
 
 state 274
 
-  234 assign_stmt: id_expr MUL_EQ assign_stmt_value_eq .
+  234 assign_stmt: id_expr DIV_EQ assign_stmt_value_eq .
 
     $default  reduce using rule 234 (assign_stmt)
 
 
 state 275
 
-  235 assign_stmt: id_expr DIV_EQ assign_stmt_value_eq .
+  235 assign_stmt: id_expr MOD_EQ assign_stmt_value_eq .
 
     $default  reduce using rule 235 (assign_stmt)
 
 
 state 276
 
-  236 assign_stmt: id_expr MOD_EQ assign_stmt_value_eq .
-
-    $default  reduce using rule 236 (assign_stmt)
-
-
-state 277
-
    63 static_member_stmt: id_expr SCOPE id_expr .
 
     $default  reduce using rule 63 (static_member_stmt)
 
 
-state 278
+state 277
 
    80 var_declar_stmt: id_expr ',' var_declar_stmt .
 
     $default  reduce using rule 80 (var_declar_stmt)
 
 
-state 279
+state 278
 
    54 class_member_stmt: id_expr . '.' id_expr
    58 class_member_func_stmt: id_expr . '.' id_expr '(' args_list ')'
    63 static_member_stmt: id_expr . SCOPE id_expr
   157 bit_opr_factor: id_expr .
-  189 self_inc_dec_stmt: id_expr . INC_OP
-  190                  | id_expr . DEC_OP
-  197 assign_stmt_value: id_expr .
-  209 assign_stmt_value_eq: id_expr .
-  215 single_assign_stmt: id_expr . '=' assign_stmt_value
-  216                   | id_expr . '=' single_assign_stmt
+  187 self_inc_dec_stmt: id_expr . INC_OP
+  188                  | id_expr . DEC_OP
+  195 assign_stmt_value: id_expr .
+  208 assign_stmt_value_eq: id_expr .
+  214 single_assign_stmt: id_expr . '=' assign_stmt_value
+  215                   | id_expr . '=' single_assign_stmt
 
-    INC_OP  shift, and go to state 251
-    DEC_OP  shift, and go to state 252
+    INC_OP  shift, and go to state 250
+    DEC_OP  shift, and go to state 251
     SCOPE   shift, and go to state 146
     '='     shift, and go to state 148
     '.'     shift, and go to state 149
 
-    '+'       reduce using rule 209 (assign_stmt_value_eq)
-    '-'       reduce using rule 209 (assign_stmt_value_eq)
-    '*'       reduce using rule 209 (assign_stmt_value_eq)
-    '/'       reduce using rule 209 (assign_stmt_value_eq)
-    '%'       reduce using rule 209 (assign_stmt_value_eq)
-    ')'       reduce using rule 197 (assign_stmt_value)
-    ';'       reduce using rule 197 (assign_stmt_value)
+    '+'       reduce using rule 208 (assign_stmt_value_eq)
+    '-'       reduce using rule 208 (assign_stmt_value_eq)
+    '*'       reduce using rule 208 (assign_stmt_value_eq)
+    '/'       reduce using rule 208 (assign_stmt_value_eq)
+    '%'       reduce using rule 208 (assign_stmt_value_eq)
+    ')'       reduce using rule 195 (assign_stmt_value)
+    ';'       reduce using rule 195 (assign_stmt_value)
     $default  reduce using rule 157 (bit_opr_factor)
+
+
+state 279
+
+  214 single_assign_stmt: id_expr '=' assign_stmt_value .
+
+    $default  reduce using rule 214 (single_assign_stmt)
 
 
 state 280
 
-  215 single_assign_stmt: id_expr '=' assign_stmt_value .
+  215 single_assign_stmt: id_expr '=' single_assign_stmt .
 
     $default  reduce using rule 215 (single_assign_stmt)
 
 
 state 281
 
-  216 single_assign_stmt: id_expr '=' single_assign_stmt .
-
-    $default  reduce using rule 216 (single_assign_stmt)
-
-
-state 282
-
    54 class_member_stmt: id_expr '.' id_expr .
    58 class_member_func_stmt: id_expr '.' id_expr . '(' args_list ')'
 
-    '('  shift, and go to state 361
+    '('  shift, and go to state 360
 
     $default  reduce using rule 54 (class_member_stmt)
 
 
+state 282
+
+  227 array_ele_assign_stmt: array_ele_stmt '=' assign_stmt_value .
+
+    $default  reduce using rule 227 (array_ele_assign_stmt)
+
+
 state 283
 
-  228 array_ele_assign_stmt: array_ele_stmt '=' assign_stmt_value .
+   59 class_member_func_stmt: array_ele_stmt '.' id_expr . '(' args_list ')'
 
-    $default  reduce using rule 228 (array_ele_assign_stmt)
+    '('  shift, and go to state 361
 
 
 state 284
 
-   59 class_member_func_stmt: array_ele_stmt '.' id_expr . '(' args_list ')'
+  116 call_statement: array_ele_stmt '(' args_list . ')'
 
-    '('  shift, and go to state 362
+    ')'  shift, and go to state 362
 
 
 state 285
-
-  116 call_statement: array_ele_stmt '(' args_list . ')'
-
-    ')'  shift, and go to state 363
-
-
-state 286
 
    74 parameter: IDENTIFIER .
 
     $default  reduce using rule 74 (parameter)
 
 
-state 287
+state 286
 
    73 param_list: '(' parameter . ')'
    75 parameter: parameter . ',' IDENTIFIER
 
-    ','  shift, and go to state 329
-    ')'  shift, and go to state 364
+    ','  shift, and go to state 328
+    ')'  shift, and go to state 363
 
 
-state 288
+state 287
 
    65 func_declar_stmt: IDENTIFIER FUNC_OP param_list '{' . expr_list '}'
 
     $default  reduce using rule 78 (expr_list)
 
-    expr_list  go to state 365
+    expr_list  go to state 364
 
 
-state 289
+state 288
 
    56 class_member_stmt: IDENTIFIER '(' args_list ')' . '.' id_expr
    60 class_member_func_stmt: IDENTIFIER '(' args_list ')' . '.' id_expr '(' args_list ')'
   117 call_statement: IDENTIFIER '(' args_list ')' .
 
-    '.'  shift, and go to state 366
+    '.'  shift, and go to state 365
 
     $default  reduce using rule 117 (call_statement)
 
 
-state 290
+state 289
 
   126 args_expr: args_expr ',' . args_expr_collection
 
@@ -4256,7 +4253,7 @@ state 290
     lambda_stmt             go to state 162
     lambda_args_stmt        go to state 105
     call_statement          go to state 163
-    args_expr_collection    go to state 367
+    args_expr_collection    go to state 366
     arithmetic_stmt         go to state 167
     bit_opr_factor          go to state 108
     arithmetic_stmt_factor  go to state 109
@@ -4271,47 +4268,47 @@ state 290
     array_ele_stmt          go to state 175
 
 
-state 291
+state 290
 
    81 var_declar_stmt: IDENTIFIER '[' XINTEGER ']' . ';'
    82                | IDENTIFIER '[' XINTEGER ']' . ',' var_declar_stmt
-  219 array_ele_stmt: IDENTIFIER '[' XINTEGER ']' .
+  218 array_ele_stmt: IDENTIFIER '[' XINTEGER ']' .
 
-    ','  shift, and go to state 368
-    ';'  shift, and go to state 369
+    ','  shift, and go to state 367
+    ';'  shift, and go to state 368
+
+    $default  reduce using rule 218 (array_ele_stmt)
+
+
+state 291
+
+   83 var_declar_stmt: IDENTIFIER '[' IDENTIFIER ']' . ';'
+   84                | IDENTIFIER '[' IDENTIFIER ']' . ',' var_declar_stmt
+  219 array_ele_stmt: IDENTIFIER '[' IDENTIFIER ']' .
+
+    ','  shift, and go to state 369
+    ';'  shift, and go to state 370
 
     $default  reduce using rule 219 (array_ele_stmt)
 
 
 state 292
 
-   83 var_declar_stmt: IDENTIFIER '[' IDENTIFIER ']' . ';'
-   84                | IDENTIFIER '[' IDENTIFIER ']' . ',' var_declar_stmt
-  220 array_ele_stmt: IDENTIFIER '[' IDENTIFIER ']' .
-
-    ','  shift, and go to state 370
-    ';'  shift, and go to state 371
+  220 array_ele_stmt: IDENTIFIER '[' TSTRING ']' .
 
     $default  reduce using rule 220 (array_ele_stmt)
 
 
 state 293
 
-  221 array_ele_stmt: IDENTIFIER '[' TSTRING ']' .
-
-    $default  reduce using rule 221 (array_ele_stmt)
-
-
-state 294
-
    85 var_declar_stmt: IDENTIFIER '[' call_statement ']' . ';'
    86                | IDENTIFIER '[' call_statement ']' . ',' var_declar_stmt
 
-    ','  shift, and go to state 372
-    ';'  shift, and go to state 373
+    ','  shift, and go to state 371
+    ';'  shift, and go to state 372
 
 
-state 295
+state 294
 
    65 func_declar_stmt: IDENTIFIER . FUNC_OP param_list '{' expr_list '}'
    81 var_declar_stmt: IDENTIFIER . '[' XINTEGER ']' ';'
@@ -4320,107 +4317,107 @@ state 295
    84                | IDENTIFIER . '[' IDENTIFIER ']' ',' var_declar_stmt
    85                | IDENTIFIER . '[' call_statement ']' ';'
    86                | IDENTIFIER . '[' call_statement ']' ',' var_declar_stmt
-  163 id_expr: IDENTIFIER .
+  162 id_expr: IDENTIFIER .
 
     FUNC_OP  shift, and go to state 62
     '['      shift, and go to state 193
 
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
 
-state 296
+state 295
 
    34 class_declar_stmt: IDENTIFIER extends_stmt '{' '}' .
 
     $default  reduce using rule 34 (class_declar_stmt)
 
 
-state 297
+state 296
 
    35 class_declar_stmt: IDENTIFIER extends_stmt '{' class_body . '}'
    45 class_body: class_body . class_body_stmt
 
-    IDENTIFIER    shift, and go to state 295
+    IDENTIFIER    shift, and go to state 294
     OPERATOR_X__  shift, and go to state 5
     '~'           shift, and go to state 26
-    '}'           shift, and go to state 374
+    '}'           shift, and go to state 373
 
-    class_body_stmt     go to state 375
-    func_declar_stmt    go to state 299
-    var_declar_stmt     go to state 300
-    id_expr             go to state 301
-    single_assign_stmt  go to state 302
+    class_body_stmt     go to state 374
+    func_declar_stmt    go to state 298
+    var_declar_stmt     go to state 299
+    id_expr             go to state 300
+    single_assign_stmt  go to state 301
 
 
-state 298
+state 297
 
    44 class_body: class_body_stmt .
 
     $default  reduce using rule 44 (class_body)
 
 
-state 299
+state 298
 
    48 class_body_stmt: func_declar_stmt .
 
     $default  reduce using rule 48 (class_body_stmt)
 
 
-state 300
+state 299
 
    46 class_body_stmt: var_declar_stmt .
 
     $default  reduce using rule 46 (class_body_stmt)
 
 
-state 301
+state 300
 
    79 var_declar_stmt: id_expr . ';'
    80                | id_expr . ',' var_declar_stmt
-  215 single_assign_stmt: id_expr . '=' assign_stmt_value
-  216                   | id_expr . '=' single_assign_stmt
+  214 single_assign_stmt: id_expr . '=' assign_stmt_value
+  215                   | id_expr . '=' single_assign_stmt
 
     ','  shift, and go to state 147
     '='  shift, and go to state 148
     ';'  shift, and go to state 150
 
 
-state 302
+state 301
 
    47 class_body_stmt: single_assign_stmt . ';'
 
-    ';'  shift, and go to state 376
+    ';'  shift, and go to state 375
 
 
-state 303
+state 302
 
    66 func_declar_stmt: OPERATOR_X__ FUNC_OP param_list '{' . expr_list '}'
 
     $default  reduce using rule 78 (expr_list)
 
-    expr_list  go to state 377
+    expr_list  go to state 376
 
 
-state 304
+state 303
 
    14 try_stmt: XTRY '{' expr_list '}' .
    15         | XTRY '{' expr_list '}' . catch_block_stmt
 
-    XCATCH  shift, and go to state 378
+    XCATCH  shift, and go to state 377
 
     $default  reduce using rule 14 (try_stmt)
 
-    catch_block_stmt  go to state 379
+    catch_block_stmt  go to state 378
 
 
-state 305
+state 304
 
    77 expr_list: expr_list statement .
 
     $default  reduce using rule 77 (expr_list)
 
 
-state 306
+state 305
 
    31 namespace_declar_stmt: XSET XPUBLIC '=' namespace_name_stmt .
    33 namespace_name_stmt: namespace_name_stmt . '.' IDENTIFIER
@@ -4430,70 +4427,107 @@ state 306
     $default  reduce using rule 31 (namespace_declar_stmt)
 
 
-state 307
+state 306
 
    33 namespace_name_stmt: namespace_name_stmt '.' IDENTIFIER .
 
     $default  reduce using rule 33 (namespace_name_stmt)
 
 
-state 308
+state 307
 
    81 var_declar_stmt: IDENTIFIER '[' XINTEGER . ']' ';'
    82                | IDENTIFIER '[' XINTEGER . ']' ',' var_declar_stmt
 
-    ']'  shift, and go to state 380
+    ']'  shift, and go to state 379
 
 
-state 309
+state 308
 
    56 class_member_stmt: IDENTIFIER . '(' args_list ')' '.' id_expr
    60 class_member_func_stmt: IDENTIFIER . '(' args_list ')' '.' id_expr '(' args_list ')'
    83 var_declar_stmt: IDENTIFIER '[' IDENTIFIER . ']' ';'
    84                | IDENTIFIER '[' IDENTIFIER . ']' ',' var_declar_stmt
   117 call_statement: IDENTIFIER . '(' args_list ')'
-  163 id_expr: IDENTIFIER .
-  219 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
-  220               | IDENTIFIER . '[' IDENTIFIER ']'
-  221               | IDENTIFIER . '[' TSTRING ']'
+  162 id_expr: IDENTIFIER .
+  218 array_ele_stmt: IDENTIFIER . '[' XINTEGER ']'
+  219               | IDENTIFIER . '[' IDENTIFIER ']'
+  220               | IDENTIFIER . '[' TSTRING ']'
 
     '('  shift, and go to state 64
     '['  shift, and go to state 221
-    ']'  shift, and go to state 381
+    ']'  shift, and go to state 380
 
-    $default  reduce using rule 163 (id_expr)
+    $default  reduce using rule 162 (id_expr)
 
 
-state 310
+state 309
 
    36 class_declar_stmt: AUTO IDENTIFIER extends_stmt '{' . '}'
    37                  | AUTO IDENTIFIER extends_stmt '{' . class_body '}'
 
-    IDENTIFIER    shift, and go to state 295
+    IDENTIFIER    shift, and go to state 294
     OPERATOR_X__  shift, and go to state 5
     '~'           shift, and go to state 26
-    '}'           shift, and go to state 382
+    '}'           shift, and go to state 381
 
-    class_body          go to state 383
-    class_body_stmt     go to state 298
-    func_declar_stmt    go to state 299
-    var_declar_stmt     go to state 300
-    id_expr             go to state 301
-    single_assign_stmt  go to state 302
+    class_body          go to state 382
+    class_body_stmt     go to state 297
+    func_declar_stmt    go to state 298
+    var_declar_stmt     go to state 299
+    id_expr             go to state 300
+    single_assign_stmt  go to state 301
+
+
+state 310
+
+  184 type_judge_stmt: id_expr XIS . id_expr
+
+    IDENTIFIER  shift, and go to state 122
+
+    id_expr  go to state 383
 
 
 state 311
 
-  186 type_judge_stmt: id_expr XIS . id_expr
+  178 logic_stmt: bool_param_expr LE_OP . bool_param_expr
 
-    IDENTIFIER  shift, and go to state 122
+    XINTEGER    shift, and go to state 90
+    TDOUBLE     shift, and go to state 91
+    TBOOL       shift, and go to state 68
+    IDENTIFIER  shift, and go to state 185
+    TSTRING     shift, and go to state 73
+    INC_OP      shift, and go to state 93
+    DEC_OP      shift, and go to state 94
+    THIS        shift, and go to state 95
+    XNULL       shift, and go to state 96
+    '-'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '('         shift, and go to state 196
 
-    id_expr  go to state 384
+    this_stmt               go to state 159
+    class_member_stmt       go to state 197
+    class_member_func_stmt  go to state 42
+    static_member_stmt      go to state 198
+    call_statement          go to state 199
+    arithmetic_stmt         go to state 200
+    bit_opr_factor          go to state 108
+    arithmetic_stmt_factor  go to state 109
+    id_expr                 go to state 169
+    t_bool_expr             go to state 202
+    double_expr             go to state 203
+    uminus_expr             go to state 204
+    string_expr             go to state 205
+    null_expr               go to state 206
+    bool_param_expr         go to state 384
+    self_inc_dec_stmt       go to state 174
+    assign_stmt_value_eq    go to state 210
+    array_ele_stmt          go to state 211
 
 
 state 312
 
-  180 logic_stmt: bool_param_expr LE_OP . bool_param_expr
+  179 logic_stmt: bool_param_expr GE_OP . bool_param_expr
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -4530,7 +4564,7 @@ state 312
 
 state 313
 
-  181 logic_stmt: bool_param_expr GE_OP . bool_param_expr
+  180 logic_stmt: bool_param_expr EQ_OP . bool_param_expr
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -4567,7 +4601,7 @@ state 313
 
 state 314
 
-  182 logic_stmt: bool_param_expr EQ_OP . bool_param_expr
+  181 logic_stmt: bool_param_expr NE_OP . bool_param_expr
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -4604,7 +4638,7 @@ state 314
 
 state 315
 
-  183 logic_stmt: bool_param_expr NE_OP . bool_param_expr
+  176 logic_stmt: bool_param_expr '>' . bool_param_expr
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -4641,7 +4675,7 @@ state 315
 
 state 316
 
-  178 logic_stmt: bool_param_expr '>' . bool_param_expr
+  177 logic_stmt: bool_param_expr '<' . bool_param_expr
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -4678,7 +4712,7 @@ state 316
 
 state 317
 
-  179 logic_stmt: bool_param_expr '<' . bool_param_expr
+  182 logic_stmt: logic_stmt AND_OP . logic_stmt
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -4701,13 +4735,15 @@ state 317
     arithmetic_stmt         go to state 200
     bit_opr_factor          go to state 108
     arithmetic_stmt_factor  go to state 109
-    id_expr                 go to state 169
+    id_expr                 go to state 201
     t_bool_expr             go to state 202
     double_expr             go to state 203
     uminus_expr             go to state 204
     string_expr             go to state 205
     null_expr               go to state 206
-    bool_param_expr         go to state 390
+    bool_param_expr         go to state 207
+    logic_stmt              go to state 390
+    type_judge_stmt         go to state 209
     self_inc_dec_stmt       go to state 174
     assign_stmt_value_eq    go to state 210
     array_ele_stmt          go to state 211
@@ -4715,7 +4751,7 @@ state 317
 
 state 318
 
-  184 logic_stmt: logic_stmt AND_OP . logic_stmt
+  183 logic_stmt: logic_stmt OR_OP . logic_stmt
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -4754,45 +4790,6 @@ state 318
 
 state 319
 
-  185 logic_stmt: logic_stmt OR_OP . logic_stmt
-
-    XINTEGER    shift, and go to state 90
-    TDOUBLE     shift, and go to state 91
-    TBOOL       shift, and go to state 68
-    IDENTIFIER  shift, and go to state 185
-    TSTRING     shift, and go to state 73
-    INC_OP      shift, and go to state 93
-    DEC_OP      shift, and go to state 94
-    THIS        shift, and go to state 95
-    XNULL       shift, and go to state 96
-    '-'         shift, and go to state 97
-    '~'         shift, and go to state 98
-    '('         shift, and go to state 196
-
-    this_stmt               go to state 159
-    class_member_stmt       go to state 197
-    class_member_func_stmt  go to state 42
-    static_member_stmt      go to state 198
-    call_statement          go to state 199
-    arithmetic_stmt         go to state 200
-    bit_opr_factor          go to state 108
-    arithmetic_stmt_factor  go to state 109
-    id_expr                 go to state 201
-    t_bool_expr             go to state 202
-    double_expr             go to state 203
-    uminus_expr             go to state 204
-    string_expr             go to state 205
-    null_expr               go to state 206
-    bool_param_expr         go to state 207
-    logic_stmt              go to state 392
-    type_judge_stmt         go to state 209
-    self_inc_dec_stmt       go to state 174
-    assign_stmt_value_eq    go to state 210
-    array_ele_stmt          go to state 211
-
-
-state 320
-
    89 selection_stmt: IF '(' logic_stmt ')' . block
    90               | IF '(' logic_stmt ')' . block ELSE block
 
@@ -4820,10 +4817,77 @@ state 320
     XINCLUDE      shift, and go to state 25
     '~'           shift, and go to state 26
     ';'           shift, and go to state 27
-    '{'           shift, and go to state 393
+    '{'           shift, and go to state 392
     '@'           shift, and go to state 28
 
-    statement                     go to state 394
+    statement                     go to state 393
+    require_stmt                  go to state 30
+    try_stmt                      go to state 31
+    declar_stmt                   go to state 32
+    annotation_declar_stmt        go to state 33
+    annotation_use_stmt           go to state 34
+    annotation_use_single_stmt    go to state 35
+    const_declar_stmt             go to state 36
+    local_declar_stmt             go to state 37
+    namespace_declar_stmt         go to state 38
+    class_declar_stmt             go to state 39
+    this_member_stmt              go to state 40
+    class_member_stmt             go to state 41
+    class_member_func_stmt        go to state 42
+    static_member_stmt            go to state 43
+    func_declar_stmt              go to state 44
+    var_declar_stmt               go to state 45
+    con_ctl_stmt                  go to state 46
+    selection_stmt                go to state 47
+    loop_stmt                     go to state 48
+    simple_stmt                   go to state 49
+    restrict_stmt                 go to state 50
+    interrupt_stmt                go to state 51
+    call_statement                go to state 52
+    call_statement_piping         go to state 53
+    call_statement_piping_single  go to state 54
+    block                         go to state 394
+    new_expr                      go to state 55
+    id_expr                       go to state 56
+    single_assign_stmt            go to state 57
+    class_member_assign_stmt      go to state 58
+    array_ele_stmt                go to state 59
+    array_ele_assign_stmt         go to state 60
+    assign_stmt                   go to state 61
+
+
+state 320
+
+   96 loop_stmt: WHILE '(' logic_stmt ')' . block
+
+    IDENTIFIER    shift, and go to state 4
+    OPERATOR_X__  shift, and go to state 5
+    RESTRICT      shift, and go to state 6
+    THIS          shift, and go to state 7
+    XTRY          shift, and go to state 8
+    XSET          shift, and go to state 9
+    REQUIRE       shift, and go to state 10
+    REQUIRE_ONCE  shift, and go to state 11
+    REF           shift, and go to state 12
+    XCONTINUE     shift, and go to state 13
+    XCONST        shift, and go to state 14
+    XLOCAL        shift, and go to state 15
+    AUTO          shift, and go to state 16
+    IF            shift, and go to state 17
+    WHILE         shift, and go to state 18
+    FOR           shift, and go to state 19
+    DELETE        shift, and go to state 20
+    BREAK         shift, and go to state 21
+    RETURN        shift, and go to state 22
+    SWITCH        shift, and go to state 23
+    NEW           shift, and go to state 24
+    XINCLUDE      shift, and go to state 25
+    '~'           shift, and go to state 26
+    ';'           shift, and go to state 27
+    '{'           shift, and go to state 392
+    '@'           shift, and go to state 28
+
+    statement                     go to state 393
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -4861,73 +4925,6 @@ state 320
 
 state 321
 
-   96 loop_stmt: WHILE '(' logic_stmt ')' . block
-
-    IDENTIFIER    shift, and go to state 4
-    OPERATOR_X__  shift, and go to state 5
-    RESTRICT      shift, and go to state 6
-    THIS          shift, and go to state 7
-    XTRY          shift, and go to state 8
-    XSET          shift, and go to state 9
-    REQUIRE       shift, and go to state 10
-    REQUIRE_ONCE  shift, and go to state 11
-    REF           shift, and go to state 12
-    XCONTINUE     shift, and go to state 13
-    XCONST        shift, and go to state 14
-    XLOCAL        shift, and go to state 15
-    AUTO          shift, and go to state 16
-    IF            shift, and go to state 17
-    WHILE         shift, and go to state 18
-    FOR           shift, and go to state 19
-    DELETE        shift, and go to state 20
-    BREAK         shift, and go to state 21
-    RETURN        shift, and go to state 22
-    SWITCH        shift, and go to state 23
-    NEW           shift, and go to state 24
-    XINCLUDE      shift, and go to state 25
-    '~'           shift, and go to state 26
-    ';'           shift, and go to state 27
-    '{'           shift, and go to state 393
-    '@'           shift, and go to state 28
-
-    statement                     go to state 394
-    require_stmt                  go to state 30
-    try_stmt                      go to state 31
-    declar_stmt                   go to state 32
-    annotation_declar_stmt        go to state 33
-    annotation_use_stmt           go to state 34
-    annotation_use_single_stmt    go to state 35
-    const_declar_stmt             go to state 36
-    local_declar_stmt             go to state 37
-    namespace_declar_stmt         go to state 38
-    class_declar_stmt             go to state 39
-    this_member_stmt              go to state 40
-    class_member_stmt             go to state 41
-    class_member_func_stmt        go to state 42
-    static_member_stmt            go to state 43
-    func_declar_stmt              go to state 44
-    var_declar_stmt               go to state 45
-    con_ctl_stmt                  go to state 46
-    selection_stmt                go to state 47
-    loop_stmt                     go to state 48
-    simple_stmt                   go to state 49
-    restrict_stmt                 go to state 50
-    interrupt_stmt                go to state 51
-    call_statement                go to state 52
-    call_statement_piping         go to state 53
-    call_statement_piping_single  go to state 54
-    block                         go to state 396
-    new_expr                      go to state 55
-    id_expr                       go to state 56
-    single_assign_stmt            go to state 57
-    class_member_assign_stmt      go to state 58
-    array_ele_stmt                go to state 59
-    array_ele_assign_stmt         go to state 60
-    assign_stmt                   go to state 61
-
-
-state 322
-
    97 loop_stmt: FOR '(' for_1_stmt ';' . logic_stmt ';' for_1_stmt ')' block
 
     XINTEGER    shift, and go to state 90
@@ -4958,147 +4955,147 @@ state 322
     string_expr             go to state 205
     null_expr               go to state 206
     bool_param_expr         go to state 207
-    logic_stmt              go to state 397
+    logic_stmt              go to state 396
     type_judge_stmt         go to state 209
     self_inc_dec_stmt       go to state 174
     assign_stmt_value_eq    go to state 210
     array_ele_stmt          go to state 211
 
 
-state 323
+state 322
 
    68 lambda_stmt: IDENTIFIER FUNC_OP '{' . expr_list '}'
 
     $default  reduce using rule 78 (expr_list)
 
-    expr_list  go to state 398
+    expr_list  go to state 397
 
 
-state 324
+state 323
 
    70 lambda_args_stmt: IDENTIFIER ',' IDENTIFIER .
 
     $default  reduce using rule 70 (lambda_args_stmt)
 
 
+state 324
+
+  218 array_ele_stmt: IDENTIFIER '[' XINTEGER . ']'
+
+    ']'  shift, and go to state 398
+
+
 state 325
 
-  219 array_ele_stmt: IDENTIFIER '[' XINTEGER . ']'
+  219 array_ele_stmt: IDENTIFIER '[' IDENTIFIER . ']'
 
     ']'  shift, and go to state 399
 
 
 state 326
 
-  220 array_ele_stmt: IDENTIFIER '[' IDENTIFIER . ']'
-
-    ']'  shift, and go to state 400
-
-
-state 327
-
    50 this_stmt: THIS '.' id_expr .
    51          | THIS '.' id_expr . '(' args_list ')'
 
-    '('  shift, and go to state 401
+    '('  shift, and go to state 400
 
     $default  reduce using rule 50 (this_stmt)
 
 
-state 328
+state 327
 
   144 parentheses_stmt: '(' assign_stmt_value_eq . ')'
 
-    ')'  shift, and go to state 402
+    ')'  shift, and go to state 401
+
+
+state 328
+
+   75 parameter: parameter ',' . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 402
 
 
 state 329
 
-   75 parameter: parameter ',' . IDENTIFIER
+   67 lambda_stmt: '(' parameter ')' . FUNC_OP '{' expr_list '}'
 
-    IDENTIFIER  shift, and go to state 403
+    FUNC_OP  shift, and go to state 403
 
 
 state 330
 
-   67 lambda_stmt: '(' parameter ')' . FUNC_OP '{' expr_list '}'
+  160 arithmetic_stmt_factor: '(' arithmetic_stmt ')' .
 
-    FUNC_OP  shift, and go to state 404
+    $default  reduce using rule 160 (arithmetic_stmt_factor)
 
 
 state 331
-
-  161 arithmetic_stmt_factor: '(' arithmetic_stmt ')' .
-
-    $default  reduce using rule 161 (arithmetic_stmt_factor)
-
-
-state 332
 
   115 interrupt_stmt: RETURN '{' args_expr '}' .
 
     $default  reduce using rule 115 (interrupt_stmt)
 
 
-state 333
+state 332
 
    69 lambda_stmt: lambda_args_stmt FUNC_OP '{' . expr_list '}'
 
     $default  reduce using rule 78 (expr_list)
 
-    expr_list  go to state 405
+    expr_list  go to state 404
 
 
-state 334
+state 333
 
    71 lambda_args_stmt: lambda_args_stmt ',' IDENTIFIER .
 
     $default  reduce using rule 71 (lambda_args_stmt)
 
 
-state 335
+state 334
 
   154 arithmetic_stmt: bit_opr_factor LEFT_SHIFT bit_opr_factor .
 
     $default  reduce using rule 154 (arithmetic_stmt)
 
 
-state 336
+state 335
 
   155 arithmetic_stmt: bit_opr_factor RIGHT_SHIFT bit_opr_factor .
 
     $default  reduce using rule 155 (arithmetic_stmt)
 
 
-state 337
+state 336
 
   151 arithmetic_stmt: bit_opr_factor '|' bit_opr_factor .
 
     $default  reduce using rule 151 (arithmetic_stmt)
 
 
-state 338
+state 337
 
   152 arithmetic_stmt: bit_opr_factor '^' bit_opr_factor .
 
     $default  reduce using rule 152 (arithmetic_stmt)
 
 
-state 339
+state 338
 
   150 arithmetic_stmt: bit_opr_factor '&' bit_opr_factor .
 
     $default  reduce using rule 150 (arithmetic_stmt)
 
 
+state 339
+
+  159 arithmetic_stmt_factor: arithmetic_stmt .
+
+    $default  reduce using rule 159 (arithmetic_stmt_factor)
+
+
 state 340
-
-  160 arithmetic_stmt_factor: arithmetic_stmt .
-
-    $default  reduce using rule 160 (arithmetic_stmt_factor)
-
-
-state 341
 
   145 arithmetic_stmt: arithmetic_stmt_factor . '+' arithmetic_stmt_factor
   145                | arithmetic_stmt_factor '+' arithmetic_stmt_factor .
@@ -5107,14 +5104,14 @@ state 341
   148                | arithmetic_stmt_factor . '/' arithmetic_stmt_factor
   149                | arithmetic_stmt_factor . '%' arithmetic_stmt_factor
 
-    '*'  shift, and go to state 248
-    '/'  shift, and go to state 249
-    '%'  shift, and go to state 250
+    '*'  shift, and go to state 247
+    '/'  shift, and go to state 248
+    '%'  shift, and go to state 249
 
     $default  reduce using rule 145 (arithmetic_stmt)
 
 
-state 342
+state 341
 
   145 arithmetic_stmt: arithmetic_stmt_factor . '+' arithmetic_stmt_factor
   146                | arithmetic_stmt_factor . '-' arithmetic_stmt_factor
@@ -5123,14 +5120,14 @@ state 342
   148                | arithmetic_stmt_factor . '/' arithmetic_stmt_factor
   149                | arithmetic_stmt_factor . '%' arithmetic_stmt_factor
 
-    '*'  shift, and go to state 248
-    '/'  shift, and go to state 249
-    '%'  shift, and go to state 250
+    '*'  shift, and go to state 247
+    '/'  shift, and go to state 248
+    '%'  shift, and go to state 249
 
     $default  reduce using rule 146 (arithmetic_stmt)
 
 
-state 343
+state 342
 
   145 arithmetic_stmt: arithmetic_stmt_factor . '+' arithmetic_stmt_factor
   146                | arithmetic_stmt_factor . '-' arithmetic_stmt_factor
@@ -5142,7 +5139,7 @@ state 343
     $default  reduce using rule 147 (arithmetic_stmt)
 
 
-state 344
+state 343
 
   145 arithmetic_stmt: arithmetic_stmt_factor . '+' arithmetic_stmt_factor
   146                | arithmetic_stmt_factor . '-' arithmetic_stmt_factor
@@ -5154,7 +5151,7 @@ state 344
     $default  reduce using rule 148 (arithmetic_stmt)
 
 
-state 345
+state 344
 
   145 arithmetic_stmt: arithmetic_stmt_factor . '+' arithmetic_stmt_factor
   146                | arithmetic_stmt_factor . '-' arithmetic_stmt_factor
@@ -5166,56 +5163,121 @@ state 345
     $default  reduce using rule 149 (arithmetic_stmt)
 
 
-state 346
+state 345
 
    91 selection_stmt: SWITCH '(' id_expr ')' . '{' case_stmt_list '}'
 
-    '{'  shift, and go to state 406
+    '{'  shift, and go to state 405
+
+
+state 346
+
+  161 new_expr: NEW id_expr '(' args_list . ')'
+
+    ')'  shift, and go to state 406
 
 
 state 347
 
-  162 new_expr: NEW id_expr '(' args_list . ')'
+   64 func_declar_stmt: '~' IDENTIFIER FUNC_OP param_list . '{' expr_list '}'
 
-    ')'  shift, and go to state 407
+    '{'  shift, and go to state 407
 
 
 state 348
 
-   64 func_declar_stmt: '~' IDENTIFIER FUNC_OP param_list . '{' expr_list '}'
+   38 class_declar_stmt: annotation_use_stmt IDENTIFIER extends_stmt '{' . '}'
+   39                  | annotation_use_stmt IDENTIFIER extends_stmt '{' . class_body '}'
 
-    '{'  shift, and go to state 408
+    IDENTIFIER    shift, and go to state 294
+    OPERATOR_X__  shift, and go to state 5
+    '~'           shift, and go to state 26
+    '}'           shift, and go to state 408
+
+    class_body          go to state 409
+    class_body_stmt     go to state 297
+    func_declar_stmt    go to state 298
+    var_declar_stmt     go to state 299
+    id_expr             go to state 300
+    single_assign_stmt  go to state 301
 
 
 state 349
 
-   38 class_declar_stmt: annotation_use_stmt IDENTIFIER extends_stmt '{' . '}'
-   39                  | annotation_use_stmt IDENTIFIER extends_stmt '{' . class_body '}'
+   40 class_declar_stmt: annotation_use_stmt AUTO IDENTIFIER extends_stmt . '{' '}'
+   41                  | annotation_use_stmt AUTO IDENTIFIER extends_stmt . '{' class_body '}'
 
-    IDENTIFIER    shift, and go to state 295
-    OPERATOR_X__  shift, and go to state 5
-    '~'           shift, and go to state 26
-    '}'           shift, and go to state 409
-
-    class_body          go to state 410
-    class_body_stmt     go to state 298
-    func_declar_stmt    go to state 299
-    var_declar_stmt     go to state 300
-    id_expr             go to state 301
-    single_assign_stmt  go to state 302
+    '{'  shift, and go to state 410
 
 
 state 350
 
-   40 class_declar_stmt: annotation_use_stmt AUTO IDENTIFIER extends_stmt . '{' '}'
-   41                  | annotation_use_stmt AUTO IDENTIFIER extends_stmt . '{' class_body '}'
+   61 class_member_func_stmt: class_member_stmt '.' id_expr '(' . args_list ')'
 
-    '{'  shift, and go to state 411
+    XINTEGER    shift, and go to state 90
+    TDOUBLE     shift, and go to state 91
+    TBOOL       shift, and go to state 68
+    IDENTIFIER  shift, and go to state 157
+    TSTRING     shift, and go to state 73
+    INC_OP      shift, and go to state 93
+    DEC_OP      shift, and go to state 94
+    THIS        shift, and go to state 95
+    NEW         shift, and go to state 24
+    '-'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '('         shift, and go to state 99
+    '$'         shift, and go to state 158
+
+    $default  reduce using rule 123 (args_list)
+
+    this_stmt               go to state 159
+    class_member_stmt       go to state 160
+    class_member_func_stmt  go to state 42
+    static_member_stmt      go to state 161
+    lambda_stmt             go to state 162
+    lambda_args_stmt        go to state 105
+    call_statement          go to state 163
+    args_list               go to state 411
+    args_expr               go to state 165
+    args_expr_collection    go to state 166
+    arithmetic_stmt         go to state 167
+    bit_opr_factor          go to state 108
+    arithmetic_stmt_factor  go to state 109
+    new_expr                go to state 168
+    id_expr                 go to state 169
+    t_bool_expr             go to state 170
+    double_expr             go to state 171
+    uminus_expr             go to state 172
+    string_expr             go to state 173
+    self_inc_dec_stmt       go to state 174
+    assign_stmt_value_eq    go to state 119
+    array_ele_stmt          go to state 175
 
 
 state 351
 
-   61 class_member_func_stmt: class_member_stmt '.' id_expr '(' . args_list ')'
+  221 array_ele_stmt: class_member_stmt '[' XINTEGER ']' .
+
+    $default  reduce using rule 221 (array_ele_stmt)
+
+
+state 352
+
+  222 array_ele_stmt: class_member_stmt '[' IDENTIFIER ']' .
+
+    $default  reduce using rule 222 (array_ele_stmt)
+
+
+state 353
+
+  223 array_ele_stmt: class_member_stmt '[' TSTRING ']' .
+
+    $default  reduce using rule 223 (array_ele_stmt)
+
+
+state 354
+
+   62 class_member_func_stmt: class_member_func_stmt '.' id_expr '(' . args_list ')'
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -5257,30 +5319,51 @@ state 351
     array_ele_stmt          go to state 175
 
 
-state 352
+state 355
 
-  222 array_ele_stmt: class_member_stmt '[' XINTEGER ']' .
+  119 call_statement: static_member_stmt '(' args_list ')' .
 
-    $default  reduce using rule 222 (array_ele_stmt)
-
-
-state 353
-
-  223 array_ele_stmt: class_member_stmt '[' IDENTIFIER ']' .
-
-    $default  reduce using rule 223 (array_ele_stmt)
+    $default  reduce using rule 119 (call_statement)
 
 
-state 354
+state 356
 
-  224 array_ele_stmt: class_member_stmt '[' TSTRING ']' .
+  122 call_statement_piping_single: call_statement '|' . call_statement
+
+    IDENTIFIER  shift, and go to state 185
+
+    class_member_stmt       go to state 179
+    class_member_func_stmt  go to state 42
+    static_member_stmt      go to state 43
+    call_statement          go to state 413
+    id_expr                 go to state 181
+    array_ele_stmt          go to state 182
+
+
+state 357
+
+  224 array_ele_stmt: call_statement '[' XINTEGER ']' .
 
     $default  reduce using rule 224 (array_ele_stmt)
 
 
-state 355
+state 358
 
-   62 class_member_func_stmt: class_member_func_stmt '.' id_expr '(' . args_list ')'
+  225 array_ele_stmt: call_statement '[' IDENTIFIER ']' .
+
+    $default  reduce using rule 225 (array_ele_stmt)
+
+
+state 359
+
+  226 array_ele_stmt: call_statement '[' TSTRING ']' .
+
+    $default  reduce using rule 226 (array_ele_stmt)
+
+
+state 360
+
+   58 class_member_func_stmt: id_expr '.' id_expr '(' . args_list ')'
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -5305,7 +5388,7 @@ state 355
     lambda_stmt             go to state 162
     lambda_args_stmt        go to state 105
     call_statement          go to state 163
-    args_list               go to state 413
+    args_list               go to state 414
     args_expr               go to state 165
     args_expr_collection    go to state 166
     arithmetic_stmt         go to state 167
@@ -5322,51 +5405,9 @@ state 355
     array_ele_stmt          go to state 175
 
 
-state 356
-
-  119 call_statement: static_member_stmt '(' args_list ')' .
-
-    $default  reduce using rule 119 (call_statement)
-
-
-state 357
-
-  122 call_statement_piping_single: call_statement '|' . call_statement
-
-    IDENTIFIER  shift, and go to state 185
-
-    class_member_stmt       go to state 179
-    class_member_func_stmt  go to state 42
-    static_member_stmt      go to state 43
-    call_statement          go to state 414
-    id_expr                 go to state 181
-    array_ele_stmt          go to state 182
-
-
-state 358
-
-  225 array_ele_stmt: call_statement '[' XINTEGER ']' .
-
-    $default  reduce using rule 225 (array_ele_stmt)
-
-
-state 359
-
-  226 array_ele_stmt: call_statement '[' IDENTIFIER ']' .
-
-    $default  reduce using rule 226 (array_ele_stmt)
-
-
-state 360
-
-  227 array_ele_stmt: call_statement '[' TSTRING ']' .
-
-    $default  reduce using rule 227 (array_ele_stmt)
-
-
 state 361
 
-   58 class_member_func_stmt: id_expr '.' id_expr '(' . args_list ')'
+   59 class_member_func_stmt: array_ele_stmt '.' id_expr '(' . args_list ')'
 
     XINTEGER    shift, and go to state 90
     TDOUBLE     shift, and go to state 91
@@ -5410,63 +5451,19 @@ state 361
 
 state 362
 
-   59 class_member_func_stmt: array_ele_stmt '.' id_expr '(' . args_list ')'
-
-    XINTEGER    shift, and go to state 90
-    TDOUBLE     shift, and go to state 91
-    TBOOL       shift, and go to state 68
-    IDENTIFIER  shift, and go to state 157
-    TSTRING     shift, and go to state 73
-    INC_OP      shift, and go to state 93
-    DEC_OP      shift, and go to state 94
-    THIS        shift, and go to state 95
-    NEW         shift, and go to state 24
-    '-'         shift, and go to state 97
-    '~'         shift, and go to state 98
-    '('         shift, and go to state 99
-    '$'         shift, and go to state 158
-
-    $default  reduce using rule 123 (args_list)
-
-    this_stmt               go to state 159
-    class_member_stmt       go to state 160
-    class_member_func_stmt  go to state 42
-    static_member_stmt      go to state 161
-    lambda_stmt             go to state 162
-    lambda_args_stmt        go to state 105
-    call_statement          go to state 163
-    args_list               go to state 416
-    args_expr               go to state 165
-    args_expr_collection    go to state 166
-    arithmetic_stmt         go to state 167
-    bit_opr_factor          go to state 108
-    arithmetic_stmt_factor  go to state 109
-    new_expr                go to state 168
-    id_expr                 go to state 169
-    t_bool_expr             go to state 170
-    double_expr             go to state 171
-    uminus_expr             go to state 172
-    string_expr             go to state 173
-    self_inc_dec_stmt       go to state 174
-    assign_stmt_value_eq    go to state 119
-    array_ele_stmt          go to state 175
-
-
-state 363
-
   116 call_statement: array_ele_stmt '(' args_list ')' .
 
     $default  reduce using rule 116 (call_statement)
 
 
-state 364
+state 363
 
    73 param_list: '(' parameter ')' .
 
     $default  reduce using rule 73 (param_list)
 
 
-state 365
+state 364
 
    65 func_declar_stmt: IDENTIFIER FUNC_OP param_list '{' expr_list . '}'
    77 expr_list: expr_list . statement
@@ -5495,10 +5492,10 @@ state 365
     XINCLUDE      shift, and go to state 25
     '~'           shift, and go to state 26
     ';'           shift, and go to state 27
-    '}'           shift, and go to state 417
+    '}'           shift, and go to state 416
     '@'           shift, and go to state 28
 
-    statement                     go to state 305
+    statement                     go to state 304
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -5533,26 +5530,43 @@ state 365
     assign_stmt                   go to state 61
 
 
-state 366
+state 365
 
    56 class_member_stmt: IDENTIFIER '(' args_list ')' '.' . id_expr
    60 class_member_func_stmt: IDENTIFIER '(' args_list ')' '.' . id_expr '(' args_list ')'
 
     IDENTIFIER  shift, and go to state 122
 
-    id_expr  go to state 418
+    id_expr  go to state 417
 
 
-state 367
+state 366
 
   126 args_expr: args_expr ',' args_expr_collection .
 
     $default  reduce using rule 126 (args_expr)
 
 
-state 368
+state 367
 
    82 var_declar_stmt: IDENTIFIER '[' XINTEGER ']' ',' . var_declar_stmt
+
+    IDENTIFIER  shift, and go to state 78
+
+    var_declar_stmt  go to state 418
+    id_expr          go to state 80
+
+
+state 368
+
+   81 var_declar_stmt: IDENTIFIER '[' XINTEGER ']' ';' .
+
+    $default  reduce using rule 81 (var_declar_stmt)
+
+
+state 369
+
+   84 var_declar_stmt: IDENTIFIER '[' IDENTIFIER ']' ',' . var_declar_stmt
 
     IDENTIFIER  shift, and go to state 78
 
@@ -5560,16 +5574,16 @@ state 368
     id_expr          go to state 80
 
 
-state 369
-
-   81 var_declar_stmt: IDENTIFIER '[' XINTEGER ']' ';' .
-
-    $default  reduce using rule 81 (var_declar_stmt)
-
-
 state 370
 
-   84 var_declar_stmt: IDENTIFIER '[' IDENTIFIER ']' ',' . var_declar_stmt
+   83 var_declar_stmt: IDENTIFIER '[' IDENTIFIER ']' ';' .
+
+    $default  reduce using rule 83 (var_declar_stmt)
+
+
+state 371
+
+   86 var_declar_stmt: IDENTIFIER '[' call_statement ']' ',' . var_declar_stmt
 
     IDENTIFIER  shift, and go to state 78
 
@@ -5577,52 +5591,35 @@ state 370
     id_expr          go to state 80
 
 
-state 371
-
-   83 var_declar_stmt: IDENTIFIER '[' IDENTIFIER ']' ';' .
-
-    $default  reduce using rule 83 (var_declar_stmt)
-
-
 state 372
-
-   86 var_declar_stmt: IDENTIFIER '[' call_statement ']' ',' . var_declar_stmt
-
-    IDENTIFIER  shift, and go to state 78
-
-    var_declar_stmt  go to state 421
-    id_expr          go to state 80
-
-
-state 373
 
    85 var_declar_stmt: IDENTIFIER '[' call_statement ']' ';' .
 
     $default  reduce using rule 85 (var_declar_stmt)
 
 
-state 374
+state 373
 
    35 class_declar_stmt: IDENTIFIER extends_stmt '{' class_body '}' .
 
     $default  reduce using rule 35 (class_declar_stmt)
 
 
-state 375
+state 374
 
    45 class_body: class_body class_body_stmt .
 
     $default  reduce using rule 45 (class_body)
 
 
-state 376
+state 375
 
    47 class_body_stmt: single_assign_stmt ';' .
 
     $default  reduce using rule 47 (class_body_stmt)
 
 
-state 377
+state 376
 
    66 func_declar_stmt: OPERATOR_X__ FUNC_OP param_list '{' expr_list . '}'
    77 expr_list: expr_list . statement
@@ -5651,10 +5648,10 @@ state 377
     XINCLUDE      shift, and go to state 25
     '~'           shift, and go to state 26
     ';'           shift, and go to state 27
-    '}'           shift, and go to state 422
+    '}'           shift, and go to state 421
     '@'           shift, and go to state 28
 
-    statement                     go to state 305
+    statement                     go to state 304
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -5689,176 +5686,176 @@ state 377
     assign_stmt                   go to state 61
 
 
-state 378
+state 377
 
    16 catch_block_stmt: XCATCH . '(' id_expr ')' '{' expr_list '}'
 
-    '('  shift, and go to state 423
+    '('  shift, and go to state 422
 
 
-state 379
+state 378
 
    15 try_stmt: XTRY '{' expr_list '}' catch_block_stmt .
 
     $default  reduce using rule 15 (try_stmt)
 
 
-state 380
+state 379
 
    81 var_declar_stmt: IDENTIFIER '[' XINTEGER ']' . ';'
    82                | IDENTIFIER '[' XINTEGER ']' . ',' var_declar_stmt
 
-    ','  shift, and go to state 368
-    ';'  shift, and go to state 369
+    ','  shift, and go to state 367
+    ';'  shift, and go to state 368
 
 
-state 381
+state 380
 
    83 var_declar_stmt: IDENTIFIER '[' IDENTIFIER ']' . ';'
    84                | IDENTIFIER '[' IDENTIFIER ']' . ',' var_declar_stmt
 
-    ','  shift, and go to state 370
-    ';'  shift, and go to state 371
+    ','  shift, and go to state 369
+    ';'  shift, and go to state 370
 
 
-state 382
+state 381
 
    36 class_declar_stmt: AUTO IDENTIFIER extends_stmt '{' '}' .
 
     $default  reduce using rule 36 (class_declar_stmt)
 
 
-state 383
+state 382
 
    37 class_declar_stmt: AUTO IDENTIFIER extends_stmt '{' class_body . '}'
    45 class_body: class_body . class_body_stmt
 
-    IDENTIFIER    shift, and go to state 295
+    IDENTIFIER    shift, and go to state 294
     OPERATOR_X__  shift, and go to state 5
     '~'           shift, and go to state 26
-    '}'           shift, and go to state 424
+    '}'           shift, and go to state 423
 
-    class_body_stmt     go to state 375
-    func_declar_stmt    go to state 299
-    var_declar_stmt     go to state 300
-    id_expr             go to state 301
-    single_assign_stmt  go to state 302
+    class_body_stmt     go to state 374
+    func_declar_stmt    go to state 298
+    var_declar_stmt     go to state 299
+    id_expr             go to state 300
+    single_assign_stmt  go to state 301
+
+
+state 383
+
+  184 type_judge_stmt: id_expr XIS id_expr .
+
+    $default  reduce using rule 184 (type_judge_stmt)
 
 
 state 384
 
-  186 type_judge_stmt: id_expr XIS id_expr .
-
-    $default  reduce using rule 186 (type_judge_stmt)
-
-
-state 385
-
-  180 logic_stmt: bool_param_expr LE_OP bool_param_expr .
-
-    $default  reduce using rule 180 (logic_stmt)
-
-
-state 386
-
-  181 logic_stmt: bool_param_expr GE_OP bool_param_expr .
-
-    $default  reduce using rule 181 (logic_stmt)
-
-
-state 387
-
-  182 logic_stmt: bool_param_expr EQ_OP bool_param_expr .
-
-    $default  reduce using rule 182 (logic_stmt)
-
-
-state 388
-
-  183 logic_stmt: bool_param_expr NE_OP bool_param_expr .
-
-    $default  reduce using rule 183 (logic_stmt)
-
-
-state 389
-
-  178 logic_stmt: bool_param_expr '>' bool_param_expr .
+  178 logic_stmt: bool_param_expr LE_OP bool_param_expr .
 
     $default  reduce using rule 178 (logic_stmt)
 
 
-state 390
+state 385
 
-  179 logic_stmt: bool_param_expr '<' bool_param_expr .
+  179 logic_stmt: bool_param_expr GE_OP bool_param_expr .
 
     $default  reduce using rule 179 (logic_stmt)
 
 
+state 386
+
+  180 logic_stmt: bool_param_expr EQ_OP bool_param_expr .
+
+    $default  reduce using rule 180 (logic_stmt)
+
+
+state 387
+
+  181 logic_stmt: bool_param_expr NE_OP bool_param_expr .
+
+    $default  reduce using rule 181 (logic_stmt)
+
+
+state 388
+
+  176 logic_stmt: bool_param_expr '>' bool_param_expr .
+
+    $default  reduce using rule 176 (logic_stmt)
+
+
+state 389
+
+  177 logic_stmt: bool_param_expr '<' bool_param_expr .
+
+    $default  reduce using rule 177 (logic_stmt)
+
+
+state 390
+
+  182 logic_stmt: logic_stmt . AND_OP logic_stmt
+  182           | logic_stmt AND_OP logic_stmt .
+  183           | logic_stmt . OR_OP logic_stmt
+
+    $default  reduce using rule 182 (logic_stmt)
+
+
 state 391
 
-  184 logic_stmt: logic_stmt . AND_OP logic_stmt
-  184           | logic_stmt AND_OP logic_stmt .
-  185           | logic_stmt . OR_OP logic_stmt
+  182 logic_stmt: logic_stmt . AND_OP logic_stmt
+  183           | logic_stmt . OR_OP logic_stmt
+  183           | logic_stmt OR_OP logic_stmt .
 
-    $default  reduce using rule 184 (logic_stmt)
+    AND_OP  shift, and go to state 317
+
+    $default  reduce using rule 183 (logic_stmt)
 
 
 state 392
-
-  184 logic_stmt: logic_stmt . AND_OP logic_stmt
-  185           | logic_stmt . OR_OP logic_stmt
-  185           | logic_stmt OR_OP logic_stmt .
-
-    AND_OP  shift, and go to state 318
-
-    $default  reduce using rule 185 (logic_stmt)
-
-
-state 393
 
   140 block: '{' . expr_list '}'
 
     $default  reduce using rule 78 (expr_list)
 
-    expr_list  go to state 425
+    expr_list  go to state 424
 
 
-state 394
+state 393
 
   141 block: statement .
 
     $default  reduce using rule 141 (block)
 
 
-state 395
+state 394
 
    89 selection_stmt: IF '(' logic_stmt ')' block .
    90               | IF '(' logic_stmt ')' block . ELSE block
 
-    ELSE  shift, and go to state 426
+    ELSE  shift, and go to state 425
 
     $default  reduce using rule 89 (selection_stmt)
 
 
-state 396
+state 395
 
    96 loop_stmt: WHILE '(' logic_stmt ')' block .
 
     $default  reduce using rule 96 (loop_stmt)
 
 
-state 397
+state 396
 
    97 loop_stmt: FOR '(' for_1_stmt ';' logic_stmt . ';' for_1_stmt ')' block
-  184 logic_stmt: logic_stmt . AND_OP logic_stmt
-  185           | logic_stmt . OR_OP logic_stmt
+  182 logic_stmt: logic_stmt . AND_OP logic_stmt
+  183           | logic_stmt . OR_OP logic_stmt
 
-    AND_OP  shift, and go to state 318
-    OR_OP   shift, and go to state 319
-    ';'     shift, and go to state 427
+    AND_OP  shift, and go to state 317
+    OR_OP   shift, and go to state 318
+    ';'     shift, and go to state 426
 
 
-state 398
+state 397
 
    68 lambda_stmt: IDENTIFIER FUNC_OP '{' expr_list . '}'
    77 expr_list: expr_list . statement
@@ -5887,10 +5884,10 @@ state 398
     XINCLUDE      shift, and go to state 25
     '~'           shift, and go to state 26
     ';'           shift, and go to state 27
-    '}'           shift, and go to state 428
+    '}'           shift, and go to state 427
     '@'           shift, and go to state 28
 
-    statement                     go to state 305
+    statement                     go to state 304
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -5925,21 +5922,21 @@ state 398
     assign_stmt                   go to state 61
 
 
+state 398
+
+  218 array_ele_stmt: IDENTIFIER '[' XINTEGER ']' .
+
+    $default  reduce using rule 218 (array_ele_stmt)
+
+
 state 399
 
-  219 array_ele_stmt: IDENTIFIER '[' XINTEGER ']' .
+  219 array_ele_stmt: IDENTIFIER '[' IDENTIFIER ']' .
 
     $default  reduce using rule 219 (array_ele_stmt)
 
 
 state 400
-
-  220 array_ele_stmt: IDENTIFIER '[' IDENTIFIER ']' .
-
-    $default  reduce using rule 220 (array_ele_stmt)
-
-
-state 401
 
    51 this_stmt: THIS '.' id_expr '(' . args_list ')'
 
@@ -5966,7 +5963,7 @@ state 401
     lambda_stmt             go to state 162
     lambda_args_stmt        go to state 105
     call_statement          go to state 163
-    args_list               go to state 429
+    args_list               go to state 428
     args_expr               go to state 165
     args_expr_collection    go to state 166
     arithmetic_stmt         go to state 167
@@ -5983,28 +5980,28 @@ state 401
     array_ele_stmt          go to state 175
 
 
-state 402
+state 401
 
   144 parentheses_stmt: '(' assign_stmt_value_eq ')' .
 
     $default  reduce using rule 144 (parentheses_stmt)
 
 
-state 403
+state 402
 
    75 parameter: parameter ',' IDENTIFIER .
 
     $default  reduce using rule 75 (parameter)
 
 
-state 404
+state 403
 
    67 lambda_stmt: '(' parameter ')' FUNC_OP . '{' expr_list '}'
 
-    '{'  shift, and go to state 430
+    '{'  shift, and go to state 429
 
 
-state 405
+state 404
 
    69 lambda_stmt: lambda_args_stmt FUNC_OP '{' expr_list . '}'
    77 expr_list: expr_list . statement
@@ -6033,10 +6030,10 @@ state 405
     XINCLUDE      shift, and go to state 25
     '~'           shift, and go to state 26
     ';'           shift, and go to state 27
-    '}'           shift, and go to state 431
+    '}'           shift, and go to state 430
     '@'           shift, and go to state 28
 
-    statement                     go to state 305
+    statement                     go to state 304
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -6071,177 +6068,177 @@ state 405
     assign_stmt                   go to state 61
 
 
-state 406
+state 405
 
    91 selection_stmt: SWITCH '(' id_expr ')' '{' . case_stmt_list '}'
 
-    CASE     shift, and go to state 432
-    DEFAULT  shift, and go to state 433
+    CASE     shift, and go to state 431
+    DEFAULT  shift, and go to state 432
 
-    case_stmt_list  go to state 434
-    case_stmt       go to state 435
+    case_stmt_list  go to state 433
+    case_stmt       go to state 434
+
+
+state 406
+
+  161 new_expr: NEW id_expr '(' args_list ')' .
+
+    $default  reduce using rule 161 (new_expr)
 
 
 state 407
-
-  162 new_expr: NEW id_expr '(' args_list ')' .
-
-    $default  reduce using rule 162 (new_expr)
-
-
-state 408
 
    64 func_declar_stmt: '~' IDENTIFIER FUNC_OP param_list '{' . expr_list '}'
 
     $default  reduce using rule 78 (expr_list)
 
-    expr_list  go to state 436
+    expr_list  go to state 435
 
 
-state 409
+state 408
 
    38 class_declar_stmt: annotation_use_stmt IDENTIFIER extends_stmt '{' '}' .
 
     $default  reduce using rule 38 (class_declar_stmt)
 
 
-state 410
+state 409
 
    39 class_declar_stmt: annotation_use_stmt IDENTIFIER extends_stmt '{' class_body . '}'
    45 class_body: class_body . class_body_stmt
 
-    IDENTIFIER    shift, and go to state 295
+    IDENTIFIER    shift, and go to state 294
     OPERATOR_X__  shift, and go to state 5
     '~'           shift, and go to state 26
-    '}'           shift, and go to state 437
+    '}'           shift, and go to state 436
 
-    class_body_stmt     go to state 375
-    func_declar_stmt    go to state 299
-    var_declar_stmt     go to state 300
-    id_expr             go to state 301
-    single_assign_stmt  go to state 302
+    class_body_stmt     go to state 374
+    func_declar_stmt    go to state 298
+    var_declar_stmt     go to state 299
+    id_expr             go to state 300
+    single_assign_stmt  go to state 301
 
 
-state 411
+state 410
 
    40 class_declar_stmt: annotation_use_stmt AUTO IDENTIFIER extends_stmt '{' . '}'
    41                  | annotation_use_stmt AUTO IDENTIFIER extends_stmt '{' . class_body '}'
 
-    IDENTIFIER    shift, and go to state 295
+    IDENTIFIER    shift, and go to state 294
     OPERATOR_X__  shift, and go to state 5
     '~'           shift, and go to state 26
-    '}'           shift, and go to state 438
+    '}'           shift, and go to state 437
 
-    class_body          go to state 439
-    class_body_stmt     go to state 298
-    func_declar_stmt    go to state 299
-    var_declar_stmt     go to state 300
-    id_expr             go to state 301
-    single_assign_stmt  go to state 302
+    class_body          go to state 438
+    class_body_stmt     go to state 297
+    func_declar_stmt    go to state 298
+    var_declar_stmt     go to state 299
+    id_expr             go to state 300
+    single_assign_stmt  go to state 301
+
+
+state 411
+
+   61 class_member_func_stmt: class_member_stmt '.' id_expr '(' args_list . ')'
+
+    ')'  shift, and go to state 439
 
 
 state 412
 
-   61 class_member_func_stmt: class_member_stmt '.' id_expr '(' args_list . ')'
+   62 class_member_func_stmt: class_member_func_stmt '.' id_expr '(' args_list . ')'
 
     ')'  shift, and go to state 440
 
 
 state 413
 
-   62 class_member_func_stmt: class_member_func_stmt '.' id_expr '(' args_list . ')'
-
-    ')'  shift, and go to state 441
-
-
-state 414
-
   122 call_statement_piping_single: call_statement '|' call_statement .
-  225 array_ele_stmt: call_statement . '[' XINTEGER ']'
-  226               | call_statement . '[' IDENTIFIER ']'
-  227               | call_statement . '[' TSTRING ']'
+  224 array_ele_stmt: call_statement . '[' XINTEGER ']'
+  225               | call_statement . '[' IDENTIFIER ']'
+  226               | call_statement . '[' TSTRING ']'
 
     '['  shift, and go to state 140
 
     $default  reduce using rule 122 (call_statement_piping_single)
 
 
-state 415
+state 414
 
    58 class_member_func_stmt: id_expr '.' id_expr '(' args_list . ')'
+
+    ')'  shift, and go to state 441
+
+
+state 415
+
+   59 class_member_func_stmt: array_ele_stmt '.' id_expr '(' args_list . ')'
 
     ')'  shift, and go to state 442
 
 
 state 416
 
-   59 class_member_func_stmt: array_ele_stmt '.' id_expr '(' args_list . ')'
-
-    ')'  shift, and go to state 443
-
-
-state 417
-
    65 func_declar_stmt: IDENTIFIER FUNC_OP param_list '{' expr_list '}' .
 
     $default  reduce using rule 65 (func_declar_stmt)
 
 
-state 418
+state 417
 
    56 class_member_stmt: IDENTIFIER '(' args_list ')' '.' id_expr .
    60 class_member_func_stmt: IDENTIFIER '(' args_list ')' '.' id_expr . '(' args_list ')'
 
-    '('  shift, and go to state 444
+    '('  shift, and go to state 443
 
     $default  reduce using rule 56 (class_member_stmt)
 
 
-state 419
+state 418
 
    82 var_declar_stmt: IDENTIFIER '[' XINTEGER ']' ',' var_declar_stmt .
 
     $default  reduce using rule 82 (var_declar_stmt)
 
 
-state 420
+state 419
 
    84 var_declar_stmt: IDENTIFIER '[' IDENTIFIER ']' ',' var_declar_stmt .
 
     $default  reduce using rule 84 (var_declar_stmt)
 
 
-state 421
+state 420
 
    86 var_declar_stmt: IDENTIFIER '[' call_statement ']' ',' var_declar_stmt .
 
     $default  reduce using rule 86 (var_declar_stmt)
 
 
-state 422
+state 421
 
    66 func_declar_stmt: OPERATOR_X__ FUNC_OP param_list '{' expr_list '}' .
 
     $default  reduce using rule 66 (func_declar_stmt)
 
 
-state 423
+state 422
 
    16 catch_block_stmt: XCATCH '(' . id_expr ')' '{' expr_list '}'
 
     IDENTIFIER  shift, and go to state 122
 
-    id_expr  go to state 445
+    id_expr  go to state 444
 
 
-state 424
+state 423
 
    37 class_declar_stmt: AUTO IDENTIFIER extends_stmt '{' class_body '}' .
 
     $default  reduce using rule 37 (class_declar_stmt)
 
 
-state 425
+state 424
 
    77 expr_list: expr_list . statement
   140 block: '{' expr_list . '}'
@@ -6270,10 +6267,10 @@ state 425
     XINCLUDE      shift, and go to state 25
     '~'           shift, and go to state 26
     ';'           shift, and go to state 27
-    '}'           shift, and go to state 446
+    '}'           shift, and go to state 445
     '@'           shift, and go to state 28
 
-    statement                     go to state 305
+    statement                     go to state 304
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -6308,7 +6305,7 @@ state 425
     assign_stmt                   go to state 61
 
 
-state 426
+state 425
 
    90 selection_stmt: IF '(' logic_stmt ')' block ELSE . block
 
@@ -6336,10 +6333,10 @@ state 426
     XINCLUDE      shift, and go to state 25
     '~'           shift, and go to state 26
     ';'           shift, and go to state 27
-    '{'           shift, and go to state 393
+    '{'           shift, and go to state 392
     '@'           shift, and go to state 28
 
-    statement                     go to state 394
+    statement                     go to state 393
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -6365,7 +6362,7 @@ state 426
     call_statement                go to state 52
     call_statement_piping         go to state 53
     call_statement_piping_single  go to state 54
-    block                         go to state 447
+    block                         go to state 446
     new_expr                      go to state 55
     id_expr                       go to state 56
     single_assign_stmt            go to state 57
@@ -6375,7 +6372,7 @@ state 426
     assign_stmt                   go to state 61
 
 
-state 427
+state 426
 
    97 loop_stmt: FOR '(' for_1_stmt ';' logic_stmt ';' . for_1_stmt ')' block
 
@@ -6391,7 +6388,7 @@ state 427
     class_member_func_stmt    go to state 42
     static_member_stmt        go to state 43
     var_declar_stmt           go to state 214
-    for_1_stmt                go to state 448
+    for_1_stmt                go to state 447
     call_statement            go to state 187
     id_expr                   go to state 216
     self_inc_dec_stmt         go to state 217
@@ -6402,73 +6399,73 @@ state 427
     assign_stmt               go to state 218
 
 
-state 428
+state 427
 
    68 lambda_stmt: IDENTIFIER FUNC_OP '{' expr_list '}' .
 
     $default  reduce using rule 68 (lambda_stmt)
 
 
-state 429
+state 428
 
    51 this_stmt: THIS '.' id_expr '(' args_list . ')'
 
-    ')'  shift, and go to state 449
+    ')'  shift, and go to state 448
 
 
-state 430
+state 429
 
    67 lambda_stmt: '(' parameter ')' FUNC_OP '{' . expr_list '}'
 
     $default  reduce using rule 78 (expr_list)
 
-    expr_list  go to state 450
+    expr_list  go to state 449
 
 
-state 431
+state 430
 
    69 lambda_stmt: lambda_args_stmt FUNC_OP '{' expr_list '}' .
 
     $default  reduce using rule 69 (lambda_stmt)
 
 
-state 432
+state 431
 
    94 case_stmt: CASE . double_expr ':' expr_list
 
     XINTEGER  shift, and go to state 225
     TDOUBLE   shift, and go to state 91
 
-    double_expr  go to state 451
+    double_expr  go to state 450
+
+
+state 432
+
+   95 case_stmt: DEFAULT . ':' expr_list
+
+    ':'  shift, and go to state 451
 
 
 state 433
 
-   95 case_stmt: DEFAULT . ':' expr_list
-
-    ':'  shift, and go to state 452
-
-
-state 434
-
    91 selection_stmt: SWITCH '(' id_expr ')' '{' case_stmt_list . '}'
    93 case_stmt_list: case_stmt_list . case_stmt
 
-    CASE     shift, and go to state 432
-    DEFAULT  shift, and go to state 433
-    '}'      shift, and go to state 453
+    CASE     shift, and go to state 431
+    DEFAULT  shift, and go to state 432
+    '}'      shift, and go to state 452
 
-    case_stmt  go to state 454
+    case_stmt  go to state 453
 
 
-state 435
+state 434
 
    92 case_stmt_list: case_stmt .
 
     $default  reduce using rule 92 (case_stmt_list)
 
 
-state 436
+state 435
 
    64 func_declar_stmt: '~' IDENTIFIER FUNC_OP param_list '{' expr_list . '}'
    77 expr_list: expr_list . statement
@@ -6497,10 +6494,10 @@ state 436
     XINCLUDE      shift, and go to state 25
     '~'           shift, and go to state 26
     ';'           shift, and go to state 27
-    '}'           shift, and go to state 455
+    '}'           shift, and go to state 454
     '@'           shift, and go to state 28
 
-    statement                     go to state 305
+    statement                     go to state 304
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -6535,66 +6532,66 @@ state 436
     assign_stmt                   go to state 61
 
 
-state 437
+state 436
 
    39 class_declar_stmt: annotation_use_stmt IDENTIFIER extends_stmt '{' class_body '}' .
 
     $default  reduce using rule 39 (class_declar_stmt)
 
 
-state 438
+state 437
 
    40 class_declar_stmt: annotation_use_stmt AUTO IDENTIFIER extends_stmt '{' '}' .
 
     $default  reduce using rule 40 (class_declar_stmt)
 
 
-state 439
+state 438
 
    41 class_declar_stmt: annotation_use_stmt AUTO IDENTIFIER extends_stmt '{' class_body . '}'
    45 class_body: class_body . class_body_stmt
 
-    IDENTIFIER    shift, and go to state 295
+    IDENTIFIER    shift, and go to state 294
     OPERATOR_X__  shift, and go to state 5
     '~'           shift, and go to state 26
-    '}'           shift, and go to state 456
+    '}'           shift, and go to state 455
 
-    class_body_stmt     go to state 375
-    func_declar_stmt    go to state 299
-    var_declar_stmt     go to state 300
-    id_expr             go to state 301
-    single_assign_stmt  go to state 302
+    class_body_stmt     go to state 374
+    func_declar_stmt    go to state 298
+    var_declar_stmt     go to state 299
+    id_expr             go to state 300
+    single_assign_stmt  go to state 301
 
 
-state 440
+state 439
 
    61 class_member_func_stmt: class_member_stmt '.' id_expr '(' args_list ')' .
 
     $default  reduce using rule 61 (class_member_func_stmt)
 
 
-state 441
+state 440
 
    62 class_member_func_stmt: class_member_func_stmt '.' id_expr '(' args_list ')' .
 
     $default  reduce using rule 62 (class_member_func_stmt)
 
 
-state 442
+state 441
 
    58 class_member_func_stmt: id_expr '.' id_expr '(' args_list ')' .
 
     $default  reduce using rule 58 (class_member_func_stmt)
 
 
-state 443
+state 442
 
    59 class_member_func_stmt: array_ele_stmt '.' id_expr '(' args_list ')' .
 
     $default  reduce using rule 59 (class_member_func_stmt)
 
 
-state 444
+state 443
 
    60 class_member_func_stmt: IDENTIFIER '(' args_list ')' '.' id_expr '(' . args_list ')'
 
@@ -6621,7 +6618,7 @@ state 444
     lambda_stmt             go to state 162
     lambda_args_stmt        go to state 105
     call_statement          go to state 163
-    args_list               go to state 457
+    args_list               go to state 456
     args_expr               go to state 165
     args_expr_collection    go to state 166
     arithmetic_stmt         go to state 167
@@ -6638,42 +6635,42 @@ state 444
     array_ele_stmt          go to state 175
 
 
-state 445
+state 444
 
    16 catch_block_stmt: XCATCH '(' id_expr . ')' '{' expr_list '}'
 
-    ')'  shift, and go to state 458
+    ')'  shift, and go to state 457
 
 
-state 446
+state 445
 
   140 block: '{' expr_list '}' .
 
     $default  reduce using rule 140 (block)
 
 
-state 447
+state 446
 
    90 selection_stmt: IF '(' logic_stmt ')' block ELSE block .
 
     $default  reduce using rule 90 (selection_stmt)
 
 
-state 448
+state 447
 
    97 loop_stmt: FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt . ')' block
 
-    ')'  shift, and go to state 459
+    ')'  shift, and go to state 458
 
 
-state 449
+state 448
 
    51 this_stmt: THIS '.' id_expr '(' args_list ')' .
 
     $default  reduce using rule 51 (this_stmt)
 
 
-state 450
+state 449
 
    67 lambda_stmt: '(' parameter ')' FUNC_OP '{' expr_list . '}'
    77 expr_list: expr_list . statement
@@ -6702,10 +6699,10 @@ state 450
     XINCLUDE      shift, and go to state 25
     '~'           shift, and go to state 26
     ';'           shift, and go to state 27
-    '}'           shift, and go to state 460
+    '}'           shift, and go to state 459
     '@'           shift, and go to state 28
 
-    statement                     go to state 305
+    statement                     go to state 304
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -6740,65 +6737,65 @@ state 450
     assign_stmt                   go to state 61
 
 
-state 451
+state 450
 
    94 case_stmt: CASE double_expr . ':' expr_list
 
-    ':'  shift, and go to state 461
+    ':'  shift, and go to state 460
 
 
-state 452
+state 451
 
    95 case_stmt: DEFAULT ':' . expr_list
 
     $default  reduce using rule 78 (expr_list)
 
-    expr_list  go to state 462
+    expr_list  go to state 461
 
 
-state 453
+state 452
 
    91 selection_stmt: SWITCH '(' id_expr ')' '{' case_stmt_list '}' .
 
     $default  reduce using rule 91 (selection_stmt)
 
 
-state 454
+state 453
 
    93 case_stmt_list: case_stmt_list case_stmt .
 
     $default  reduce using rule 93 (case_stmt_list)
 
 
-state 455
+state 454
 
    64 func_declar_stmt: '~' IDENTIFIER FUNC_OP param_list '{' expr_list '}' .
 
     $default  reduce using rule 64 (func_declar_stmt)
 
 
-state 456
+state 455
 
    41 class_declar_stmt: annotation_use_stmt AUTO IDENTIFIER extends_stmt '{' class_body '}' .
 
     $default  reduce using rule 41 (class_declar_stmt)
 
 
-state 457
+state 456
 
    60 class_member_func_stmt: IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list . ')'
 
-    ')'  shift, and go to state 463
+    ')'  shift, and go to state 462
 
 
-state 458
+state 457
 
    16 catch_block_stmt: XCATCH '(' id_expr ')' . '{' expr_list '}'
 
-    '{'  shift, and go to state 464
+    '{'  shift, and go to state 463
 
 
-state 459
+state 458
 
    97 loop_stmt: FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' . block
 
@@ -6826,10 +6823,10 @@ state 459
     XINCLUDE      shift, and go to state 25
     '~'           shift, and go to state 26
     ';'           shift, and go to state 27
-    '{'           shift, and go to state 393
+    '{'           shift, and go to state 392
     '@'           shift, and go to state 28
 
-    statement                     go to state 394
+    statement                     go to state 393
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -6855,7 +6852,7 @@ state 459
     call_statement                go to state 52
     call_statement_piping         go to state 53
     call_statement_piping_single  go to state 54
-    block                         go to state 465
+    block                         go to state 464
     new_expr                      go to state 55
     id_expr                       go to state 56
     single_assign_stmt            go to state 57
@@ -6865,23 +6862,23 @@ state 459
     assign_stmt                   go to state 61
 
 
-state 460
+state 459
 
    67 lambda_stmt: '(' parameter ')' FUNC_OP '{' expr_list '}' .
 
     $default  reduce using rule 67 (lambda_stmt)
 
 
-state 461
+state 460
 
    94 case_stmt: CASE double_expr ':' . expr_list
 
     $default  reduce using rule 78 (expr_list)
 
-    expr_list  go to state 466
+    expr_list  go to state 465
 
 
-state 462
+state 461
 
    77 expr_list: expr_list . statement
    95 case_stmt: DEFAULT ':' expr_list .
@@ -6914,7 +6911,7 @@ state 462
 
     $default  reduce using rule 95 (case_stmt)
 
-    statement                     go to state 305
+    statement                     go to state 304
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -6949,30 +6946,30 @@ state 462
     assign_stmt                   go to state 61
 
 
-state 463
+state 462
 
    60 class_member_func_stmt: IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list ')' .
 
     $default  reduce using rule 60 (class_member_func_stmt)
 
 
-state 464
+state 463
 
    16 catch_block_stmt: XCATCH '(' id_expr ')' '{' . expr_list '}'
 
     $default  reduce using rule 78 (expr_list)
 
-    expr_list  go to state 467
+    expr_list  go to state 466
 
 
-state 465
+state 464
 
    97 loop_stmt: FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block .
 
     $default  reduce using rule 97 (loop_stmt)
 
 
-state 466
+state 465
 
    77 expr_list: expr_list . statement
    94 case_stmt: CASE double_expr ':' expr_list .
@@ -7005,7 +7002,74 @@ state 466
 
     $default  reduce using rule 94 (case_stmt)
 
-    statement                     go to state 305
+    statement                     go to state 304
+    require_stmt                  go to state 30
+    try_stmt                      go to state 31
+    declar_stmt                   go to state 32
+    annotation_declar_stmt        go to state 33
+    annotation_use_stmt           go to state 34
+    annotation_use_single_stmt    go to state 35
+    const_declar_stmt             go to state 36
+    local_declar_stmt             go to state 37
+    namespace_declar_stmt         go to state 38
+    class_declar_stmt             go to state 39
+    this_member_stmt              go to state 40
+    class_member_stmt             go to state 41
+    class_member_func_stmt        go to state 42
+    static_member_stmt            go to state 43
+    func_declar_stmt              go to state 44
+    var_declar_stmt               go to state 45
+    con_ctl_stmt                  go to state 46
+    selection_stmt                go to state 47
+    loop_stmt                     go to state 48
+    simple_stmt                   go to state 49
+    restrict_stmt                 go to state 50
+    interrupt_stmt                go to state 51
+    call_statement                go to state 52
+    call_statement_piping         go to state 53
+    call_statement_piping_single  go to state 54
+    new_expr                      go to state 55
+    id_expr                       go to state 56
+    single_assign_stmt            go to state 57
+    class_member_assign_stmt      go to state 58
+    array_ele_stmt                go to state 59
+    array_ele_assign_stmt         go to state 60
+    assign_stmt                   go to state 61
+
+
+state 466
+
+   16 catch_block_stmt: XCATCH '(' id_expr ')' '{' expr_list . '}'
+   77 expr_list: expr_list . statement
+
+    IDENTIFIER    shift, and go to state 4
+    OPERATOR_X__  shift, and go to state 5
+    RESTRICT      shift, and go to state 6
+    THIS          shift, and go to state 7
+    XTRY          shift, and go to state 8
+    XSET          shift, and go to state 9
+    REQUIRE       shift, and go to state 10
+    REQUIRE_ONCE  shift, and go to state 11
+    REF           shift, and go to state 12
+    XCONTINUE     shift, and go to state 13
+    XCONST        shift, and go to state 14
+    XLOCAL        shift, and go to state 15
+    AUTO          shift, and go to state 16
+    IF            shift, and go to state 17
+    WHILE         shift, and go to state 18
+    FOR           shift, and go to state 19
+    DELETE        shift, and go to state 20
+    BREAK         shift, and go to state 21
+    RETURN        shift, and go to state 22
+    SWITCH        shift, and go to state 23
+    NEW           shift, and go to state 24
+    XINCLUDE      shift, and go to state 25
+    '~'           shift, and go to state 26
+    ';'           shift, and go to state 27
+    '}'           shift, and go to state 467
+    '@'           shift, and go to state 28
+
+    statement                     go to state 304
     require_stmt                  go to state 30
     try_stmt                      go to state 31
     declar_stmt                   go to state 32
@@ -7041,73 +7105,6 @@ state 466
 
 
 state 467
-
-   16 catch_block_stmt: XCATCH '(' id_expr ')' '{' expr_list . '}'
-   77 expr_list: expr_list . statement
-
-    IDENTIFIER    shift, and go to state 4
-    OPERATOR_X__  shift, and go to state 5
-    RESTRICT      shift, and go to state 6
-    THIS          shift, and go to state 7
-    XTRY          shift, and go to state 8
-    XSET          shift, and go to state 9
-    REQUIRE       shift, and go to state 10
-    REQUIRE_ONCE  shift, and go to state 11
-    REF           shift, and go to state 12
-    XCONTINUE     shift, and go to state 13
-    XCONST        shift, and go to state 14
-    XLOCAL        shift, and go to state 15
-    AUTO          shift, and go to state 16
-    IF            shift, and go to state 17
-    WHILE         shift, and go to state 18
-    FOR           shift, and go to state 19
-    DELETE        shift, and go to state 20
-    BREAK         shift, and go to state 21
-    RETURN        shift, and go to state 22
-    SWITCH        shift, and go to state 23
-    NEW           shift, and go to state 24
-    XINCLUDE      shift, and go to state 25
-    '~'           shift, and go to state 26
-    ';'           shift, and go to state 27
-    '}'           shift, and go to state 468
-    '@'           shift, and go to state 28
-
-    statement                     go to state 305
-    require_stmt                  go to state 30
-    try_stmt                      go to state 31
-    declar_stmt                   go to state 32
-    annotation_declar_stmt        go to state 33
-    annotation_use_stmt           go to state 34
-    annotation_use_single_stmt    go to state 35
-    const_declar_stmt             go to state 36
-    local_declar_stmt             go to state 37
-    namespace_declar_stmt         go to state 38
-    class_declar_stmt             go to state 39
-    this_member_stmt              go to state 40
-    class_member_stmt             go to state 41
-    class_member_func_stmt        go to state 42
-    static_member_stmt            go to state 43
-    func_declar_stmt              go to state 44
-    var_declar_stmt               go to state 45
-    con_ctl_stmt                  go to state 46
-    selection_stmt                go to state 47
-    loop_stmt                     go to state 48
-    simple_stmt                   go to state 49
-    restrict_stmt                 go to state 50
-    interrupt_stmt                go to state 51
-    call_statement                go to state 52
-    call_statement_piping         go to state 53
-    call_statement_piping_single  go to state 54
-    new_expr                      go to state 55
-    id_expr                       go to state 56
-    single_assign_stmt            go to state 57
-    class_member_assign_stmt      go to state 58
-    array_ele_stmt                go to state 59
-    array_ele_assign_stmt         go to state 60
-    assign_stmt                   go to state 61
-
-
-state 468
 
    16 catch_block_stmt: XCATCH '(' id_expr ')' '{' expr_list '}' .
 
