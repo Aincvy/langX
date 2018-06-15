@@ -44,8 +44,8 @@ namespace langX {
 		this->m_disposing = false;
 		this->m_thread_mgr = new langXThreadMgr();
 		this->m_thread_mgr->initMainThreadInfo();
-    this->m_log_manager = new LogManager();
-    this->m_log_manager->init("/etc/langX/log4cpp.properties");
+    	this->m_log_manager = new LogManager();
+    	this->m_log_manager->init("/etc/langX/log4cpp.properties");
 
 	}
 

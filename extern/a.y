@@ -159,7 +159,7 @@ namespace_name_stmt
 //  类声明语句
 class_declar_stmt
 	: IDENTIFIER extends_stmt '{' '}'            { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($1 , $2, NULL,false); }
-	| IDENTIFIER extends_stmt '{' class_body '}' { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($2 , $2, $4,false); }
+	| IDENTIFIER extends_stmt '{' class_body '}' { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($1 , $2, $4,false); }
 	| AUTO IDENTIFIER extends_stmt '{' '}'            { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($2 , $3, NULL,true); }
 	| AUTO IDENTIFIER extends_stmt '{' class_body '}' { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($2 , $3, $5, true); }
 	| annotation_use_stmt IDENTIFIER extends_stmt '{' '}'            { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($2 , $3, NULL,false); }
@@ -416,7 +416,7 @@ bit_opr_factor
 //  运算语句的分子
 arithmetic_stmt_factor
 	: assign_stmt_value_eq    { $$ = $1 ; }
-	| string_expr             { $$ = $1 ; }
+	//| string_expr             { $$ = $1 ; }
 	| arithmetic_stmt         { $$ = $1 ; }
 	| '(' arithmetic_stmt ')' { $$ = $2 ; }
 	;
@@ -457,7 +457,7 @@ bool_param_expr
 	: assign_stmt_value_eq { $$ = $1; }
 	| arithmetic_stmt     { $$ = $1; }
 	| t_bool_expr         { $$ = $1; }
-	| string_expr         { $$ = $1; }
+	//| string_expr         { $$ = $1; }
 	| null_expr           { $$ = $1; }
 	;
 
@@ -511,13 +511,14 @@ assign_stmt_value
 assign_stmt_value_eq
 	: double_expr   { $$ = $1; }
 	| uminus_expr   { $$ = $1; }
+	| string_expr   { $$ = $1; }
 	| call_statement    { $$ = $1; }
 	| id_expr       { $$ = $1; }
 	| self_inc_dec_stmt { $$ = $1; }
-	| class_member_stmt { $$ = $1; }
+	| class_member_stmt  %prec NONASSOC  { $$ = $1; }
 	| static_member_stmt { $$ = $1; }
-	| this_stmt          { $$ = $1; }
-	| array_ele_stmt     { $$ = $1; }
+	| this_stmt        %prec UMINUS  { $$ = $1; }
+	| array_ele_stmt  { $$ = $1; }
 	;
 
 // 赋值

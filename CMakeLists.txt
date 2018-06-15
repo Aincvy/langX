@@ -7,6 +7,7 @@ PROJECT(LANGX)
 
 #LINK_LIBRARIES(${Log4cpp_LIBRARIES})
 
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
 SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
 SET(CMAKE_VERBOSE_MAKEFILE on)
 SET(CMAKE_C_COMPILER       g++ )
@@ -16,5 +17,14 @@ ADD_SUBDIRECTORY(source target)
 #ADD_SUBDIRECTORY(extern bin)
 
 # 配置文件安装
-INSTALL(FILES log4cpp.properties langX.properties  DESTINATION /etc/langX )
-INSTALL(DIRECTORY DESTINATION /etc/langX/mods)
+IF(NOT EXISTS /etc/langX/log4cpp.properties )
+	INSTALL(FILES log4cpp.properties  DESTINATION /etc/langX )
+ENDIF()
+
+IF(NOT EXISTS /etc/langX/langX.properties )
+	INSTALL(FILES langX.properties  DESTINATION /etc/langX )
+ENDIF()
+
+IF(NOT EXISTS /etc/langX/mods )
+	INSTALL(DIRECTORY DESTINATION /etc/langX/mods)
+ENDIF()
