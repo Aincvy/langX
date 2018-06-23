@@ -144,6 +144,33 @@ XFunction * create3rdFunc(const char *name, langX::X3rdFuncWorker worker)
 	return func;
 }
 
+void getObjStringDesc(langX::Object * obj, char *tmp, int maxSize)
+{
+	if (!obj) {
+		return;
+	}
+
+	langX::ObjectType type = obj->getType();
+	switch (type)
+	{
+	case NUMBER:
+		snprintf(tmp, maxSize, "%f", ((Number*)obj)->getDoubleValue());
+		break;
+	case STRING:
+		snprintf(tmp, maxSize, "%s", ((String*)obj)->getValue());
+		break;
+	case NULLOBJECT:
+		snprintf(tmp, maxSize, "%s", "null");
+		break;
+	case FUNCTION:
+		snprintf(tmp, maxSize, "function@[%s", obj->characteristic());
+		break;
+	default:
+		break;
+	}
+
+}
+
 void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 {
 	std::stringstream ss;
@@ -180,6 +207,7 @@ void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 	memcpy(p+offset, str.c_str(), size);
 
 }
+
 
 XNode * string(char *v)
 {
