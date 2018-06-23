@@ -114,7 +114,8 @@ std::string fileInfoString(const langX::NodeFileInfo & f);
 // 创建一个第三方函数
 XFunction* create3rdFunc(const char *, langX::X3rdFuncWorker);
 
+// 将一个 langXObject 转成字符串， 可能会调用该对象的 toString() 方法
 void objToString(langX::Object * obj,char *, int offset, int maxSize);
 
-
-
+//  获取一个对象的字符串描述
+void getObjStringDesc(langX::Object *obj, char *, int maxSize);

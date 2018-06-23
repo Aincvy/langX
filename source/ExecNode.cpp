@@ -1278,14 +1278,36 @@ namespace langX {
 			freeSubNodes(n);
 			return;
 		}
-		if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
-		{
-			getState()->curThread()->throwException(newArithmeticException("type error on opr '+='!")->addRef());
-			freeSubNodes(n);
-			return;
-		}
 
-		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() + ((Number*)n2->value)->getDoubleValue());
+		// 字符串的 += 操作
+		if (n1->value->getType() == STRING)
+		{	
+			// 追加到一起去
+			String *str1 = (String*)n1->value;
+			std::string str2( str1->getStrValue() );
+			Object* obj = n2->value;
+			if (obj->getType() == ObjectType::STRING) {
+				str2.append(((String*)obj)->getStrValue());
+			}
+			else {
+				char tmp[4096] = { 0 };
+				getObjStringDesc(n2->value, tmp, 4096);
+				str2.append(tmp);
+			}
+			n->value = Allocator::allocateString(str2.c_str());
+
+		} else
+		{
+			if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
+			{
+				getState()->curThread()->throwException(newArithmeticException("type error on opr '+='!")->addRef());
+				freeSubNodes(n);
+				return;
+			}
+
+			n->value = Allocator::allocateNumber(
+				((Number*)n1->value)->getDoubleValue() + ((Number*)n2->value)->getDoubleValue());
+		}	
 
 		setValueToEnv(n1->var_obj->name, n->value);
 		freeSubNodes(n);
