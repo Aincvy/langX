@@ -325,6 +325,12 @@ namespace langX {
 
 		this->m_thrown_obj = obj;
 
+		// 暂存下 正在执行的节点
+		if (this->currentExecute != NULL)
+		{
+			this->m_thrown_exec_node = this->currentExecute->node;
+		}
+
 		// 找到一个存在tryEnv 的执行链节点
 		NodeLink *nodeLink = nullptr;
 		do {
@@ -371,6 +377,9 @@ namespace langX {
 			}
 			
 		}
+
+		// 重置信息
+		this->m_thrown_exec_node = NULL;
 
 		// 删除对象
 		Allocator::freeObject(obj->getRefObject());
@@ -475,17 +484,22 @@ namespace langX {
 		}
 	}
 
-
 	NodeFileInfo langXThread::getCurrentNodeFileInfo()
 	{
-		if (this->currentExecute == NULL)
-		{
-			NodeFileInfo f;
-			f.lineno = -1;
-			f.filename = "No Current Node Info... ";
-			return (f);
+		// 如果在异常中， 就优先丢出那个异常时候的节点
+		if (this->m_thrown_exec_node != NULL) {
+			return this->m_thrown_exec_node->fileinfo;
 		}
-		return this->currentExecute->node->fileinfo;
+
+		if (this->currentExecute != NULL)
+		{
+			return this->currentExecute->node->fileinfo;
+		}
+
+		NodeFileInfo f;
+		f.lineno = -1;
+		f.filename = "No Current Node Info... ";
+		return (f);
 	}
 
 	langXObjectRef * langXThread::getThrownObj()

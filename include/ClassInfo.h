@@ -53,7 +53,7 @@ namespace langX {
 		// 当前类是否是该类 OR 该类的子类
 		bool isInstanceOf(const char *) const;
 
-		// 扩展自身类
+		// 扩展这个类， 或者说叫 填充这个类
 		void expand(ClassInfo *);
 
 		// 获得这个类的桥接环境

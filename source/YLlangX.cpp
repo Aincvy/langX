@@ -91,7 +91,7 @@ void deal_state(NodeState * state) {
 	state->isLocal = false;
 }
 
-
+// 这里是给节点的文件信息赋值
 void deal_fileinfo(NodeFileInfo *f) {
 	f->lineno = getParseLineNo();
 	f->filename = state->getParsingFile();
@@ -119,13 +119,14 @@ XNode *newNode() {
 std::string fileInfoString(const NodeFileInfo & f) {
 	std::stringstream ss;
 	ss << "at ";
-	if (f.filename)
-	{
-		ss << f.filename;
-	}
-	else {
-		ss << "<NoFile>";
-	}
+	//if (f.filename)
+	//{
+	//	ss << f.filename;
+	//}
+	//else {
+	//	ss << "<NoFile>";
+	//}
+	ss << f.filename;
 
 	ss << ":";
 	ss << f.lineno;
@@ -443,7 +444,7 @@ XNode * claxx(char *name, char *parent, XNode * node, bool flag) {
 	{
 		ClassBridgeEnv *env = claxxInfo->getClassEnv();
 		state->curThread()->newEnv(env);
-		__execNode(node, node);         // 理解处理掉这个节点，但是也仅仅只是处理到这个节点
+		__execNode(node, node);         // 立即处理掉这个节点，但是也仅仅只是处理到这个节点
 		state->curThread()->backEnv(false);
 	}
 

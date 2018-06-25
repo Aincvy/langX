@@ -3,6 +3,7 @@
 #include "../include/ClassInfo.h"
 #include "../include/StackTrace.h"
 
+
 namespace langX {
 
 
@@ -97,6 +98,8 @@ namespace langX {
 
 	StrackTraceFrame * StackTrace::newFrame(ClassInfo *a, Function *b, const char *c)
 	{
+		//printf("newFrame class: %s(%p), function: %s.\n" , (a ? a->getName() : "null"),a, ( b ? b->getName() : "null"));
+
 		StrackTraceFrame *f = new StrackTraceFrame();
 		f->setClassInfo(a);
 		f->setFunction(b);
