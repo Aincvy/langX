@@ -174,6 +174,8 @@ namespace langX {
 		Object *m_function_result = nullptr;
 		// 丢出来的那个对象
 		langXObjectRef * m_thrown_obj = nullptr;
+		// 在丢出一个对象（异常）的时候， 正在执行的那个节点
+		Node *m_thrown_exec_node = nullptr;
 		//  执行节点的根节点
 		NodeLink * executeRoot;        
 		// 当前的执行节点

@@ -321,7 +321,7 @@ namespace langX {
 			return -1;
 		}
 
-    logger->info("do file: %s", filename);
+		logger->info("do file: %s", filename);
 		FILE *fp = fopen(filename, "r");
 		if (fp == NULL)
 		{
@@ -477,7 +477,7 @@ namespace langX {
 			return -1;
 		}
 
-    logger->debug("require_onceFile %s ", filename);
+		logger->debug("require_onceFile %s ", filename);
 		FILE *fp = fopen(filename, "r");
 		if (fp == NULL)
 		{

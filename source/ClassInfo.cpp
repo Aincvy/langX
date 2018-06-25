@@ -211,6 +211,7 @@ namespace langX {
 				delete (abc->second);
 			}
 
+			obj->setClassInfo(this);    // 把类信息重新定位到当前类信息对象
 			this->m_functions[str] = obj;
 		}
 

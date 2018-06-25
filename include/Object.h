@@ -73,14 +73,14 @@ namespace langX {
 		   这个函数不应该， 也不会update 所在的环境   */
 		virtual void update(Object *) = 0;
 
-		// 返回这个对象的特性字符串
+		// 返回这个对象的特性字符串  | 相当于唯一标识的意思
 		virtual const char * characteristic() const;
 
-		// 设置这个对象的特性字符串
+		// 设置这个对象的特性字符串  | 相当于唯一标识的意思
 		void setCharacteristic(const char *);
 
 	protected:
-		// 这个对象的特性字符串
+		// 这个对象的特性字符串   | 相当于唯一标识的意思
 		mutable std::string m_characteristic;
 
 	private:
@@ -172,7 +172,9 @@ namespace langX {
 	struct NodeFileInfo
 	{
 		// 文件名
-		const char * filename;
+		// const char * filename;
+		// 修改成 std::string 试试，上面的那个类型要处理一下
+		std::string filename;
 		// 行号
 		int lineno;
 	};
