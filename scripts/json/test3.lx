@@ -1,0 +1,5 @@
+ref langX.json;
+
+a = "{\"key\": 123}";
+j = new JsonObject(a);
+println("key: " + a.getNumber("key"));

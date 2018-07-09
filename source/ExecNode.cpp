@@ -606,6 +606,29 @@ namespace langX {
 		
 	}
 
+	// ! 取反
+	void __exec33(NodeLink *nodeLink) {
+		Node *n = nodeLink->node;
+		if (nodeLink->index == 0) {
+			doSubNodes(n);
+			nodeLink->index = 1;
+			return;
+		}
+
+		Node *n1 = n->opr_obj->op[0];
+		if (n1->value == NULL )
+		{
+			getState()->curThread()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
+			freeSubNodes(n);
+			return;
+		}
+
+		Object * value = n1->value;
+		n->value = Allocator::allocateNumber(value->isTrue() ? 0 : 1);
+
+		freeSubNodes(n);
+	}
+
 	// *
 	void __exec42(NodeLink *nodeLink) {
 		Node *n = nodeLink->node;
@@ -3952,6 +3975,9 @@ namespace langX {
 			break;
 		case '~':
 			__exec126(nodeLink);
+			break;
+		case '!':
+			__exec33(nodeLink);
 			break;
 		case UMINUS:
 			__execUMINUS(nodeLink);

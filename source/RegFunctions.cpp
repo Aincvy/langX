@@ -2,11 +2,13 @@
 #include <iostream>
 #include <stdarg.h>
 #include <string.h>
+#include <stdlib.h>
 
 #ifdef WIN32
 #else
 #include <unistd.h>
 #include <termios.h>
+#include <sys/stat.h>
 #endif
 
 #include "../include/RegFunctions.h"
@@ -21,7 +23,7 @@
 static struct termios old, newone;
 
 namespace langX {
-	
+
 	/* Initialize new terminal i/o settings */
 	void initTermios(int echo)
 #ifdef WIN32
@@ -86,7 +88,7 @@ namespace langX {
 			}
 		}
 		printf("\n");
-	
+
 		return NULL;
 	}
 
@@ -162,7 +164,7 @@ namespace langX {
 			return NULL;
 		}
 
-		
+
 		Object *obj = args.args[0];
 		if (obj == NULL)
 		{
@@ -249,6 +251,98 @@ namespace langX {
 		return NULL;
 	}
 
+	Object * langX_sy_exists(X3rdFunction *func, const X3rdArgs & args) {
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING) {
+			String *str = (String*)a;
+			const char * path = str->getValue();
+			if (access(path, F_OK) == 0) {
+				return new Number(1);   // 文件存在
+			}
+			else {
+				return new Number(0);
+			}
+		}
+
+		return NULL;
+	}
+
+	// 创建文件夹
+	Object * langX_sy_mkdir(X3rdFunction *func, const X3rdArgs & args) {
+
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING) {
+			String *str = (String*)a;
+			const char * path = str->getValue();
+			if (mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0) {
+				return new Number(1);   // 创建文件夹成功
+			}
+			else {
+				return new Number(0);
+			}
+		}
+
+		return NULL;
+	}
+
+	// 把字符串转换成数字  | 如果遇到不能转换的字符串， 则返回0
+	Object * langX_sy_to_int(X3rdFunction *func, const X3rdArgs & args) {
+
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING) {
+			String *str = (String*)a;
+			const char * number = str->getValue();
+			int ret = atoi(number);
+			return new Number(ret);
+		}
+
+		return NULL;
+	}
+
+	// 获取当前的工作目录
+	Object * langX_sy_cwd(X3rdFunction *func, const X3rdArgs & args) {
+		char buf[2048] = { 0 };
+		getcwd(buf, sizeof(buf));
+		return new String(buf);
+	}
+
+	Object * langX_sy_chdir(X3rdFunction *func, const X3rdArgs & args) {
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING) {
+			String *str = (String*)a;
+			const char * path = str->getValue();
+			int ret = chdir(path);
+			return new Number(ret);
+		}
+
+		return NULL;
+	}
+
+	// 执行一个命令， 并打印输出
+	// null 标识参数错误，  -1 标识打开管道失败  1 标识执行成功
+	Object * langX_sy_run_and_print(X3rdFunction *func, const X3rdArgs & args) {
+
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING) {
+			String *str = (String*)a;
+			const char * cmd = str->getValue();
+			
+			FILE *fp = popen(cmd, "r");
+			if (fp == NULL) {
+				return new Number(-1);
+			}
+
+			char buf[1024] = { 0 };
+			while (fgets(buf, 1024, fp) != NULL) {
+				printf("%s", buf);
+			}
+			pclose(fp);
+			return new Number(1);
+		}
+
+		return NULL;
+	}
+
 	void regFunctions(langXState *state)
 	{
 		state->reg3rd("print", langX_print);
@@ -256,10 +350,16 @@ namespace langX {
 		state->reg3rd("scanNumber", langX_scan_number);
 		state->reg3rd("printStackTrace", langX_print_stack_trace);
 		state->reg3rd("systemRun", langX_system_run);
-		state->reg3rd("println",langX_println);
+		state->reg3rd("println", langX_println);
 		state->reg3rd("doFile", langX_do_file);
 		state->reg3rd("exit", langX_exit);
 		state->reg3rd("readLine", langX_read_line);
+		state->reg3rd("sy_exists", langX_sy_exists);
+		state->reg3rd("sy_mkdir", langX_sy_mkdir);
+		state->reg3rd("sy_to_int", langX_sy_to_int);
+		state->reg3rd("sy_cwd", langX_sy_cwd);
+		state->reg3rd("sy_chdir", langX_sy_chdir);
+		state->reg3rd("sy_run_and_print", langX_sy_run_and_print);
 
 	}
 

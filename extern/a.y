@@ -40,7 +40,7 @@ char *namespaceNameCat(char *,char *);
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
 %type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt bit_opr_factor local_declar_stmt
-%type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt const_declar_stmt annotation_declar_stmt annotation_use_stmt annotation_use_single_stmt call_statement_piping call_statement_piping_single
+%type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt const_declar_stmt annotation_declar_stmt annotation_use_stmt annotation_use_single_stmt call_statement_piping call_statement_piping_single not_expr_value
 %type <params> param_list parameter lambda_args_stmt
 %type <args> args_list args_expr
 %type <sValue> extends_stmt namespace_name_stmt
@@ -64,8 +64,8 @@ char *namespaceNameCat(char *,char *);
 %left LEFT_SHIFT RIGHT_SHIFT
 %left '+' '-'
 %left '*' '/' '%'
-%right '~' 
-%left '.' '(' ')' '[' ']'
+%right '!' '~'
+%left '(' ')' '[' ']' '.' 
 %left FUNC_OP
 %nonassoc PRIORITY3
 %nonassoc PRIORITY2
@@ -452,12 +452,18 @@ null_expr
 	: XNULL   { $$ = xnull();}
 	;
 
+not_expr_value
+	: id_expr				{ $$ = $1; }
+	| call_statement  		{ $$ = $1; }
+	| class_member_stmt 	{ $$ = $1; }
+	| this_stmt        		{ $$ = $1; }
+	;
+
 //  bool 比较的值
 bool_param_expr
 	: assign_stmt_value_eq { $$ = $1; }
 	| arithmetic_stmt     { $$ = $1; }
 	| t_bool_expr         { $$ = $1; }
-	//| string_expr         { $$ = $1; }
 	| null_expr           { $$ = $1; }
 	;
 
@@ -465,6 +471,7 @@ bool_param_expr
 logic_stmt
 	: bool_param_expr { $$ = $1; }
 	| type_judge_stmt { $$ = $1; }
+	| '!' not_expr_value     { $$ = opr('!', 1, $2);}
 	| bool_param_expr '>' bool_param_expr { $$ = opr('>',2,$1,$3);}
 	| bool_param_expr '<' bool_param_expr { $$ = opr('<',2,$1,$3);}
 	| bool_param_expr LE_OP bool_param_expr { $$ = opr( LE_OP,2,$1,$3);}
