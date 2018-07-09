@@ -299,7 +299,23 @@ namespace langX {
 		}
 
 		MyJsonData *data = new MyJsonData();
-		data->pJsonRoot = cJSON_CreateObject();
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING)
+		{
+			String* str = (String*)a;
+			cJSON* root = cJSON_Parse(str->getValue());
+			if (root == NULL)
+			{
+				// parse error
+				printf("parse json error, string: %s\n", str->getValue());
+				root = cJSON_CreateObject();
+			}
+
+			data->pJsonRoot = root;
+		}
+		else {
+			data->pJsonRoot = cJSON_CreateObject();
+		}
 
 		args.object->set3rdObj(data);
 

@@ -360,8 +360,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 75
-#define YY_END_OF_BUFFER 76
+#define YY_NUM_RULES 76
+#define YY_END_OF_BUFFER 77
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -371,16 +371,16 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[199] =
     {   0,
-        0,    0,   76,   75,   73,   74,   75,   75,   37,   67,
-       63,   72,   72,   72,   59,   72,   60,   72,   39,   39,
-       55,   57,   52,   58,   51,   56,   61,   62,   65,   37,
+        0,    0,   77,   76,   74,   75,   65,   76,   37,   68,
+       63,   73,   73,   73,   59,   73,   60,   73,   39,   39,
+       55,   57,   52,   58,   51,   56,   61,   62,   66,   37,
        37,   37,   37,   37,   37,   37,   37,   37,   37,   37,
-       37,   37,   37,   37,   53,   64,   54,   66,   44,    0,
-       36,    0,   37,   49,   70,   47,   34,   45,   35,   46,
-        1,    2,   48,    0,   39,   50,   68,   41,   43,   33,
-       42,   69,   37,   37,   37,   37,   37,   37,   37,   37,
+       37,   37,   37,   37,   53,   64,   54,   67,   44,    0,
+       36,    0,   37,   49,   71,   47,   34,   45,   35,   46,
+        1,    2,   48,    0,   39,   50,   69,   41,   43,   33,
+       42,   70,   37,   37,   37,   37,   37,   37,   37,   37,
        37,    4,   37,   25,   37,   37,   37,   37,   37,   37,
-       37,   37,   37,   37,   37,   71,    2,   40,   37,   37,
+       37,   37,   37,   37,   37,   72,    2,   40,   37,   37,
 
        37,   37,   37,   37,   37,   37,   37,   37,    7,   37,
        37,   16,   37,   37,   37,   29,   37,   37,   37,   24,
@@ -1199,56 +1199,61 @@ YY_RULE_SETUP
 case 65:
 YY_RULE_SETUP
 #line 109 "a.l"
-{count(); return '^'; }
+{count(); return '!'; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
 #line 110 "a.l"
-{count(); return '~'; }
+{count(); return '^'; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
 #line 111 "a.l"
-{count(); return '%'; }
+{count(); return '~'; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
 #line 112 "a.l"
-{count(); return LEFT_SHIFT;}
+{count(); return '%'; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
 #line 113 "a.l"
-{count(); return RIGHT_SHIFT; }
+{count(); return LEFT_SHIFT;}
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
 #line 114 "a.l"
-{count(); return AND_OP;}
+{count(); return RIGHT_SHIFT; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
 #line 115 "a.l"
-{count(); return OR_OP;}
+{count(); return AND_OP;}
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
 #line 116 "a.l"
-{count(); return *yytext;}
+{count(); return OR_OP;}
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 118 "a.l"
-{count(); }
+#line 117 "a.l"
+{count(); return *yytext;}
 	YY_BREAK
 case 74:
-/* rule 74 can match eol */
 YY_RULE_SETUP
 #line 119 "a.l"
+{count(); }
+	YY_BREAK
+case 75:
+/* rule 75 can match eol */
+YY_RULE_SETUP
+#line 120 "a.l"
 {count(); now_line++ ; }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 121 "a.l"
+#line 122 "a.l"
 { 
 	
     //printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
@@ -1275,12 +1280,12 @@ case YY_STATE_EOF(INITIAL):
 	fileEOF();
 }
 	YY_BREAK
-case 75:
+case 76:
 YY_RULE_SETUP
-#line 148 "a.l"
+#line 149 "a.l"
 ECHO;
 	YY_BREAK
-#line 1284 "lex.yy.c"
+#line 1289 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2275,7 +2280,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 148 "a.l"
+#line 149 "a.l"
 
 
 

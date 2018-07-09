@@ -106,6 +106,7 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 "]" {count(); return ']'; }
 "&" {count(); return '&'; }
 "|" {count(); return '|'; }
+"!" {count(); return '!'; }
 "^" {count(); return '^'; }
 "~" {count(); return '~'; }
 "%" {count(); return '%'; }

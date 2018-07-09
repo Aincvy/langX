@@ -1,0 +1,138 @@
+println("install mods script start..");
+
+// 下载python 的地址
+dl_url_python = "https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tar.xz" ;
+// 下载libevent 的地址
+dl_url_libevent = "https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz" ;
+
+install_mysql_cmd = "";
+
+
+//  定义一些要用的函数
+
+// 切换目录，之前写错的，不想很麻烦的给改掉 就这样了
+sy_cd => (path){
+	sy_chdir(path);
+}
+
+
+// 编译一个 mod, 参数为项目路径
+complieMod => ( projectDir ){
+	
+	exist = sy_exists(projectDir) ;
+	if( !exist ){
+		println("工程目录" + projectDir + " 不存在，跳过" );
+		return ;
+	}
+
+	buildDir = projectDir + "/build" ;
+	exist = sy_exists(buildDir) ;
+	if ( !exist ){
+		sy_mkdir(buildDir);
+	}
+	
+	// 把工作目录定位到build 里面
+	sy_chdir(buildDir);
+	sy_run_and_print("cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local");  //
+	sy_run_and_print("make");
+	//sy_run_and_print("make install");
+
+	println("=========================================================");
+	println("|   build " + projectDir + " over");
+	println("=========================================================");
+}
+
+dlFile => ( url ){
+	
+	sy_run_and_print("wget " + url );
+}
+
+// 检测文件是否存在， 如果不存在则会询问用户是否要进行下载
+checkExecExistsAndDownload => (execName, dlUrl, installFunc){
+	// usr/bin
+	exist = sy_exists("/usr/bin/" + execName);
+	if ( exist ){
+		return ;
+	}
+
+	exist = sy_exists("/usr/local/bin/" + execName);
+	if ( exist ){
+		return ;
+	}
+
+	println("未能找到" + execName + ",是否需要进行下载 (y/n)");
+	s = scanString();
+	if ( s == "y" ) {
+		dlFile(url);
+		
+		if(installFunc) {
+			installFunc();
+		}
+	}
+
+}
+
+
+compliePython3 => (){
+	sy_run_and_print("tar -xvJf Python-3.5.2.tar.xz");
+	sy_cd("Python-3.5.2");
+	sy_run_and_print("./configure --prefix=/usr/local");
+	sy_run_and_print("make && make install");
+	sy_cd("../");
+}
+
+complieLibevent2 => (){
+	sy_run_and_print("tar -xvJf libevent-2.0.21-stable.tar.gz");
+	sy_cd("libevent-2.0.21-stable");
+	sy_run_and_print("./configure --prefix=/usr/local");
+	sy_run_and_print("make && make install");
+	sy_cd("../");
+}
+
+
+// 实际运行的脚本内容
+
+// 检测依赖库的存在情况
+checkExecExistsAndDownload("python3", dl_url_python);
+
+
+// 获取当前所在目录 
+current_dir = sy_cwd();
+println("current_dir: " + current_dir);
+
+checkDir = current_dir + "/modProjects" ;
+exist = sy_exists(checkDir);
+if( !exist ){
+	println( checkDir + "不存在，请确认下");
+	exit(-1);
+}
+
+parentDir = checkDir;
+
+// core 库
+projectDir = parentDir + "/langX-Core";
+complieMod(projectDir);
+
+/* // json 库
+projectDir = parentDir + "/langX-Json";
+complieMod(projectDir);
+
+// libevent 库
+projectDir = parentDir + "/langX-libevent";
+complieMod(projectDir);
+
+// mysql 库
+projectDir = parentDir + "/langX-Mysql";
+complieMod(projectDir);
+
+// python 库
+projectDir = parentDir + "/langX-Python";
+complieMod(projectDir);
+*/
+
+
+println("");
+println("");
+println("install script run over!");
+
+
