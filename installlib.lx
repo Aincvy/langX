@@ -4,6 +4,7 @@ println("install mods script start..");
 dl_url_python = "https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tar.xz" ;
 // 下载libevent 的地址
 dl_url_libevent = "https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz" ;
+dl_url_cjson = "https://github.com/DaveGamble/cJSON/archive/v1.3.0.tar.gz -O cJSON-1.3.0.tar.gz";
 
 install_mysql_cmd = "";
 
@@ -34,8 +35,7 @@ complieMod => ( projectDir ){
 	// 把工作目录定位到build 里面
 	sy_chdir(buildDir);
 	sy_run_and_print("cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local");  //
-	sy_run_and_print("make");
-	//sy_run_and_print("make install");
+	sy_run_and_print("make && make install");
 
 	println("=========================================================");
 	println("|   build " + projectDir + " over");
@@ -60,44 +60,98 @@ checkExecExistsAndDownload => (execName, dlUrl, installFunc){
 		return ;
 	}
 
-	println("未能找到" + execName + ",是否需要进行下载 (y/n)");
+	askAndDL(execName, dlUrl, installFunc );
+
+}
+
+// 检测库是否存在， 不存在则尝试下载行为
+checkLibExistsAndDownload => ( libName, dlUrl, installFunc ){
+	
+	name = libName + ".so";
+	exist = sy_exists("/usr/lib/" + name);
+	if ( exist ){
+		return ;
+	}
+
+	exist = sy_exists("/usr/local/lib/" + name);
+	if ( exist ){
+		return ;
+	}
+
+	askAndDL(name, dlUrl, installFunc );
+}
+
+
+askAndDL => (name , dlUrl, installFunc){
+	
+	println("未能找到" + name + ",是否需要进行下载 (y/n)");
+	curDir = sy_cwd();
+	tempDir = curDir + "/temp";
+	println("将在" + tempDir + " 目录里面进行操作");
 	s = scanString();
 	if ( s == "y" ) {
-		dlFile(url);
+
+		
+		// 在 temp 的目录进行操作
+		exist = sy_exists(tempDir);
+		if( !exist){
+			sy_mkdir(tempDir);
+		}
+		sy_cd(tempDir);
+
+		dlFile(dlUrl);
 		
 		if(installFunc) {
 			installFunc();
 		}
-	}
 
+		sy_cd(curDir);
+	}
+	
 }
 
 
 compliePython3 => (){
 	sy_run_and_print("tar -xvJf Python-3.5.2.tar.xz");
 	sy_cd("Python-3.5.2");
-	sy_run_and_print("./configure --prefix=/usr/local");
+	sy_run_and_print("./configure --prefix=/usr/local --enable-shared");
 	sy_run_and_print("make && make install");
 	sy_cd("../");
 }
 
 complieLibevent2 => (){
-	sy_run_and_print("tar -xvJf libevent-2.0.21-stable.tar.gz");
+	sy_run_and_print("tar -xzvf libevent-2.0.21-stable.tar.gz");
 	sy_cd("libevent-2.0.21-stable");
 	sy_run_and_print("./configure --prefix=/usr/local");
 	sy_run_and_print("make && make install");
 	sy_cd("../");
 }
 
+compliecJson => (){
+	sy_run_and_print("tar -xzvf cJSON-1.3.0.tar.gz");
+	sy_cd("cJSON-1.3.0");
+	sy_mkdir("build");
+	sy_cd("build");
+	sy_run_and_print("cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local");
+	sy_run_and_print("make && make install");
+	sy_cd("../../");
+}
+
 
 // 实际运行的脚本内容
 
 // 检测依赖库的存在情况
-checkExecExistsAndDownload("python3", dl_url_python);
-
+// checkExecExistsAndDownload("python3", dl_url_python, compliePython3);
+checkLibExistsAndDownload("libpython3", dl_url_python, compliePython3 );
+checkLibExistsAndDownload("libevent", dl_url_libevent, complieLibevent2 );
+checkLibExistsAndDownload("libcjson", dl_url_cjson, compliecJson );
 
 // 获取当前所在目录 
 current_dir = sy_cwd();
+println("============================================================================");
+println("============================================================================");
+println("============================================================================");
+println("============================================================================");
 println("current_dir: " + current_dir);
 
 checkDir = current_dir + "/modProjects" ;
@@ -113,7 +167,7 @@ parentDir = checkDir;
 projectDir = parentDir + "/langX-Core";
 complieMod(projectDir);
 
-/* // json 库
+// json 库
 projectDir = parentDir + "/langX-Json";
 complieMod(projectDir);
 
@@ -121,14 +175,14 @@ complieMod(projectDir);
 projectDir = parentDir + "/langX-libevent";
 complieMod(projectDir);
 
+// python 库
+projectDir = parentDir + "/langX-Python";
+complieMod(projectDir);
+
 // mysql 库
 projectDir = parentDir + "/langX-Mysql";
 complieMod(projectDir);
 
-// python 库
-projectDir = parentDir + "/langX-Python";
-complieMod(projectDir);
-*/
 
 
 println("");

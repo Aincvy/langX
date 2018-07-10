@@ -34,3 +34,11 @@ langX.vcxproj.user
 extern/y.dot
 build/
 target/
+.vs/langX/v15/.suo
+.vs/langX/v15/Browse.VC.db
+.vs/langX/v15/Solution.VC.db
+.vs/langX/xs/UserPrefs.xml
+bin/ARM/Debug/langX.out.recipe
+bin/ARM/Debug/langX.out.recipe.merged
+bin/x64/Debug/langX.out.recipe
+bin/x64/Debug/langX.out.recipe.merged
