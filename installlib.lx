@@ -3,8 +3,8 @@ println("install mods script start..");
 // 下载python 的地址
 dl_url_python = "https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tar.xz" ;
 // 下载libevent 的地址
-dl_url_libevent = "https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz" ;
-dl_url_cjson = "https://github.com/DaveGamble/cJSON/archive/v1.3.0.tar.gz -O cJSON-1.3.0.tar.gz";
+dl_url_libevent = "--no-check-certificate https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz" ;
+dl_url_cjson = "--no-check-certificate https://github.com/DaveGamble/cJSON/archive/v1.3.0.tar.gz -O cJSON-1.3.0.tar.gz";
 
 install_mysql_cmd = "";
 
@@ -116,6 +116,8 @@ compliePython3 => (){
 	sy_cd("Python-3.5.2");
 	sy_run_and_print("./configure --prefix=/usr/local --enable-shared");
 	sy_run_and_print("make && make install");
+	// 安装完成之后需要建立一个软连接
+	sy_run_and_print("ln -s /usr/local/include/python3.5m /usr/local/include/python");
 	sy_cd("../");
 }
 

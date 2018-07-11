@@ -98,8 +98,11 @@ void deal_fileinfo(NodeFileInfo *f) {
 }
 
 XNode *newNode() {
-
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	// 节点的文件信息里面存在了一个 std::string 
+	// 如果再用下面的方式进行申请内存，则会在centos 下有问题
+	// 需要改成使用 new 的方式
+	// XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * node = new XNode();
 	node->con_obj = NULL;
 	node->var_obj = NULL;
 	node->arr_obj = NULL;
@@ -688,7 +691,10 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 }
 
 XNode * argsNode(XArgsList * args) {
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	// 节点的文件信息里面存在了一个 std::string 
+	// 如果再用下面的方式进行申请内存，则会在centos 下有问题
+	// XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
+	XNode * node = new XNode();
 	node->type = NODE_ARGS;
 	node->value = NULL;
 	node->postposition = NULL;
