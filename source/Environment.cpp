@@ -726,6 +726,7 @@ namespace langX {
 			obj = Allocator::allocate(NULLOBJECT);
 		}
 		obj->setName(name);
+		obj->setEmergeEnv(this);    // 这个对象现在放入了当前环境里面 更新他的产生环境为本环境
 
 		if (it != this->m_objects_map.end())
 		{

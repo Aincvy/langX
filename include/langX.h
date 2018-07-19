@@ -40,7 +40,7 @@ namespace langX {
 		// 获得脚本环境或者 命名空间环境  [类型视情况而定]
 		Environment *getScriptOrNSEnv() const;
 
-		// 注册一个第三方函数
+		// 注册一个第三方函数 到全局环境里面
 		void reg3rd(const char *, X3rdFuncWorker worker);
 		// 解除函数的注册
 		void unreg3rd(const char *);
@@ -57,8 +57,8 @@ namespace langX {
 		// 获得类信息。  会先搜索当前脚本环境， 如果不存在， 则去搜索全局环境
 		ClassInfo *getClass(const char *) const;
 
-    // 根据类的全名获取一个类的信息
-    ClassInfo *getClassByFullName(const char *);
+		// 根据类的全名获取一个类的信息
+		ClassInfo *getClassByFullName(const char *);
 
 		// 获得一个命名空间[单一]， 如果该命名空间不存在， 则会添加一个进去 不能使用 a.b.c 这样的名字。。 因为不会解析出来
 		XNameSpace *singleGetNameSpaceOrCreate(const char *);

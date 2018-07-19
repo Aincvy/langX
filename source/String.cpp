@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "../include/String.h"
+#include "../include/Utils.h"
 
 namespace langX {
 	String::String(const char *v)
@@ -32,32 +33,7 @@ namespace langX {
 	}
 	void String::simpleEscape()
 	{
-		// TODO  \\n  变成 \n  两个字符
-
-		while (m_value.find("\\n") != std::string::npos)
-		{
-			// 存在换行符
-			m_value.replace(m_value.find("\\n") , 2, "\n");
-		}
-
-		while (m_value.find("\\\"") != std::string::npos)
-		{
-			// 存在 双引号
-			m_value.replace(m_value.find("\\\""), 2, "\"");
-		}
-
-		while (m_value.find("\\\'") != std::string::npos)
-		{
-			// 存在 单引号
-			m_value.replace(m_value.find("\\\'"), 2, "\'");
-		}
-
-		while (m_value.find("\\\t") != std::string::npos)
-		{
-			// 存在 制表符
-			m_value.replace(m_value.find("\\\t"), 2, "\t");
-		}
-
+		this->m_value = unescape(this->m_value);
 	}
 	bool String::isTrue() const
 	{
@@ -74,6 +50,7 @@ namespace langX {
 		str->setCharacteristic(characteristic());
 		str->setConst(this->isConst());
 		str->setLocal(this->isLocal());
+		str->setName(this->getName());
 		return str;
 	}
 	void String::update(Object *right)
@@ -205,10 +182,10 @@ namespace langX {
 		return  this->m_characteristic.c_str();
 	}
 
-
-
 	void String::finalize()
 	{
 		delete this;
 	}
+
+
 }

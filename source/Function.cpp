@@ -284,6 +284,7 @@ namespace langX {
 		r->setCharacteristic(characteristic());
 		r->setLocal(this->isLocal());
 		r->setConst(this->isConst());
+		r->setName(this->getName());
 
 		return r;
 	}

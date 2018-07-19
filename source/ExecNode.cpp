@@ -1314,7 +1314,7 @@ namespace langX {
 			}
 			else {
 				char tmp[4096] = { 0 };
-				getObjStringDesc(n2->value, tmp, 4096);
+				getObjStringDesc(obj, tmp, 4096);
 				str2.append(tmp);
 			}
 			n->value = Allocator::allocateString(str2.c_str());
@@ -3745,16 +3745,6 @@ namespace langX {
 
 				}
 				else {
-					if (obj->getType() == NUMBER)
-					{
-						Number * number = (Number*)obj;
-						//printf("var %s=%.2f \n", node->var_obj->name, number->getDoubleValue());
-					}
-					else if (obj->getType() == STRING)
-					{
-						String *string = (String*)obj;
-						//printf("var %s=\"%s\" \n" , node->var_obj->name, string->getValue());
-					}
 
 					// 变量类型为 一个 copy 
 					node->value = obj->clone();

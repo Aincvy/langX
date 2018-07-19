@@ -18,6 +18,11 @@
 #include "../include/Number.h"
 #include "../include/YLlangX.h"
 #include "../include/langXThread.h"
+#include "../include/ClassInfo.h"
+#include "../include/NullObject.h"
+#include "../include/langXObject.h"
+#include "../include/langXObjectRef.h"
+#include "../include/Allocator.h"
 
 
 static struct termios old, newone;
@@ -51,6 +56,28 @@ namespace langX {
 		tcsetattr(0, TCSANOW, &old);
 	}
 #endif
+
+	// 对象的元数据信
+	static ClassInfo * c_metadata;
+	// 空类， 当想返回某个对象的时候可以考虑使用
+	static ClassInfo * c_empty_class;
+
+	// 注册一些类到 langX里面 
+	// 基本上都是 本文件里面需要用到的类 
+	void regClasses(langXState *state) {
+		c_metadata = new ClassInfo("ObjectMetadata");
+		NullObject nullObj;
+		c_metadata->addMember("memoryAddress", &nullObj);
+		c_metadata->addMember("variableName", &nullObj);
+		c_metadata->addMember("characteristic", &nullObj);
+		c_metadata->addMember("emergeEnv", &nullObj);
+		c_metadata->addMember("value", &nullObj);
+		state->regClassToGlobal(c_metadata);
+
+		c_empty_class = new ClassInfo("EmptyClass");
+		state->regClassToGlobal(c_empty_class);
+
+	}
 
 	// 打印语句之后自动换行
 	Object * langX_println(X3rdFunction *func, const X3rdArgs & args) {
@@ -326,7 +353,7 @@ namespace langX {
 		if (a && a->getType() == ObjectType::STRING) {
 			String *str = (String*)a;
 			const char * cmd = str->getValue();
-			
+
 			FILE *fp = popen(cmd, "r");
 			if (fp == NULL) {
 				return new Number(-1);
@@ -343,15 +370,103 @@ namespace langX {
 		return NULL;
 	}
 
+	// 获取一个对象的元信息
+	// 部分属性暂时无法获取到正确的值， 所以不进行赋值操作
+	Object * langX_sy_metadata(X3rdFunction *func, const X3rdArgs & args) {
+
+		Object *a = args.args[0];
+		langXObject *obj = c_metadata->newObject();
+		if (a) {
+			char tmp[1024] = { 0 };
+			sprintf(tmp, "%p", a);
+			String str(tmp);
+			// obj->setMember("memoryAddress", &str);
+			String nameStr(a->getName());
+			obj->setMember("variableName", &nameStr);
+			String charaStr(a->characteristic());
+			obj->setMember("characteristic", &charaStr);
+			Environment *env = a->getEmergeEnv();
+			if (env)
+			{
+				sprintf(tmp, "%p", env);
+				String envStr(tmp);
+				//obj->setMember("emergeEnv", &envStr);
+			}
+			
+			obj->setMember("value", a);
+		}
+
+		return obj->addRef();
+	}
+
+	// 获取一个元素的类型， 返回一个字符串
+	// 可以传来两个参数， 第一个为要鉴定的对象 
+	// 如果第一个参数是一个 Object类型，即对象类型，如果第二个参数为true 则返回对象的类名， 否则返回 "Object"
+	Object * langX_co_typeof(X3rdFunction *func, const X3rdArgs & args) {
+
+		Object *a = args.args[0];
+		const char *typeName = "Null";
+		if (a) {
+			ObjectType ot = a->getType();
+			if (ot == ObjectType::NUMBER)
+			{
+				typeName = "Number";
+			}
+			else if (ot == ObjectType::STRING) {
+				typeName = "String";
+			}
+			else if (ot == ObjectType::FUNCTION) {
+				typeName = "Function";
+			}
+			else if (ot == ObjectType::XARRAY) {
+				typeName = "Array";
+			}
+			else if (ot == ObjectType::UNKNOWN)
+			{
+				typeName = "Unknown";
+			}
+			else if (ot == ObjectType::OBJECT) {
+				Object *b = args.args[1];
+				if (b && b->isTrue())
+				{
+					// 返回类名
+					typeName = ((langXObjectRef*)a)->getClassInfo()->getName();
+				}
+				else {
+					typeName = "Object";
+				}
+			}
+
+		}
+
+		return Allocator::allocateString(typeName);
+	}
+
+	// 获取一个对象的类名， 如果该元素不是一个对象，则返回 NullObject
+	Object * langX_co_classname(X3rdFunction *func, const X3rdArgs & args) {
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::OBJECT)
+		{
+			langXObjectRef *ref = (langXObjectRef*)a;
+			const char * name = ref->getClassInfo()->getName();
+			return Allocator::allocateString(name);
+		}
+
+		return Allocator::allocate(ObjectType::NULLOBJECT);
+	}
+
+
 	void regFunctions(langXState *state)
 	{
+		regClasses(state);
+
 		state->reg3rd("print", langX_print);
 		state->reg3rd("scanString", langX_scan_string);
 		state->reg3rd("scanNumber", langX_scan_number);
 		state->reg3rd("printStackTrace", langX_print_stack_trace);
-		state->reg3rd("systemRun", langX_system_run);
+		state->reg3rd("sy_run", langX_system_run);
 		state->reg3rd("println", langX_println);
-		state->reg3rd("doFile", langX_do_file);
+		state->reg3rd("sy_do_file", langX_do_file);
 		state->reg3rd("exit", langX_exit);
 		state->reg3rd("readLine", langX_read_line);
 		state->reg3rd("sy_exists", langX_sy_exists);
@@ -360,6 +475,9 @@ namespace langX {
 		state->reg3rd("sy_cwd", langX_sy_cwd);
 		state->reg3rd("sy_chdir", langX_sy_chdir);
 		state->reg3rd("sy_run_and_print", langX_sy_run_and_print);
+		state->reg3rd("sy_metadata", langX_sy_metadata);
+		state->reg3rd("co_typeof", langX_co_typeof);
+		state->reg3rd("co_classname", langX_co_classname);
 
 	}
 

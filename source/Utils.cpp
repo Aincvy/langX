@@ -82,4 +82,33 @@ namespace langX {
 		return resVec;
 	}
 
+	std::string unescape(const std::string& s)
+	{
+		std::string res;
+		std::string::const_iterator it = s.begin();
+		while (it != s.end())
+		{
+			char c = *it++;
+			if (c == '\\' && it != s.end())
+			{
+				char t = *it++;
+				switch (t) {
+				case '\\': c = '\\'; break;
+				case 'n': c = '\n'; break;
+				case 't': c = '\t'; break;
+				case 'a': c = '\a'; break;
+				case 'b': c = '\b'; break;
+					// all other escapes
+				default:
+					// invalid escape sequence - let it go
+					c = t;
+					break;
+				}
+			}
+			res += c;
+		}
+
+		return res;
+	}
+
 }
