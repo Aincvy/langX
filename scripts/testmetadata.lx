@@ -1,0 +1,70 @@
+
+a = 1;
+
+funa => (){
+	a = 2;
+	b = showMetadata;
+
+	//showMetadata(a);
+	//showMetadata(b);
+
+	data = sy_metadata(a);
+	println("memoryAddress: " + data.memoryAddress);
+	println("variableName: " + data.variableName);
+	println("characteristic: " + data.characteristic);
+	println("emergeEnv: " + data.emergeEnv);
+	println("value: " + data.value);
+
+	data = sy_metadata(b);
+	println("memoryAddress: " + data.memoryAddress);
+	println("variableName: " + data.variableName);
+	println("characteristic: " + data.characteristic);
+	println("emergeEnv: " + data.emergeEnv);
+	println("value: " + data.value);
+}
+
+
+showMetadata => (x) {
+	if(!x){
+		println("param is null.");
+		return ;
+	}
+
+	data = sy_metadata(x);
+	println("memoryAddress: " + data.memoryAddress);
+	println("variableName: " + data.variableName);
+	println("characteristic: " + data.characteristic);
+	println("emergeEnv: " + data.emergeEnv);
+	println("value: " + data.value);
+	println("type: " + co_typeof(data,true));
+}
+
+showTypeof => (){
+	println("==========================================");
+
+	a = 1 ;
+	println("type a: " + co_typeof(a));
+	a = "123";
+	println("type a: " + co_typeof(a));
+	a = showMetadata;
+	println("type a: " + co_typeof(a));
+	a = new Class();
+	println("type a: " + co_typeof(a,false));
+
+	cn = co_classname(a);
+	println("classname a: " + cn);
+
+}
+
+Class {
+	
+}
+
+showMetadata(a);
+funa();
+
+showTypeof();
+
+println("last a = " + a);
+
+println("script end...");

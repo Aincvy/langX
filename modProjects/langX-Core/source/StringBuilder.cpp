@@ -1,5 +1,6 @@
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 
 #include "../include/RegDefaultClasses.h"
 #include "../../../include/ClassInfo.h"
@@ -29,7 +30,9 @@ namespace langX {
 				}
 			}
 			else if (a->getType() == ObjectType::STRING) {
-				ss << ((String*)a)->getValue();
+				String *str = (String*)a;
+				str->simpleEscape();
+				ss << str->getValue();
 			}
 			else if (a->getType() == NULLOBJECT)
 			{
@@ -61,12 +64,11 @@ namespace langX {
 			return nullptr;
 		}
 
-		std::stringstream& ss = *((std::stringstream*) args.object);
+		std::stringstream& ss = *((std::stringstream*) args.object->get3rdObj());
 		for (auto i = 0; i < args.index; i++) {
 			Object *a = args.args[i];
 			append(ss, a, nullptr);
 		}
-
 
 		return nullptr;
 	}
@@ -78,8 +80,14 @@ namespace langX {
 			printf("langX_StringBuilder_appendLine error! NO OBJ!\n");
 			return nullptr;
 		}
+		
+		std::stringstream& ss = *((std::stringstream*) args.object->get3rdObj());
+		for (auto i = 0; i < args.index; i++) {
+			Object *a = args.args[i];
+			append(ss, a, nullptr);
+		}
 
-
+		ss << "\n";
 
 		return nullptr;
 	}
@@ -92,7 +100,9 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		std::stringstream& ss = *((std::stringstream*) args.object->get3rdObj());
+		
+		return Allocator::allocateString(ss.str().c_str());;
 	}
 
 
@@ -103,7 +113,11 @@ namespace langX {
 			return nullptr;
 		}
 
-		return nullptr;
+		std::stringstream& ss = *((std::stringstream*) args.object->get3rdObj());
+		ss.seekg(0, std::ios::end);
+		int size = ss.tellg();
+
+		return Allocator::allocateNumber(size);
 	}
 
 
@@ -114,15 +128,24 @@ namespace langX {
 			return nullptr;
 		}
 
+		std::stringstream& ss = *((std::stringstream*) args.object->get3rdObj());
+		std::string string = ss.str();
+		std::string ns(string.rbegin(), string.rend());
+		ss.str(ns);
+		
+		printf("ns: %s\n", ns.c_str());
 		return nullptr;
 	}
 
 	Object * langX_StringBuilder_StringBuilder(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_StringBuilder_StringBuilder error! NO OBJ!\n");
+			printf("langX_StringBuilder_StringBuilder_Dtor error! NO OBJ!\n");
 			return nullptr;
 		}
+
+		std::stringstream *ss = new std::stringstream();
+		args.object->set3rdObj(ss);
 
 		return nullptr;
 	}
@@ -134,6 +157,10 @@ namespace langX {
 			printf("langX_StringBuilder_StringBuilder_Dtor error! NO OBJ!\n");
 			return nullptr;
 		}
+
+		std::stringstream *ss = (std::stringstream *)args.object->get3rdObj();
+		delete ss;
+		args.object->set3rdObj(nullptr);
 
 		return nullptr;
 	}

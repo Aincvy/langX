@@ -84,6 +84,7 @@ namespace langX {
 		obj->setCharacteristic(characteristic());
 		obj->setConst(this->isConst());
 		obj->setLocal(this->isLocal());
+		obj->setName(this->getName());
 		return obj;
 	}
 

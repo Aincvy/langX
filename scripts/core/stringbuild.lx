@@ -1,0 +1,18 @@
+ref langX.core;
+
+ss = new StringBuilder();
+
+ss.append(1,2,3,4);
+
+ss.append("\n");
+
+ss.appendLine("hello, there!");
+
+str = ss.toString();
+print("v: " + str);
+
+println("length: " + ss.length());
+
+ss.reverse();
+str = ss.toString();
+print("v: " + str);
