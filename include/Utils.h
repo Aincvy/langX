@@ -15,4 +15,7 @@ namespace langX {
 	// 处理字符串内的转义字符
 	std::string unescape(const std::string& s);
 
+	// 判定一个字符串是否是另外一个的结尾
+	bool endsWith(std::string const &fullString, std::string const &ending);
+
 }

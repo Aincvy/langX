@@ -13,7 +13,6 @@ namespace langX {
 	}
 	langXObjectRef::~langXObjectRef()
 	{
-		
 		if (this->m_object_ref != nullptr)
 		{
 			// 当前对象正在销毁中， 则 直接返回， 不减少引用
@@ -33,7 +32,7 @@ namespace langX {
 	{
 		if (m_object_ref == nullptr)
 		{
-			return ;
+			return;
 		}
 		this->m_object_ref->setMember(name, obj);
 	}
@@ -127,7 +126,6 @@ namespace langX {
 			this->m_object_ref = ((langXObjectRef*)obj)->getRefObject();
 			this->m_object_ref->justAddRef(this);
 		}
-
 	}
 
 	void langXObjectRef::setRefObject(langXObject *obj)
@@ -137,6 +135,5 @@ namespace langX {
 
 	void langXObjectRef::finalize()
 	{
-
 	}
 }

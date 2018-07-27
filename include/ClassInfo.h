@@ -47,6 +47,9 @@ namespace langX {
 		// 生成一个本类的对象  参数： true 将生成的对象放入Allocator进行登记， false: 不放
 		langXObject* newObject(bool );
 
+		// 生成一个可扩展的本类 对象
+		langXObjectExtend* newExtendObject();
+
 		std::map<std::string, Object*> & getMembers();
 		std::map<std::string, Function*> & getFunctions();
 

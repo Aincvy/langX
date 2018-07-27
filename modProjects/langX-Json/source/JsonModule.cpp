@@ -9,6 +9,7 @@ namespace langX {
 
 	JsonModule::JsonModule()
 	{
+		this->setName("json");
 	}
 
 	JsonModule::~JsonModule()

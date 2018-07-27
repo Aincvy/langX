@@ -9,10 +9,9 @@
 
 namespace langX {
 
-
-
 	PythonModule::PythonModule()
 	{
+		this->setName("python");
 	}
 
 	PythonModule::~PythonModule()

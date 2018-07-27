@@ -11,12 +11,11 @@
 extern langX::Allocator m_exec_alloc;
 
 namespace langX {
-
 	XArray::XArray(int length)
 	{
 		if (length <= 0)
 		{
-			// maybe should throw a execption... 
+			// maybe should throw a execption...
 			return;
 		}
 
@@ -83,7 +82,6 @@ namespace langX {
 			else {
 				old->update(obj);
 			}
-
 		}
 		else {
 			this->m_array[index] = obj->clone();
@@ -106,8 +104,6 @@ namespace langX {
 	{
 		return this->m_ref_count;
 	}
-
-
 
 	XArrayRef::XArrayRef(XArray *a)
 	{
@@ -210,5 +206,4 @@ namespace langX {
 	void XArrayRef::finalize()
 	{
 	}
-
 }

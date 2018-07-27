@@ -24,11 +24,18 @@ namespace langX {
 		// 获得 
 		std::string & getLibDir();
 
+		// 获取运行库目录的位置
+		const std::string & getRTLibDir() const;
+
 	private:
 
+		// rt 脚本库的目录
+		std::string m_rtlib_dir;
+		// .so 动态库的目录
 		std::string m_lib_dir;
-    std::string m_log4cpp_path;
+		std::string m_log4cpp_path;
 		std::vector<std::string> m_lib_list;
+
 
 	};
 

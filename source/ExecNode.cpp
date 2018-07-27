@@ -21,13 +21,10 @@
 #include "../include/InnerFunction.h"
 #include "../include/langXThread.h"
 
-
 namespace langX {
-
-
 	// 根据数组信息获得结果， 返回的结果为一个 nullptr 或者复制好的结果
 	Object * getValueFromArrayInfo(ArrayInfo *arrayInfo, NodeLink *nodeLink, langXThread *thread) {
-		if (nodeLink->index == 0) {	
+		if (nodeLink->index == 0) {
 			nodeLink->index = 1;
 			bool flag = false;
 			if (arrayInfo->objNode != NULL)
@@ -138,10 +135,8 @@ namespace langX {
 		return ret->clone();
 	}
 
-
 	// 将节点的值更新到环境中
 	void setValueToEnv2(const char*name, Object *val, Environment *env) {
-
 		if (val == NULL || name == NULL || env == NULL)
 		{
 			printf("setValueToEnv Node Args Error. \n");
@@ -254,15 +249,12 @@ namespace langX {
 						}
 					}
 				}
-
 			}
 		}
 	}
 
-
 	//递归释放节点及子节点值的内存  | 会遍历所有节点， 发现值都会进行释放操作
 	void recursiveFreeNodeValue(Node *n) {
-
 		if (n == NULL)
 		{
 			return;
@@ -281,7 +273,6 @@ namespace langX {
 				recursiveFreeNodeValue(n->opr_obj->op[i]);
 			}
 		}
-
 	}
 
 	// 释放数组信息
@@ -294,9 +285,8 @@ namespace langX {
 		recursiveFreeNodeValue(arrayInfo->indexNode);
 	}
 
-
 	/*
-	  释放当前节点的子节点的值 内存 | 只释放一层的值内存 
+	  释放当前节点的子节点的值 内存 | 只释放一层的值内存
 	*/
 	void freeSubNodes(Node *n) {
 		if (n == NULL)
@@ -321,8 +311,6 @@ namespace langX {
 			n->opr_obj->op[i]->value = NULL;
 		}
 	}
-
-
 
 	/* 如果这个变量不存在， 则new 一个放上去
 	   并且会放到当前的环境里面
@@ -381,7 +369,7 @@ namespace langX {
 				t->setEmergeEnv(obj->getEmergeEnv());
 				obj->getEmergeEnv()->putObject(left->var_obj->name, t);
 
-				// 释放掉原值   0820  上面那条 putObject 语句执行结束之后， 好像就访问不到 obj 了 以后需要查看是为什么 TODO 
+				// 释放掉原值   0820  上面那条 putObject 语句执行结束之后， 好像就访问不到 obj 了 以后需要查看是为什么 TODO
 				// 上述语句会调用 langXObject::setMember  ，这个函数会检查类型， 如果类型不一致， 会释放掉原有内存
 				//Allocator::free(obj);
 
@@ -462,9 +450,9 @@ namespace langX {
 				return;
 			}
 		}
-		else if ((left != NULL && left->getType() == STRING) || (right != NULL  && right->getType() == STRING))
+		else if ((left != NULL && left->getType() == STRING) || (right != NULL && right->getType() == STRING))
 		{
-			// 字符串拼接 
+			// 字符串拼接
 			std::stringstream ss;
 			if (left == NULL)
 			{
@@ -540,8 +528,8 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
-	// +  
-	// 操作结果， 会将结果存储在当前节点中 
+	// +
+	// 操作结果， 会将结果存储在当前节点中
 	void __exec43(NodeLink *nodeLink) {
 		Node *  n = nodeLink->node;
 		if (nodeLink->index == 0) {
@@ -552,12 +540,10 @@ namespace langX {
 			__realExec43(n);
 			nodeLink->backAfterExec = true;
 		}
-
 	}
 
 	// -
 	void __exec45(NodeLink *nodeLink) {
-
 		Node *n = nodeLink->node;
 		if (nodeLink->index == 0) {
 			doSubNodes(n);
@@ -603,7 +589,6 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() - ((Number*)n2->value)->getDoubleValue());
 		freeSubNodes(n);
-		
 	}
 
 	// ! 取反
@@ -616,7 +601,7 @@ namespace langX {
 		}
 
 		Node *n1 = n->opr_obj->op[0];
-		if (n1->value == NULL )
+		if (n1->value == NULL)
 		{
 			getState()->curThread()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
 			freeSubNodes(n);
@@ -677,7 +662,6 @@ namespace langX {
 
 		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() * ((Number*)n2->value)->getDoubleValue());
 		freeSubNodes(n);
-		
 	}
 
 	// /
@@ -737,12 +721,10 @@ namespace langX {
 		n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() / d2);
 		freeSubNodes(n);
 		nodeLink->backAfterExec = true;
-
 	}
 
 	// 按位或  |
 	void __exec124(NodeLink *nodeLink) {
-
 		Node *n = nodeLink->node;
 		if (nodeLink->index == 0) {
 			doSubNodes(n);
@@ -773,7 +755,6 @@ namespace langX {
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
 		nodeLink->backAfterExec = true;
-
 	}
 
 	// 按位与  &
@@ -808,7 +789,6 @@ namespace langX {
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
 		nodeLink->backAfterExec = true;
-
 	}
 
 	// 按位异或  ^
@@ -843,12 +823,10 @@ namespace langX {
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
 		nodeLink->backAfterExec = true;
-
 	}
 
 	// 按位取反  ~
 	void __exec126(NodeLink *nodeLink) {
-
 		Node *n = nodeLink->node;
 		if (nodeLink->index == 0) {
 			doSubNodes(n);
@@ -877,12 +855,10 @@ namespace langX {
 		n->value = Allocator::allocateNumber(i3);
 		freeSubNodes(n);
 		nodeLink->backAfterExec = true;
-
 	}
 
 	// 向左移位
 	void __execLEFT_SHIFT(NodeLink *nodeLink) {
-
 		Node *n = nodeLink->node;
 		if (nodeLink->index == 0) {
 			doSubNodes(n);
@@ -927,8 +903,6 @@ namespace langX {
 			return;
 		}
 
-
-
 		int i1 = ((Number*)n1->value)->getIntValue();
 		int i2 = ((Number*)n2->value)->getIntValue();
 		int i3 = i1 << i2;
@@ -939,7 +913,6 @@ namespace langX {
 
 	// 向右移位
 	void __execRIGHT_SHIFT(NodeLink *nodeLink) {
-
 		Node *n = nodeLink->node;
 		if (nodeLink->index == 0) {
 			doSubNodes(n);
@@ -994,7 +967,6 @@ namespace langX {
 
 	//  取模运算 %
 	void __exec37(NodeLink *nodeLink) {
-
 		Node *n = nodeLink->node;
 		if (nodeLink->index == 0) {
 			doSubNodes(n);
@@ -1047,7 +1019,7 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
-	// 赋值操作 = 
+	// 赋值操作 =
 	void __exec61(NodeLink *nodeLink, langXThread *thread) {
 		Node *n = nodeLink->node;
 		//printf("__exec61 start\n");
@@ -1092,18 +1064,17 @@ namespace langX {
 				getState()->curThread()->throwException(newTypeErrorException("left not the NODE_VARIABLE")->addRef());
 				freeSubNodes(n);
 				return;
-			} 
-
+			}
 		}
 
 		if (nodeLink->index == 0) {
 			nodeLink->index = 1;
 		}
-			
+
 		Node *right = n->opr_obj->op[1];
 		//   要把右侧的值检出， 然后对比类型，更新左侧的值
 		if (nodeLink->index == 1) {
-			checkValue(right,thread);
+			checkValue(right, thread);
 			nodeLink->index = 2;
 			return;
 		}
@@ -1138,7 +1109,7 @@ namespace langX {
 				left->ptr_u = NULL;
 			}
 		}
-		
+
 		ObjectType rightType = right->value->getType();
 		if (objectRef == NULL && arrayInfo == NULL)
 		{
@@ -1154,14 +1125,12 @@ namespace langX {
 
 			left->value->update(right->value);
 
-			// 释放右值的内存 
+			// 释放右值的内存
 			Allocator::free(right->value);
 			right->value = NULL;
 
-
-			// 更新值到 Environment 
+			// 更新值到 Environment
 			setValueToEnv2(left->var_obj->name, left->value, left->value->getEmergeEnv());
-
 
 			n->value = Allocator::copy(left->value);
 			// 左值是指向 Environment 内的内存的复制， 需要释放
@@ -1229,12 +1198,12 @@ namespace langX {
 			n->value = Allocator::copy(right->value);
 		}
 		else {
-			// 这里的Left 已经被执行过了   
+			// 这里的Left 已经被执行过了
 			char * name = left->opr_obj->op[1]->var_obj->name;
-			
+
 			do {
-				// 判定一下操作符 = 是否进行重载了   
-				// 操作符= 重载的结果是 属性赋值， 而非当前对象 
+				// 判定一下操作符 = 是否进行重载了
+				// 操作符= 重载的结果是 属性赋值， 而非当前对象
 				Function *func1 = objectRef->getFunction("operator=");
 				if (func1)
 				{
@@ -1249,14 +1218,13 @@ namespace langX {
 					freeSubNodes(n);
 					break;
 				}
-				
+
 				// 属性的正常赋值
 				if (!objectRef->getClassInfo()->hasMember(name))
 				{
 					char tmp[100] = { 0 };
 					sprintf(tmp, "cannot find member %s in class %s!", name, objectRef->getClassInfo()->getName());
 					getState()->curThread()->throwException(newNoClassMemberException(tmp)->addRef());
-
 				}
 				else {
 					if (left->value != NULL && left->value->isConst())
@@ -1271,7 +1239,6 @@ namespace langX {
 					n->value = Allocator::copy(right->value);
 				}
 			} while (false);
-			
 
 			Allocator::free(right->value);
 			right->value = NULL;
@@ -1304,10 +1271,10 @@ namespace langX {
 
 		// 字符串的 += 操作
 		if (n1->value->getType() == STRING)
-		{	
+		{
 			// 追加到一起去
 			String *str1 = (String*)n1->value;
-			std::string str2( str1->getStrValue() );
+			std::string str2(str1->getStrValue());
 			Object* obj = n2->value;
 			if (obj->getType() == ObjectType::STRING) {
 				str2.append(((String*)obj)->getStrValue());
@@ -1318,8 +1285,8 @@ namespace langX {
 				str2.append(tmp);
 			}
 			n->value = Allocator::allocateString(str2.c_str());
-
-		} else
+		}
+		else
 		{
 			if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
 			{
@@ -1330,7 +1297,7 @@ namespace langX {
 
 			n->value = Allocator::allocateNumber(
 				((Number*)n1->value)->getDoubleValue() + ((Number*)n2->value)->getDoubleValue());
-		}	
+		}
 
 		setValueToEnv(n1->var_obj->name, n->value);
 		freeSubNodes(n);
@@ -1474,7 +1441,6 @@ namespace langX {
 	}
 
 	void __execBREAK(NodeLink *nodeLink, langXThread * thread) {
-		
 		if (!thread->isInLoop() && !thread->isInSwitch())
 		{
 			getState()->curThread()->throwException(newUnsupportedOperationException("invalid break stmt.")->addRef());
@@ -1500,7 +1466,7 @@ namespace langX {
 				}
 			}
 		} while (true);
-		
+
 		thread->setBackInExec(true);
 		if (thread->isInLoop()) {
 			thread->setInLoop(false);
@@ -1542,7 +1508,7 @@ namespace langX {
 			nodeLink->index = 1;
 			return;
 		}
-		
+
 		Node * a = n->opr_obj->op[0];
 		if (a == NULL)
 		{
@@ -1578,7 +1544,7 @@ namespace langX {
 			nodeLink = nodeLink->previous;
 			thread->endExecute();
 		} while (true);
-		
+
 #ifdef SHOW_DETAILS
 		//printf("want back to %p,cmd %d \n", funcRootNode, funcRootNode == nullptr ? -1 : funcRootNode->opr_obj->opr);
 		//if (nodeLink == nullptr)
@@ -1592,7 +1558,7 @@ namespace langX {
 #endif
 	}
 
-	// 自增运算符 ++ 
+	// 自增运算符 ++
 	void __execINC_OP(NodeLink *nodeLink) {
 		Node *n = nodeLink->node;
 		if (nodeLink->index == 0) {
@@ -1657,7 +1623,7 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
-	// 自减运算符 -- 
+	// 自减运算符 --
 	void __execDEC_OP(NodeLink *nodeLink) {
 		Node *n = nodeLink->node;
 		if (nodeLink->index == 0) {
@@ -1725,10 +1691,8 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
-
 	// 分号 ;
 	void __exec59(NodeLink *nodeLink, langXThread * thread) {
-		
 		Node *n = nodeLink->node;
 
 		nodeLink->backAfterExec = false;      //  这是一个复合性质的节点， 自己管理这个状态就好了
@@ -1746,12 +1710,11 @@ namespace langX {
 		doSuffixOperation(n);
 		freeSubNodes(n);
 		nodeLink->backAfterExec = true;
-
 	}
 
 	// 逗号表达式
 	void __exec44(NodeLink *nodeLink, langXThread * thread) {
-		// 操作和 分号表达式差不多应该， 这样应该就OK了。 
+		// 操作和 分号表达式差不多应该， 这样应该就OK了。
 		__exec59(nodeLink, thread);
 	}
 
@@ -1941,17 +1904,17 @@ namespace langX {
 		Object * left = n1->value;
 		Object * right = n2->value;
 
-		if (left->getType() == NULLOBJECT )
+		if (left->getType() == NULLOBJECT)
 		{
 			if (right->getType() == NULLOBJECT)
 			{
 				n->value = Allocator::allocateNumber(1);
-			}else{
+			}
+			else {
 				n->value = Allocator::allocateNumber(0);
 			}
-			
 		}
-		else if (left->getType() == NUMBER )
+		else if (left->getType() == NUMBER)
 		{
 			if (n2->value->getType() == NUMBER)
 			{
@@ -1965,12 +1928,12 @@ namespace langX {
 				else {
 					n->value = Allocator::allocateNumber(0);
 				}
-			}else{
+			}
+			else {
 				n->value = Allocator::allocateNumber(0);
 			}
-			
 		}
-		else if (left->getType() == STRING )
+		else if (left->getType() == STRING)
 		{
 			if (n2->value->getType() == STRING)
 			{
@@ -1985,7 +1948,8 @@ namespace langX {
 				else {
 					n->value = Allocator::allocateNumber(0);
 				}
-			}else{
+			}
+			else {
 				n->value = Allocator::allocateNumber(0);
 			}
 		}
@@ -2016,7 +1980,6 @@ namespace langX {
 				else {
 					n->value = Allocator::allocateNumber(0);
 				}
-
 			}
 			else if (right->getType() == NULLOBJECT || right->getType() == XARRAY)
 			{
@@ -2026,7 +1989,6 @@ namespace langX {
 				getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
 				n->value = Allocator::allocateNumber(0);
 			}
-
 		}
 		else if (left->getType() == XARRAY)
 		{
@@ -2084,7 +2046,6 @@ namespace langX {
 			return;
 		}
 
-
 		Object * left = n1->value;
 		Object * right = n2->value;
 
@@ -2097,125 +2058,122 @@ namespace langX {
 			else {
 				n->value = Allocator::allocateNumber(1);
 			}
-
-		}else
-		if (left->getType() == NUMBER )
-		{
-			if (n2->value->getType() == NUMBER)
-			{
-				double a = ((Number*)n1->value)->getDoubleValue();
-				double b = ((Number*)n2->value)->getDoubleValue();
-
-				if (a != b)
-				{
-					n->value = Allocator::allocateNumber(1);
-				}
-				else {
-					n->value = Allocator::allocateNumber(0);
-				}
-			}
-			else {
-				n->value = Allocator::allocateNumber(1);
-			}
-			
 		}
-		else if (left->getType() == STRING )
-		{
-			// 左侧类型为字符串
-			if (n2->value->getType() == STRING)
+		else
+			if (left->getType() == NUMBER)
 			{
-				// 如果右侧类型也为字符串
-
-				// 字符串比较
-				const char * a = ((String*)n1->value)->getValue();
-				const char * b = ((String*)n2->value)->getValue();
-
-				if (strcmp(a, b) != 0)
+				if (n2->value->getType() == NUMBER)
 				{
-					n->value = Allocator::allocateNumber(1);
-				}
-				else {
-					n->value = Allocator::allocateNumber(0);
-				}
-			}
-			else {
+					double a = ((Number*)n1->value)->getDoubleValue();
+					double b = ((Number*)n2->value)->getDoubleValue();
 
-				n->value = Allocator::allocateNumber(1);
-			}
-		}
-		else if (left->getType() == OBJECT) {
-			langXObjectRef * ref1 = (langXObjectRef*)left;
-			Function *func1 = ref1->getFunction("operator!=");
-			if (func1)
-			{
-				X3rdArgs _3rdArgs;
-				memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-				_3rdArgs.args[0] = right;
-				_3rdArgs.index = 1;
-				n->value = callFunction(left, func1, &_3rdArgs);
-
-				freeSubNodes(n);
-				nodeLink->backAfterExec = true;
-				return;
-			}
-
-			// check 描述字符串
-			if (right && right->getType() == OBJECT)
-			{
-				langXObjectRef * ref2 = (langXObjectRef*)right;
-				if (strcmp(ref1->characteristic(), ref2->characteristic()) == 0)
-				{
-					n->value = Allocator::allocateNumber(0);
+					if (a != b)
+					{
+						n->value = Allocator::allocateNumber(1);
+					}
+					else {
+						n->value = Allocator::allocateNumber(0);
+					}
 				}
 				else {
 					n->value = Allocator::allocateNumber(1);
 				}
-
 			}
-			else if (right->getType() == NULLOBJECT || right->getType() == XARRAY)
+			else if (left->getType() == STRING)
 			{
-				n->value = Allocator::allocateNumber(1);
+				// 左侧类型为字符串
+				if (n2->value->getType() == STRING)
+				{
+					// 如果右侧类型也为字符串
+
+					// 字符串比较
+					const char * a = ((String*)n1->value)->getValue();
+					const char * b = ((String*)n2->value)->getValue();
+
+					if (strcmp(a, b) != 0)
+					{
+						n->value = Allocator::allocateNumber(1);
+					}
+					else {
+						n->value = Allocator::allocateNumber(0);
+					}
+				}
+				else {
+					n->value = Allocator::allocateNumber(1);
+				}
+			}
+			else if (left->getType() == OBJECT) {
+				langXObjectRef * ref1 = (langXObjectRef*)left;
+				Function *func1 = ref1->getFunction("operator!=");
+				if (func1)
+				{
+					X3rdArgs _3rdArgs;
+					memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+					_3rdArgs.args[0] = right;
+					_3rdArgs.index = 1;
+					n->value = callFunction(left, func1, &_3rdArgs);
+
+					freeSubNodes(n);
+					nodeLink->backAfterExec = true;
+					return;
+				}
+
+				// check 描述字符串
+				if (right && right->getType() == OBJECT)
+				{
+					langXObjectRef * ref2 = (langXObjectRef*)right;
+					if (strcmp(ref1->characteristic(), ref2->characteristic()) == 0)
+					{
+						n->value = Allocator::allocateNumber(0);
+					}
+					else {
+						n->value = Allocator::allocateNumber(1);
+					}
+				}
+				else if (right->getType() == NULLOBJECT || right->getType() == XARRAY)
+				{
+					n->value = Allocator::allocateNumber(1);
+				}
+				else {
+					getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+					n->value = Allocator::allocateNumber(0);
+				}
+			}
+			else if (left->getType() == XARRAY)
+			{
+				// 数组
+				if (right->getType() == OBJECT)
+				{
+					n->value = Allocator::allocateNumber(1);
+				}
+				else if (right->getType() == NULLOBJECT)
+				{
+					n->value = Allocator::allocateNumber(1);
+				}
+				else if (right->getType() == XARRAY)
+				{
+					if (strcmp(left->characteristic(), right->characteristic()) == 0)
+					{
+						n->value = Allocator::allocateNumber(0);
+					}
+					else {
+						n->value = Allocator::allocateNumber(1);
+					}
+				}
+				else {
+					getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+					n->value = Allocator::allocateNumber(0);
+				}
 			}
 			else {
-				getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
+				//printf("类型不同，无法比较");
+				getState()->curThread()->throwException(newArithmeticException("type error on opr '!='! only can number or string!")->addRef());
 				n->value = Allocator::allocateNumber(0);
 			}
-		}
-		else if (left->getType() == XARRAY)
-		{
-			// 数组
-			if (right->getType() == OBJECT)
-			{
-				n->value = Allocator::allocateNumber(1);
-			}
-			else if (right->getType() == NULLOBJECT)
-			{
-				n->value = Allocator::allocateNumber(1);
-			}
-			else if (right->getType() == XARRAY)
-			{
-				if (strcmp(left->characteristic(), right->characteristic()) == 0)
-				{
-					n->value = Allocator::allocateNumber(0);
-				}
-				else {
-					n->value = Allocator::allocateNumber(1);
-				}
-			}
-			else {
-				getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-				n->value = Allocator::allocateNumber(0);
-			}
-		}
-		else {
-			//printf("类型不同，无法比较");
-			getState()->curThread()->throwException(newArithmeticException("type error on opr '!='! only can number or string!")->addRef());
-			n->value = Allocator::allocateNumber(0);
-		}
 
-		doSuffixOperation(n);
-		freeSubNodes(n);
-		nodeLink->backAfterExec = true;
+			doSuffixOperation(n);
+			freeSubNodes(n);
+			nodeLink->backAfterExec = true;
 	}
 
 	void __execOPAND(NodeLink *nodeLink) {
@@ -2274,7 +2232,6 @@ namespace langX {
 	}
 
 	void __execIF(NodeLink *nodeLink, langXThread *thread) {
-
 		Node *n = nodeLink->node;
 		Node *n1 = n->opr_obj->op[0];
 		if (nodeLink->index == 0) {
@@ -2284,18 +2241,16 @@ namespace langX {
 		}
 		else if (nodeLink->index == 1) {
 			// 判断条件，确定 应该执行的点
-			
+
 			bool f = __tryConvertToBool(n1);
 
 			if (f)
 			{
-
 				Node * a = n->opr_obj->op[1];
 				if (a != NULL)
 				{
 					thread->beginExecute(a, true);
 				}
-
 			}
 			else {
 				if (n->opr_obj->op_count >= 3)
@@ -2305,7 +2260,6 @@ namespace langX {
 					{
 						thread->beginExecute(a, true);
 					}
-
 				}
 			}
 			nodeLink->index = 2;
@@ -2337,7 +2291,7 @@ namespace langX {
 			return;
 		}
 		else if (nodeLink->index == 1) {
-			// 已经计算了条件节点 
+			// 已经计算了条件节点
 			if (__tryConvertToBool(conNode)) {
 				doSuffixOperation(conNode);
 				thread->beginExecute(run, true);
@@ -2358,13 +2312,11 @@ namespace langX {
 			// 循环内部的节点已经执行完毕， 现在做一些后续操作
 			freeSubNodes(run);
 			recursiveFreeNodeValue(run);
-			nodeLink->index = 0;    // 
+			nodeLink->index = 0;    //
 		}
-
 	}
 
 	void __execFOR(NodeLink *nodeLink, langXThread *thread) {
-
 		nodeLink->backAfterExec = false;
 
 		Node *n = nodeLink->node;
@@ -2380,7 +2332,7 @@ namespace langX {
 		Node *run = n->opr_obj->op[3];
 		if (nodeLink->index == 0) {
 			// 要求计算初始节点的值
-			thread->beginExecute(n->opr_obj->op[0],true);
+			thread->beginExecute(n->opr_obj->op[0], true);
 			nodeLink->index = 1;
 		}
 		else if (nodeLink->index == 1) {
@@ -2425,7 +2377,6 @@ namespace langX {
 
 			nodeLink->index = 1;
 		}
-
 	}
 
 	void __execSWITCH(NodeLink *nodeLink, langXThread *thread) {
@@ -2440,13 +2391,13 @@ namespace langX {
 			nodeLink->index = 1;
 			return;
 		}
-		
+
 		if (id_expr->value == NULL)
 		{
 			thread->throwException(newUnsupportedOperationException("null condition value in switch()!")->addRef());
 			return;
 		}
-	
+
 		if (!nodeLink->flag) {
 			thread->setInSwitch(true);
 			nodeLink->flag = true;
@@ -2466,11 +2417,10 @@ namespace langX {
 				else {
 					sprintf(tmp, "%f", number->getDoubleValue());
 				}
-
 			}
 			else if (obj->getType() == ObjectType::STRING) {
 				String *str = (String*)obj;
-				sprintf(tmp,"%s", str->getValue());
+				sprintf(tmp, "%s", str->getValue());
 			}
 
 			SwitchInfo *switchInfo = (SwitchInfo *)n->ptr_u;
@@ -2486,28 +2436,22 @@ namespace langX {
 
 			return;
 		}
-		
+
 		thread->setInSwitch(false);
 		nodeLink->backAfterExec = true;
-
-
 	}
 
 	void __execCASE_LIST(NodeLink *nodeLink, langXThread *thread) {
-
 		// 2017年12月8日  switch 内处理这些事情
 		nodeLink->backAfterExec = true;
-
 	}
 
 	void __execCASE(NodeLink *nodeLink, langXThread *thread) {
-		
 		// 2017年12月8日  switch 内处理这些事情
-		nodeLink->backAfterExec = true; 
+		nodeLink->backAfterExec = true;
 	}
 
 	void __execDeafult(NodeLink *nodeLink, langXThread *thread) {
-		
 		Node *n = nodeLink->node;
 
 		if (nodeLink->index == 0) {
@@ -2517,7 +2461,6 @@ namespace langX {
 		else {
 			freeSubNodes(n);
 		}
-
 	}
 
 	void __execUMINUS(NodeLink *nodeLink) {
@@ -2547,11 +2490,10 @@ namespace langX {
 
 		freeSubNodes(n);
 		nodeLink->backAfterExec = true;
-
 	}
 
 	// 执行一个函数
-	void __execFUNC_CALL(NodeLink *nodeLink,langXThread *thread) {	
+	void __execFUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
 		Node *n = nodeLink->node;
 
 		Node *n1 = n->opr_obj->op[0];
@@ -2560,7 +2502,7 @@ namespace langX {
 			nodeLink->index = 1;
 			return;
 		}
-		
+
 		nodeLink->backAfterExec = false;     // 强制更新状态为执行结束后不释放节点， 因为函数执行需要2次
 
 		std::string remark = fileInfoString(n->fileinfo);
@@ -2573,8 +2515,8 @@ namespace langX {
 				FunctionRef *f = (FunctionRef*)n1->value;
 				NodeLink *putNodeLink = nullptr;
 				if (nodeLink->ptr_u == NULL) {
-					// 第一次执行， 需要让函数确认所有的参数 
-					putNodeLink = newNodeLink(nullptr, n );
+					// 第一次执行， 需要让函数确认所有的参数
+					putNodeLink = newNodeLink(nullptr, n);
 					nodeLink->ptr_u = putNodeLink;
 					f->call(args, remark.c_str(), putNodeLink);
 					return;
@@ -2594,7 +2536,7 @@ namespace langX {
 				String *n1Str = (String*)n1->value;
 				str += n1Str->getValue();
 				str += " by var ";
-				if (n1 ->var_obj)
+				if (n1->var_obj)
 				{
 					str += n1->var_obj->name;;
 				}
@@ -2606,7 +2548,7 @@ namespace langX {
 
 				NodeLink *putNodeLink = nullptr;
 				if (nodeLink->ptr_u == NULL) {
-					// 第一次执行， 需要让函数确认所有的参数 
+					// 第一次执行， 需要让函数确认所有的参数
 					putNodeLink = newNodeLink(nullptr, n);
 					nodeLink->ptr_u = putNodeLink;
 					call(n1Str->getValue(), args, str.c_str(), putNodeLink);
@@ -2626,7 +2568,7 @@ namespace langX {
 			char * name = n1->var_obj->name;
 			NodeLink *putNodeLink = nullptr;
 			if (nodeLink->ptr_u == NULL) {
-				// 第一次执行， 需要让函数确认所有的参数 
+				// 第一次执行， 需要让函数确认所有的参数
 				putNodeLink = newNodeLink(nullptr, n);
 				nodeLink->ptr_u = putNodeLink;
 				call(name, args, remark.c_str(), putNodeLink);
@@ -2646,7 +2588,7 @@ namespace langX {
 		nodeLink->backAfterExec = true;
 	}
 
-	void __execNEW(NodeLink *nodeLink ,langXThread *thread) {
+	void __execNEW(NodeLink *nodeLink, langXThread *thread) {
 		Node *n = nodeLink->node;
 		// new 一个对象
 		nodeLink->backAfterExec = false;
@@ -2694,23 +2636,21 @@ namespace langX {
 				object->callConstructor(nullptr, fileInfoString(n->fileinfo).c_str(), nodeLink, thread);
 			}
 		}
-		
+
 		nodeLink->backAfterExec = true;
 	}
 
 	void __execCLAXX_BODY(NodeLink *nodeLink) {
-
 		Node *n = nodeLink->node;
 		if (nodeLink->index == 0) {
 			doSubNodes(n);
 			nodeLink->index = 1;
 			return;
 		}
-		
+
 		freeSubNodes(n);
 		nodeLink->backAfterExec = true;
 	}
-
 
 	void __realExecVAR_DECLAR(Node *n, langXThread *thread) {
 		// 都初始为 null
@@ -2724,7 +2664,7 @@ namespace langX {
 			{
 				if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR)
 				{
-					__realExecVAR_DECLAR(t,thread);
+					__realExecVAR_DECLAR(t, thread);
 				}
 				else if (t->type == NODE_ARRAY)
 				{
@@ -2758,7 +2698,6 @@ namespace langX {
 					Object *arrayRef = array1->addRef();
 					arrayRef->setEmergeEnv(thread->getCurrentEnv());
 					setValueToEnv(name, arrayRef);
-
 				}
 				continue;
 			}
@@ -2769,7 +2708,7 @@ namespace langX {
 
 		Allocator::free(obj);
 	}
-	
+
 	// 确保变量声明里的数组 节点的值都运算出来
 	void __execVAR_DECLAR_CheckValue(Node *n, langXThread *thread) {
 		for (int i = 0; i < n->opr_obj->op_count; i++)
@@ -2797,7 +2736,6 @@ namespace langX {
 						Node *t = an->lengthNode;
 						thread->beginExecute(t, true);
 					}
-
 				}
 				continue;
 			}
@@ -2806,7 +2744,6 @@ namespace langX {
 
 	// 变量声明
 	void __execVAR_DECLAR(NodeLink *nodeLink, langXThread *thread) {
-
 		Node *n = nodeLink->node;
 		nodeLink->backAfterExec = false;
 		if (nodeLink->index == 0) {
@@ -2819,7 +2756,6 @@ namespace langX {
 			__realExecVAR_DECLAR(n, thread);
 			nodeLink->backAfterExec = true;
 		}
-		
 	}
 
 	void __execCLAXX_MEMBER(NodeLink *nodeLink, langXThread *thread) {
@@ -2832,7 +2768,6 @@ namespace langX {
 			nodeLink->index = 1;
 			return;
 		}
-		
 
 		if (n1->value == NULL)
 		{
@@ -2847,7 +2782,7 @@ namespace langX {
 		char *memberName = n->opr_obj->op[1]->var_obj->name;
 
 		nodeLink->backAfterExec = true;
-		//    先处理数组和字符串的情况 
+		//    先处理数组和字符串的情况
 		if (n1->value->getType() == XARRAY)
 		{
 			XArrayRef *arrayRef = (XArrayRef*)n1->value;
@@ -2867,7 +2802,6 @@ namespace langX {
 			return;
 		}
 		else if (n1->value->getType() == STRING) {
-
 			String * str = (String*)n1->value;
 			if (strcmp(memberName, "length") == 0)
 			{
@@ -2917,11 +2851,11 @@ namespace langX {
 		}
 
 		Object *t = objectRef->getMember(memberName);
-		if (t == NULL || (t!=NULL && t->isLocal()))
+		if (t == NULL || (t != NULL && t->isLocal()))
 		{
-			// 变量未找到， 或者变量是一个local 
+			// 变量未找到， 或者变量是一个local
 
-			// check 函数  回头再check 
+			// check 函数  回头再check
 			Function *func = objectRef->getFunction(memberName);
 			if (func != nullptr)
 			{
@@ -2937,7 +2871,6 @@ namespace langX {
 				freeSubNodes(n);
 				return;
 			}
-
 		}
 		n->value = t->clone();
 
@@ -2952,7 +2885,7 @@ namespace langX {
 			nodeLink->index = 1;
 			return;
 		}
-		
+
 		if (n1->value == NULL)
 		{
 			thread->throwException(newTypeErrorException("left value is not class object !")->addRef());
@@ -2963,8 +2896,8 @@ namespace langX {
 		if (n1->value->getType() == STRING)
 		{
 			// 从语法解析文件可知 此节点是一个函数调用节点
-			Node *n2 = n->opr_obj->op[1];     
-			XArgsList *args = (XArgsList *) n2->opr_obj->op[1]->ptr_u;    
+			Node *n2 = n->opr_obj->op[1];
+			XArgsList *args = (XArgsList *)n2->opr_obj->op[1]->ptr_u;
 			if (nodeLink->index == 1)
 			{
 				nodeLink->index = 2;
@@ -2976,13 +2909,13 @@ namespace langX {
 							continue;
 						}
 
-						thread->beginExecute(args->args[i],true);
+						thread->beginExecute(args->args[i], true);
 					}
 					return;
 				}
 			}
 			//  上面的写法是为了确保 无论如何到这个地方 index都是2
-			n->value = callInnerFunc(n1->value,n2);
+			n->value = callInnerFunc(n1->value, n2);
 			return;
 		}
 
@@ -2993,7 +2926,6 @@ namespace langX {
 			return;
 		}
 
-
 		// 2017年12月3日   首次执行到这里的时候 把当前object的环境丢进去
 		if (!nodeLink->flag) {
 			nodeLink->flag = true;
@@ -3002,7 +2934,7 @@ namespace langX {
 			Environment *env = objectRef->getRefObject()->getObjectEnvironment();
 			thread->newEnv2(env);
 		}
-		
+
 		// 根据语法解析文件可知， 第二个节点为一个函数调用节点
 		Node *n2 = n->opr_obj->op[1];
 		if (nodeLink->index == 1) {
@@ -3033,7 +2965,6 @@ namespace langX {
 			thread->getCurrentEnv()->setRestrict(true);
 		}
 		else {
-
 			Node *n1 = n->opr_obj->op[0];
 			if (nodeLink->index == 0) {
 				thread->beginExecute(n1, true);
@@ -3051,7 +2982,7 @@ namespace langX {
 	}
 
 	// 执行 this.xxx
-	void __execTHIS(NodeLink *nodeLink,  langXThread *thread) {
+	void __execTHIS(NodeLink *nodeLink, langXThread *thread) {
 		Node *n = nodeLink->node;
 		Node *n1 = n->opr_obj->op[0];
 		nodeLink->backAfterExec = false;
@@ -3167,7 +3098,6 @@ namespace langX {
 	}
 
 	void __execSCOPE_FUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
-
 		Node *n = nodeLink->node;
 
 		// 根据语法文件可知 n1 是一个SCOPE 类型
@@ -3211,7 +3141,7 @@ namespace langX {
 		else {
 			putNodeLink = (NodeLink*)nodeLink->ptr_u;
 		}
-		
+
 		claxxInfo = getState()->getClass(className);
 		Function *t = claxxInfo->getFunction(memberName);
 
@@ -3229,7 +3159,6 @@ namespace langX {
 
 	// 执行 try {}
 	void __execXTRY(NodeLink *nodeLink, langXThread *thread) {
-		
 		Node *n = nodeLink->node;
 
 		if (nodeLink->index == 0) {
@@ -3241,7 +3170,7 @@ namespace langX {
 			nodeLink->tryEnv = tryEnv;     // 设置环境到节点是上
 			return;
 		}
-		
+
 		if (nodeLink->index == 1) {
 			thread->backEnv();
 		}
@@ -3250,8 +3179,7 @@ namespace langX {
 	}
 
 	//  类型判断语句， 返回一个 true/false
-	void __execXIS(NodeLink *nodeLink,langXThread *thread) {
-
+	void __execXIS(NodeLink *nodeLink, langXThread *thread) {
 		Node *n = nodeLink->node;
 		Node *n1 = n->opr_obj->op[0];
 		Node *n2 = n->opr_obj->op[1];
@@ -3320,10 +3248,8 @@ namespace langX {
 		nodeLink->backAfterExec = true;
 	}
 
-
 	// 包含其他文件
 	void __execINCLUDE(NodeLink *nodeLink) {
-		
 		Node *n = nodeLink->node;
 
 		char *tmp = n->opr_obj->op[0]->con_obj->sValue;
@@ -3342,7 +3268,7 @@ namespace langX {
 			const char *t1 = getState()->getParsingFile();
 			if (realpath(t1, tmpBuf))
 			{
-				// ok 
+				// ok
 				std::string a(tmpBuf);
 				auto it = a.find_last_of('/');
 				if (it != std::string::npos)
@@ -3355,7 +3281,6 @@ namespace langX {
 				}
 			}
 		}
-
 
 		getState()->includeFile(filename);
 		nodeLink->backAfterExec = true;
@@ -3381,7 +3306,7 @@ namespace langX {
 			const char *t1 = getState()->getParsingFile();
 			if (realpath(t1, tmpBuf))
 			{
-				// ok 
+				// ok
 				std::string a(tmpBuf);
 				auto it = a.find_last_of('/');
 				if (it != std::string::npos)
@@ -3395,7 +3320,6 @@ namespace langX {
 			}
 		}
 
-
 		getState()->requireFile(filename);
 
 		nodeLink->backAfterExec = true;
@@ -3403,7 +3327,6 @@ namespace langX {
 	}
 
 	void __execREQUIRE_ONCE(NodeLink *nodeLink) {
-
 		Node *n = nodeLink->node;
 
 		char *tmp = n->opr_obj->op[0]->con_obj->sValue;
@@ -3422,7 +3345,7 @@ namespace langX {
 			char tmpBuf[1024];
 			if (realpath(getState()->getParsingFile(), tmpBuf))
 			{
-				// ok 
+				// ok
 				std::string a(tmpBuf);
 				auto it = a.find_last_of('/');
 				if (it != std::string::npos)
@@ -3516,7 +3439,6 @@ namespace langX {
 			scriptEnv->addNameSpace(space);
 		}
 		else {
-
 			ClassInfo *c = space->getClass(str.c_str());
 			if (c != NULL)
 			{
@@ -3579,7 +3501,6 @@ namespace langX {
 			else {
 				tmp->setConst(!tmp->isConst());
 			}
-
 		}
 
 		Allocator::free(obj);
@@ -3642,15 +3563,12 @@ namespace langX {
 				NodeLink tmpNodeLink;
 				memset(&tmpNodeLink, 0, sizeof(NodeLink));
 				tmpNodeLink.node = t;
-				__realExecNode(&tmpNodeLink,thread);
+				__realExecNode(&tmpNodeLink, thread);
 			}
-			
 		}
 
 		Allocator::free(obj);
-
 	}
-
 
 	void __execLOCAL(NodeLink* nodeLink, langXThread *thread) {
 		Node *n = nodeLink->node;
@@ -3659,17 +3577,17 @@ namespace langX {
 	}
 
 	//  continue 关键字
-	void __execCONTINUE(NodeLink *nodeLink,langXThread* thread) {
+	void __execCONTINUE(NodeLink *nodeLink, langXThread* thread) {
 		Node *n = nodeLink->node;
 
-		if (!thread->isInLoop() )
+		if (!thread->isInLoop())
 		{
 			getState()->curThread()->throwException(newUnsupportedOperationException("invalid continue stmt.")->addRef());
 			//printf("无效的CONTINUE 语句 ");
 			return;
 		}
 
-		// 
+		//
 		do {
 			if (nodeLink == nullptr) {
 				break;
@@ -3695,12 +3613,10 @@ namespace langX {
 
 			nodeLink = nodeLink->previous;
 			thread->endExecute();
-
 		} while (true);
 
 		thread->setBackInExec(true);
 	}
-
 
 	/*
 	 * 执行节点，  节点的结果 将 放在  Node.value 上
@@ -3718,7 +3634,7 @@ namespace langX {
 		nodeLink->backAfterExec = true;
 
 		Node *node = nodeLink->node;
-		
+
 		if (node->type == NODE_VARIABLE)
 		{
 			//printf("__execNode NODE_VARIABLE\n");
@@ -3736,20 +3652,16 @@ namespace langX {
 					Function *func = getState()->curThread()->getFunction(node->var_obj->name);
 					if (func != nullptr)
 					{
-
 						node->value = Allocator::allocateFunctionRef(func);
 					}
 					else {
 						node->value = new NullObject();
 					}
-
 				}
 				else {
-
-					// 变量类型为 一个 copy 
+					// 变量类型为 一个 copy
 					node->value = obj->clone();
 				}
-
 			}
 
 			return;
@@ -3808,12 +3720,11 @@ namespace langX {
 					node->ptr_u = NULL;
 					return;
 				}
-
 			}
 
 			getState()->regClass(cinfo);
 			node->ptr_u = NULL;
-			
+
 			return;
 		}
 		else if (node->type == NODE_FUNCTION)
@@ -3826,7 +3737,7 @@ namespace langX {
 			Function *func = (Function*)node->ptr_u;
 			if (!func->hasName())
 			{
-				// 匿名函数    ...  wtf ???  当初匿名函数到底是怎么进行处理的- - 
+				// 匿名函数    ...  wtf ???  当初匿名函数到底是怎么进行处理的- -
 				//  2017年12月3日   当运算一个匿名函数的时候， 就把改该节点的值 做成一个函数指针指向这个匿名函数
 				node->value = Allocator::allocateFunctionRef(func);
 				return;
@@ -3846,10 +3757,10 @@ namespace langX {
 			Environment *env = getState()->getScriptOrNSEnv();
 			if (env != NULL && env->getType() == EnvironmentType::TScriptEnvironment)
 			{
-				func->setScriptEnv( (ScriptEnvironment*)env );
+				func->setScriptEnv((ScriptEnvironment*)env);
 			}
 			thread->getCurrentEnv()->putFunction(func->getName(), func);
-			
+
 			return;
 		}
 		else if (node->type == NODE_NULL)
@@ -3911,7 +3822,6 @@ namespace langX {
 			getState()->changeNameSpace(space);
 			return;
 		}
-
 
 		if (node->type != NODE_OPERATOR)
 		{
@@ -4030,7 +3940,7 @@ namespace langX {
 			__execRETURN(nodeLink, thread);
 			break;
 		case SWITCH:
-			__execSWITCH(nodeLink,thread);
+			__execSWITCH(nodeLink, thread);
 			break;
 		case CASE_LIST:
 			__execCASE_LIST(nodeLink, thread);
@@ -4057,7 +3967,7 @@ namespace langX {
 			__execVAR_DECLAR(nodeLink, thread);
 			break;
 		case RESTRICT:
-			__execRESTRICT(nodeLink,thread);
+			__execRESTRICT(nodeLink, thread);
 			break;
 		case THIS:
 			__execTHIS(nodeLink, thread);
@@ -4094,9 +4004,9 @@ namespace langX {
 			break;
 		case XCONST:
 			__execCONST(nodeLink, thread);
-			break ;
-		case XCONTINUE :
-			__execCONTINUE(nodeLink,thread);
+			break;
+		case XCONTINUE:
+			__execCONTINUE(nodeLink, thread);
 			break;
 		case XLOCAL:
 			__execLOCAL(nodeLink, thread);
@@ -4104,7 +4014,6 @@ namespace langX {
 		default:
 			break;
 		}
-
 	}
 
 	void __execNode(Node *node) {
@@ -4112,14 +4021,13 @@ namespace langX {
 	}
 
 	void __execNode(Node *node, Node *limitNode) {
-
 		langXThread * thread = getState()->curThread();
 		if (node != NULL)
 		{
 			// 如果没给参数， 就暂时进入一个循环做一些事情
 			thread->initRootNode(node);
 		}
-	
+
 		NodeLink *curLink = NULL;
 		while ((curLink = thread->getCurrentExecute()) != NULL) {
 			//  程序没还有结束
@@ -4143,20 +4051,16 @@ namespace langX {
 					continue;
 				}
 			}
-			
+
 			if (curLink->next == nullptr && curLink->backAfterExec) {
 				// will end execute .
 				Node *tmpNode = curLink->node;
 				thread->endExecute();
 
 				if (tmpNode == limitNode) {
-					break; 
+					break;
 				}
 			}
-
 		}
-
 	}
-
 }
-

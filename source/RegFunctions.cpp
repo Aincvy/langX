@@ -24,16 +24,14 @@
 #include "../include/langXObjectRef.h"
 #include "../include/Allocator.h"
 
-
 static struct termios old, newone;
 
 namespace langX {
-
 	/* Initialize new terminal i/o settings */
 	void initTermios(int echo)
 #ifdef WIN32
 	{
-		// win32 
+		// win32
 	}
 #else
 	{
@@ -49,7 +47,7 @@ namespace langX {
 	void resetTermios(void)
 #ifdef WIN32
 	{
-		// win32 
+		// win32
 	}
 #else
 	{
@@ -57,13 +55,8 @@ namespace langX {
 	}
 #endif
 
-	// 对象的元数据信
-	static ClassInfo * c_metadata;
-	// 空类， 当想返回某个对象的时候可以考虑使用
-	static ClassInfo * c_empty_class;
-
-	// 注册一些类到 langX里面 
-	// 基本上都是 本文件里面需要用到的类 
+	// 注册一些类到 langX里面
+	// 基本上都是 本文件里面需要用到的类
 	void regClasses(langXState *state) {
 		c_metadata = new ClassInfo("ObjectMetadata");
 		NullObject nullObj;
@@ -76,7 +69,6 @@ namespace langX {
 
 		c_empty_class = new ClassInfo("EmptyClass");
 		state->regClassToGlobal(c_empty_class);
-
 	}
 
 	// 打印语句之后自动换行
@@ -191,7 +183,6 @@ namespace langX {
 			return NULL;
 		}
 
-
 		Object *obj = args.args[0];
 		if (obj == NULL)
 		{
@@ -208,10 +199,8 @@ namespace langX {
 		return NULL;
 	}
 
-
 	// 读取出一个字符串
 	Object * langX_scan_string(X3rdFunction *func, const X3rdArgs & args) {
-
 		char t[100] = { 0 };
 		scanf("%s", t);
 
@@ -220,14 +209,12 @@ namespace langX {
 
 	// 读取一行
 	Object * langX_read_line(X3rdFunction *func, const X3rdArgs & args) {
-
 		char inputBuffer[2048] = { 0 };
 		int inputIndex = 0;
 
 		initTermios(0);
 		char c;
 		while ((c = getchar()) != '\n') {
-
 			if (c == '\b' && inputIndex > 0) {
 				inputBuffer[--inputIndex] = '\0';
 				printf("\b \b");
@@ -236,7 +223,6 @@ namespace langX {
 				inputBuffer[inputIndex++] = c;
 				printf("%c", c);
 			}
-
 		}
 		resetTermios();
 		printf("\n");
@@ -246,7 +232,6 @@ namespace langX {
 
 	// 读取一个数字
 	Object * langX_scan_number(X3rdFunction *func, const X3rdArgs & args) {
-
 		double a;
 		scanf("%lf", &a);
 
@@ -254,14 +239,12 @@ namespace langX {
 	}
 
 	Object * langX_print_stack_trace(X3rdFunction *func, const X3rdArgs & args) {
-
 		func->getLangX()->curThread()->printStackTrace();
 
 		return NULL;
 	}
 
 	Object * langX_exit(X3rdFunction *func, const X3rdArgs & args) {
-
 		int status = 0;
 
 		if (args.index > 0)
@@ -296,7 +279,6 @@ namespace langX {
 
 	// 创建文件夹
 	Object * langX_sy_mkdir(X3rdFunction *func, const X3rdArgs & args) {
-
 		Object *a = args.args[0];
 		if (a && a->getType() == ObjectType::STRING) {
 			String *str = (String*)a;
@@ -314,7 +296,6 @@ namespace langX {
 
 	// 把字符串转换成数字  | 如果遇到不能转换的字符串， 则返回0
 	Object * langX_sy_to_int(X3rdFunction *func, const X3rdArgs & args) {
-
 		Object *a = args.args[0];
 		if (a && a->getType() == ObjectType::STRING) {
 			String *str = (String*)a;
@@ -348,7 +329,6 @@ namespace langX {
 	// 执行一个命令， 并打印输出
 	// null 标识参数错误，  -1 标识打开管道失败  1 标识执行成功
 	Object * langX_sy_run_and_print(X3rdFunction *func, const X3rdArgs & args) {
-
 		Object *a = args.args[0];
 		if (a && a->getType() == ObjectType::STRING) {
 			String *str = (String*)a;
@@ -373,7 +353,6 @@ namespace langX {
 	// 获取一个对象的元信息
 	// 部分属性暂时无法获取到正确的值， 所以不进行赋值操作
 	Object * langX_sy_metadata(X3rdFunction *func, const X3rdArgs & args) {
-
 		Object *a = args.args[0];
 		langXObject *obj = c_metadata->newObject();
 		if (a) {
@@ -392,7 +371,7 @@ namespace langX {
 				String envStr(tmp);
 				//obj->setMember("emergeEnv", &envStr);
 			}
-			
+
 			obj->setMember("value", a);
 		}
 
@@ -400,10 +379,9 @@ namespace langX {
 	}
 
 	// 获取一个元素的类型， 返回一个字符串
-	// 可以传来两个参数， 第一个为要鉴定的对象 
+	// 可以传来两个参数， 第一个为要鉴定的对象
 	// 如果第一个参数是一个 Object类型，即对象类型，如果第二个参数为true 则返回对象的类名， 否则返回 "Object"
 	Object * langX_co_typeof(X3rdFunction *func, const X3rdArgs & args) {
-
 		Object *a = args.args[0];
 		const char *typeName = "Null";
 		if (a) {
@@ -436,7 +414,6 @@ namespace langX {
 					typeName = "Object";
 				}
 			}
-
 		}
 
 		return Allocator::allocateString(typeName);
@@ -453,6 +430,19 @@ namespace langX {
 		}
 
 		return Allocator::allocate(ObjectType::NULLOBJECT);
+	}
+
+	Object * langX_sy_isLoadMod(X3rdFunction *func, const X3rdArgs & args) {
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING)
+		{
+			String *str = (String*)a;
+			bool flag = func->getLangX()->isLoadModule(str->getValue());
+			int ret = flag ? 1 : 0;
+			return Allocator::allocateNumber(ret);
+		}
+
+		return Allocator::allocateNumber(0);
 	}
 
 
@@ -478,7 +468,6 @@ namespace langX {
 		state->reg3rd("sy_metadata", langX_sy_metadata);
 		state->reg3rd("co_typeof", langX_co_typeof);
 		state->reg3rd("co_classname", langX_co_classname);
-
+		state->reg3rd("sy_isLoadMod", langX_sy_isLoadMod);
 	}
-
 }

@@ -8,7 +8,6 @@
 #include "../include/langXThread.h"
 
 namespace langX {
-
 	// 构造方法
 	Object * langX_Exception_Exception(X3rdFunction *func, const X3rdArgs & args) {
 		if (args.object == NULL)
@@ -48,7 +47,6 @@ namespace langX {
 
 	// 打印堆栈信息
 	Object * langX_Exception_printStackTrace(X3rdFunction *func, const X3rdArgs & args) {
-
 		// 先打印exception 的message
 		if (args.object == NULL)
 		{
@@ -233,5 +231,4 @@ namespace langX {
 	{
 		return  newException("InnerException", message);
 	}
-
 }

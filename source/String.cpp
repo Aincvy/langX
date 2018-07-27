@@ -13,7 +13,6 @@ namespace langX {
 	}
 	String::~String()
 	{
-
 	}
 	void String::add(const char * str)
 	{
@@ -79,7 +78,6 @@ namespace langX {
 
 	bool String::isEmpty() const
 	{
-		
 		return this->m_value.empty();
 	}
 
@@ -103,7 +101,6 @@ namespace langX {
 
 	int String::indexOf(const char *str)
 	{
-
 		int i = this->m_value.find_first_of(str);
 		if (i == std::string::npos)
 		{
@@ -129,7 +126,7 @@ namespace langX {
 		int len = strlen(a);
 		while (i != std::string::npos)
 		{
-			str.replace(i , len,b);
+			str.replace(i, len, b);
 
 			i = str.find(a);
 		}
@@ -186,6 +183,4 @@ namespace langX {
 	{
 		delete this;
 	}
-
-
 }

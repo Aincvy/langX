@@ -14,7 +14,6 @@
 #include "../include/LogManager.h"
 
 namespace langX {
-
 	Environment::Environment()
 	{
 		this->m_parent = NULL;
@@ -22,7 +21,6 @@ namespace langX {
 
 	Environment::~Environment()
 	{
-
 	}
 
 	Object * Environment::getObject(const std::string &, bool)
@@ -131,10 +129,6 @@ namespace langX {
 	{
 		this->m_deep = i;
 	}
-
-
-
-
 
 	ClassBridgeEnv::ClassBridgeEnv(ClassInfo *claxx)
 	{
@@ -259,8 +253,6 @@ namespace langX {
 		return EnvironmentType::TClassBridgeEnv;
 	}
 
-
-
 	ObjectBridgeEnv::ObjectBridgeEnv(langXObject *obj)
 	{
 		this->m_object = obj;
@@ -302,7 +294,7 @@ namespace langX {
 		{
 			if (this->m_parent != NULL && !m_restrict)
 			{
-				return this->m_parent->getObject(name,false);
+				return this->m_parent->getObject(name, false);
 			}
 		}
 		Object * r = this->m_object->getMember(name.c_str());
@@ -310,7 +302,7 @@ namespace langX {
 		{
 			if (this->m_parent != NULL && !m_restrict)
 			{
-				return this->m_parent->getObject(name,false);
+				return this->m_parent->getObject(name, false);
 			}
 		}
 		return r;
@@ -415,7 +407,6 @@ namespace langX {
 
 			m_functions_map.clear();
 		}
-
 	}
 
 	bool TryEnvironment::isTryEnvironment() const
@@ -476,7 +467,7 @@ namespace langX {
 	{
 		//printf("getObject on env-p: %p\n", this);
 
-		return this->getObject(name,true);
+		return this->getObject(name, true);
 	}
 
 	Object * TryEnvironment::getObject(const std::string &name, bool firstLevel)
@@ -498,7 +489,7 @@ namespace langX {
 		{
 			if (this->m_parent != NULL && !m_restrict)
 			{
-				return this->m_parent->getObject(name,false);
+				return this->m_parent->getObject(name, false);
 			}
 			return NULL;
 		}
@@ -568,7 +559,6 @@ namespace langX {
 
 	void EnvironmentBridgeEnv::putObject(const char *name, Object *obj)
 	{
-
 		//  这是环境桥接环境， 不需要复制。 目标环境应该会进行复制的
 		this->m_env->putObject(name, obj);
 	}
@@ -596,12 +586,12 @@ namespace langX {
 
 	Object * EnvironmentBridgeEnv::getObject(const std::string & name, bool firstLevel)
 	{
-		Object *o = this->m_env->getObject(name , firstLevel);
+		Object *o = this->m_env->getObject(name, firstLevel);
 		if (o == NULL)
 		{
 			if (this->getParent() != NULL && !this->m_restrict)
 			{
-				return this->getParent()->getObject(name,false);
+				return this->getParent()->getObject(name, false);
 			}
 		}
 		return o;
@@ -738,8 +728,6 @@ namespace langX {
 		else {
 			this->m_objects_map[name] = obj;
 		}
-
-
 	}
 
 	Object * DefaultEnvironment::getObject(const std::string &name)
@@ -766,16 +754,13 @@ namespace langX {
 		{
 			if (this->m_parent != NULL && !m_restrict)
 			{
-				return this->m_parent->getObject(name,false);
+				return this->m_parent->getObject(name, false);
 			}
 			return NULL;
 		}
 
 		return index->second;
-
 	}
-
-
 
 	Object * DefaultEnvironment::getObjectSelf(const char *name) const
 	{
@@ -789,12 +774,10 @@ namespace langX {
 
 	void DefaultEnvironment::putFunction(const char *, Function *)
 	{
-
 	}
 
 	void DefaultEnvironment::putFunction(const std::string &, Function *)
 	{
-
 	}
 
 	Function * DefaultEnvironment::getFunction(const std::string & name)
@@ -818,14 +801,12 @@ namespace langX {
 
 	XNameSpaceEnvironment::~XNameSpaceEnvironment()
 	{
-
 	}
 
 	const char * XNameSpaceEnvironment::getName() const
 	{
 		return this->m_space->getName();
 	}
-
 
 	void XNameSpaceEnvironment::putObject(const char *name, Object *obj)
 	{
@@ -834,7 +815,7 @@ namespace langX {
 
 	void XNameSpaceEnvironment::putObject(const std::string &name, Object *obj)
 	{
-		// 因为是命名空间的桥接环境。 命名空间内部再实现的时候会copy 。 所以这里不进行copy 
+		// 因为是命名空间的桥接环境。 命名空间内部再实现的时候会copy 。 所以这里不进行copy
 		this->m_space->putObject(name, obj);
 	}
 
@@ -923,7 +904,6 @@ namespace langX {
 
 	GlobalEnvironment::GlobalEnvironment()
 	{
-		
 	}
 
 	GlobalEnvironment::~GlobalEnvironment()
@@ -948,7 +928,6 @@ namespace langX {
 
 			m_classes_map.clear();
 		}
-
 	}
 
 	void GlobalEnvironment::putObject(const char *, Object *)
@@ -1089,7 +1068,6 @@ namespace langX {
 
 		if (!m_require_files_map.empty())
 		{
-
 			for (auto a = m_require_files_map.begin(); a != m_require_files_map.end(); a++)
 			{
 				//printf("free require files: %p\n", a->second);
@@ -1179,13 +1157,12 @@ namespace langX {
 
 			if (this->m_parent != NULL && !m_restrict)
 			{
-				return this->m_parent->getObject(name,false);
+				return this->m_parent->getObject(name, false);
 			}
 			return NULL;
 		}
 
 		return index->second;
-
 	}
 
 	Object * ScriptEnvironment::getObjectSelf(const char *name) const
@@ -1229,14 +1206,12 @@ namespace langX {
 				for (auto i = this->m_require_files_map.begin(); i != this->m_require_files_map.end(); i++)
 				{
 					Function *f = i->second->getFunction(name);
-					if (f != nullptr )
+					if (f != nullptr)
 					{
 						return f;
 					}
 				}
 			}
-
-			
 
 			if (this->m_parent != NULL)
 			{
@@ -1352,12 +1327,12 @@ namespace langX {
 		}
 
 		std::string str(name);
-		if (this->m_require_files_map.find(name) == this->m_require_files_map.end() )
+		if (this->m_require_files_map.find(name) == this->m_require_files_map.end())
 		{
 			this->m_require_files_map[str] = env;
 			return 0;
 		}
-		
+
 		return -1;
 	}
 
@@ -1384,5 +1359,4 @@ namespace langX {
 	{
 		return EnvironmentType::TScriptEnvironment;
 	}
-
 }

@@ -6,9 +6,6 @@
 #include "../include/Allocator.h"
 
 namespace langX {
-
-
-
 	XNameSpace::XNameSpace(const char *name)
 	{
 		this->m_name = std::string(name);
@@ -27,7 +24,6 @@ namespace langX {
 			m_objects_map.clear();
 		}
 	}
-
 
 	const char * XNameSpace::getName() const
 	{
@@ -54,7 +50,6 @@ namespace langX {
 
 	Object * XNameSpace::getObject(const std::string &name)
 	{
-
 		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
 			return NULL;
@@ -145,5 +140,4 @@ namespace langX {
 		this->m_namespace_map[name] = space;
 		return space;
 	}
-
 }

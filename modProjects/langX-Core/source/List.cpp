@@ -187,11 +187,32 @@ namespace langX {
 			}
 		}
 
+		return nullptr;
+	}
+
+	Object * langX_List_Clear(X3rdFunction *func, const X3rdArgs &args) {
+
+		if (args.object == nullptr)
+		{
+			printf("langX_List_Clear error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		std::list<Object*> * list = (std::list<Object*> *)args.object->get3rdObj();
+		list->clear();
 
 		return nullptr;
 	}
 
+
 	Object * langX_List_Iterator(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_List_Iterator error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		std::list<Object*> * list = (std::list<Object*> *)args.object->get3rdObj();
 
 		return nullptr;
 	}

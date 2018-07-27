@@ -9,7 +9,9 @@ namespace langX {
 
 	CoreModule::CoreModule()
 	{
+		this->setName("core");
 	}
+
 	CoreModule::~CoreModule()
 	{
 	}

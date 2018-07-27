@@ -3,11 +3,10 @@
 #include "../include/Utils.h"
 
 namespace langX {
-
 	Object::Object()
 	{
 		this->m_ref_count = 0;
-		
+
 		char t[100];
 		randomCharacteristic(t, 100, this, 8);
 		this->m_characteristic = std::string(t);
@@ -84,15 +83,14 @@ namespace langX {
 		this->m_characteristic = std::string(a);
 	}
 
-
 	NodeLink * newNodeLink(NodeLink *previous, Node *node) {
-		NodeLink *nodeLink = (NodeLink *)calloc(1,sizeof(NodeLink));
+		NodeLink *nodeLink = (NodeLink *)calloc(1, sizeof(NodeLink));
 		nodeLink->previous = previous;
 		nodeLink->node = node;
 		nodeLink->index = 0;
 		nodeLink->backAfterExec = false;
 		nodeLink->flag = false;
-		nodeLink->next = NULL; 
+		nodeLink->next = NULL;
 		if (previous != NULL) {
 			previous->next = nodeLink;
 		}
@@ -120,5 +118,4 @@ namespace langX {
 		nodeLink->tryEnv = NULL;
 		free(nodeLink);
 	}
-
 }

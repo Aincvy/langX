@@ -3,11 +3,7 @@
 #include "../include/ClassInfo.h"
 #include "../include/StackTrace.h"
 
-
 namespace langX {
-
-
-
 	StrackTraceFrame::StrackTraceFrame()
 	{
 	}
@@ -81,7 +77,6 @@ namespace langX {
 
 	StackTrace::StackTrace()
 	{
-		
 	}
 
 	StackTrace::~StackTrace()
@@ -121,7 +116,7 @@ namespace langX {
 		StrackTraceFrame  *ret = this->m_frames.back();
 		this->m_frames.pop_back();
 		delete ret;
-		return ;
+		return;
 	}
 
 	StrackTraceFrame * StackTrace::top() const
@@ -139,13 +134,12 @@ namespace langX {
 		StrackTraceFrameArray ret;
 		ret.length = this->m_frames.size();
 		ret.frame = (const StrackTraceFrame**)calloc(ret.length, sizeof(StrackTraceFrame*));
-		
-		for (int i = 0 ; i < this->m_frames.size(); i++)
+
+		for (int i = 0; i < this->m_frames.size(); i++)
 		{
 			ret.frame[i] = this->m_frames[i];
 		}
 
 		return (ret);
 	}
-
 }

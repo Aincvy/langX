@@ -4,11 +4,9 @@
 
 namespace langX {
 
-
-
 	MysqlModule::MysqlModule()
 	{
-
+		this->setName("mysql");
 	}
 
 	MysqlModule::~MysqlModule()
