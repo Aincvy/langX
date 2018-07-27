@@ -9,7 +9,6 @@
 #include "../include/YLlangX.h"
 
 namespace langX {
-
 	langX::ClassInfo::ClassInfo(const char*name)
 	{
 		this->m_name = std::string(name);
@@ -62,7 +61,7 @@ namespace langX {
 
 		if (this->m_parent != NULL)
 		{
-			return this->m_parent->hasMember(name ,true);
+			return this->m_parent->hasMember(name, true);
 		}
 
 		return false;
@@ -73,7 +72,7 @@ namespace langX {
 		return getMember(name, false);
 	}
 
-	Object * ClassInfo::getMember(const char *name , bool flag) const
+	Object * ClassInfo::getMember(const char *name, bool flag) const
 	{
 		if (!hasMember(name))
 		{
@@ -107,7 +106,7 @@ namespace langX {
 		return getFunction(name, false);
 	}
 
-	Function * ClassInfo::getFunction(const char *name , bool flag) const
+	Function * ClassInfo::getFunction(const char *name, bool flag) const
 	{
 		if (!hasFunction(name))
 		{
@@ -150,6 +149,11 @@ namespace langX {
 		return new langXObject(this);
 	}
 
+	langXObjectExtend* ClassInfo::newExtendObject()
+	{
+		return langXObjectExtend();
+	}
+
 	std::map<std::string, Object*>& ClassInfo::getMembers()
 	{
 		return this->m_members;
@@ -162,7 +166,7 @@ namespace langX {
 
 	bool ClassInfo::isInstanceOf(const char *name) const
 	{
-		if (strcmp(this->m_name.c_str(), name ) == 0)
+		if (strcmp(this->m_name.c_str(), name) == 0)
 		{
 			return true;
 		}
@@ -215,9 +219,9 @@ namespace langX {
 			this->m_functions[str] = obj;
 		}
 
-		if (! this->m_local )
+		if (!this->m_local)
 		{
-			if (c1->isLocal() )
+			if (c1->isLocal())
 			{
 				this->m_local = true;
 			}
@@ -238,6 +242,4 @@ namespace langX {
 	{
 		this->m_local = f;
 	}
-
-
 }

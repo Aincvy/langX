@@ -57,7 +57,6 @@ void assignment(const char *n, langX::Object * obj)
 	state->curThread()->putObject(n, obj);
 }
 
-
 Object * getValue(const char *n)
 {
 	return state->curThread()->getObject(n);
@@ -98,7 +97,7 @@ void deal_fileinfo(NodeFileInfo *f) {
 }
 
 XNode *newNode() {
-	// 节点的文件信息里面存在了一个 std::string 
+	// 节点的文件信息里面存在了一个 std::string
 	// 如果再用下面的方式进行申请内存，则会在centos 下有问题
 	// 需要改成使用 new 的方式
 	// XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
@@ -116,7 +115,6 @@ XNode *newNode() {
 	node->ptr_u = NULL;
 
 	return node;
-
 }
 
 std::string fileInfoString(const NodeFileInfo & f) {
@@ -172,7 +170,6 @@ void getObjStringDesc(langX::Object * obj, char *tmp, int maxSize)
 	default:
 		break;
 	}
-
 }
 
 void objToString(langX::Object * obj, char *p, int offset, int maxSize)
@@ -185,7 +182,7 @@ void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 		ss << "|[" << obj->characteristic();
 	}
 	else {
-		// 
+		//
 		FunctionRef aref(func1);
 		aref.setObj(ref1->getRefObject());
 		NodeLink tmpNodeLink;
@@ -193,7 +190,7 @@ void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 		//  因为本参数无参，所以只修改 index为1， 这样的话，一次就可以获取到结果
 		tmpNodeLink.index = 1;
 		Object *retObj = aref.call(nullptr, "<call toString()>", &tmpNodeLink);
- 		if (retObj->getType() == STRING)
+		if (retObj->getType() == STRING)
 		{
 			ss << ((String*)retObj)->getValue();
 		}
@@ -207,11 +204,9 @@ void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 	{
 		size = str.size();
 	}
-	
-	memcpy(p+offset, str.c_str(), size);
 
+	memcpy(p + offset, str.c_str(), size);
 }
-
 
 XNode * string(char *v)
 {
@@ -248,10 +243,9 @@ XNode * var(char *name)
 	return node;
 }
 
-// 数组元素节点 
+// 数组元素节点
 // 如果使用的变量， 则值放在 第三个参数lengthNode 上
 XNode *arr(char *name, int index, XNode *indexNode) {
-
 	XNode * node = newNode();
 	node->arr_obj = (langX::ArrayInfo*) calloc(1, sizeof(langX::ArrayInfo) * 1);
 	node->type = NODE_ARRAY_ELE;
@@ -262,7 +256,6 @@ XNode *arr(char *name, int index, XNode *indexNode) {
 	node->arr_obj->indexNode = indexNode;
 
 	return node;
-
 }
 
 XNode * arr2(XNode *objNode, int index, XNode *indexNode)
@@ -394,7 +387,6 @@ XNode * dtrt(char *name, XParamsList *params, XNode *node)
 }
 
 XNode *lambda(XParamsList *params, XNode *node) {
-
 	Function *func = new Function("", node);
 	func->setParamsList(params);
 
@@ -427,7 +419,6 @@ XNode * xnull()
 }
 
 XNode * claxx(char *name, char *parent, XNode * node, bool flag) {
-
 	ClassInfo *pclass = NULL;
 	if (parent != NULL)
 	{
@@ -474,15 +465,13 @@ XObject * call(const char *name, XArgsList* args, const char *remark, NodeLink *
 	return callFunc(function, args, remark, nodeLink);
 }
 
-
 // 调用第三方函数
-XObject *call3rdFunc(X3rdFunction *x3rdfunc, langXThread * thread,XArgsList *args, NodeLink* nodeLink) {
-
+XObject *call3rdFunc(X3rdFunction *x3rdfunc, langXThread * thread, XArgsList *args, NodeLink* nodeLink) {
 	X3rdArgs _3rdArgs;
 	memset(&_3rdArgs, 0, sizeof(X3rdArgs));
 	if (args != NULL)
 	{
-		// 计算出参数节点的值。 然后克隆一份给 传参的那个数据结构。 然后再释放掉参数节点的值。 
+		// 计算出参数节点的值。 然后克隆一份给 传参的那个数据结构。 然后再释放掉参数节点的值。
 		if (nodeLink->index == 0) {
 			for (int i = 0; i < args->index; i++)
 			{
@@ -547,13 +536,11 @@ XObject *call3rdFunc(X3rdFunction *x3rdfunc, langXThread * thread,XArgsList *arg
 	{
 		Allocator::free(_3rdArgs.args[i]);
 	}
-	
-	return ret1;
 
+	return ret1;
 }
 
 XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, NodeLink* nodeLink) {
-	
 #ifdef SHOW_DETAILS
 	//printf("callFunc %s %s\n" , function->getName(), remark );
 #endif
@@ -570,18 +557,18 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 		if (nodeLink->index == 0) {
 			thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 		}
-		// 第三方函数 
+		// 第三方函数
 		X3rdFunction *x3rdfunc = (X3rdFunction*)function;
 		return call3rdFunc(x3rdfunc, thread, args, nodeLink);
 	}
 
 	if (nodeLink->index == 0)
 	{
-		// 
+		//
 		thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
 		// 计算参数的值
-		if (args != NULL )
+		if (args != NULL)
 		{
 			XParamsList *params = function->getParamsList();
 			NullObject nullobj;
@@ -597,11 +584,10 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 				{
 					// 最初的时候， 参数的值应该是一个NULL 。 然后执行参数节点， 产生一个结果
 					thread->beginExecute(args->args[i], true);
-
 				}
 			}
 		}
-		
+
 		nodeLink->index = 1;
 		return nullptr;
 	}
@@ -618,7 +604,6 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 	Environment * env = new DefaultEnvironment();
 	Object * ret = NULL;
 
-
 	if (args != NULL)
 	{
 		XParamsList *params = function->getParamsList();
@@ -633,18 +618,16 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 
 			if (args->args[i] != NULL)
 			{
-
 				if (args->args[i]->value)
 				{
 					env->putObject(params->args[i], args->args[i]->value);
-
 				}
 				else {
 					env->putObject(params->args[i], &nullobj);
 				}
 
-				// 上面的做法是把参数的值 复制到环境内。   
-				// Environment.putObject   内都是保留的一个副本。  
+				// 上面的做法是把参数的值 复制到环境内。
+				// Environment.putObject   内都是保留的一个副本。
 				// 这片代码的本意是吧参数节点的值算出来，然后丢给函数。 现在任务已经完成了。 可以把参数节点的值给释放掉了
 
 				// 释放这个参数节点的值
@@ -654,11 +637,10 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 				//printf("put param %s object: %d.on env: %p. number value: %f. \n", params->args[i] , t ,env, t == NUMBER ? ((Number*)args->args[i]->value)->getDoubleValue() : -1 );
 			}
 			else {
-				// 没给出的参数 给个NULL 
+				// 没给出的参数 给个NULL
 				env->putObject(params->args[i], &nullobj);
 			}
 		}
-
 	}
 
 	if (abcEnv != NULL)
@@ -668,7 +650,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 	}
 
 	// 如果这个函数属于某个脚本， 先用该函数的脚本环境覆盖
-	ScriptEnvironment *fsenv =  function->getScriptEnv();
+	ScriptEnvironment *fsenv = function->getScriptEnv();
 	bool flagfsenv = false;
 	if (fsenv != nullptr)
 	{
@@ -691,7 +673,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 }
 
 XNode * argsNode(XArgsList * args) {
-	// 节点的文件信息里面存在了一个 std::string 
+	// 节点的文件信息里面存在了一个 std::string
 	// 如果再用下面的方式进行申请内存，则会在centos 下有问题
 	// XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
 	XNode * node = new XNode();
@@ -757,7 +739,7 @@ XArgsList * xArgs(XArgsList *args, XNode *node) {
 }
 
 // 预处理case list
-void pretreatCaseList(XNode *node,SwitchInfo *switchInfo) {
+void pretreatCaseList(XNode *node, SwitchInfo *switchInfo) {
 	if (node == nullptr || node->type != NodeType::NODE_OPERATOR) {
 		return;
 	}
@@ -777,10 +759,10 @@ void pretreatCaseList(XNode *node,SwitchInfo *switchInfo) {
 		memset(&nodeLink, 0, sizeof(NodeLink));
 		Node *checkValueNode = node->opr_obj->op[0];    // 从语法解析文件可知， 此值是一个判定值
 		Node *execNode = node->opr_obj->op[1];    // 从语法解析文件可知， 此值是一个具体的执行值
-		
+
 		nodeLink.node = checkValueNode;
 		__realExecNode(&nodeLink, getState()->curThread());
-		
+
 		if (execNode != nullptr) {
 			switchInfo->caseList[index] = execNode;
 
@@ -790,7 +772,7 @@ void pretreatCaseList(XNode *node,SwitchInfo *switchInfo) {
 					switchInfo->keyIndexMap.insert(std::pair<std::string, int>((*i), index));
 				}
 			}
-		} 
+		}
 
 		// 释放值
 		Object *obj = checkValueNode->value;
@@ -822,7 +804,6 @@ void pretreatCaseList(XNode *node,SwitchInfo *switchInfo) {
 			else {
 				switchInfo->keyIndexMap[key] = index;
 			}
-			
 		}
 		else {
 			// error value
@@ -836,14 +817,13 @@ void pretreatCaseList(XNode *node,SwitchInfo *switchInfo) {
 	else if (opr == DEFAULT) {
 		switchInfo->defaultNode = node;
 	}
-
 }
 
 void pretreatSwitch(XNode *node) {
 	if (node->type != NodeType::NODE_OPERATOR) {
 		return;
 	}
-	
+
 	if (node->opr_obj->opr != SWITCH) {
 		return;
 	}
@@ -866,7 +846,6 @@ void pretreatSwitch(XNode *node) {
 	memcpy(caseList, nodes, memSize);
 	switchInfo->caseList = caseList;
 }
-
 
 void freeArgsList(XArgsList *alist) {
 	if (alist->args != NULL)
@@ -907,7 +886,6 @@ void freeAllArgList(Node *n) {
 			freeAllArgList(n->opr_obj->op[i]);
 		}
 	}
-
 }
 
 void freeNode(XNode * n) {
@@ -1024,7 +1002,6 @@ void doFile(const char *f)
 	state->doFile(f);
 }
 
-
 void execNodeButLimit(XNode *n, XNode *limit) {
 	langX::__execNode(n, limit);
 }
@@ -1034,7 +1011,6 @@ void execNode(XNode *n) {
 }
 
 void execAndFreeNode(XNode *n) {
-
 	langXThread * thread = getState()->curThread();
 	if (thread->isInException())
 	{

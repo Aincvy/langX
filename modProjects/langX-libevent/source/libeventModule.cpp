@@ -8,10 +8,9 @@
 
 namespace langX {
 
-
-
 	libeventModule::libeventModule()
 	{
+		this->setName("libevent");
 	}
 
 	libeventModule::~libeventModule()

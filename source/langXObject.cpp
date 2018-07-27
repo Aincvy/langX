@@ -13,9 +13,6 @@
 #include "../include/langXThread.h"
 
 namespace langX {
-
-
-
 	langXObject::langXObject(ClassInfo *claxxInfo)
 	{
 		// 先生成父类对象
@@ -50,7 +47,7 @@ namespace langX {
 
 		this->m_disposing = true;
 		// 先干掉自己， 再干掉父类对象
-		
+
 		// 先调用自己的 析构函数
 		std::string str = "~";
 		str += this->m_class_info->getName();
@@ -70,7 +67,7 @@ namespace langX {
 			{
 				continue;
 			}
-			
+
 			r->setRefObject(nullptr);
 		}
 		this->m_refs.clear();
@@ -83,7 +80,7 @@ namespace langX {
 		}
 	}
 
-	bool langXObject::typeCheck(const char *name) const{
+	bool langXObject::typeCheck(const char *name) const {
 		return m_class_info->isInstanceOf(name);
 	}
 
@@ -101,7 +98,7 @@ namespace langX {
 				printf("cannot find member %s!\n", name);
 				return;
 			}
-			
+
 			this->m_parent->setMember(name, obj, true);
 			return;
 		}
@@ -165,7 +162,7 @@ namespace langX {
 
 	Function * langXObject::getFunction(const char *name, bool flag) const
 	{
-		return this->m_class_info->getFunction(name,flag);
+		return this->m_class_info->getFunction(name, flag);
 	}
 
 	const ClassInfo * langXObject::getClassInfo() const
@@ -269,7 +266,7 @@ namespace langX {
 
 	void langXObject::callConstructor(ArgsList *args, const char *remark)
 	{
-		// 强行执行构造函数  
+		// 强行执行构造函数
 		Function *func = getConstructor();
 		if (func)
 		{
@@ -299,7 +296,6 @@ namespace langX {
 			freeNodeLink(putNodeLink);
 			nodeLink->ptr_u = NULL;
 		}
-
 	}
 
 	Object * langXObject::callFunction(const char *name) const
@@ -356,6 +352,39 @@ namespace langX {
 		return this->m_disposing;
 	}
 
+	langXObjectExtend::langXObjectExtend(ClassInfo *c) : langXObject(c)
+	{
 
+	}
 
+	langXObjectExtend::~langXObjectExtend() 
+	{
+
+	}
+
+	void langXObjectExtend::addFunction(const char *name, Function *f)
+	{
+		this->m_function_map[name] = f;
+	}
+
+	Function * langXObjectExtend::getFunction(const char *name) const
+	{
+		auto it = this->m_function_map.find(name);
+		if (it == this->m_function_map.end())
+		{
+			return nullptr;
+		}
+		return it->second;
+	}
+
+	void langXObjectExtend::addMember(const char *name, Object *v)
+	{
+		auto it = this->m_members.find(name);
+		if (it == this->m_members.end())
+		{
+			this->m_members[name] = nullptr;
+		}
+
+		setMember(name, v);
+	}
 }

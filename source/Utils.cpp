@@ -1,21 +1,20 @@
 #ifdef WIN32
 #include <time.h>
 #else
-#include <sys/time.h>  
+#include <sys/time.h>
 #include <stdio.h>
 #endif // WIN32
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <iostream>
 
 #include "../include/Utils.h"
 
-
 namespace langX {
-
 	static const char * aZ0_str = "qwertyuiopasdfghjklzxcvbnm0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
-	static const int aZ0_len = 62 - 1 ;
+	static const int aZ0_len = 62 - 1;
 
 	long getTime()
 	{
@@ -27,14 +26,13 @@ namespace langX {
 		gettimeofday(&tv, NULL);
 		return (long)((long long)tv.tv_sec * 1000 + tv.tv_usec / 1000);
 #endif // WIN32
-		
 	}
 
 	void randomCharacteristic(char *array, int arrayLen, void *p, int randomLen)
 	{
 		if (!p || !array)
 		{
-			return ;
+			return;
 		}
 
 		memset(array, 0, arrayLen);
@@ -49,12 +47,12 @@ namespace langX {
 			}
 		}
 
-		for (int i = 8; i < randomLen+8; i++)
+		for (int i = 8; i < randomLen + 8; i++)
 		{
 			array[i] = aZ0_str[(rand() % aZ0_len)];
 		}
 
-		return ;
+		return;
 	}
 
 	std::vector<std::string> splitString(const std::string & str, const std::string & pattern)
@@ -109,6 +107,15 @@ namespace langX {
 		}
 
 		return res;
+	}
+
+	bool endsWith(std::string const &fullString, std::string const &ending) {
+		if (fullString.length() >= ending.length()) {
+			return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
+		}
+		else {
+			return false;
+		}
 	}
 
 }

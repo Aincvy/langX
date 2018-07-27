@@ -6,9 +6,6 @@
 #include "../include/Utils.h"
 
 namespace langX {
-
-
-
 	ConfigX::ConfigX()
 	{
 	}
@@ -27,7 +24,6 @@ namespace langX {
 
 		std::string s;
 		while (std::getline(fin, s)) {
-
 			if (s[0] == '#')
 			{
 				continue;
@@ -45,37 +41,20 @@ namespace langX {
 			{
 				continue;
 			}
+
 			if (key == "LIB_DIR" || key == "XX")
 			{
-        if( key == "LIB_DIR"){
-          this->m_lib_dir = std::string(value);
-        } else if(key == "log4cpp"){
-          this->m_log4cpp_path = std::string(value);
-        }
+				if (key == "LIB_DIR") {
+					this->m_lib_dir = std::string(value);
+				}
+				else if (key == "log4cpp") {
+					this->m_log4cpp_path = std::string(value);
+				}
 
 				char tmpChar = value[value.length() - 1];
 				if (tmpChar == '\r' || tmpChar == '\n')
 				{
 					this->m_lib_dir = value.substr(0, value.length() - 1);
-				}else
-				if (value.length() > 1)
-				{
-					// \r\n
-					char tmpChar1 = value[value.length() - 2];
-					if (tmpChar1 == '\r' && tmpChar == '\n')
-					{
-						this->m_lib_dir = value.substr(0, value.length() - 2);
-					}
-				}
-
-			}
-			else {
-				std::string tmpStr = std::string(value);
-
-				char tmpChar = value[value.length() - 1];
-				if (tmpChar == '\r' || tmpChar == '\n')
-				{
-					tmpStr = value.substr(0, value.length() - 1);
 				}
 				else
 					if (value.length() > 1)
@@ -84,13 +63,38 @@ namespace langX {
 						char tmpChar1 = value[value.length() - 2];
 						if (tmpChar1 == '\r' && tmpChar == '\n')
 						{
-							tmpStr = value.substr(0, value.length() - 2);
+							this->m_lib_dir = value.substr(0, value.length() - 2);
 						}
 					}
-
-				this->m_lib_list.push_back(tmpStr);
+				continue;
+			}
+			
+			if (key == "rtlibDir")
+			{
+				this->m_rtlib_dir = std::string(value);
+				continue;
 			}
 
+			// ÅäÖÃµÄ¿âÁĞ±í
+			std::string tmpStr = std::string(value);
+
+			char tmpChar = value[value.length() - 1];
+			if (tmpChar == '\r' || tmpChar == '\n')
+			{
+				tmpStr = value.substr(0, value.length() - 1);
+			}
+			else
+				if (value.length() > 1)
+				{
+					// \r\n
+					char tmpChar1 = value[value.length() - 2];
+					if (tmpChar1 == '\r' && tmpChar == '\n')
+					{
+						tmpStr = value.substr(0, value.length() - 2);
+					}
+				}
+
+			this->m_lib_list.push_back(tmpStr);
 		}
 
 		return 0;
@@ -105,5 +109,8 @@ namespace langX {
 	{
 		return this->m_lib_dir;
 	}
-
+	const std::string & ConfigX::getRTLibDir() const
+	{
+		return this->m_rtlib_dir;
+	}
 }

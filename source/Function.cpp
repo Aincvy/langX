@@ -64,10 +64,8 @@ void setStateToCanFree(langX::Node *n) {
 }
 
 namespace langX {
-
 	Function::Function()
 	{
-
 	}
 
 	Function::Function(Node *root)
@@ -155,7 +153,6 @@ namespace langX {
 		thread->setInFunction(false);
 		thread->setFuncRootNode(lastFuncCallRoot);
 
-
 		if (m_node_root->value != NULL)
 		{
 			Allocator::free(m_node_root->value);
@@ -172,7 +169,6 @@ namespace langX {
 
 		return nullptr;
 	}
-
 
 	bool Function::is3rd() const
 	{
@@ -197,7 +193,6 @@ namespace langX {
 	{
 		return this->m_script_env;
 	}
-
 
 	X3rdFunction::X3rdFunction()
 	{
@@ -238,13 +233,12 @@ namespace langX {
 	{
 		if (!m_worker)
 		{
-			// error function. 
+			// error function.
 			printf("error function: %s!\n", this->getName());
 			return nullptr;
 		}
 		return m_worker(this, args);
 	}
-
 
 	FunctionRef::FunctionRef(Function * f)
 	{
@@ -291,7 +285,6 @@ namespace langX {
 
 	void FunctionRef::update(Object * a)
 	{
-
 		if (a->getType() != FUNCTION)
 		{
 			return;
@@ -347,7 +340,7 @@ namespace langX {
 		return nullptr;
 	}
 
-	Object * FunctionRef::call(ArgsList * argsList, const char * remark,NodeLink *nodeLink)
+	Object * FunctionRef::call(ArgsList * argsList, const char * remark, NodeLink *nodeLink)
 	{
 		// 获取参数
 		if (nodeLink->index == 0) {
@@ -372,7 +365,6 @@ namespace langX {
 
 	Object * FunctionRef::call(Object* args[], int len, const char * remark)
 	{
-
 		Function *function = this->m_func;
 		Object * ret = NULL;
 
@@ -381,7 +373,7 @@ namespace langX {
 
 		if (function->is3rd())
 		{
-			// 第三方函数 
+			// 第三方函数
 			X3rdFunction *x3rdfunc = (X3rdFunction*)function;
 			X3rdArgs _3rdArgs;
 			memset(&_3rdArgs, 0, sizeof(X3rdArgs));
@@ -399,7 +391,7 @@ namespace langX {
 				}
 				_3rdArgs.index = len;
 			}
-			
+
 			_3rdArgs.object = this->m_func_obj;
 
 			ret = x3rdfunc->call(_3rdArgs);
@@ -444,9 +436,8 @@ namespace langX {
 			{
 				getState()->curThread()->backEnv();
 			}
-
 		}
-		
+
 		thread->getStackTrace().popFrame();
 
 		return ret;
@@ -454,7 +445,5 @@ namespace langX {
 
 	void FunctionRef::finalize()
 	{
-
 	}
-
 }

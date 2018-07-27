@@ -10,7 +10,6 @@
 #include "../include/langXObjectRef.h"
 #include "../include/Function.h"
 
-
 #ifdef WIN32
 // win32的库
 #else
@@ -25,15 +24,13 @@
 #include <stdio.h>
 #endif
 
-
 // 释放环境内存
 void freeEnv(langX::Environment **env) {
-
 	if (env == NULL || (*env) == NULL)
 	{
 		return;
 	}
-	
+
 	langX::Environment *p = (*env);
 	switch (p->getType())
 	{
@@ -69,7 +66,6 @@ void freeEnv(langX::Environment **env) {
 }
 
 namespace langX {
-
 	void  gTryCatchCB(langXObjectRef *obj) {
 		Function *func = obj->getFunction("printStackTrace");
 		if (func != NULL)
@@ -105,7 +101,7 @@ namespace langX {
 	{
 		freeThrownObj();
 
-		// 清理掉环境 
+		// 清理掉环境
 
 		while (this->m_current_env != NULL && this->m_current_env->getParent() != NULL)
 		{
@@ -116,7 +112,6 @@ namespace langX {
 		{
 			freeEnv(&this->m_current_env);
 		}
-
 	}
 
 	StackTrace & langXThread::getStackTrace()
@@ -149,7 +144,8 @@ namespace langX {
 		if (flag)
 		{
 			m_exec_status.inLoop++;
-		}else{
+		}
+		else {
 			if (m_exec_status.inLoop > 0)
 			{
 				m_exec_status.inLoop--;
@@ -351,12 +347,12 @@ namespace langX {
 			// 找到了try 节点
 			TryEnvironment * tryEnv = (TryEnvironment *)nodeLink->tryEnv;
 			nodeLink->tryEnv = nullptr;
-			
+
 			// check call back first.
 			CBCatch c = tryEnv->getCatchCB();
 			if (c != NULL)
 			{
-				// 调用回调 
+				// 调用回调
 				c(obj);
 			}
 			else {
@@ -375,7 +371,6 @@ namespace langX {
 
 				backEnv();
 			}
-			
 		}
 
 		// 重置信息
@@ -413,10 +408,10 @@ namespace langX {
 		if (this->m_current_deep > 0)
 		{
 			this->m_current_env->putObject(name, obj);
-		}else{
+		}
+		else {
 			getState()->getScriptOrNSEnv()->putObject(name, obj);
 		}
-		
 	}
 
 	void langXThread::putObject(const std::string &name, Object *obj)
@@ -520,7 +515,6 @@ namespace langX {
 	void langXThread::kill()
 	{
 		// 暂不实现
-
 	}
 
 	NodeLink * langXThread::beginExecute(Node *node)
@@ -610,7 +604,6 @@ namespace langX {
 		thread->setStatus(langXThreadStatus::Running);
 		this->m_selfmap[id] = thread;
 		this->m_idmap[curThreadId] = thread;
-
 	}
 
 	void langXThreadMgr::freeAllThreads()
@@ -648,5 +641,4 @@ namespace langX {
 
 		return nullptr;
 	}
-
 }

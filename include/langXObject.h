@@ -21,7 +21,7 @@ namespace langX {
 	{
 	public:
 		langXObject(ClassInfo *);
-		~langXObject();
+		virtual ~langXObject();
 
 		// 判断这个对象是否是指定的类型
 		bool typeCheck(const char *) const;
@@ -40,7 +40,7 @@ namespace langX {
 		//  获得这个对象的属性和值的 map 
 		const std::map<std::string, Object*> & getMemberMap() const;
 
-		Function *getFunction(const char *) const;
+		virtual Function *getFunction(const char *) const;
 		//  这个请求是否是来自子类 
 		Function *getFunction(const char *,bool) const;
 		
@@ -92,12 +92,15 @@ namespace langX {
 		// 此对象是否在销毁中
 		bool isDisposing() const;
 
+	protected:
+		// 当前对象的成员列表
+		std::map<std::string, Object*> m_members;
+
 	private:
 
 		// 引用的那些引用
 		std::vector<langXObjectRef*> m_refs;
 
-		std::map<std::string, Object*> m_members;
 		ClassInfo *m_class_info;
 		// 当前对象的环境
 		ObjectBridgeEnv *m_my_env;
@@ -115,6 +118,27 @@ namespace langX {
 
 		// 此对象是否在销毁中
 		bool m_disposing = false;
+	};
+
+
+	// 具有扩展能力的 langXObject
+	class langXObjectExtend : public langXObject {
+
+	public:
+		langXObjectExtend(ClassInfo *);
+		~langXObjectExtend();
+
+		// 添加一个成员到对象里面
+		void addMember(const char *, Object *);
+
+		// 添加一个函数到成员里面
+		void addFunction(const char*, Function *);
+
+		Function *getFunction(const char *) const;
+
+	private:
+		// key: 函数名, value: 函数
+		std::map<std::string, Function*> m_function_map;
 	};
 
 }

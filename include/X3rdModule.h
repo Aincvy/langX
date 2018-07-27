@@ -1,5 +1,6 @@
 #pragma once
 
+
 /*
  * @date 2016-10-30
  * @author hideDragon
@@ -24,8 +25,24 @@ namespace langX {
 		// 卸载模块，  卸载成功返回 0 ， 失败返回 -1
 		virtual int unload(langXState *);
 
+		// 获取这个模块的名字
+		const char * getName() const;
+		// 设置当前模块的名字，  会复制参数指向的内存
+		void setName(const char *);
+
+		// 动态库的 .so 文件的位置
+		void setSoObj(void *soObj);
+		void * getSoObj() const;
+
 	private:
 
+		// 模块的名字
+		char * m_name;
+		// 加载的模块的 so 文件的指针
+		void * m_soObj; 
+
+		// 检测是否需要释放name的内存
+		void checkForFreeName();
 	};
 
 

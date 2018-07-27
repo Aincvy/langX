@@ -30,7 +30,7 @@ namespace langX {
 	}
 
 	bool Number::isInteger() const {
-		return this->m_value == (int) this->m_value;
+		return this->m_value == (int)this->m_value;
 	}
 
 	const char * Number::characteristic() const
@@ -88,12 +88,8 @@ namespace langX {
 		return obj;
 	}
 
-
-
 	void Number::update(Object *right)
 	{
-
-
 		if (right == NULL || right->getType() != NUMBER)
 		{
 			return;

@@ -20,10 +20,10 @@ namespace langX {
 	class X3rdModule;
 	class langXThreadMgr;
 	class langXThread;
-  class LogManager;
+	class LogManager;
 
 	/*
-	  所有的脚本环境最后在释放内存。 
+	  所有的脚本环境最后在释放内存。
 	*/
 
 
@@ -65,6 +65,9 @@ namespace langX {
 
 		// 获得命名空间[单一]   不能使用 a.b.c 这样的名字。。 因为不会解析出来
 		XNameSpace *singleGetNameSpace(const char *);
+
+		// 放一个命名空间到 langXState 里面
+		void putNameSpace(const char*, XNameSpace *);
 
 		// 获得命名空间， 支持 a.b.c
 		XNameSpace *getNameSpace(const char *);
@@ -111,15 +114,22 @@ namespace langX {
 		// 返回当前线程信息
 		langXThread* curThread() const;
 
+		// 获取当前正在使用中的配置
+		const ConfigX & getConfig() const;
+
+		// 是否加载了某个模块
+		bool isLoadModule(const char *) const ;
+
 	private:
 		// 全局环境
-		GlobalEnvironment *m_global_env = nullptr;
-		
+		GlobalEnvironment * m_global_env = nullptr;
+
 		// 当前的脚本环境， 可能是一个脚本环境， 可能是一个命名空间环境
 		Environment *m_script_env = nullptr;
+		// 配置
 		ConfigX m_config;
-    // 日志管理器
-    LogManager *m_log_manager = nullptr;
+		// 日志管理器
+		LogManager *m_log_manager = nullptr;
 
 		std::map<std::string, XNameSpace*> m_namespace_map;
 		//  执行过文件列表
@@ -127,23 +137,20 @@ namespace langX {
 		//  正在执行文件的栈
 		std::list<char*> m_doing_files;
 		//  正在执行的脚本环境的栈 
-		std::list<ScriptEnvironment*> m_doing_script_envs; 
+		std::list<ScriptEnvironment*> m_doing_script_envs;
 		//  k:  脚本文件绝对路径，  v: 脚本环境.  仅供 require_once 使用
 		std::map<std::string, ScriptEnvironment*> m_script_env_map;
 		// 加载完成的动态库
-		std::map<void*, X3rdModule*> m_load_libs;
+		std::map<std::string, X3rdModule*> m_load_libs;
 
 		// 正在解析的文件的绝对路径
 		char * m_parsing_file = NULL;
 
 		bool m_yy_parsing = false;
 
-		
-
 		bool m_disposing = false;
 
 		langXThreadMgr* m_thread_mgr;
 
-		
 	};
 }

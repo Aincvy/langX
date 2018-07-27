@@ -15,9 +15,7 @@
 #include <string>
 #include <vector>
 
-
 namespace langX {
-
 
 	Object * callFunction(Object *obj, Function *func, X3rdArgs *args) {
 		if (obj == nullptr || obj->getType() != OBJECT || func == nullptr)
@@ -34,7 +32,6 @@ namespace langX {
 		return retObj;
 	}
 
-
 	Object * callInnerFunc(Object *obj, Node * n) {
 		// n 应该是一个函数调用节点
 		if (n->type != NodeType::NODE_OPERATOR || n->opr_obj->opr != FUNC_CALL)
@@ -50,7 +47,7 @@ namespace langX {
 
 		// 转换参数   , 外部传来的时候参数的值都是存在的，直接使用就好了
 		X3rdArgs _3rdArgs;
-		memset(&_3rdArgs, 0, sizeof(X3rdArgs));	
+		memset(&_3rdArgs, 0, sizeof(X3rdArgs));
 		if (args)
 		{
 			for (int i = 0; i < args->index; i++)
@@ -89,14 +86,13 @@ namespace langX {
 
 	Object * callInnerFunc(Object *obj, const char *name, X3rdArgs *args)
 	{
-
 		Object *ret = nullptr;
 
 		if (obj->getType() == STRING)
 		{
-			String * str = (String* )obj;
-			
-			if (strcmp(name,"length") == 0)
+			String * str = (String*)obj;
+
+			if (strcmp(name, "length") == 0)
 			{
 				ret = Allocator::allocateNumber(str->size());
 			}
@@ -125,14 +121,14 @@ namespace langX {
 					return Allocator::allocateString(str->subStr(index).c_str());
 				}
 
-				return Allocator::allocateString(str->subStr(index,len).c_str());
+				return Allocator::allocateString(str->subStr(index, len).c_str());
 			}
 			else if (strcmp(name, "contains") == 0)
 			{
 				Object *a = args->args[0];
 				if (a && a->getType() == STRING)
 				{
-					if ( str->contains(((String*)a)->getValue()) )
+					if (str->contains(((String*)a)->getValue()))
 					{
 						return Allocator::allocateNumber(1);
 					}
@@ -148,7 +144,6 @@ namespace langX {
 					int i = str->indexOf(((String*)a)->getValue());
 
 					return Allocator::allocateNumber(i);
-					
 				}
 
 				return Allocator::allocateNumber(-1);
@@ -218,7 +213,6 @@ namespace langX {
 				std::string t1 = str->upperCase();
 				return Allocator::allocateString(t1.c_str());
 			}
-
 		}
 
 		if (ret == nullptr)
@@ -227,6 +221,4 @@ namespace langX {
 		}
 		return ret;
 	}
-
-
 }

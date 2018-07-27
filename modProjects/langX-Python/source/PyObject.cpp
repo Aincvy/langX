@@ -429,8 +429,6 @@ namespace langX {
 				PyArg_Parse(ret, "d", &a);
 
 				return Allocator::allocateNumber(a);
-
-				
 			}
 		}
 		else if (a->getType() == NUMBER)
@@ -459,8 +457,6 @@ namespace langX {
 
 		return nullptr;
 	}
-
-
 
 	Object * langX_PyObject_get(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
