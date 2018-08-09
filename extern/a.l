@@ -122,7 +122,8 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 <<EOF>> { 
 	
     //printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
-	
+	bool flag = false;
+
 	if(fileDeep-- > 1){
 	  // 包含文件栈 存在其他缓冲区
 	  yy_delete_buffer( YY_CURRENT_BUFFER );
@@ -138,12 +139,20 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 	  include_stack_ptr-- ;
 	  //printf("remove stack top buffer to current.\n");
 	}else{
-	  yyterminate();
+		flag = true;
 	}
 	
 	//printf("end of file: %s\n" , getParsingFilename() );
 	popStateFrame();
 	fileEOF();
+
+	if(flag){
+		yyParseStoped();
+
+		// yyterminate() 是一个宏。。  不是一个方法。。 会执行return 语句
+		yyterminate();
+	}
+
 }
 
 %%

@@ -7,6 +7,7 @@
 namespace langX {
 	X3rdModule::X3rdModule()
 	{
+		this->m_name = nullptr;
 	}
 
 	X3rdModule::~X3rdModule()

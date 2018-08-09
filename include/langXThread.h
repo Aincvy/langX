@@ -151,6 +151,9 @@ namespace langX {
 		// 获取当前正在执行的节点链路
 		NodeLink * getCurrentExecute();
 
+		// 重置当前的环境深度
+		void resetCurrentDeep();
+
 	private:
 
 		// 线程id

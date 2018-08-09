@@ -120,6 +120,9 @@ namespace langX {
 		// 是否加载了某个模块
 		bool isLoadModule(const char *) const ;
 
+		// 设置是否正在解析中
+		void setYYParsing(bool);
+
 	private:
 		// 全局环境
 		GlobalEnvironment * m_global_env = nullptr;
@@ -145,6 +148,8 @@ namespace langX {
 
 		// 正在解析的文件的绝对路径
 		char * m_parsing_file = NULL;
+		// 使用 include 关键字包含脚本的深度
+		int includeDeep = 0;
 
 		bool m_yy_parsing = false;
 

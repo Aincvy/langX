@@ -1,0 +1,43 @@
+// file: Workbook.lx
+// date: 2018年08月03日
+//
+// 这个类， 一个类对应一个工作簿
+//
+//
+
+
+// 单个 sheet
+WorkSheet {
+	
+	// 
+	_py_worksheet ;
+
+
+	// 获取/设置 当前sheet 的标题
+	title => ( newTitle ){
+
+		pyTitle = _py_worksheet.getString("title");
+		return pyTitle;
+	}
+
+}
+
+
+// 工作簿
+Workbook {
+	
+	// python 库的 workbook 对象
+	_py_workbook;
+	
+	// 获取正在活跃中的
+	activeSheet => (){
+		sheet = _py_workbook.get("active");
+
+		ws = new WorkSheet();
+		ws._py_worksheet = sheet;
+		return ws;
+	}
+
+
+
+}

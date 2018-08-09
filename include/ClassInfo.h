@@ -14,6 +14,7 @@ namespace langX {
 	class Object;
 	class Function;
 	class langXObject;
+	class langXObjectExtend;
 	class ClassBridgeEnv;
 
 	class ClassInfo 

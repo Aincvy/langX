@@ -1002,6 +1002,11 @@ void doFile(const char *f)
 	state->doFile(f);
 }
 
+void yyParseStoped()
+{
+	state->setYYParsing(false);
+}
+
 void execNodeButLimit(XNode *n, XNode *limit) {
 	langX::__execNode(n, limit);
 }
