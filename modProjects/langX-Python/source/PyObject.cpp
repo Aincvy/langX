@@ -397,8 +397,6 @@ namespace langX {
 			}
 		}
 
-		
-
 		return nullptr;
 	}
 

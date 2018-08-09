@@ -100,6 +100,9 @@ extern "C" {
 
 	// 执行文件
 	void doFile(const char *);
+
+	// yy 解析停止了 
+	void yyParseStoped();
 }
 
 langX::Object* getValue(const char*);

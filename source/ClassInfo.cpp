@@ -151,7 +151,7 @@ namespace langX {
 
 	langXObjectExtend* ClassInfo::newExtendObject()
 	{
-		return langXObjectExtend();
+		return (langXObjectExtend*)Allocator::newObject(this, true, true);
 	}
 
 	std::map<std::string, Object*>& ClassInfo::getMembers()

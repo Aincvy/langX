@@ -62,9 +62,9 @@ namespace langX {
 			else if (dirp->d_type == DT_REG)
 			{
 				 // 常规文件， 应该是一个脚本
-				if (!endsWith(filename, ".lx"))
+				if (filename != "Main.lx")
 				{
-					// 后缀名不对就无视
+					// 只加载文件夹里面的 Main.lx 文件
 					continue;
 				}
 

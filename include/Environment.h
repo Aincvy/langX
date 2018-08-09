@@ -216,6 +216,7 @@ namespace langX {
 		std::map<std::string, Function*> m_functions_map;
 		std::map<std::string, ClassInfo*> m_classes_map;
 		std::map<std::string, Object*> m_objects_map;
+		// 引用的命名空间列表
 		std::list< XNameSpace*> m_namespaces;
 		std::map<std::string, ClassInfo *> m_ref_classes_map;
 	};

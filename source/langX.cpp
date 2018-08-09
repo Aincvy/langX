@@ -293,7 +293,9 @@ namespace langX {
 			return;
 		}
 
+		logger->debug("changeNameSpace: %s", s->getName());
 		this->m_script_env = new XNameSpaceEnvironment(s);
+		this->curThread()->resetCurrentDeep();
 	}
 
 	void langXState::newScriptEnv(ScriptEnvironment *env)
@@ -363,6 +365,7 @@ namespace langX {
 
 		if (!m_yy_parsing)
 		{
+			logger->debug("re-start parsing");
 			m_yy_parsing = true;
 			yyparse();
 		}
@@ -390,9 +393,10 @@ namespace langX {
 			this->m_parsing_file = NULL;
 		}
 
+		this->includeDeep++;
 		this->m_parsing_file = strdup(filename);
 
-		//printf("require file %s !\n", filename);
+		logger->info("include file: %s", filename);
 
 		pushBuffer(fp);
 
@@ -555,19 +559,25 @@ namespace langX {
 
 	void langXState::fileEOF()
 	{
-		logger->debug("file %s eof!", m_parsing_file);
+		logger->debug("file eof: %s", m_parsing_file);
 		free(this->m_parsing_file);
 		this->m_parsing_file = NULL;
 
-		if (this->m_doing_files.empty())
+		if (!this->m_doing_files.empty())
 		{
-			return;
+			// 取出新的解析文件
+			char * p = this->m_doing_files.front();
+			this->m_doing_files.erase(this->m_doing_files.begin());
+			this->m_parsing_file = p;
 		}
 
-		char * p = this->m_doing_files.front();
-		this->m_doing_files.erase(this->m_doing_files.begin());
-		this->m_parsing_file = p;
-
+		logger->debug("includeDeep: %d", includeDeep);
+		if (this->includeDeep > 0 && --this->includeDeep >= 0)
+		{
+			logger->debug("do not reset script env.");
+			return;
+		}
+		
 		if (!m_doing_script_envs.empty())
 		{
 			ScriptEnvironment *scrEnv = m_doing_script_envs.front();
@@ -610,8 +620,9 @@ namespace langX {
 		int ret = mod->init(this);
 		mod->setSoObj(soObj);
 
-		this->m_load_libs[mod->getName()] = mod;
-		logger->debug("load module %s over", path);
+		const char *modName = mod->getName();
+		this->m_load_libs[modName] = mod;
+		logger->debug("load module %s(%s) over", modName,path);
 
 		return ret;
 	}
@@ -670,5 +681,9 @@ namespace langX {
 		}
 
 		return this->m_load_libs.find(name) != this->m_load_libs.end();
+	}
+	void langXState::setYYParsing(bool f)
+	{
+		this->m_yy_parsing = f;
 	}
 }

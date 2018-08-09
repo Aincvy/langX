@@ -1257,7 +1257,8 @@ case YY_STATE_EOF(INITIAL):
 { 
 	
     //printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
-	
+	bool flag = false;
+
 	if(fileDeep-- > 1){
 	  // 包含文件栈 存在其他缓冲区
 	  yy_delete_buffer(YY_CURRENT_BUFFER );
@@ -1272,20 +1273,28 @@ case YY_STATE_EOF(INITIAL):
 	  include_stack_ptr-- ;
 	  //printf("remove stack top buffer to current.\n");
 	}else{
-	  yyterminate();
+		flag = true;
 	}
 	
 	//printf("end of file: %s\n" , getParsingFilename() );
 	popStateFrame();
 	fileEOF();
+
+	if(flag){
+		yyParseStoped();
+
+		// yyterminate() 是一个宏。。  不是一个方法。。 会执行return 语句
+		yyterminate();
+	}
+
 }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 149 "a.l"
+#line 158 "a.l"
 ECHO;
 	YY_BREAK
-#line 1289 "lex.yy.c"
+#line 1298 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2280,7 +2289,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 149 "a.l"
+#line 158 "a.l"
 
 
 

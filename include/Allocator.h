@@ -13,6 +13,7 @@ namespace langX {
 	class langXObject;
 	class ClassInfo;
 	class XArray;
+	class langXObjectExtend;
 
 	// 主要用来申请一个对象
 	class Allocator

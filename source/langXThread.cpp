@@ -9,6 +9,7 @@
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 #include "../include/Function.h"
+#include "../include/LogManager.h"
 
 #ifdef WIN32
 // win32的库
@@ -278,6 +279,8 @@ namespace langX {
 
 	Environment * langXThread::newEnv()
 	{
+		logger->debug("newEnv: %d", this->m_current_deep);
+
 		Environment *env = new DefaultEnvironment();
 		env->setParent(this->m_current_env);
 		env->setDeep((++this->m_current_deep));
@@ -292,7 +295,8 @@ namespace langX {
 			return NULL;
 		}
 
-		//printf("newEnv %p , type: %d\n" , env,env->getType());
+		logger->debug("newEnv hasparam: %d", this->m_current_deep);
+
 		env->setParent(this->m_current_env);
 		env->setDeep((++this->m_current_deep));
 		this->m_current_env = env;
@@ -306,7 +310,8 @@ namespace langX {
 			return NULL;
 		}
 
-		//printf("newEnv2 %p , type: %d\n", env, env->getType());
+		logger->debug("newEnv hasparam2: %d", this->m_current_deep);
+
 		EnvironmentBridgeEnv *bEnv = new EnvironmentBridgeEnv(env);
 		bEnv->setParent(this->m_current_env);
 		bEnv->setDeep((++this->m_current_deep));
@@ -551,6 +556,11 @@ namespace langX {
 	NodeLink * langXThread::getCurrentExecute()
 	{
 		return this->currentExecute;
+	}
+
+	void langXThread::resetCurrentDeep()
+	{
+		this->m_current_deep = 0;
 	}
 
 	void langXThread::freeThrownObj()
