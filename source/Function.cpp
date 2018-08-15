@@ -142,6 +142,7 @@ namespace langX {
 			return NULL;
 		}
 
+		// printf("Function.call() %s\n", getName());
 		resetNodeState(this->m_node_root);
 
 		langXThread *thread = getState()->curThread();

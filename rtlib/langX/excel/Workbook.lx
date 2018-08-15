@@ -16,8 +16,8 @@ WorkSheet {
 	// 获取/设置 当前sheet 的标题
 	title => ( newTitle ){
 
-		pyTitle = _py_worksheet.getString("title");
-		return pyTitle;
+		pyTitle = _py_worksheet.get("title");
+		return pyTitle.toStr();
 	}
 
 }
@@ -33,6 +33,10 @@ Workbook {
 	activeSheet => (){
 		sheet = _py_workbook.get("active");
 
+		println("sheet: " + sheet);
+		if(sheet.isNull()){
+			println("sheet is nulll.....");			
+		}
 		ws = new WorkSheet();
 		ws._py_worksheet = sheet;
 		return ws;
