@@ -8,6 +8,7 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+#include "../../../include/LogManager.h"
 
 
 #ifdef WIN32 
@@ -30,6 +31,7 @@ namespace langX {
 
 	Object * langX_PythonLib_isLoad(X3rdFunction *func, const X3rdArgs &args) {
 
+
 		if (Py_IsInitialized())
 		{
 			return Allocator::allocateNumber(1);
@@ -39,10 +41,8 @@ namespace langX {
 
 	}
 
-
-
 	Object * langX_PythonLib_load(X3rdFunction *func, const X3rdArgs &args) {
-
+		
 		if (Py_IsInitialized())
 		{
 			return Allocator::allocateNumber(1);
@@ -52,9 +52,11 @@ namespace langX {
 		
 		if (Py_IsInitialized())
 		{
+			logger->debug("load python lib ok.");
 			return Allocator::allocateNumber(1);
 		}
 
+		logger->debug("load python lib fail.");
 		return Allocator::allocateNumber(0);
 	}
 

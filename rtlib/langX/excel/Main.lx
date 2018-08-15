@@ -13,10 +13,12 @@ include "Workbook.lx"
 
 // python 的 excel 操作模块
 _py_openpyxl ;
+_py_hook;
 
 // 初始化excel 工具
 //
 // 返回 101 说明 没有python 库
+// 返回 102 说明 没有找到 openpyxl 库
 // 返回 0 表示初始化成功
 initExcelTools => (){
 	
@@ -26,10 +28,16 @@ initExcelTools => (){
 
 	ref langX.python;
 	PythonLib::load();
+	_py_hook = new PythonHook();
 
 	// TODO 判定 openpyxl 库有没有安装
 
-	_py_openpyxl = py.importModule("openpyxl");
+	//_py_hook.doSString("import openpyxl");
+	_py_openpyxl = _py_hook.importModule("openpyxl");
+
+	if ( _py_openpyxl.isNull() ) {
+		return 102 ;
+	}
 
 	return 0 ;
 }
@@ -39,9 +47,9 @@ initExcelTools => (){
 loadExcel => (filepath){
 	
 	pyLoadFunc = _py_openpyxl.get("load_workbook");
-	pArgs = py.newTuple(1);
+	pArgs = _py_hook.newTuple(1);
 	pArgs.setItem(0, filepath);
-	wb = pFunc.callMethod(pArgs);
+	wb = pyLoadFunc.callMethod(pArgs);
 
 	mywb = new Workbook();
 	mywb._py_workbook = wb;

@@ -279,7 +279,6 @@ namespace langX {
 
 	Environment * langXThread::newEnv()
 	{
-		logger->debug("newEnv: %d", this->m_current_deep);
 
 		Environment *env = new DefaultEnvironment();
 		env->setParent(this->m_current_env);
@@ -295,8 +294,6 @@ namespace langX {
 			return NULL;
 		}
 
-		logger->debug("newEnv hasparam: %d", this->m_current_deep);
-
 		env->setParent(this->m_current_env);
 		env->setDeep((++this->m_current_deep));
 		this->m_current_env = env;
@@ -309,8 +306,6 @@ namespace langX {
 		{
 			return NULL;
 		}
-
-		logger->debug("newEnv hasparam2: %d", this->m_current_deep);
 
 		EnvironmentBridgeEnv *bEnv = new EnvironmentBridgeEnv(env);
 		bEnv->setParent(this->m_current_env);

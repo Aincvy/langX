@@ -29,12 +29,22 @@ namespace langX {
 			return nullptr;
 		}
 
+		PyObject *path= PySys_GetObject("path");
+		int size = PyList_Size(path);
+		for (size_t i = 0; i < size; i++)
+		{
+			PyObject * t = PyList_GetItem(path, i);
+			char *p = NULL;
+			PyArg_Parse(t, "s", &p);
+			printf("%d: %s", i , p);
+		}
 		Object *a = args.args[0];
 		if (a && a->getType() == STRING)
 		{
 			String *str = (String*)a;
 			str->simpleEscape();
 
+			
 			PyObject *ret = PyImport_ImportModule(str->getValue());
 			langXObject *aobj = claxxPyObj->newObject();
 			XClassPyObject * bobj = createXClassPyObject();

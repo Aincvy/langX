@@ -1,0 +1,10 @@
+ref langX.python;
+
+abc => {
+	print("123");
+	PythonLib::load();
+	
+}
+
+abc();
+println("123");

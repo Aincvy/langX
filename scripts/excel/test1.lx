@@ -1,0 +1,12 @@
+ref langX.rt.util.excel;
+
+
+retVal = initExcelTools();
+println("init : " + retVal);
+
+wb = loadExcel("/Users/alias/Desktop/temp/公司文件/config_fish.xlsx");
+sheet = wb.activeSheet();
+title = sheet.title();
+println("title: " + title);
+
+println("script over.");

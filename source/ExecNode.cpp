@@ -3100,6 +3100,8 @@ namespace langX {
 	void __execSCOPE_FUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
 		Node *n = nodeLink->node;
 
+		nodeLink->backAfterExec = false;      // 函数需要执行两次 才会获取到结果
+
 		// 根据语法文件可知 n1 是一个SCOPE 类型
 		Node *n1 = n->opr_obj->op[0];
 		ClassInfo *claxxInfo = nullptr;
@@ -3150,7 +3152,6 @@ namespace langX {
 		n->value = callFunc(t, args, remark, putNodeLink);
 
 		doSuffixOperationArgs(args);
-		//Allocator::free(n1->value);
 		n1->value = NULL;
 
 		getState()->curThread()->backEnv();
@@ -4032,6 +4033,12 @@ namespace langX {
 		while ((curLink = thread->getCurrentExecute()) != NULL) {
 			//  程序没还有结束
 
+			int cmd = -1;
+			if (curLink->node->type == NodeType::NODE_OPERATOR)
+			{
+				cmd = curLink->node->opr_obj->opr;
+			}
+			// printf("curLink: %d\n", cmd);
 			__realExecNode(curLink, thread);     // 将原来的内容丢到一个新的方法里面
 			if (thread->isBackInExec()) {
 				// 上面方法可能会将  curLink 指向的位置内存被删除， 判定下两个值是否一致， 不一致则重新执行
