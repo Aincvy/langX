@@ -15,9 +15,51 @@ WorkSheet {
 
 	// 获取/设置 当前sheet 的标题
 	title => ( newTitle ){
+		if ( newTitle){
 
-		pyTitle = _py_worksheet.get("title");
-		return pyTitle.toStr();
+		} else {
+			pyTitle = _py_worksheet.get("title");
+			return pyTitle.toStr();
+		}
+	}
+
+	// 获取/设置 一个单元格里面的值
+	data =>(x,y,pdata){
+		if( x is Number){
+
+		} else {
+			return "param x must be Number." ;
+		}
+
+		if (y is Number){
+
+		} else {
+			return "param y must be Number" ;
+		}
+
+		pyFunc = _py_worksheet.get("cell");
+		pArgs = _py_hook.newTuple(2);
+		pArgs.setItem(0, x);
+		pArgs.setItem(1, y);
+		cell = pyFunc.callMethod(pArgs);
+
+		// println("pdata: " + pdata);
+		if(pdata){
+
+		} else {
+			tmp = cell.get("value");
+			return tmp.toStr();
+		}
+	}
+
+	columnCount => (){
+		pyTitle = _py_worksheet.get("max_column");
+		return pyTitle.toNumber();
+	}
+
+	rowCount => (){
+		pyTitle = _py_worksheet.get("max_row");
+		return pyTitle.toNumber();
 	}
 
 }
@@ -33,15 +75,55 @@ Workbook {
 	activeSheet => (){
 		sheet = _py_workbook.get("active");
 
-		println("sheet: " + sheet);
 		if(sheet.isNull()){
-			println("sheet is nulll.....");			
+			// println("sheet is nulll.....");			
+			return null ;
 		}
 		ws = new WorkSheet();
 		ws._py_worksheet = sheet;
 		return ws;
 	}
 
+	// 创建一个新的子表
+	createSheet => (name) {
+		
+		pyFunc = _py_workbook.get("create_sheet");
+		pArgs = _py_hook.newTuple(1);
+		pArgs.setItem(0, name);
+		sheet = pyFunc.callMethod(pArgs);
 
+		if(sheet.isNull()){			
+			return null ;
+		}
+		ws = new WorkSheet();
+		ws._py_worksheet = sheet;
+		return ws;
+	}
+
+	// 获取一个 子表
+	sheet => (name){
+		if(!name){
+			return "param name must be not null";
+		}
+
+		pyFunc = _py_workbook.get("get_sheet_by_name");
+		pArgs = _py_hook.newTuple(1);
+		pArgs.setItem(0, name);
+		sheet = pyFunc.callMethod(pArgs);
+
+		if(sheet.isNull()){			
+			return null ;
+		}
+		ws = new WorkSheet();
+		ws._py_worksheet = sheet;
+		return ws;
+	}
+
+	remove => (sheet) {
+		pyFunc = _py_workbook.get("remove");
+		pArgs = _py_hook.newTuple(1);
+		pArgs.setItem(0, sheet);
+		pyFunc.callMethod(pArgs);
+	}
 
 }

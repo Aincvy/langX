@@ -29,7 +29,7 @@ namespace langX {
 			return nullptr;
 		}
 
-		PyObject *path= PySys_GetObject("path");
+		/*PyObject *path= PySys_GetObject("path");
 		int size = PyList_Size(path);
 		for (size_t i = 0; i < size; i++)
 		{
@@ -37,7 +37,7 @@ namespace langX {
 			char *p = NULL;
 			PyArg_Parse(t, "s", &p);
 			printf("%d: %s", i , p);
-		}
+		}*/
 		Object *a = args.args[0];
 		if (a && a->getType() == STRING)
 		{

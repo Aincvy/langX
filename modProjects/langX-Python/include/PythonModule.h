@@ -70,6 +70,10 @@ namespace langX {
 	void freeXClassPyObject(XClassPyObject **);
 	langXObject * createLangXObjectPyObj(PyObject * pyObj, PyObjectType type);
 	langXObject * newPyException(const char * message);
+	langXObject * createLangXObjectPyObjEasy(PyObject * pyObj, PyObjectType type);
+
+	Object * langX_PyObject_get_impl(XClassPyObject *obj, Object *a);
+
 }
 
 int loadModule(langX::X3rdModule *& mod);
