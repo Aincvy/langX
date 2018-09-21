@@ -17,8 +17,6 @@
 #include <python/Python.h>
 #endif
 
-langX::ClassInfo *claxxPyObj = NULL;
-
 namespace langX {
 
 	langXObject * createLangXObjectPyObj(PyObject * pyObj , PyObjectType type) {
@@ -456,15 +454,8 @@ namespace langX {
 		return nullptr;
 	}
 
-	Object * langX_PyObject_get(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PyObject_get error! NO OBJ!\n");
-			return nullptr;
-		}
-		
-		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
-		Object *a = args.args[0];
+	Object * langX::langX_PyObject_get_impl(XClassPyObject * obj, Object * a)
+	{
 		if (!a)
 		{
 			return Allocator::allocate(NULLOBJECT);
@@ -475,14 +466,14 @@ namespace langX {
 			String *str = (String*)a;
 			if (obj->type == PyObjectType::Module || obj->type == PyObjectType::Dict || obj->type == PyObjectType::Unknown)
 			{
-				PyObject * ret =PyObject_GetAttrString(obj->pyObj, str->getValue());
+				PyObject * ret = PyObject_GetAttrString(obj->pyObj, str->getValue());
 				return createLangXObjectPyObj(ret, PyObjectType::Unknown)->addRef();
 			}
 		}
 		else if (a->getType() == NUMBER)
 		{
 			int i = ((Number*)a)->getIntValue();
-			if (obj->type == PyObjectType::Tuple )
+			if (obj->type == PyObjectType::Tuple)
 			{
 				PyObject * ret = PyTuple_GetItem(obj->pyObj, i);
 				return createLangXObjectPyObj(ret, PyObjectType::Unknown)->addRef();
@@ -495,6 +486,19 @@ namespace langX {
 		}
 
 		return nullptr;
+	}
+
+	Object * langX_PyObject_get(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_PyObject_get error! NO OBJ!\n");
+			return nullptr;
+		}
+		
+		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
+		Object *a = args.args[0];
+		
+		return langX_PyObject_get_impl(obj, a);
 	}
 
 
@@ -541,6 +545,51 @@ namespace langX {
 		return Allocator::allocateNumber(0);
 	}
 
+	Object * langX_PyObject_o(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_PyObject_isNull error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
+		langXObject *tmp = createLangXObjectPyObjEasy(obj->pyObj, obj->type);
+
+		return tmp->addRef();
+	}
+
+	Object * langX_PyObject_value(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_PyObject_isNull error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
+		if (PyLong_Check(obj->pyObj))
+		{
+			return langX_PyObject_toNumber(func, args);
+		}
+		else if (PyBytes_Check(obj->pyObj))
+		{
+			return langX_PyObject_toString(func, args);
+		}
+
+		return nullptr;
+	}
+
+	Object * langX_PyObject_detectPyType(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_PyObject_isNull error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
+		PyObject *pyObj = obj->pyObj;
+
+		return nullptr;
+	}
 
 	int regPyObject(langXState *state, XNameSpace* space) {
 
@@ -559,6 +608,9 @@ namespace langX {
 		info->addFunction("get", create3rdFunc("get", langX_PyObject_get));
 		info->addFunction("operator[]", create3rdFunc("operator[]", langX_PyObject_operator_square_brackets));
 		info->addFunction("isNull", create3rdFunc("isNull", langX_PyObject_isNull));
+		info->addFunction("o", create3rdFunc("o", langX_PyObject_o));
+		info->addFunction("value", create3rdFunc("value", langX_PyObject_value));
+		info->addFunction("detectPyType", create3rdFunc("detectPyType", langX_PyObject_detectPyType));
 
 		space->putClass(info);
 

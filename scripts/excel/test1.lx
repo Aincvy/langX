@@ -9,4 +9,12 @@ sheet = wb.activeSheet();
 title = sheet.title();
 println("title: " + title);
 
+maxCol = sheet.columnCount();
+maxRow = sheet.rowCount();
+println("maxCol: " + maxCol);
+println("maxRow: " + maxRow);
+
+sheet.data(1,1, "hello__");
+// println("t1: " + t1);
+
 println("script over.");

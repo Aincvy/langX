@@ -6,7 +6,8 @@
 
 namespace langX {
 
-
+	ClassInfo *claxxPyObj = NULL;
+	ClassInfo *claxxPyObjEasy = NULL;
 
 	int regPythonLib(langXState *state, XNameSpace* space);
 
@@ -21,5 +22,9 @@ namespace langX {
 	int regPyObject(langXState *state, XNameSpace* space);
 
 	int regPyException(langXState *state, XNameSpace* space);
+
+	int regPySomeFunction(langXState *state, XNameSpace* space);
+
+	int regPyObjectEasy(langXState *state, XNameSpace* space);
 
 }
