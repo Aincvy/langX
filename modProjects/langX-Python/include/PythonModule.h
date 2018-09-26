@@ -11,6 +11,7 @@
 namespace langX {
 
 	class langXObject;
+	class Object;
 
 	class PythonModule : public X3rdModule
 	{
@@ -52,6 +53,12 @@ namespace langX {
 
 		// 列表
 		PyListX , 
+
+		PyNumber,
+
+		PyString,
+
+		PyBool
 	};
 
 
@@ -73,6 +80,7 @@ namespace langX {
 	langXObject * createLangXObjectPyObjEasy(PyObject * pyObj, PyObjectType type);
 
 	Object * langX_PyObject_get_impl(XClassPyObject *obj, Object *a);
+	Object * langX_PyObject_set_impl(XClassPyObject * obj, Object * key, Object *value);
 
 }
 

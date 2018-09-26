@@ -14,6 +14,7 @@
 
 namespace langX {
 
+	ClassInfo *claxxPyObjEasy = NULL;
 
 	Object * langX_PyObjectEasy_operator_dot(X3rdFunction *func, const X3rdArgs &args) {
 		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
@@ -38,8 +39,9 @@ namespace langX {
 
 		// 
 		Object *a = args.args[0];
+		Object *b = args.args[1];
 
-		return nullptr;
+		return langX_PyObject_set_impl(obj, a,b);
 	}
 
 	int regPyObjectEasy(langXState *state, XNameSpace* space) {

@@ -6,8 +6,8 @@
 
 namespace langX {
 
-	ClassInfo *claxxPyObj = NULL;
-	ClassInfo *claxxPyObjEasy = NULL;
+	extern ClassInfo *claxxPyObj;
+	extern ClassInfo *claxxPyObjEasy;
 
 	int regPythonLib(langXState *state, XNameSpace* space);
 

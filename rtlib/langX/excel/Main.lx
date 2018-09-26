@@ -53,6 +53,7 @@ loadExcel => (filepath){
 
 	mywb = new Workbook();
 	mywb._py_workbook = wb;
+	mywb._filepath = filepath;
 
 	return mywb;
 }
