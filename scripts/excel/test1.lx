@@ -14,7 +14,12 @@ maxRow = sheet.rowCount();
 println("maxCol: " + maxCol);
 println("maxRow: " + maxRow);
 
+t1 = sheet.data(1,1);
+println("before: " + t1);
 sheet.data(1,1, "hello__");
-// println("t1: " + t1);
+t1 = sheet.data(1,1);
+println("after: " + t1);
+
+wb.save();
 
 println("script over.");

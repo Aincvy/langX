@@ -38,18 +38,21 @@ WorkSheet {
 		}
 
 		pyFunc = _py_worksheet.get("cell");
-		pArgs = _py_hook.newTuple(2);
-		pArgs.setItem(0, x);
-		pArgs.setItem(1, y);
-		cell = pyFunc.callMethod(pArgs);
-
-		// println("pdata: " + pdata);
-		if(pdata){
-
+		pArgs ;
+		if (pdata) {
+			pArgs = _py_hook.newTuple(3);
+			pArgs.setItem(0, x);
+			pArgs.setItem(1, y);
+			pArgs.setItem(2, pdata);
 		} else {
-			tmp = cell.get("value");
-			return tmp.toStr();
+			pArgs = _py_hook.newTuple(2);
+			pArgs.setItem(0, x);
+			pArgs.setItem(1, y);
 		}
+		
+		cell = pyFunc.callMethod(pArgs);
+		tmp = cell.get("value");
+		return tmp.toStr();
 	}
 
 	columnCount => (){
@@ -71,6 +74,9 @@ Workbook {
 	// python 库的 workbook 对象
 	_py_workbook;
 	
+	_filepath;
+
+
 	// 获取正在活跃中的
 	activeSheet => (){
 		sheet = _py_workbook.get("active");
@@ -124,6 +130,19 @@ Workbook {
 		pArgs = _py_hook.newTuple(1);
 		pArgs.setItem(0, sheet);
 		pyFunc.callMethod(pArgs);
+	}
+
+	save => ( filepath ){
+		saveFilePath = filepath;
+		if ( !saveFilePath ){
+			saveFilePath = _filepath;
+		}
+
+		pyFunc = _py_workbook.get("save");
+		pArgs = _py_hook.newTuple(1);
+		pArgs.setItem(0, saveFilePath);
+		pyFunc.callMethod(pArgs);
+
 	}
 
 }
