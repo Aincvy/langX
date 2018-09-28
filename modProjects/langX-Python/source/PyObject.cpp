@@ -631,7 +631,7 @@ namespace langX {
 		{
 			return langX_PyObject_toNumber(func, args);
 		}
-		else if (PyBytes_Check(obj->pyObj))
+		else if (PyBytes_Check(obj->pyObj) || PyUnicode_Check(obj->pyObj))
 		{
 			return langX_PyObject_toString(func, args);
 		}
@@ -647,7 +647,7 @@ namespace langX {
 			}
 		}
 
-		return nullptr;
+		return Allocator::allocate(ObjectType::NULLOBJECT);
 	}
 
 	Object * langX_PyObject_detectPyType(X3rdFunction *func, const X3rdArgs &args) {
@@ -708,7 +708,7 @@ namespace langX {
 		info->addFunction("getString", create3rdFunc("getString", langX_PyObject_getString));
 		info->addFunction("getNumber", create3rdFunc("getNumber", langX_PyObject_getNumber));
 		info->addFunction("get", create3rdFunc("get", langX_PyObject_get));
-		info->addFunction("set", create3rdFunc("set", langX_PyObject_set));
+		info->addFunction("set2", create3rdFunc("set", langX_PyObject_set));
 		info->addFunction("operator[]", create3rdFunc("operator[]", langX_PyObject_operator_square_brackets));
 		info->addFunction("isNull", create3rdFunc("isNull", langX_PyObject_isNull));
 		info->addFunction("o", create3rdFunc("o", langX_PyObject_o));

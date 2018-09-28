@@ -36,6 +36,8 @@ namespace langX {
 		static String *allocateString(const char *);
 		static void freeString(String *);
 
+		static Object* allocateNull();
+
 		// 申请一个数组
 		static XArray *allocateArray(int size);
 

@@ -149,6 +149,11 @@ namespace langX {
 		delete str;
 	}
 
+	Object * Allocator::allocateNull()
+	{
+		return allocate(ObjectType::NULLOBJECT);
+	}
+
 	XArray * Allocator::allocateArray(int size)
 	{
 		checkArrayGC();
