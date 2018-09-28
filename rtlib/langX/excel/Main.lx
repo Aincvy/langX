@@ -58,5 +58,17 @@ loadExcel => (filepath){
 	return mywb;
 }
 
+// 新建一个表格
+Workbook => (){
+	pyLoadFunc = _py_openpyxl.get("Workbook");
+	pArgs = _py_hook.newTuple(0);
+	wb = pyLoadFunc.callMethod(pArgs);
+
+	mywb = new Workbook();
+	mywb._py_workbook = wb;
+	mywb._filepath = null;
+
+	return mywb;
+}
 
 

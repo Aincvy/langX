@@ -6,20 +6,34 @@ println("init : " + retVal);
 
 wb = loadExcel("/Users/alias/Desktop/temp/公司文件/config_fish.xlsx");
 sheet = wb.activeSheet();
-title = sheet.title();
-println("title: " + title);
+//title = sheet.title();
+//println("title: " + title);
 
 maxCol = sheet.columnCount();
 maxRow = sheet.rowCount();
 println("maxCol: " + maxCol);
 println("maxRow: " + maxRow);
 
-t1 = sheet.data(1,1);
+t1 = sheet.data(4,2);
 println("before: " + t1);
 sheet.data(1,1, "hello__");
 t1 = sheet.data(1,1);
 println("after: " + t1);
 
-wb.save();
+// wb.save();
+
+mywb = Workbook();
+mySheet = mywb.activeSheet();
+//aa = mySheet.title("abc111");
+//println("a: " + aa);
+
+for ( i = 1; i < maxCol ; i++){
+	t1 = sheet.data(9 ,i);
+	println(i + ": " + t1);
+
+	mySheet.data(1,i, t1);
+}
+
+mywb.save("a.xlsx");
 
 println("script over.");

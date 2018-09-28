@@ -16,11 +16,11 @@ WorkSheet {
 	// 获取/设置 当前sheet 的标题
 	title => ( newTitle ){
 		if ( newTitle){
+			_py_worksheet.set2("title", newTitle);
+		} 
 
-		} else {
-			pyTitle = _py_worksheet.get("title");
-			return pyTitle.toStr();
-		}
+		pyTitle = _py_worksheet.get("title");
+		return pyTitle.toStr();
 	}
 
 	// 获取/设置 一个单元格里面的值
@@ -52,7 +52,14 @@ WorkSheet {
 		
 		cell = pyFunc.callMethod(pArgs);
 		tmp = cell.get("value");
-		return tmp.toStr();
+		if(!tmp){
+			return null;
+		}
+		if (tmp.isNull()){
+			return null;
+		}
+
+		return tmp.value();
 	}
 
 	columnCount => (){
@@ -79,6 +86,9 @@ Workbook {
 
 	// 获取正在活跃中的
 	activeSheet => (){
+		//restrict;
+
+		local sheet;
 		sheet = _py_workbook.get("active");
 
 		if(sheet.isNull()){
@@ -93,6 +103,7 @@ Workbook {
 	// 创建一个新的子表
 	createSheet => (name) {
 		
+		local sheet;
 		pyFunc = _py_workbook.get("create_sheet");
 		pArgs = _py_hook.newTuple(1);
 		pArgs.setItem(0, name);
@@ -115,6 +126,7 @@ Workbook {
 		pyFunc = _py_workbook.get("get_sheet_by_name");
 		pArgs = _py_hook.newTuple(1);
 		pArgs.setItem(0, name);
+		local sheet;
 		sheet = pyFunc.callMethod(pArgs);
 
 		if(sheet.isNull()){			
