@@ -10,4 +10,11 @@ funa => {
 
 print("funa=" + funa() + "\n");
 
+a = 5;
+b = 10;
+a++;
+b--;
+println("a: " + a);
+println("b: " + b);
+
 print("script end.");

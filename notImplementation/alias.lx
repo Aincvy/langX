@@ -1,0 +1,27 @@
+
+funa => (){
+	println("funa()");
+}
+
+funb => (a){
+	println("funb: " + a);
+}
+
+
+Class1 {
+	
+	test1 => (){
+		return "xx01";
+	}
+
+}
+
+set abc funa;
+set qwe funb;
+set name Class1::test1;
+
+abc ;  //  call funa();
+qwe("abcc");
+
+a = new Class1();
+a.name;   // equals  a.test1();

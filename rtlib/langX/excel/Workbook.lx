@@ -17,6 +17,9 @@ WorkSheet {
 	title => ( newTitle ){
 		if ( newTitle){
 			_py_worksheet.set2("title", newTitle);
+			//local o;
+			//o = _py_worksheet.o();
+			//o.title = newTitle;
 		} 
 
 		pyTitle = _py_worksheet.get("title");
