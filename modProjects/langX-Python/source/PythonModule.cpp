@@ -29,6 +29,9 @@ namespace langX {
 		regPyException(state, space);
 		regPyObjectType(state, space);
 		regPyObject(state, space);
+		regPyObjectEasy(state, space);
+
+		regPySomeFunction(state, space);
 
 		return 0;
 	}
