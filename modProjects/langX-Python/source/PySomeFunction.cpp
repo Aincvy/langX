@@ -15,7 +15,7 @@ namespace langX {
 
 
 
-	Object * langX_PyObject_Import(X3rdFunction *func, const X3rdArgs &args) {
+	Object * langX_PyFunctions_Import(X3rdFunction *func, const X3rdArgs &args) {
 		
 		Object *a = args.args[0];
 		if (a == nullptr)
@@ -41,11 +41,24 @@ namespace langX {
 		return aobj->addRef();
 	}
 
+	Object * langX_PyFunctions_ToPyObject(X3rdFunction *func, const X3rdArgs &args) {
+
+		Object *a = args.args[0];
+		if (a == nullptr)
+		{
+			return Allocator::allocate(ObjectType::NULLOBJECT);;
+		}
+
+		PyObject *pyObj = langXToPyObject(a);
+		return createLangXObjectPyObj(pyObj, PyObjectType::Unknown)->addRef();
+	}
+
 
 	int regPySomeFunction(langXState *state, XNameSpace* space) {
 		// 注册一些函数进去
 		
-		space->putFunction("import", create3rdFunc("import", langX_PyObject_Import));
+		space->putFunction("import", create3rdFunc("import", langX_PyFunctions_Import));
+		space->putFunction("toPyObject", create3rdFunc("toPyObject", langX_PyFunctions_ToPyObject));
 
 		return 0;
 	}

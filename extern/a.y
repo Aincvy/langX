@@ -40,7 +40,7 @@ char *namespaceNameCat(char *,char *);
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
 %type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt bit_opr_factor local_declar_stmt
-%type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt const_declar_stmt annotation_declar_stmt annotation_use_stmt annotation_use_single_stmt call_statement_piping call_statement_piping_single not_expr_value
+%type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt const_declar_stmt annotation_declar_stmt annotation_use_stmt annotation_use_single_stmt call_statement_piping call_statement_piping_single not_expr_value self_compute_stmt
 %type <params> param_list parameter lambda_args_stmt
 %type <args> args_list args_expr
 %type <sValue> extends_stmt namespace_name_stmt
@@ -308,7 +308,8 @@ for_1_stmt
 	
 //  简单语句
 simple_stmt
-	: assign_stmt   { $$ = $1; }
+	: self_compute_stmt { $$ = $1; }
+	| assign_stmt   { $$ = $1; }
 	| call_statement  %prec PRIORITY1 { $$ = $1; }
 	| DELETE IDENTIFIER { $$ = opr(DELETE, 1 ,$2 ); }
 	| interrupt_stmt { $$ = $1; }
@@ -316,6 +317,11 @@ simple_stmt
 	| restrict_stmt  { $$ = $1; }
 	| XCONTINUE { $$ = opr(XCONTINUE , 0 ); }
 	| call_statement_piping %prec PRIORITY3 { $$ = $1; }
+	;
+
+// 自增 自减运算语句 
+self_compute_stmt
+	: self_inc_dec_stmt    { $$ = $1; }
 	;
 
 //  限定语句， 限定环境

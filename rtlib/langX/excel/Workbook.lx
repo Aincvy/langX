@@ -105,9 +105,10 @@ Workbook {
 		
 		local sheet;
 		pyFunc = _py_workbook.get("create_sheet");
-		pArgs = _py_hook.newTuple(1);
-		pArgs.setItem(0, name);
-		sheet = pyFunc.callMethod(pArgs);
+		//pArgs = _py_hook.newTuple(1);
+		//pArgs.setItem(0, name);
+		//sheet = pyFunc.callMethod(pArgs);
+		sheet = pyFunc.callMethod(name);
 
 		if(sheet.isNull()){			
 			return null ;
@@ -151,9 +152,10 @@ Workbook {
 		}
 
 		pyFunc = _py_workbook.get("save");
-		pArgs = _py_hook.newTuple(1);
-		pArgs.setItem(0, saveFilePath);
-		pyFunc.callMethod(pArgs);
+		//pArgs = _py_hook.newTuple(1);
+		//pArgs.setItem(0, saveFilePath);
+		//pyFunc.callMethod(pArgs);
+		pyFunc.callMethod(saveFilePath);
 
 	}
 

@@ -1,7 +1,0 @@
-ref langX.rt.util.excel;    // 引入 excel 库
-
-book = loadWorkBook('abc.xlsx');
-sheet = book.sheet(0);   // 获取第一张子表
-
-
-
