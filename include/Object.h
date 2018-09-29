@@ -20,6 +20,7 @@ namespace langX {
 	class Environment;
 	class langXObject;
 	class XArrayRef;
+	class XArray;
 
 	// 对象类型
 	enum ObjectType
@@ -291,5 +292,5 @@ namespace langX {
 	// 释放一个nodeLink 占用的内存
 	void freeNodeLink(NodeLink *);
 
-
-}
+	void x3rdArgsToArray(const X3rdArgs& args, XArray* arrayObjRef);
+} 

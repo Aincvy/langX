@@ -82,6 +82,8 @@ namespace langX {
 	Object * langX_PyObject_get_impl(XClassPyObject *obj, Object *a);
 	Object * langX_PyObject_set_impl(XClassPyObject * obj, Object * key, Object *value);
 
+	PyObject * langXToPyObject(Object *);
+
 }
 
 int loadModule(langX::X3rdModule *& mod);

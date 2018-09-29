@@ -1,6 +1,7 @@
 #include <string>
 #include "../include/Object.h"
 #include "../include/Utils.h"
+#include "../include/XArray.h"
 
 namespace langX {
 	Object::Object()
@@ -118,4 +119,15 @@ namespace langX {
 		nodeLink->tryEnv = NULL;
 		free(nodeLink);
 	}
+
+	void x3rdArgsToArray(const X3rdArgs& args, XArray* arrayObjRef) {
+		XArray *arrayRef = arrayObjRef;
+
+		int length = args.index;
+		for (size_t i = 0; i < length; i++)
+		{
+			arrayRef->set(i, args.args[i]);
+		}
+	}
+
 }
