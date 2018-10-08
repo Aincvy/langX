@@ -65,6 +65,9 @@ namespace langX {
 		// 分割字符串
 		std::vector<std::string> split(const char *);
 
+
+		void trim();
+
 		// 获得这个字符串的特性字符串 
 		const char * characteristic() const;
 

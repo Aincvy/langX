@@ -25,3 +25,4 @@ qwe("abcc");
 
 a = new Class1();
 a.name;   // equals  a.test1();
+

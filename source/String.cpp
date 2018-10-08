@@ -168,6 +168,14 @@ namespace langX {
 		return elems;
 	}
 
+	void String::trim()
+	{
+		std::string &s = this->m_value;
+
+		s.erase(0, s.find_first_not_of(" "));
+		s.erase(s.find_last_not_of(" ") + 1);
+	}
+
 	const char * String::characteristic() const
 	{
 		std::stringstream ss;

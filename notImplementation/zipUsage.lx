@@ -1,0 +1,7 @@
+ref langX.zip;
+
+a = compress("abc");
+b = decompress(a);
+
+println(b);
+

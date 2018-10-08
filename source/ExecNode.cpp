@@ -20,6 +20,7 @@
 #include "../include/NullObject.h"
 #include "../include/InnerFunction.h"
 #include "../include/langXThread.h"
+#include "../include/LogManager.h"
 
 namespace langX {
 	// 根据数组信息获得结果， 返回的结果为一个 nullptr 或者复制好的结果
@@ -1940,6 +1941,7 @@ namespace langX {
 				// 字符串比较
 				const char * a = ((String*)n1->value)->getValue();
 				const char * b = ((String*)n2->value)->getValue();
+				// logger->debug("a: %s,b: %s",a,b);
 
 				if (strcmp(a, b) == 0)
 				{
