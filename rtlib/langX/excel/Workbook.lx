@@ -53,6 +53,7 @@ WorkSheet {
 			pArgs.setItem(1, y);
 		}
 		
+		local cell;
 		cell = pyFunc.callMethod(pArgs);
 		tmp = cell.get("value");
 		if(!tmp){

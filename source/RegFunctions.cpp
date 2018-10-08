@@ -445,6 +445,18 @@ namespace langX {
 		return Allocator::allocateNumber(0);
 	}
 
+	Object * langX_str_trim(X3rdFunction *func, const X3rdArgs & args) {
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::STRING)
+		{
+			String *str = (String*)a;
+			str->trim();
+			return Allocator::allocateString(str->getValue());
+		}
+
+		return Allocator::allocateNull();
+	}
+
 
 	void regFunctions(langXState *state)
 	{
@@ -469,5 +481,6 @@ namespace langX {
 		state->reg3rd("co_typeof", langX_co_typeof);
 		state->reg3rd("co_classname", langX_co_classname);
 		state->reg3rd("sy_isLoadMod", langX_sy_isLoadMod);
+		state->reg3rd("str_trim", langX_str_trim);
 	}
 }

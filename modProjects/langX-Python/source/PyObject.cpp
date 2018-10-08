@@ -657,7 +657,7 @@ namespace langX {
 		}
 
 		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
-		if (PyLong_Check(obj->pyObj))
+		if (PyLong_Check(obj->pyObj) || PyFloat_Check(obj->pyObj))
 		{
 			return langX_PyObject_toNumber(func, args);
 		}

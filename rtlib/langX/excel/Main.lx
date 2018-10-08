@@ -46,6 +46,8 @@ initExcelTools => (){
 // 返回一个工作簿的类
 loadExcel => (filepath){
 	
+	local pyLoadFunc,pArgs,wb,mywb;
+
 	pyLoadFunc = _py_openpyxl.get("load_workbook");
 	pArgs = _py_hook.newTuple(1);
 	pArgs.setItem(0, filepath);
@@ -60,6 +62,8 @@ loadExcel => (filepath){
 
 // 新建一个表格
 Workbook => (){
+	local pyLoadFunc,pArgs,wb,mywb;
+
 	pyLoadFunc = _py_openpyxl.get("Workbook");
 	pArgs = _py_hook.newTuple(0);
 	wb = pyLoadFunc.callMethod(pArgs);

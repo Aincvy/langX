@@ -213,6 +213,11 @@ namespace langX {
 				std::string t1 = str->upperCase();
 				return Allocator::allocateString(t1.c_str());
 			}
+			// no effect ...
+			//else if (strcmp(name, "trim") == 0)
+			//{
+			//	str->trim();
+			//}
 		}
 
 		if (ret == nullptr)
