@@ -378,6 +378,7 @@ args_expr_collection
 	| static_member_stmt { $$ = $1; }
 	| new_expr        { $$ = $1;}
 	| '$'             { $$ = NULL; }
+	| null_expr		  { $$ = $1; }
 	;
 
 block
