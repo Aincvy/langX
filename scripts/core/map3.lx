@@ -2,7 +2,10 @@ ref langX.core.util;
 
 a = new Map();
 a.put( 1 , "value1" );
+a.put( 2 , null);
 
 abc = a.get( 1 );
+t = a.get(2);
+println("t: " + t);
 
 println("abc="+abc);

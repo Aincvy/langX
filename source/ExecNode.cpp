@@ -4031,9 +4031,11 @@ namespace langX {
 			thread->initRootNode(node);
 		}
 
+		Node *lastExecNode = NULL;
 		NodeLink *curLink = NULL;
 		while ((curLink = thread->getCurrentExecute()) != NULL) {
 			//  程序没还有结束
+			lastExecNode = curLink->node;
 
 			int cmd = -1;
 			if (curLink->node->type == NodeType::NODE_OPERATOR)
@@ -4071,5 +4073,13 @@ namespace langX {
 				}
 			}
 		}
+
+		// 处理下一些后续的操作
+		if (lastExecNode)
+		{
+			doSuffixOperation(lastExecNode);
+			lastExecNode = nullptr;
+		}
+		// printf("one round end\n");
 	}
 }
