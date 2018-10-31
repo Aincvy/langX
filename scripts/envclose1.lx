@@ -1,0 +1,24 @@
+a = 1; 
+
+funa => (){
+
+	local a;
+	a = 2 ;
+
+	println("a: " + a );
+
+	// funb();
+
+	println("after a: " + a );
+}
+
+funb => (){
+	
+	println("a: " + a );
+
+	a = 3;
+
+}
+
+funa();
+println("a: " + a );

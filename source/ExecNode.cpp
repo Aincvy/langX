@@ -2965,6 +2965,7 @@ namespace langX {
 		if (n->opr_obj->op_count <= 0)
 		{
 			thread->getCurrentEnv()->setRestrict(true);
+			thread->getCurrentEnv()->setClose(true);
 		}
 		else {
 			Node *n1 = n->opr_obj->op[0];
@@ -2974,7 +2975,9 @@ namespace langX {
 				return;
 			}
 			else {
-				thread->getCurrentEnv()->setRestrict(__tryConvertToBool(n1));
+				bool f = __tryConvertToBool(n1);
+				thread->getCurrentEnv()->setRestrict(f);
+				thread->getCurrentEnv()->setClose(f);
 			}
 
 			freeSubNodes(n);
