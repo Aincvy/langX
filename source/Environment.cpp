@@ -17,6 +17,7 @@ namespace langX {
 	Environment::Environment()
 	{
 		this->m_parent = NULL;
+		this->m_close_flag = true;
 	}
 
 	Environment::~Environment()
@@ -128,6 +129,16 @@ namespace langX {
 	void Environment::setDeep(int i)
 	{
 		this->m_deep = i;
+	}
+
+	bool Environment::isClose() const
+	{
+		return this->m_close_flag;
+	}
+
+	void Environment::setClose(bool f)
+	{
+		this->m_close_flag = f;
 	}
 
 	ClassBridgeEnv::ClassBridgeEnv(ClassInfo *claxx)
@@ -737,6 +748,8 @@ namespace langX {
 
 	Object * DefaultEnvironment::getObject(const std::string &name, bool firstLevel)
 	{
+
+		// printf("DefaultEnvironment getObject: %s\n", name.c_str());
 		auto index = this->m_objects_map.find(name);
 		bool flag = false;
 		if (index == this->m_objects_map.end())
@@ -744,7 +757,8 @@ namespace langX {
 			flag = true;
 		}
 		else {
-			if (!firstLevel && index->second->isLocal())
+			if (!firstLevel && 
+				(index->second->isLocal() || this->isClose()))
 			{
 				flag = true;
 			}
@@ -1085,6 +1099,8 @@ namespace langX {
 
 	void ScriptEnvironment::putObject(const std::string &name, Object *obj)
 	{
+
+		// printf("putObject name: %s\n", name.c_str());
 		auto it = this->m_objects_map.find(name);
 
 		if (obj) {
@@ -1116,6 +1132,8 @@ namespace langX {
 
 	Object * ScriptEnvironment::getObject(const std::string & name, bool firstLevel)
 	{
+
+		//printf("getObject: %s,firstLevel: %d\n", name.c_str(), firstLevel);
 		auto index = this->m_objects_map.find(name);
 		bool flag = false;
 		if (index == this->m_objects_map.end())
@@ -1123,12 +1141,14 @@ namespace langX {
 			flag = true;
 		}
 		else {
-			if (!firstLevel && index->second->isLocal())
+			if (!firstLevel && 
+				(index->second->isLocal() || this->isClose()))
 			{
 				flag = true;
 			}
 		}
 
+		//printf("flag: %d\n", flag);
 		if (flag)
 		{
 			if (!this->m_namespaces.empty())
@@ -1147,6 +1167,7 @@ namespace langX {
 			{
 				for (auto i = this->m_require_files_map.begin(); i != this->m_require_files_map.end(); i++)
 				{
+					//printf("look require file %s\n", i->first.c_str());
 					Object *f = i->second->getObject(name);
 					if (f != nullptr && !f->isLocal())
 					{

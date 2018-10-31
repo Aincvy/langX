@@ -81,6 +81,9 @@ namespace langX {
 		int getDeep() const;
 		void setDeep(int);
 
+		bool isClose() const;
+		void setClose(bool);
+
 	private:
 		//std::map<std::string, Function*> m_functions_map;
 		//std::map<std::string, ClassInfo*> m_classes_map;
@@ -93,6 +96,8 @@ namespace langX {
 		bool m_restrict = false;
 		//  死亡符号。  如果当前环境为 死亡环境， 则不应该执行节点，直接返回就好了
 		bool m_dead = false;
+		// 关闭标记，  默认环境都是关闭的， 关闭状态下 部分环境的成员无法被外部访问
+		bool m_close_flag = false;
 
 		// 当前环境的深度 即 第几层环境
 		int m_deep = -1;
