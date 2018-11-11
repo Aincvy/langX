@@ -93,6 +93,12 @@
     <ClInclude Include="include\LogManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\langXrtlib.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RegObjects.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="extern\lex.yy.c">
@@ -174,6 +180,12 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\LogManager.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\langXrtlib.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RegObjects.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

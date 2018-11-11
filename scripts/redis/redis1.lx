@@ -1,0 +1,13 @@
+ref langX.redis;
+
+redis = new RedisClient();
+
+redis.connect("127.0.0.1", 6379);
+redis.put("foo", 123.005);
+println("put foo=123 over!");
+
+abc = redis.get("foo");
+println("now get it, foo=" + abc);
+
+
+println("script over");

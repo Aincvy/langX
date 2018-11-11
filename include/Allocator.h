@@ -32,6 +32,10 @@ namespace langX {
 		static Number *allocateNumber(double );
 		static void freeNumber(Number *);
 
+		// 布尔类型
+		static Number* allocateTrue();
+		static Number* allocateFalse();
+
 		static String *allocateString();
 		static String *allocateString(const char *);
 		static void freeString(String *);
