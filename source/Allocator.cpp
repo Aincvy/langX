@@ -130,6 +130,16 @@ namespace langX {
 		delete v;
 	}
 
+	Number * Allocator::allocateTrue()
+	{
+		return allocateNumber(1);
+	}
+
+	Number * Allocator::allocateFalse()
+	{
+		return allocateNumber(0);
+	}
+
 	String * Allocator::allocateString()
 	{
 		return new String("");

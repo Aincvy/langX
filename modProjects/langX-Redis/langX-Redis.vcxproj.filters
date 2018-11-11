@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{08554557-2f9a-4493-a3ba-9d35dd2993cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{2be0b705-9ec0-4164-a92c-b5c5863b8861}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\RedisModule.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RegRedisModule.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\RedisClient.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RedisModule.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RedisExceptions.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
