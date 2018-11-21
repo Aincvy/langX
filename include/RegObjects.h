@@ -8,6 +8,12 @@
 namespace langX {
 
 	class langXObjectExtend;
+	class ClassInfo;
+
+
+	// Àà×¢²á
+	ClassInfo* regLoggerClass(langXState *state);
+
 
 	// ×¢²á
 	void regObjects(langXState *state);

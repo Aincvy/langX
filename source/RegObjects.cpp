@@ -10,17 +10,16 @@
 namespace langX {
 
 	void regLogger(langXState *state) {
-		langXObjectExtend *obj = emptyObject();
-		
-		
-		langXObjectRef *ref = obj->addRef();
-		state->getGlobalEnv()->putObject("langXLogger", ref);
+		ClassInfo *loggerClass = regLoggerClass(state);
+
+		langXObject *obj= loggerClass->newObject(false);
+
+		state->getGlobalEnv()->putObject("logger", obj->addRef());
 	}
 
 	void regObjects(langXState * state)
 	{
 		regLogger(state);
-
 
 	}
 
