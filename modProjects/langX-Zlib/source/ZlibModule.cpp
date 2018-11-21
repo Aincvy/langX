@@ -8,12 +8,43 @@
  ***************************************************************************************/
 
 #include "../include/ZlibModule.h"
+#include "../include/RegZlibModule.h"
+
+#include "../../../include/LogManager.h"
+#include "../../../include/langX.h"
 
 namespace langX{
 
+	ZlibModule::ZlibModule()
+	{
+		setName("zlib");
+	}
 
+	ZlibModule::~ZlibModule()
+	{
+	}
 
+	int ZlibModule::init(langXState * state)
+	{
+		logger->info("init zlib lib.");
+
+		XNameSpace* space = state->getNameSpaceOrCreate("langX.zlib");
+		
+		regZlib(state, space);
+
+		return 0;
+	}
+
+	int ZlibModule::unload(langXState *)
+	{
+		return 0;
+	}
 
 }
 
+int loadModule(langX::X3rdModule *& mod) {
 
+	mod = new langX::ZlibModule();
+
+	return 0;
+}

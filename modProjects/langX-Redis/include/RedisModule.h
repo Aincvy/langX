@@ -21,5 +21,5 @@ namespace langX {
 
 }
 
-
+// lang x  会调用这个方法尝试获取一个 mod 
 int loadModule(langX::X3rdModule *& mod);

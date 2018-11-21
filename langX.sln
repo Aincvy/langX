@@ -15,9 +15,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX-Python", "modProjects
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX-Json", "modProjects\langX-Json\langX-Json.vcxproj", "{46486BB3-3095-43F3-9D89-F733A7EC70D0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX-Zlib", "modProjects\langX-Zlib\langX-Zlib.vcxproj", "{2682DDC3-6AA5-496D-967F-996706CFFA24}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX-Redis", "modProjects\langX-Redis\langX-Redis.vcxproj", "{AC152F62-00ED-4F4D-B02B-6DE9A32BB1C0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "langX-Zlib", "modProjects\langX-Zlib\langX-Zlib.vcxproj", "{86CDA012-4117-4815-A7A7-C4A1B22202A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,16 +101,6 @@ Global
 		{46486BB3-3095-43F3-9D89-F733A7EC70D0}.Release|x64.Build.0 = Release|x64
 		{46486BB3-3095-43F3-9D89-F733A7EC70D0}.Release|x86.ActiveCfg = Release|x86
 		{46486BB3-3095-43F3-9D89-F733A7EC70D0}.Release|x86.Build.0 = Release|x86
-		{2682DDC3-6AA5-496D-967F-996706CFFA24}.Debug|ARM.ActiveCfg = Debug|Win32
-		{2682DDC3-6AA5-496D-967F-996706CFFA24}.Debug|x64.ActiveCfg = Debug|x64
-		{2682DDC3-6AA5-496D-967F-996706CFFA24}.Debug|x64.Build.0 = Debug|x64
-		{2682DDC3-6AA5-496D-967F-996706CFFA24}.Debug|x86.ActiveCfg = Debug|Win32
-		{2682DDC3-6AA5-496D-967F-996706CFFA24}.Debug|x86.Build.0 = Debug|Win32
-		{2682DDC3-6AA5-496D-967F-996706CFFA24}.Release|ARM.ActiveCfg = Release|Win32
-		{2682DDC3-6AA5-496D-967F-996706CFFA24}.Release|x64.ActiveCfg = Release|x64
-		{2682DDC3-6AA5-496D-967F-996706CFFA24}.Release|x64.Build.0 = Release|x64
-		{2682DDC3-6AA5-496D-967F-996706CFFA24}.Release|x86.ActiveCfg = Release|Win32
-		{2682DDC3-6AA5-496D-967F-996706CFFA24}.Release|x86.Build.0 = Release|Win32
 		{AC152F62-00ED-4F4D-B02B-6DE9A32BB1C0}.Debug|ARM.ActiveCfg = Debug|ARM
 		{AC152F62-00ED-4F4D-B02B-6DE9A32BB1C0}.Debug|ARM.Build.0 = Debug|ARM
 		{AC152F62-00ED-4F4D-B02B-6DE9A32BB1C0}.Debug|x64.ActiveCfg = Debug|x64
@@ -123,6 +113,18 @@ Global
 		{AC152F62-00ED-4F4D-B02B-6DE9A32BB1C0}.Release|x64.Build.0 = Release|x64
 		{AC152F62-00ED-4F4D-B02B-6DE9A32BB1C0}.Release|x86.ActiveCfg = Release|x86
 		{AC152F62-00ED-4F4D-B02B-6DE9A32BB1C0}.Release|x86.Build.0 = Release|x86
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Debug|ARM.ActiveCfg = Debug|ARM
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Debug|ARM.Build.0 = Debug|ARM
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Debug|x64.ActiveCfg = Debug|x64
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Debug|x64.Build.0 = Debug|x64
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Debug|x86.ActiveCfg = Debug|x86
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Debug|x86.Build.0 = Debug|x86
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Release|ARM.ActiveCfg = Release|ARM
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Release|ARM.Build.0 = Release|ARM
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Release|x64.ActiveCfg = Release|x64
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Release|x64.Build.0 = Release|x64
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Release|x86.ActiveCfg = Release|x86
+		{86CDA012-4117-4815-A7A7-C4A1B22202A6}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

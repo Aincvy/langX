@@ -7,16 +7,33 @@
  *         
  **************************************************************************************/
 
+#include "../../../include/X3rdModule.h"
 
 #ifndef ZLIBMODULE_H
 #define ZLIBMODULE_H
 
 namespace langX{
 
+	class langXObject;
+	class Object;
 
+	class ZlibModule : public X3rdModule {
+
+	public:
+		ZlibModule();
+		~ZlibModule();
+
+		int init(langXState *);
+
+		virtual int unload(langXState *);
+
+	private:
+
+	};
 
 }
 
+int loadModule(langX::X3rdModule *& mod);
 
 #endif /* !ZLIBMODULE_H */
 

@@ -2,18 +2,30 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
-      <UniqueIdentifier>{71311b76-9982-49d8-b0c4-279cf0b8e3c2}</UniqueIdentifier>
+      <UniqueIdentifier>{e6d1171f-07a4-425b-8080-ef350f5d0c47}</UniqueIdentifier>
     </Filter>
     <Filter Include="source">
-      <UniqueIdentifier>{46230347-5c25-4931-ba36-ac93d0443d43}</UniqueIdentifier>
+      <UniqueIdentifier>{4282e4ac-0988-49b1-9e1f-071053130253}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\RegZlibModule.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="include\ZlibModule.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\Zip.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ZipFile.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Zlib.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
     <ClCompile Include="source\ZlibModule.cpp">
       <Filter>source</Filter>
     </ClCompile>

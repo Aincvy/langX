@@ -1,0 +1,9 @@
+ref langX.zlib;
+
+str = "The text, time, xflags, and os fields are filled in with the gzip header contents. hcrc is set to true if there is a header CRC. (The header CRC was valid if done is set to one.) If extra is not Z_NULL, then extra_max contains the maximum number of bytes to write to extra. Once done is true, extra_";
+abc = Zlib::compress(str);
+bcd = Zlib::decompress(abc);
+
+println("bcd: " + bcd);
+
+println("script over!");
