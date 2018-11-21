@@ -11,6 +11,15 @@ namespace langX {
 	{
 		this->m_value = std::string(v);
 	}
+	String::String(std::string v)
+	{
+		this->m_value = std::string(v);
+	}
+	langX::String::String(const char *v, int l)
+	{
+		this->m_value = std::string(v, l);
+	}
+
 	String::~String()
 	{
 	}

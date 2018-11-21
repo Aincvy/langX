@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include <map>
+#include <string>
 
 
 namespace langX {
@@ -38,6 +39,8 @@ namespace langX {
 
 		static String *allocateString();
 		static String *allocateString(const char *);
+		static String *allocateString(std::string);
+		static String *allocateString(const char*, int);
 		static void freeString(String *);
 
 		static Object* allocateNull();

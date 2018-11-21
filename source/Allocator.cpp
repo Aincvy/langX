@@ -150,6 +150,16 @@ namespace langX {
 		return new String(str);
 	}
 
+	String * Allocator::allocateString(std::string str)
+	{
+		return new String(str);
+	}
+
+	String * Allocator::allocateString(const char *v, int l)
+	{
+		return new String(v,l);
+	}
+
 	void Allocator::freeString(String *str)
 	{
 		if (str == NULL)

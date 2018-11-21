@@ -12,6 +12,8 @@ namespace langX {
 	{
 	public:
 		String(const char *);
+		String(std::string );
+		String(const char *, int);
 		~String();
 
 		//  将参数的值追加到当前字符串的后面
