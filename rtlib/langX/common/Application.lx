@@ -1,0 +1,52 @@
+/*
+ * 需要实现的类 Application
+ * 内置类， 表示一些当前应用程序的参数
+ *
+ */
+
+set public = langX.common;
+
+Application {
+	
+	// 只读属性， 执行的那个脚本的绝对路径， 包含了可执行文件的路径 
+	ExecutablePath ;
+	
+	// 获取启动了应用程序的可执行文件的路径，不包括可执行文件的名称  只读属性
+	StartupPath ;
+	
+	// 当前是否在调试模式下  只读属性
+	IsDebug ;
+	
+	// 执行的平台， Linux/Win   只读属性
+	RunPlatform ; 
+	
+	// 程序启动的时候的 unix时间戳   只读属性
+	StartTime ;
+	
+	// 日志程序  只读属性
+	logger ; 
+	
+	// 程序退出  参数为状态码
+	exit => ( status ){  }
+	
+	
+}
+
+// 默认实例
+app ;
+
+initApp => (){
+
+	ref langX.extend;
+
+	app = new Application();
+
+	app.logger = logger;
+
+	
+}
+
+
+initApp();
+
+println("load app over.");

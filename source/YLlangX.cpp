@@ -21,6 +21,7 @@
 #include "../extern/y.tab.h"
 #include "../include/langXThread.h"
 #include "../include/LogManager.h"
+#include "../include/RegObjects.h"
 
 extern int getParseLineNo();
 
@@ -37,6 +38,7 @@ void initLangX()
 
 		regFunctions(state);
 		regExceptions();
+		regObjects(state);
 
 		state->loadConfig("/etc/langX/langX.properties");
 	}

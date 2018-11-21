@@ -1,0 +1,5 @@
+// common folder
+// load other script.
+
+include "Application.lx"
+
