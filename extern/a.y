@@ -602,10 +602,11 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 	
-	initLangX();
+	initLangX(argc, argv);
 	
-	for(int i = 1; i < argc; i++)
-		doFile(argv[i]);
+	doFile(argv[1]);
+	//for(int i = 1; i < argc; i++)
+	//	doFile(argv[i]);
 	
 	closeLangX();
 	

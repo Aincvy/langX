@@ -686,4 +686,32 @@ namespace langX {
 	{
 		this->m_yy_parsing = f;
 	}
+
+	void langXState::setStartArg(int argc, char * argv[])
+	{
+		int realSize = argc - 2;
+		if (realSize <= 0)
+		{
+			this->startArgSize = 0;
+			return;
+		}
+
+		this->startArgSize = realSize;
+		this->startArgValues = new char*[realSize];
+
+		for (size_t i = 0; i < realSize; i++)
+		{
+			int index = i + 2;
+			this->startArgValues[i] = argv[index];
+		}
+
+	}
+	int langXState::getArgc()
+	{
+		return this->startArgSize;
+	}
+	char ** langXState::getArgv()
+	{
+		return this->startArgValues;
+	}
 }

@@ -29,11 +29,12 @@ using namespace langX;
 
 static langXState* state = NULL;
 
-void initLangX()
+void initLangX(int argc, char *argv[])
 {
 	if (state == NULL)
 	{
 		state = new langXState();
+		state->setStartArg(argc, argv);
 		logger->debug("initLangX");
 
 		regFunctions(state);

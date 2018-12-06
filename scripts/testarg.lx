@@ -1,0 +1,12 @@
+
+argc = sy_argc();
+
+println("argc: " + argc);
+println("=========================");
+for( i = 0; i < argc ; i++){
+	a = sy_arg(i);
+	println(i + ": " + a);
+}
+
+
+println("end...");
