@@ -65,6 +65,7 @@
     <ClCompile Include="source\Environment.cpp" />
     <ClCompile Include="source\ExecNode.cpp" />
     <ClCompile Include="source\Exception.cpp" />
+    <ClCompile Include="source\extend\langXLogger.cpp" />
     <ClCompile Include="source\Function.cpp" />
     <ClCompile Include="source\InnerFunction.cpp" />
     <ClCompile Include="source\langX.cpp" />

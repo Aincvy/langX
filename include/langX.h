@@ -123,6 +123,15 @@ namespace langX {
 		// 设置是否正在解析中
 		void setYYParsing(bool);
 
+		// 设置程序的启动参数
+		void setStartArg(int argc, char *argv[]);
+
+		// 获取启动参数列表的长度
+		int getArgc();
+		// 获取启动参数的实际值
+		char** getArgv();
+
+
 	private:
 		// 全局环境
 		GlobalEnvironment * m_global_env = nullptr;
@@ -154,6 +163,10 @@ namespace langX {
 		bool m_yy_parsing = false;
 
 		bool m_disposing = false;
+
+		// 启动的参数信息
+		int startArgSize;
+		char **startArgValues;
 
 		langXThreadMgr* m_thread_mgr;
 

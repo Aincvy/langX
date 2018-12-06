@@ -25,7 +25,7 @@ typedef langX::NodeLink NodeLink;
 //  lex/yacc 是C语言的
 extern "C" {
 
-	void initLangX();
+	void initLangX(int argc,char *argv[]);
 
 	void closeLangX();
 

@@ -23,6 +23,7 @@
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 #include "../include/Allocator.h"
+#include "../include/XArray.h"
 
 static struct termios old, newone;
 
@@ -457,6 +458,57 @@ namespace langX {
 		return Allocator::allocateNull();
 	}
 
+	Object * langX_get_start_arg(X3rdFunction *func, const X3rdArgs & args) {
+		langXState *state = func->getLangX();
+		int argc = state->getArgc();
+		if (argc <= 0)
+		{
+			return nullptr;
+		}
+
+
+		Object *a = args.args[0];
+		if (a && a->getType() == ObjectType::NUMBER)
+		{
+			int index = ((Number*)a)->getIntValue();
+			if (index >= argc)
+			{
+				return nullptr;
+			}
+
+			char *abc = state->getArgv()[index];
+			return Allocator::allocateString(abc);
+		}
+
+		return Allocator::allocateNull();
+	}
+
+	Object * langX_get_start_arg_size(X3rdFunction *func, const X3rdArgs & args) {
+		langXState *state = func->getLangX();
+		int argc = state->getArgc();
+		return Allocator::allocateNumber(argc);
+	}
+
+	Object * langX_get_start_args(X3rdFunction *func, const X3rdArgs & args) {
+		langXState *state = func->getLangX();
+		int argc = state->getArgc();
+		if (argc <= 0)
+		{
+			return nullptr;
+		}
+
+		XArray *arr= Allocator::allocateArray(argc);
+		
+		char **argv = state->getArgv();
+		for (size_t i = 0; i < argc; i++)
+		{
+			String *str = Allocator::allocateString(argv[i]);
+			arr->set(i, str);
+		}
+
+		return arr->addRef();
+	}
+
 
 	void regFunctions(langXState *state)
 	{
@@ -481,6 +533,13 @@ namespace langX {
 		state->reg3rd("co_typeof", langX_co_typeof);
 		state->reg3rd("co_classname", langX_co_classname);
 		state->reg3rd("sy_isLoadMod", langX_sy_isLoadMod);
+		state->reg3rd("sy_arg", langX_get_start_arg);
+		state->reg3rd("sy_argc", langX_get_start_arg_size);
+		state->reg3rd("sy_argv", langX_get_start_args);
+
+
+		// 字符串相关的函数
 		state->reg3rd("str_trim", langX_str_trim);
+
 	}
 }

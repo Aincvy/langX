@@ -47,6 +47,6 @@ initApp => (){
 }
 
 
-initApp();
+// initApp();
 
-println("load app over.");
+// println("load app over.");

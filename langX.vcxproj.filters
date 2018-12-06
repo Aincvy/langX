@@ -16,6 +16,9 @@
     <Filter Include="mod">
       <UniqueIdentifier>{823ac97a-16c0-4385-a4dd-20497aa04ebd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\extend">
+      <UniqueIdentifier>{1001468b-d6e3-4d24-8f18-e73019143ee1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\YLlangX.h">
@@ -187,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="source\RegObjects.cpp">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\extend\langXLogger.cpp">
+      <Filter>source\extend</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
