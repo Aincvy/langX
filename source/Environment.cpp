@@ -14,6 +14,33 @@
 #include "../include/LogManager.h"
 
 namespace langX {
+
+	// 放一个对象到 对象map 里面
+	void realPutObject(Environment *env, std::map<std::string, Object*> *m_objects_map, const std::string & name, Object *obj) {
+		auto it = m_objects_map->find(name);
+
+		if (obj) {
+			obj = obj->clone();
+		}
+		else {
+			obj = Allocator::allocate(NULLOBJECT);
+		}
+		obj->setName(name);
+		obj->setEmergeEnv(env);    // 这个对象现在放入了当前环境里面 更新他的产生环境为本环境
+
+		if (it != m_objects_map->end())
+		{
+			// 删除 原来的值
+			Allocator::free(it->second);
+			// 替换新值
+			it->second = obj;
+		}
+		else {
+			m_objects_map->insert(std::make_pair(name, obj));
+		}
+	}
+
+
 	Environment::Environment()
 	{
 		this->m_parent = NULL;
@@ -718,27 +745,7 @@ namespace langX {
 
 	void DefaultEnvironment::putObject(const std::string &name, Object *obj)
 	{
-		auto it = this->m_objects_map.find(name);
-
-		if (obj) {
-			obj = obj->clone();
-		}
-		else {
-			obj = Allocator::allocate(NULLOBJECT);
-		}
-		obj->setName(name);
-		obj->setEmergeEnv(this);    // 这个对象现在放入了当前环境里面 更新他的产生环境为本环境
-
-		if (it != this->m_objects_map.end())
-		{
-			// 删除 原来的值
-			Allocator::free(it->second);
-			// 替换新值
-			it->second = obj;
-		}
-		else {
-			this->m_objects_map[name] = obj;
-		}
+		realPutObject(this, &this->m_objects_map, name, obj);
 	}
 
 	Object * DefaultEnvironment::getObject(const std::string &name)
@@ -835,14 +842,23 @@ namespace langX {
 
 	Object * XNameSpaceEnvironment::getObject(const std::string &name)
 	{
-		//printf("getObject on env-p: %p\n", this);
-
-		return this->m_space->getObject(name);
+		return getObject(name, true);
 	}
 
 	Object * XNameSpaceEnvironment::getObject(const std::string & name, bool)
 	{
-		return this->m_space->getObject(name);
+		Object * a = this->m_space->getObject(name);
+		if (a != nullptr)
+		{
+			return a;
+		}
+
+		if (this->m_parent != NULL && !m_restrict)
+		{
+			return this->m_parent->getObject(name, false);
+		}
+		return NULL;
+
 	}
 
 	Object * XNameSpaceEnvironment::getObjectSelf(const char *name) const
@@ -865,7 +881,7 @@ namespace langX {
 		Function * f = this->m_space->getFunction(name);
 		if (f == NULL)
 		{
-			if (this->m_parent != NULL)
+			if (this->m_parent != NULL && !m_restrict)
 			{
 				return this->m_parent->getFunction(name);
 			}
@@ -906,6 +922,11 @@ namespace langX {
 		return this->m_space->getNameSpace(name);
 	}
 
+	XNameSpace * XNameSpaceEnvironment::getNameSpace()
+	{
+		return this->m_space;
+	}
+
 	void XNameSpaceEnvironment::setXNameSpace(XNameSpace *s)
 	{
 		this->m_space = s;
@@ -944,27 +965,33 @@ namespace langX {
 		}
 	}
 
-	void GlobalEnvironment::putObject(const char *, Object *)
+	void GlobalEnvironment::putObject(const char *name, Object *obj)
 	{
+		putObject(std::string(name), obj);
 	}
 
-	void GlobalEnvironment::putObject(const std::string &, Object *)
+	void GlobalEnvironment::putObject(const std::string &name, Object *obj)
 	{
+		realPutObject(this, &this->m_objects_map, name, obj);
 	}
 
-	Object * GlobalEnvironment::getObject(const std::string &)
+	Object * GlobalEnvironment::getObject(const std::string &name)
 	{
-		//printf("getObject on GlobalEnvironment env-p: %p\n", this);
-
-		return nullptr;
+		return getObject(std::string(name), true);
 	}
 
-	Object * GlobalEnvironment::getObject(const std::string &, bool)
+	Object * GlobalEnvironment::getObject(const std::string &name, bool firstLevel)
 	{
-		return nullptr;
+
+		if (this->m_objects_map.find(name) == this->m_objects_map.end())
+		{
+			return NULL;
+		}
+
+		return this->m_objects_map.at(name);
 	}
 
-	Object * GlobalEnvironment::getObjectSelf(const char *) const
+	Object * GlobalEnvironment::getObjectSelf(const char *name) const
 	{
 		return nullptr;
 	}

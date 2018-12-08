@@ -52,6 +52,17 @@ namespace langX {
 	{
 		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
+			// 寻找一下 引用的空间里面的对象
+			for (auto it = this->m_ref_namespace_map.begin();  it != this->m_ref_namespace_map.end(); it++)
+			{
+				XNameSpace *ns = it->second;
+				Object *t = ns->getObjectSelf(name.c_str());
+				if (t != nullptr)
+				{
+					return t;
+				}
+			}
+
 			return NULL;
 		}
 
@@ -140,4 +151,17 @@ namespace langX {
 		this->m_namespace_map[name] = space;
 		return space;
 	}
+	void XNameSpace::addRefNamespace(XNameSpace *ns)
+	{
+		if (ns == nullptr)
+		{
+			return;
+		}
+
+		const char *name =ns->getName();
+		this->m_ref_namespace_map[name] = ns;
+	}
+
+
+
 }

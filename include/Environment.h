@@ -164,6 +164,9 @@ namespace langX {
 		std::map<std::string, Function*> m_functions_map;
 		std::map<std::string, ClassInfo*> m_classes_map;
 		
+		//  变量的集合
+		std::map<std::string, Object*> m_objects_map;
+
 	};
 
 	//  脚本环境。 可以放 类，函数， 变量 等。
@@ -255,6 +258,8 @@ namespace langX {
 
 		void putNameSpace(const char *, XNameSpace *);
 		XNameSpace * getNameSpace(const char *);
+		// 获取 本环境指向的 命名空间
+		XNameSpace * getNameSpace();
 
 		// 更换环境桥接到的命名空间
 		void setXNameSpace(XNameSpace *);

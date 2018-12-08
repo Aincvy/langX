@@ -1,0 +1,8 @@
+ref langX.common;
+
+// println("ac: "+ app.logger);
+
+println("logger: " + app.logger);
+
+app.logger.info("this is from script...");
+

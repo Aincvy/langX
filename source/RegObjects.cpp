@@ -6,6 +6,7 @@
 #include "../include/langXObjectRef.h"
 #include "../include/Allocator.h"
 #include "../include/Environment.h"
+#include "../include/LogManager.h"
 
 namespace langX {
 
@@ -15,6 +16,7 @@ namespace langX {
 		langXObject *obj= loggerClass->newObject(false);
 
 		state->getGlobalEnv()->putObject("logger", obj->addRef());
+		logger->debug("reg logger object to global.");
 	}
 
 	void regObjects(langXState * state)

@@ -521,7 +521,7 @@ namespace langX {
 		state->reg3rd("sy_run", langX_system_run);
 		state->reg3rd("println", langX_println);
 		state->reg3rd("sy_do_file", langX_do_file);
-		state->reg3rd("exit", langX_exit);
+		state->reg3rd("sy_exit", langX_exit);
 		state->reg3rd("readLine", langX_read_line);
 		state->reg3rd("sy_exists", langX_sy_exists);
 		state->reg3rd("sy_mkdir", langX_sy_mkdir);

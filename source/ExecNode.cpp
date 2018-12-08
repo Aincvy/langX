@@ -3384,13 +3384,14 @@ namespace langX {
 			return;
 		}
 
-		if (env->getType() != TScriptEnvironment)
+		EnvironmentType eType = env->getType();
+		if (eType != TScriptEnvironment
+				&& eType != TXNameSpaceEnvironment)
 		{
-			getState()->curThread()->throwException(newUnsupportedOperationException("cannot ref not inner a script! check you are is a namespace?")->addRef());
+			getState()->curThread()->throwException(newUnsupportedOperationException("cannot ref not inner a script or namespace! check are you ok?")->addRef());
 			return;
 		}
 
-		ScriptEnvironment *scriptEnv = (ScriptEnvironment*)env;
 		char *namespaceName = n->opr_obj->op[0]->con_obj->sValue;
 
 		std::string str = std::string(namespaceName);
@@ -3439,17 +3440,21 @@ namespace langX {
 			return;
 		}
 
+		XNameSpace *retSpace = nullptr;
+		ClassInfo *retClass = nullptr;
+	
 		if (flag)
 		{
 			//  str 是用掉了已经
-			scriptEnv->addNameSpace(space);
+			
+			retSpace = space;
 		}
 		else {
 			ClassInfo *c = space->getClass(str.c_str());
 			if (c != NULL)
 			{
 				// 添加类
-				scriptEnv->addClassInfo(c);
+				retClass = c;
 			}
 			else {
 				space = space->getNameSpace(str.c_str());
@@ -3462,10 +3467,36 @@ namespace langX {
 					getState()->curThread()->throwException(newException(tmp)->addRef());
 					return;
 				}
-				scriptEnv->addNameSpace(space);
+				retSpace = space;
 			}
 		}
 
+		if (eType == TScriptEnvironment)
+		{
+			ScriptEnvironment *scriptEnv = (ScriptEnvironment*)env;
+			if (retSpace != nullptr)
+			{
+				scriptEnv->addNameSpace(retSpace);
+			}
+			if (retClass != nullptr)
+			{
+				scriptEnv->addClassInfo(retClass);
+			}
+
+		}
+		else if (eType == TXNameSpaceEnvironment)
+		{
+			XNameSpaceEnvironment *nsEnv = (XNameSpaceEnvironment*)env;
+			if (retSpace != nullptr)
+			{
+				nsEnv->getNameSpace()->addRefNamespace(retSpace);
+			}
+			if (retClass != nullptr)
+			{
+				nsEnv->putClass(retClass->getName(), retClass);
+			}
+		}
+		
 		nodeLink->backAfterExec = true;
 	}
 

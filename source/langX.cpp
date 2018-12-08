@@ -295,6 +295,7 @@ namespace langX {
 
 		logger->debug("changeNameSpace: %s", s->getName());
 		this->m_script_env = new XNameSpaceEnvironment(s);
+		this->m_script_env->setParent(this->m_global_env);   // 设置父环境为 全局环境
 		this->curThread()->resetCurrentDeep();
 	}
 
