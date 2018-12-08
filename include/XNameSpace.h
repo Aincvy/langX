@@ -39,6 +39,8 @@ namespace langX {
 		// 获得命名空间， 如果命名空间不存在， 则创建一个放入自身中
 		XNameSpace * getNameSpace2(const char *);
 
+		void addRefNamespace(XNameSpace*);
+
 	private:
 
 		std::string m_name;
@@ -47,6 +49,9 @@ namespace langX {
 		std::map<std::string, Function*> m_functions_map;
 		std::map<std::string, ClassInfo*> m_classes_map;
 		std::map<std::string, XNameSpace*> m_namespace_map;
+
+		// 引用其他的命名空间
+		std::map<std::string, XNameSpace*> m_ref_namespace_map;
 
 	};
 

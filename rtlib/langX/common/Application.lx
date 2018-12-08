@@ -27,7 +27,9 @@ Application {
 	logger ; 
 	
 	// 程序退出  参数为状态码
-	exit => ( status ){  }
+	exit => ( status ){ 
+		sy_exit(status);
+	}
 	
 	
 }
@@ -37,16 +39,17 @@ app ;
 
 initApp => (){
 
-	ref langX.extend;
-
 	app = new Application();
 
 	app.logger = logger;
+	app.IsDebug = false;
+	// app.StartTime = 
 
 	
 }
 
 
-// initApp();
+initApp();
+
 
 // println("load app over.");

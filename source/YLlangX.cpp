@@ -288,12 +288,10 @@ XNode * xint(int i)
 
 XNode * changeNameSpace(char * name)
 {
-	//printf("node will change space to: %s\n" ,name);
 	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
 	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
 	node->type = NODE_CHANGE_NAMESPACE;
 	node->con_obj->sValue = name;
-	//printf("createNumberNode: %.5f\n", a);
 	return node;
 }
 
