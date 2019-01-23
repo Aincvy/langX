@@ -24,7 +24,7 @@ namespace langX {
 		langXRedisInfo * info = (langXRedisInfo*)calloc(sizeof(langXRedisInfo), 1);
 		info->ip = strdup(ip);
 		info->port = port;
-		info->redisContext = redisContext;
+		info->redis = redisContext;
 		info->connected = redisContext != nullptr;
 		return info;
 	}
@@ -96,7 +96,7 @@ namespace langX {
 		{
 			const char *key = ((String*)a)->getValue();
 
-			redisReply *reply= (redisReply *)redisCommand(redisInfo->redisContext, "GET %s", key);
+			redisReply *reply= (redisReply *)redisCommand(redisInfo->redis, "GET %s", key);
 			if (reply == nullptr)
 			{
 				// error .
@@ -135,17 +135,17 @@ namespace langX {
 		if (b->getType() == ObjectType::STRING)
 		{
 			const char *value = ((String*)b)->getValue();
-			reply = (redisReply *)redisCommand(redisInfo->redisContext, "SET %s %s", key, value);
+			reply = (redisReply *)redisCommand(redisInfo->redis, "SET %s %s", key, value);
 		}
 		else if (b->getType() == ObjectType::NUMBER)
 		{
 			Number *number = (Number*)b;
 			if (number->isInteger())
 			{
-				reply = (redisReply*)redisCommand(redisInfo->redisContext, "Set %s %d", key, number->getIntValue());
+				reply = (redisReply*)redisCommand(redisInfo->redis, "Set %s %d", key, number->getIntValue());
 			}
 			else {
-				reply = (redisReply*)redisCommand(redisInfo->redisContext, "Set %s %f", key, number->getDoubleValue());
+				reply = (redisReply*)redisCommand(redisInfo->redis, "Set %s %f", key, number->getDoubleValue());
 			}
 		}
 		else if (b->getType() == ObjectType::XARRAY)

@@ -15,7 +15,7 @@ namespace langX {
 
 
 	struct langXRedisInfo {
-		redisContext *redisContext;
+		redisContext *redis;
 		char *ip;
 		int port;
 		bool connected;
