@@ -501,7 +501,7 @@ namespace langX {
 
 
 
-	Object * langX::langX_PyObject_set_impl(XClassPyObject * obj, Object * key, Object *value)
+	Object * langX_PyObject_set_impl(XClassPyObject * obj, Object * key, Object *value)
 	{
 		if (!key || !value)
 		{
@@ -528,7 +528,7 @@ namespace langX {
 		return nullptr;
 	}
 
-	Object * langX::langX_PyObject_get_impl(XClassPyObject * obj, Object * a)
+	Object * langX_PyObject_get_impl(XClassPyObject * obj, Object * a)
 	{
 		if (!a)
 		{
