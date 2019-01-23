@@ -57,7 +57,7 @@ namespace langX {
 		return 0;
 	}
 
-	langXObject * langX::createLangXObjectPyObjEasy(PyObject * pyObj, PyObjectType type)
+	langXObject * createLangXObjectPyObjEasy(PyObject * pyObj, PyObjectType type)
 	{	
 		langXObject *obj = claxxPyObjEasy->newObject();
 		XClassPyObject * t = createXClassPyObject();
