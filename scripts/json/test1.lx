@@ -17,3 +17,11 @@ array1.put("three");
 obj.put("array", array1);
 println( obj.toJSONString() );
 //println( array1.toJSONString() );
+
+
+// test obj
+println("-------new style-----------------");
+tmp1 = obj.langxobj();
+println("name: " + tmp1.name);
+println("class: " + tmp1.schoolinfo.class);
+println("array2: " + tmp1.array[2]);

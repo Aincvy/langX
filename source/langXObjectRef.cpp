@@ -7,10 +7,12 @@
 #include "../include/langXObjectRef.h"
 
 namespace langX {
+
 	langXObjectRef::langXObjectRef(langXObject * obj)
 	{
 		this->m_object_ref = obj;
 	}
+
 	langXObjectRef::~langXObjectRef()
 	{
 		if (this->m_object_ref != nullptr)
@@ -24,10 +26,12 @@ namespace langX {
 			this->m_object_ref = nullptr;
 		}
 	}
+
 	langXObject * langXObjectRef::getRefObject()
 	{
 		return this->m_object_ref;
 	}
+
 	void langXObjectRef::setMember(const char *name, Object *obj)
 	{
 		if (m_object_ref == nullptr)
@@ -36,6 +40,7 @@ namespace langX {
 		}
 		this->m_object_ref->setMember(name, obj);
 	}
+
 	Object * langXObjectRef::getMember(const char *name) const
 	{
 		if (m_object_ref == nullptr)
@@ -44,6 +49,7 @@ namespace langX {
 		}
 		return this->m_object_ref->getMember(name);
 	}
+
 	Function * langXObjectRef::getFunction(const char *name) const
 	{
 		if (m_object_ref == nullptr)
@@ -52,6 +58,27 @@ namespace langX {
 		}
 		return this->m_object_ref->getFunction(name);
 	}
+
+	Object * langXObjectRef::callFunction(const char *name) const
+	{
+		if (m_object_ref == nullptr)
+		{
+			return NULL;
+		}
+
+		return this->m_object_ref->callFunction(name);
+	}
+
+	Object * langXObjectRef::callFunction(const char *name, Object *args[], int len, const char *remark)
+	{
+		if (m_object_ref == nullptr)
+		{
+			return NULL;
+		}
+
+		return this->m_object_ref->callFunction(name, args, len, remark);
+	}
+
 	const ClassInfo * langXObjectRef::getClassInfo() const
 	{
 		if (m_object_ref == nullptr)
@@ -60,6 +87,7 @@ namespace langX {
 		}
 		return this->m_object_ref->getClassInfo();
 	}
+
 	Function * langXObjectRef::getConstructor() const
 	{
 		if (m_object_ref == nullptr)
@@ -68,6 +96,7 @@ namespace langX {
 		}
 		return this->m_object_ref->getConstructor();
 	}
+
 	void langXObjectRef::setMembersEmergeEnv(Environment *env)
 	{
 		if (this->m_object_ref == nullptr)
@@ -76,6 +105,7 @@ namespace langX {
 		}
 		this->m_object_ref->setMembersEmergeEnv(env);
 	}
+
 	bool langXObjectRef::isTrue() const
 	{
 		if (this->m_object_ref == nullptr)
@@ -84,10 +114,12 @@ namespace langX {
 		}
 		return true;
 	}
+
 	ObjectType langXObjectRef::getType() const
 	{
 		return OBJECT;
 	}
+
 	Object * langXObjectRef::clone() const
 	{
 		langXObjectRef * obj = NULL;

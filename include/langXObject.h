@@ -71,6 +71,9 @@ namespace langX {
 		// 调用无参函数 ,如果找不到函数，直接返回NULL
 		Object * callFunction(const char*) const;
 
+		// 调用一个带参函数   ,如果找不到函数，直接返回NULL
+		Object * callFunction(const char *, Object* [], int, const char*);
+
 		// 设置这个对象的成员的产生环境
 		void setMembersEmergeEnv(Environment *);
 

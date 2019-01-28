@@ -91,6 +91,11 @@ namespace langX {
 
 	void langXObject::setMember(const char *name, Object *obj, bool flag)
 	{
+		if (name == nullptr)
+		{
+			return;
+		}
+
 		if (this->m_members.find(name) == this->m_members.end())
 		{
 			if (this->m_parent == NULL)
@@ -303,7 +308,6 @@ namespace langX {
 		Function * func = getFunction(name);
 		if (func == NULL)
 		{
-			//printf("cannot find func: %s\n" , name);
 			return NULL;
 		}
 
@@ -312,6 +316,20 @@ namespace langX {
 		getState()->curThread()->backEnv();
 
 		return obj;
+	}
+
+	Object * langXObject::callFunction(const char *name, Object* args[], int len, const char * remark)
+	{
+		Function * func = getFunction(name);
+		if (func == NULL)
+		{
+			return NULL;
+		}
+
+		FunctionRef fRef(func);
+		Object *ret = fRef.call(args, len, remark);
+
+		return ret;
 	}
 
 	void langXObject::setMembersEmergeEnv(Environment *env)
@@ -379,10 +397,17 @@ namespace langX {
 
 	void langXObjectExtend::addMember(const char *name, Object *v)
 	{
+		if (name == nullptr)
+		{
+			return;
+		}
+
 		auto it = this->m_members.find(name);
+
+		
 		if (it == this->m_members.end())
 		{
-			this->m_members[name] = nullptr;
+			this->m_members[name] = Allocator::allocateNull();
 		}
 
 		setMember(name, v);
