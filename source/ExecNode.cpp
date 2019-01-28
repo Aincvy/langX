@@ -23,6 +23,7 @@
 #include "../include/LogManager.h"
 
 namespace langX {
+
 	// 根据数组信息获得结果， 返回的结果为一个 nullptr 或者复制好的结果
 	Object * getValueFromArrayInfo(ArrayInfo *arrayInfo, NodeLink *nodeLink, langXThread *thread) {
 		if (nodeLink->index == 0) {

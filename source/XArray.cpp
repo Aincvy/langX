@@ -89,6 +89,18 @@ namespace langX {
 		}
 	}
 
+	bool XArray::add(Object *obj)
+	{
+		if (this->m_add_cursor >= this->m_length)
+		{
+			return false;
+		}
+
+		set(this->m_add_cursor++, obj);
+
+		return true;
+	}
+
 	XArrayRef * XArray::addRef()
 	{
 		m_ref_count++;

@@ -23,6 +23,9 @@ namespace langX {
 		// 在set 的时候会获得一个 obj 的副本
 		void set(int index, Object *);
 
+		// 添加一个对象到末尾
+		bool add(Object *);
+
 		// 只是自增一个自己的引用次数
 		//void justAddRef();
 		// 生成一个引用， 引用到这个对象身上
@@ -35,6 +38,8 @@ namespace langX {
 	private:
 		Object** m_array = nullptr;
 		int m_length = 0;
+		// 调用添加函数的时候 游标
+		int m_add_cursor = 0;
 
 		int  m_ref_count = 0;
 	};

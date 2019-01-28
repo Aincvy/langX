@@ -36,6 +36,11 @@ namespace langX {
 	// 此函数只返回 string/number
 	Object* getSimpleJsonValue(cJSON *);
 
+	// json 转成langX对象的代码部分
+	Object *cJsonToLangXObject(cJSON *root, langXState *state);
+	Object * cJsonToLangXObject_obj(cJSON *root, ClassInfo *empty);
+	Object * cJsonToLangXObject_array(cJSON *root, ClassInfo *empty);
+
 	// 一些数据结构
 
 	//  json 数据的保存

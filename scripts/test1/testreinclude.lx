@@ -1,0 +1,22 @@
+// 实验失败， 原因未知。。。 
+
+
+include "define.lx"
+
+	test1();
+
+funa => (){
+	
+	scanString();
+
+	include "define.lx"
+
+	test1();
+
+}
+
+while ( 1) {
+	
+	funa();
+
+}
