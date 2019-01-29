@@ -64,6 +64,11 @@ namespace langX {
 		this->m_emerge_env = env;
 	}
 
+	Object * Object::clone(bool)
+	{
+		return clone();
+	}
+
 	const char * Object::getName() const
 	{
 		return this->m_name.c_str();

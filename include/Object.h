@@ -64,6 +64,9 @@ namespace langX {
 		virtual ObjectType getType() const = 0;
 		/* 克隆当前对象， 返回出一个新的对象 */
 		virtual Object* clone() const = 0;
+		// 参数: true 深度克隆 ,false: 只克隆引用
+		// 目前只针对数组有效， 其他元素 都正常
+		virtual Object* clone(bool);
 
 		// 获得这个对象在他产生环境的名字
 		const char * getName() const;
