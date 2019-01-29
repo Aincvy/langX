@@ -11,6 +11,7 @@
 extern langX::Allocator m_exec_alloc;
 
 namespace langX {
+
 	XArray::XArray(int length)
 	{
 		if (length <= 0)
@@ -117,6 +118,31 @@ namespace langX {
 		return this->m_ref_count;
 	}
 
+	XArray * XArray::clone() const
+	{
+		XArray *arr = Allocator::allocateArray(this->m_length);
+
+		for (size_t i = 0; i < this->m_length; i++)
+		{
+			Object *obj = at(i);
+			if (obj->getType() == ObjectType::XARRAY)
+			{
+				XArrayRef *xar = (XArrayRef*)obj;
+
+				XArray *nxa = xar->getArray()->clone();
+				XArrayRef nxar(nxa);
+				arr->set(i, &nxar);
+
+			}
+			else {
+				arr->set(i, obj);
+			}
+
+		}
+
+		return arr;
+	}
+
 	XArrayRef::XArrayRef(XArray *a)
 	{
 		this->m_array = a;
@@ -162,7 +188,8 @@ namespace langX {
 		{
 			return -1;
 		}
-		this->m_array->getLength();
+
+		return this->m_array->getLength();
 	}
 
 	bool XArrayRef::isTrue() const
@@ -189,6 +216,22 @@ namespace langX {
 			return ret;
 		}
 		Object * obj = this->m_array->addRef();
+		obj->setEmergeEnv(this->getEmergeEnv());
+		obj->setCharacteristic(characteristic());
+		obj->setConst(this->isConst());
+		obj->setLocal(this->isLocal());
+		obj->setName(this->getName());
+		return obj;
+	}
+
+	Object * XArrayRef::clone(bool flag) const
+	{
+		if (!flag)
+		{
+			return  clone();
+		}
+
+		Object * obj = this->m_array->clone()->addRef();
 		obj->setEmergeEnv(this->getEmergeEnv());
 		obj->setCharacteristic(characteristic());
 		obj->setConst(this->isConst());

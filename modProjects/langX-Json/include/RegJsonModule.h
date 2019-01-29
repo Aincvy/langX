@@ -24,8 +24,13 @@ namespace langX {
 	// 参数为 这个jsonarray 的根， 如果给个null 则会自动创建一个
 	langXObject * createJsonArray(cJSON *);
 	
+	// 把一个数组转换成一个json数组
+	cJSON *langXArrayToJson(XArrayRef *ref);
+	// 把一个对象转换成一个 json 对象
+	cJSON *langXObjectToJson(langXObjectRef *objRef);
 	// 添加元素到对象上
 	Object* jsonAddItemToObject(cJSON *, const char *, Object *);
+	Object* jsonAddItemToObjectOrArray(cJSON *root, const char *key, Object *b, bool isArray);
 	// 添加元素到数组上
 	Object* jsonAddItemToArray(cJSON *, Object *);
 	// 将一个json 对象解析成一个对象 !!!  此函数并未实现
@@ -37,6 +42,7 @@ namespace langX {
 	Object* getSimpleJsonValue(cJSON *);
 
 	// json 转成langX对象的代码部分
+	Object * langX_JsonObject_langXObj(X3rdFunction *func, const X3rdArgs &args);
 	Object *cJsonToLangXObject(cJSON *root, langXState *state);
 	Object * cJsonToLangXObject_obj(cJSON *root, ClassInfo *empty);
 	Object * cJsonToLangXObject_array(cJSON *root, ClassInfo *empty);

@@ -11,6 +11,8 @@
 #include "../../../include/Environment.h"
 #include "../../../include/XArray.h"
 
+#include <map>
+
 static langX::ClassInfo *jsonObjectClass;
 
 namespace langX {
@@ -65,8 +67,6 @@ namespace langX {
 		int len = cJSON_GetArraySize(root);
 		XArray *arr = Allocator::allocateArray(len);
 
-		printf("array len %d\n", arr->getLength());
-
 		cJSON *child = root->child;
 
 		while (child) {
@@ -105,8 +105,6 @@ namespace langX {
 			else if (child->type == cJSON_Array)
 			{
 				val = cJsonToLangXObject_array(child, empty);
-
-				printf("val: %p,length: %d\n", val, ((XArrayRef*)val)->getLength());
 			}
 			else {
 				val = getObjectFromJson(child);
@@ -143,32 +141,151 @@ namespace langX {
 		return obj->addRef();
 	}
 
-	Object* jsonAddItemToObject(cJSON *root, const char *key, Object *b)
+	// 
+	Object* jsonAddItemToObject(cJSON *root, const char *key, Object *b) {
+		return jsonAddItemToObjectOrArray(root, key, b, false);
+	}
+
+	//  
+	Object* jsonAddItemToObjectOrArray(cJSON *root, const char *key, Object *b, bool isArray)
 	{
+		printf("jsonAddItemToObjectOrArray %d,%s, \n", b->getType(), key);
+		printf("isArray: %d\n", isArray);
+
 		if (b->getType() == ObjectType::STRING)
 		{
 			String *str = (String*)b;
-			cJSON_AddStringToObject(root, key, str->getValue());
+			if (isArray)
+			{
+				cJSON_AddItemToArray(root, cJSON_CreateString(str->getValue()));
+			}
+			else {
+				cJSON_AddStringToObject(root, key, str->getValue());
+			}
+			
 			return Allocator::allocateNumber(1);
 		}
 		else if (b->getType() == ObjectType::NUMBER)
 		{
 			Number * num = (Number*)b;
-			cJSON_AddNumberToObject(root, key, num->getDoubleValue());
+			if (isArray)
+			{
+				cJSON_AddItemToArray(root, cJSON_CreateNumber(num->getDoubleValue()));
+			}
+			else {
+				cJSON_AddNumberToObject(root, key, num->getDoubleValue());
+			}
+			
 			return Allocator::allocateNumber(1);
 		}
 		else if (b->getType() == ObjectType::OBJECT)
 		{
 			langXObjectRef *ref = (langXObjectRef*)b;
-			if (ref->getClassInfo()->isInstanceOf("JsonObject") || ref->getClassInfo()->isInstanceOf("JsonArray"))
+			if (ref->getClassInfo()->isInstanceOf("JsonObject") 
+				|| ref->getClassInfo()->isInstanceOf("JsonArray"))
 			{
 				MyJsonData *thedata = (MyJsonData*)ref->getRefObject()->get3rdObj();
-				cJSON_AddItemToObject(root, key, thedata->pJsonRoot);
+				if (isArray)
+				{
+					cJSON_AddItemToArray(root, thedata->pJsonRoot);
+				}
+				else {
+					cJSON_AddItemToObject(root, key, thedata->pJsonRoot);
+				}
+				
 				return Allocator::allocateNumber(1);
 			}
+			else {
+				// 其他的正常对象
+				// 先看看 该对象有无 toJSONString 函数， 如果有的话就调用一下
+				Object *ret= ref->callFunction("toJSONString");
+				cJSON *data = nullptr;
+				if (ret && ret->getType() == ObjectType::STRING)
+				{
+					// 这应该是一个json 对象
+					data = cJSON_Parse(((String*)ret)->getValue());
+				}
+
+				if (!data)
+				{
+					data = langXObjectToJson(ref);
+				}
+
+				if (data)
+				{
+					// 如果最终 没解析成 json ,就直接无视了
+					if (isArray)
+					{
+						cJSON_AddItemToArray(root, data);
+					}
+					else {
+						cJSON_AddItemToObject(root, key, data);
+					}
+
+					return Allocator::allocateNumber(1);
+				}
+				
+			}
+		}
+		else if (b->getType() == ObjectType::XARRAY)
+		{
+			// 数组， 解析成数组
+			XArrayRef *ref = (XArrayRef*)b;
+			cJSON *data = langXArrayToJson(ref);
+
+			if (isArray)
+			{
+				cJSON_AddItemToArray(root, data);
+			}
+			else {
+				cJSON_AddItemToObject(root, key, data);
+			}
+
+			return Allocator::allocateNumber(1);
 		}
 
 		return Allocator::allocateNumber(0);
+	}
+
+	// 把一个 langX 数组转成 json 
+	cJSON *langXArrayToJson(XArrayRef *ref) {
+		
+		printf("langXArrayToJson\n");
+		cJSON *data = cJSON_CreateArray();
+
+		for (size_t i = 0; i < ref->getLength(); i++)
+		{
+			Object *element = ref->at(i);
+			if (element == nullptr || element->getType() == ObjectType::NULLOBJECT)
+			{
+				cJSON_AddItemToArray(data, cJSON_CreateNull());
+			}
+			else {
+
+				jsonAddItemToObjectOrArray(data, nullptr, element, true);
+			}
+		}
+
+		return data;
+	}
+
+	// 把一个langX 对象转成一个json 对象
+	cJSON *langXObjectToJson(langXObjectRef *objRef) {
+		printf("langXObjectToJson %s: %p\n", objRef->getName(), objRef);
+
+		const std::map<std::string, Object*> & map = objRef->getRefObject()->getMemberMap();
+		cJSON *root = cJSON_CreateObject();  
+
+		for (auto it = map.begin(); it != map.end(); it++) {
+			// 遍历 member map
+
+			const char * key = it->first.c_str();
+			printf("langXObjectToJson member %s\n", key);
+
+			jsonAddItemToObject(root, key, it->second);
+		}
+
+		return root;
 	}
 
 	Object * langX_JsonObject_getJsonArray(X3rdFunction *func, const X3rdArgs &args) {
@@ -399,14 +516,31 @@ namespace langX {
 
 		MyJsonData *data = new MyJsonData();
 		Object *a = args.args[0];
-		if (a && a->getType() == ObjectType::STRING)
+		if (a )
 		{
-			String* str = (String*)a;
-			cJSON* root = cJSON_Parse(str->getValue());
-			if (root == NULL)
+			cJSON* root = NULL;
+
+			if (a->getType() == ObjectType::STRING)
 			{
-				// parse error
-				printf("parse json error, string: %s\n", str->getValue());
+				String* str = (String*)a;
+				root = cJSON_Parse(str->getValue());
+				if (root == NULL)
+				{
+					// parse error
+					printf("parse json error, string: %s\n", str->getValue());
+					// root = cJSON_CreateObject();
+				}
+			}
+			else if (a->getType() == ObjectType::OBJECT)
+			{
+				// 是一个对象， 转成json 
+				langXObjectRef* objRef = (langXObjectRef*)a;
+
+				root = langXObjectToJson(objRef);
+			}
+			
+			if (root == nullptr)
+			{
 				root = cJSON_CreateObject();
 			}
 

@@ -399,9 +399,35 @@ namespace langX {
 		}
 
 		MyJsonData *data = new MyJsonData();
-		data->pJsonRoot = cJSON_CreateArray();
-
 		args.object->set3rdObj(data);
+
+		Object *a = args.args[0];
+		if (a)
+		{
+			cJSON *jsonData = nullptr;
+
+			if (a->getType() == ObjectType::STRING)
+			{
+				const char *str = ((String*)jsonData)->getValue();
+				jsonData = cJSON_Parse(str);
+			}
+			else if (a->getType() == ObjectType::XARRAY)
+			{
+				XArrayRef *ref = (XArrayRef*)a;
+				jsonData = langXArrayToJson(ref);
+			}
+
+			if (!jsonData)
+			{
+				jsonData = cJSON_CreateArray();
+			}
+
+			data->pJsonRoot = jsonData;
+
+		}
+		else {
+			data->pJsonRoot = cJSON_CreateArray();
+		}
 
 		return nullptr;
 	}
@@ -420,11 +446,12 @@ namespace langX {
 		info->addFunction("toStringArray", create3rdFunc("toStringArray", langX_JsonArray_toStringArray));
 		info->addFunction("toNumberArray", create3rdFunc("toNumberArray", langX_JsonArray_toNumberArray));
 		info->addFunction("size", create3rdFunc("size", langX_JsonArray_size));
-		info->addFunction("~JsonArray", create3rdFunc("~JsonArray", langX_JsonArray_JsonArray_Dtor));
 		info->addFunction("getJsonArray", create3rdFunc("getJsonArray", langX_JsonArray_getJsonArray));
 		info->addFunction("getJsonObject", create3rdFunc("getJsonObject", langX_JsonArray_getJsonObject));
 		info->addFunction("JsonArray", create3rdFunc("JsonArray", langX_JsonArray_JsonArray));
+		info->addFunction("~JsonArray", create3rdFunc("~JsonArray", langX_JsonArray_JsonArray_Dtor));
 		info->addFunction("toJSONString", create3rdFunc("toJSONString", langX_JsonArray_toJSONString));
+		info->addFunction("langxobj", create3rdFunc("langxobj", langX_JsonObject_langXObj));
 
 		space->putClass(info);
 		jsonArrayClass = info;

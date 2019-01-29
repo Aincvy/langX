@@ -1,0 +1,66 @@
+ref langX.json;
+
+
+SchoolInfo{
+	
+	class ;
+	grade;
+	score;
+
+}
+
+
+Child {
+	
+	id ;
+	name ;
+	age;
+
+	schoolInfo;
+
+	friendIds[3];
+
+	friends[3];
+
+}
+
+
+xiaoming = new Child();
+xiaoming.id = 1;
+xiaoming.name = "xiaoming";
+xiaoming.age = 15;
+
+xiaomingsi = new SchoolInfo();
+xiaomingsi.class = 1;
+xiaomingsi.grade = 5;
+xiaomingsi.score = 99;
+// xiaoming.schoolInfo = xiaomingsi;
+
+//xiaoming.friendIds[0] = 2;
+//xiaoming.friendIds[1] = 5;
+//xiaoming.friendIds[2] = 48;
+
+xiaobai = new Child();
+xiaobai.id = 2;
+xiaobai.name = "xiaobai";
+xiaobai.age = 16;
+
+xiaobaisi = new SchoolInfo();
+xiaobaisi.class = 1;
+xiaobaisi.grade = 5;
+xiaobaisi.score = 85;
+// xiaobai.schoolInfo = xiaobaisi;
+
+xiaoming.friends[1] = xiaobai;
+
+a = Child::friends;
+
+println(xiaobai.friends[1]);
+println(xiaoming.friends[1]);
+println(a[1]);
+
+// json = new JsonObject(xiaoming);
+println(json.toJSONString());
+
+
+println("----------[ OVER ]---------");

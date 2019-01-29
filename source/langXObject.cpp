@@ -29,7 +29,7 @@ namespace langX {
 		std::map<std::string, Object*> & map = claxxInfo->getMembers();
 		for (auto i = map.begin(); i != map.end(); i++)
 		{
-			Object *obj = i->second->clone();
+			Object *obj = i->second->clone(true);
 			//  类的字段值 为对象专有， 产生环境也是对象的环境
 			obj->setEmergeEnv(this->m_my_env);
 			obj->setName(i->first);

@@ -35,6 +35,9 @@ namespace langX {
 		//  获得当前对象的引用次数
 		int getRefCount() const;
 
+		// 克隆当前数组 | 深度克隆
+		XArray *clone() const;
+
 	private:
 		Object** m_array = nullptr;
 		int m_length = 0;
@@ -64,6 +67,7 @@ namespace langX {
 		ObjectType getType() const ;
 		/* 克隆当前对象， 返回出一个新的对象 */
 		Object* clone() const ;
+		Object* clone(bool) const;
 
 		/* 把自己Update 成目标的值
 		这个函数不应该， 也不会update 所在的环境   */
