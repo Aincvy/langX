@@ -66,7 +66,7 @@ namespace langX {
 		virtual Object* clone() const = 0;
 		// 参数: true 深度克隆 ,false: 只克隆引用
 		// 目前只针对数组有效， 其他元素 都正常
-		virtual Object* clone(bool);
+		virtual Object* clone(bool) const;
 
 		// 获得这个对象在他产生环境的名字
 		const char * getName() const;
@@ -82,6 +82,8 @@ namespace langX {
 
 		// 设置这个对象的特性字符串  | 相当于唯一标识的意思
 		void setCharacteristic(const char *);
+		// 重新生成一个新的 特性字符串， 并返回
+		const char * regenCharacteristic();
 
 	protected:
 		// 这个对象的特性字符串   | 相当于唯一标识的意思

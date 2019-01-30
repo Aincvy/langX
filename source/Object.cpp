@@ -4,13 +4,12 @@
 #include "../include/XArray.h"
 
 namespace langX {
+
 	Object::Object()
 	{
 		this->m_ref_count = 0;
 
-		char t[100];
-		randomCharacteristic(t, 100, this, 8);
-		this->m_characteristic = std::string(t);
+		regenCharacteristic();
 	}
 
 	Object::~Object()
@@ -64,7 +63,7 @@ namespace langX {
 		this->m_emerge_env = env;
 	}
 
-	Object * Object::clone(bool)
+	Object * Object::clone(bool) const
 	{
 		return clone();
 	}
@@ -87,6 +86,15 @@ namespace langX {
 	void Object::setCharacteristic(const char *a)
 	{
 		this->m_characteristic = std::string(a);
+	}
+
+	const char * Object::regenCharacteristic()
+	{
+		char t[100] = { 0 };
+		randomCharacteristic(t, 100, this, 8);
+		this->m_characteristic = std::string(t);
+
+		return characteristic();
 	}
 
 	NodeLink * newNodeLink(NodeLink *previous, Node *node) {

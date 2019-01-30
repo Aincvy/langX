@@ -149,8 +149,6 @@ namespace langX {
 	//  
 	Object* jsonAddItemToObjectOrArray(cJSON *root, const char *key, Object *b, bool isArray)
 	{
-		printf("jsonAddItemToObjectOrArray %d,%s, \n", b->getType(), key);
-		printf("isArray: %d\n", isArray);
 
 		if (b->getType() == ObjectType::STRING)
 		{
@@ -250,7 +248,6 @@ namespace langX {
 	// 把一个 langX 数组转成 json 
 	cJSON *langXArrayToJson(XArrayRef *ref) {
 		
-		printf("langXArrayToJson\n");
 		cJSON *data = cJSON_CreateArray();
 
 		for (size_t i = 0; i < ref->getLength(); i++)
@@ -271,7 +268,6 @@ namespace langX {
 
 	// 把一个langX 对象转成一个json 对象
 	cJSON *langXObjectToJson(langXObjectRef *objRef) {
-		printf("langXObjectToJson %s: %p\n", objRef->getName(), objRef);
 
 		const std::map<std::string, Object*> & map = objRef->getRefObject()->getMemberMap();
 		cJSON *root = cJSON_CreateObject();  
@@ -280,7 +276,6 @@ namespace langX {
 			// 遍历 member map
 
 			const char * key = it->first.c_str();
-			printf("langXObjectToJson member %s\n", key);
 
 			jsonAddItemToObject(root, key, it->second);
 		}
