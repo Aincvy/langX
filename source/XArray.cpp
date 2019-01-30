@@ -226,7 +226,7 @@ namespace langX {
 
 	Object * XArrayRef::clone(bool flag) const
 	{
-		if (!flag)
+		if (!flag || this->m_array == nullptr)
 		{
 			return  clone();
 		}

@@ -13,6 +13,7 @@
 #include "../include/langXThread.h"
 
 namespace langX {
+
 	langXObject::langXObject(ClassInfo *claxxInfo)
 	{
 		// 先生成父类对象
@@ -29,10 +30,13 @@ namespace langX {
 		std::map<std::string, Object*> & map = claxxInfo->getMembers();
 		for (auto i = map.begin(); i != map.end(); i++)
 		{
+			// printf("%s: %d\n", i->first.c_str(), i->second->getType());
+
 			Object *obj = i->second->clone(true);
 			//  类的字段值 为对象专有， 产生环境也是对象的环境
 			obj->setEmergeEnv(this->m_my_env);
 			obj->setName(i->first);
+			obj->regenCharacteristic();     // 重新生成特征字符串 ，当前对象和类中的元素是不一样的。 
 			this->m_members[i->first] = obj;
 		}
 
