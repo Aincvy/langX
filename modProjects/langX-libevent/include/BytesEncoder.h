@@ -16,4 +16,15 @@ namespace langX {
 	};
 
 
+	// langX 内部的编码器
+	class langXBytesEncoder : public BytesEncoder {
+
+	public:
+		langXBytesEncoder();
+		~langXBytesEncoder();
+
+		char * encord(void *, int *);
+
+	};
+
 }

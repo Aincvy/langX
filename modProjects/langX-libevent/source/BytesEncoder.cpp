@@ -12,4 +12,17 @@ namespace langX {
 	{
 	}
 
+	langXBytesEncoder::langXBytesEncoder()
+	{
+	}
+
+	langXBytesEncoder::~langXBytesEncoder()
+	{
+	}
+
+	char * langXBytesEncoder::encord(void *, int *)
+	{
+		return nullptr;
+	}
+
 }

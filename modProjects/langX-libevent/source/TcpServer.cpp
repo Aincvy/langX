@@ -39,34 +39,37 @@ u_short htons(int port);
 namespace langX {
 
 
-	static void
-		conn_readcb(struct bufferevent *bev, void *user_data)
+	static void conn_readcb(struct bufferevent *bev, void *user_data)
 	{
 		// 读的回调
 		char msg[4096] = { 0 };
 		size_t len = bufferevent_read(bev, msg, sizeof(msg) - 1);
 
-		//printf("get msg in readcb: %s\n",msg);
-
 		TcpClientArgs *clientArgs = (TcpClientArgs*)user_data;
 		TcpServerArgs *arg = (TcpServerArgs*)clientArgs->serverObject->get3rdObj();
 
-		String astr(msg);
-		if (arg->readcb)
+		if (arg->decoderList == nullptr)
 		{
-			// server,client,data
-			Object *arglist[3] = { 0 };
-			arglist[0] = arg->xobject->addRef();
-			arglist[1] = clientArgs->clientObject->addRef();
-			arglist[2] = &astr;
-			arg->readcb->call(arglist, 3, "in libevent conn_readcb");
-			//printf("call readcb cb\n");
+			String astr(msg);
+			if (arg->readcb)
+			{
+				// server,client,data
+				Object *arglist[3] = { 0 };
+				arglist[0] = arg->xobject->addRef();
+				arglist[1] = clientArgs->clientObject->addRef();
+				arglist[2] = &astr;
+				arg->readcb->call(arglist, 3, "in libevent conn_readcb");
+
+			}
+		}
+		else {
+			// 先使用解码器
+
 		}
 
 	}
 
-	static void
-		conn_writecb(struct bufferevent *bev, void *user_data)
+	static void conn_writecb(struct bufferevent *bev, void *user_data)
 	{
 		struct evbuffer *output = bufferevent_get_output(bev);
 		if (evbuffer_get_length(output) == 0) {
@@ -75,8 +78,7 @@ namespace langX {
 		}
 	}
 
-	static void
-		conn_eventcb(struct bufferevent *bev, short events, void *user_data)
+	static void conn_eventcb(struct bufferevent *bev, short events, void *user_data)
 	{
 		if (events & BEV_EVENT_EOF) {
 			printf("Connection closed.\n");
@@ -98,8 +100,7 @@ namespace langX {
 	   the connection was received and the length of that address respectively.
 	   The ptr argument is the user-supplied pointer that
 		 was passed to evconnlistener_new(). */
-	static void
-		listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
+	static void listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
 			struct sockaddr *sa, int socklen, void *user_data)
 	{
 		TcpServerArgs *arg = (TcpServerArgs *)user_data;
@@ -145,7 +146,7 @@ namespace langX {
 	}
 
 	// 这个函数内部并不会free arg 参数
-	void closeTcpServer(TcpServerArgs *arg) {
+	void freeTcpServerArg(TcpServerArgs *arg) {
 
 		if (arg->listener)
 		{
@@ -158,6 +159,14 @@ namespace langX {
 			arg->base = nullptr;
 		}
 		arg->xobject = nullptr;
+
+		if (arg->encoderList)
+		{
+			delete arg->encoderList;
+		}
+		if (arg->decoderList) {
+			delete arg->decoderList;
+		}
 	}
 
 	Object * langX_TcpServer_TcpServer_Dtor(X3rdFunction *func, const X3rdArgs &args) {
@@ -168,7 +177,7 @@ namespace langX {
 		}
 
 		TcpServerArgs *arg = (TcpServerArgs*)args.object->get3rdObj();
-		closeTcpServer(arg);
+		freeTcpServerArg(arg);
 		free(arg);
 		arg = nullptr;
 		args.object->set3rdObj(nullptr);
@@ -186,6 +195,8 @@ namespace langX {
 		TcpServerArgs *arg = (TcpServerArgs*)calloc(1, sizeof(TcpServerArgs));
 		arg->xobject = args.object;
 		arg->base = event_base_new();
+		arg->encoderList = nullptr;
+		arg->decoderList = nullptr;
 		memset(&arg->sin, 0, sizeof(struct sockaddr_in));
 		args.object->set3rdObj(arg);
 
@@ -272,7 +283,6 @@ namespace langX {
 			//return Allocator::allocateNumber(1);
 		}
 
-		//return Allocator::allocateNumber(0);
 		return args.object->addRef();
 	}
 
@@ -295,7 +305,6 @@ namespace langX {
 			//return Allocator::allocateNumber(1);
 		}
 
-		//return Allocator::allocateNumber(0);
 		return args.object->addRef();
 	}
 
@@ -341,7 +350,6 @@ namespace langX {
 			//return Allocator::allocateNumber(1);
 		}
 
-		//return Allocator::allocateNumber(0);
 		return args.object->addRef();
 
 	}
@@ -365,7 +373,6 @@ namespace langX {
 			//return Allocator::allocateNumber(1);
 		}
 
-		//return Allocator::allocateNumber(0);
 		return args.object->addRef();
 	}
 
@@ -389,6 +396,51 @@ namespace langX {
 		return nullptr;
 	}
 
+	// 添加一个解码器 或者编码器
+	Object * langX_TcpServer_addXCoder(X3rdFunction *func, const X3rdArgs &args) {
+		if (args.object == nullptr)
+		{
+			printf("langX_TcpServer_addXCoder error! NO OBJ!\n");
+			return nullptr;
+		}
+
+		TcpServerArgs *arg = (TcpServerArgs*)args.object->get3rdObj();
+
+		if (arg->encoderList == nullptr)
+		{
+			arg->encoderList = new std::list<BytesEncoder*>();
+		}
+		if (arg->decoderList == nullptr)
+		{
+			arg->decoderList = new std::list<BytesDecoder*>();
+		}
+
+		for (size_t i = 0; i < args.index; i++)
+		{
+			Object *obj = args.args[i];
+			
+			if (obj == nullptr || obj->getType() != ObjectType::OBJECT)
+			{
+				continue;
+			}
+
+			langXObjectRef *ref = (langXObjectRef*)obj;
+			if (ref->getFunction("encode") != nullptr)
+			{
+				langXBytesEncoder* encoder = new  langXBytesEncoder();
+				arg->encoderList->push_back(encoder);
+			}
+
+			if (ref->getFunction("decode") != nullptr)
+			{
+				langXBytesDecoder *decoder = new langXBytesDecoder(ref->getRefObject());
+				arg->decoderList->push_back(decoder);
+			}
+
+		}
+
+	}
+
 
 	int regTcpServer(langXState *state, XNameSpace* space) {
 
@@ -405,6 +457,7 @@ namespace langX {
 		info->addFunction("onWrite", create3rdFunc("onWrite", langX_TcpServer_onWrite));
 		info->addFunction("onRead", create3rdFunc("onRead", langX_TcpServer_onRead));
 		info->addFunction("onAccept", create3rdFunc("onAccept", langX_TcpServer_onAccept));
+		info->addFunction("addXCoder", create3rdFunc("addXCoder", langX_TcpServer_onAccept));
 
 		space->putClass(info);
 
