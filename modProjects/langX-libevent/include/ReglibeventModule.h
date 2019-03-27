@@ -9,6 +9,10 @@
 
 // windows 下 此工具并不可用。 因为项目的某些别的问题所以暂时这样写，以满足需求
 
+struct  in_addr {
+
+};
+
 /*
 * Socket address, internet style.
 */
@@ -27,12 +31,15 @@ struct sockaddr_in {
 #include <event2/event.h>
 #endif
 
+#include <list>
+
 #include "../../../include/X3rdModule.h"
 #include "../../../include/langX.h"
 #include "../../../include/XNameSpace.h"
 #include "../../../include/langXObject.h"
 #include "../../../include/Function.h"
-
+#include "BytesDecoder.h"
+#include "BytesEncoder.h"
 
 
 namespace langX {
@@ -53,6 +60,11 @@ namespace langX {
 		struct event_base *base;
 		langX::langXObject *xobject;
 		struct sockaddr_in sin;
+
+		// 写数据的时候的 编码器列表
+		std::list<BytesEncoder*>* encoderList;
+		// 解码器列表
+		std::list<BytesDecoder*>* decoderList;
 
 		langX::FunctionRef *acceptcb;
 		langX::FunctionRef *readcb;
