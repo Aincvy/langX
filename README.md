@@ -1,8 +1,23 @@
 # langX
 
-弄了挺久的这个啊。。 
+一个c++写的脚本语言解释器。  本项目目前只能在 Linux/macOS 上运行， Windows上无法使用。
 
-开发的时候请在 dev 分支上进行工作。
+弱类型的语言。  写了个桥接模块， 可以桥接其他的库使用。   目前有Json,Mysql,Python,Redis,Zlib,libevent. 更具体的可以看**modProjects** 文件夹。
+
+
+
+### 文件夹说明
+
+---
+
+- docs  文档目录， 目前只有一些简单的说明
+- extern  yacc 和 flex 文件的存放目录。
+- include, source  源代码目录
+- modProjects   模块工程目录
+- rtlib  运行时加载的库
+- scripts  测试脚本存放的目录。
+
+
 
 
 
