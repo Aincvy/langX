@@ -48,3 +48,7 @@ modProjects/langX-Redis/bin/ARM/Debug/langX-Redis.out.recipe
 modProjects/langX-Redis/bin/ARM/Debug/langX-Redis.out.recipe.merged
 modProjects/langX-Zlib/bin/ARM/Debug/langX-Zlib.out.recipe
 modProjects/langX-Zlib/bin/ARM/Debug/langX-Zlib.out.recipe.merged
+
+
+.vs/
+.vs/*
