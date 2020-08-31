@@ -30,25 +30,21 @@ obj/
 langX.VC.VC.opendb
 langX.VC.db
 langX.vcxproj.user
-.vs/langX/v14/.suo
+
 extern/y.dot
 build/
-target/
-.vs/langX/v15/.suo
-.vs/langX/v15/Browse.VC.db
-.vs/langX/v15/Solution.VC.db
-.vs/langX/xs/UserPrefs.xml
-bin/ARM/Debug/langX.out.recipe
-bin/ARM/Debug/langX.out.recipe.merged
-bin/x64/Debug/langX.out.recipe
-bin/x64/Debug/langX.out.recipe.merged
-.vs/langX/v15/Solution.VC.db-shm
-.vs/langX/v15/Solution.VC.db-wal
-modProjects/langX-Redis/bin/ARM/Debug/langX-Redis.out.recipe
-modProjects/langX-Redis/bin/ARM/Debug/langX-Redis.out.recipe.merged
-modProjects/langX-Zlib/bin/ARM/Debug/langX-Zlib.out.recipe
-modProjects/langX-Zlib/bin/ARM/Debug/langX-Zlib.out.recipe.merged
+*/target/
+*/bin/
+Debug/
+*/Debug/
 
 
+# VS Files
 .vs/
 .vs/*
+*/.vs/
+
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
