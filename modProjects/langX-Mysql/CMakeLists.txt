@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.11)
+SET(CMAKE_MODULE_PATH APPEND "${CMAKE_SOURCE_DIR}/../../cmake/")
 
 PROJECT(LANGX_MYSQL)
 
-SET(CMAKE_MODULE_PATH APPEND "${CMAKE_SOURCE_DIR}/../../cmake/")
 find_package(MySQL REQUIRED)
 
 include_directories(${MYSQL_INCLUDE_DIR})
