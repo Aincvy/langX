@@ -7,7 +7,7 @@
 #include "../../../lib/libevent-2.0.21-stable/include/event2/util.h"
 #include "../../../lib/libevent-2.0.21-stable/include/event2/event.h"
 
-// windows ÏÂ ´Ë¹¤¾ß²¢²»¿ÉÓÃ¡£ ÒòÎªÏîÄ¿µÄÄ³Ğ©±ğµÄÎÊÌâËùÒÔÔİÊ±ÕâÑùĞ´£¬ÒÔÂú×ãĞèÇó
+// windows ä¸‹ æ­¤å·¥å…·å¹¶ä¸å¯ç”¨ã€‚ å› ä¸ºé¡¹ç›®çš„æŸäº›åˆ«çš„é—®é¢˜æ‰€ä»¥æš‚æ—¶è¿™æ ·å†™ï¼Œä»¥æ»¡è¶³éœ€æ±‚
 
 struct  in_addr {
 
@@ -50,10 +50,10 @@ namespace langX {
 
 	int regDefaultNetPacket(langXState *state, XNameSpace *space);
 
-	// ³õÊ¼»¯server ĞèÒªµÄÒ»Ğ©¹¤¾ß
+	// åˆå§‹åŒ–server éœ€è¦çš„ä¸€äº›å·¥å…·
 	void initServerSupportTools();
 
-	// TcpServer µÄÒ»Ğ©²ÎÊı
+	// TcpServer çš„ä¸€äº›å‚æ•°
 	struct TcpServerArgs
 	{
 		struct evconnlistener *listener;
@@ -61,9 +61,9 @@ namespace langX {
 		langX::langXObject *xobject;
 		struct sockaddr_in sin;
 
-		// Ğ´Êı¾İµÄÊ±ºòµÄ ±àÂëÆ÷ÁĞ±í
+		// å†™æ•°æ®çš„æ—¶å€™çš„ ç¼–ç å™¨åˆ—è¡¨
 		std::list<BytesEncoder*>* encoderList;
-		// ½âÂëÆ÷ÁĞ±í
+		// è§£ç å™¨åˆ—è¡¨
 		std::list<BytesDecoder*>* decoderList;
 
 		langX::FunctionRef *acceptcb;
@@ -73,7 +73,7 @@ namespace langX {
 		langX::FunctionRef *serverclosecb;
 	};
 
-	// TcpClient µÄÒ»Ğ©²ÎÊı
+	// TcpClient çš„ä¸€äº›å‚æ•°
 	struct TcpClientArgs
 	{
 		struct bufferevent *bev;
@@ -81,6 +81,6 @@ namespace langX {
 		langX::langXObject *clientObject;
 	};
 
-	
+
 
 }
