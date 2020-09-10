@@ -1,0 +1,25 @@
+
+makeElemets => {
+  a[10];
+  // 省略赋值
+  return a;
+}
+
+filterGT10 => (a){
+
+  len = a.length;
+  r[len];
+  rIndex = 0;
+  for( i = 0; i < len; i++){
+    t = a[i];
+    if ( t >= 10 ){
+      r[rIndex] = t;   // add
+      rIndex++;
+    }
+  }
+
+  return r;
+}
+
+
+makeElemets() /> filterGT10() ;

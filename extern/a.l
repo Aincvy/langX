@@ -13,7 +13,7 @@ int yylex(void);
 extern YYSTYPE yylval;
 
 void comment(void);
-int column = 0; 
+int column = 0;
 void count(void);
 
 #define MAX_INCLUDE_DEPTH 45
@@ -22,7 +22,7 @@ int line_stack[MAX_INCLUDE_DEPTH] ;       // 记录行的栈
 int now_line = 1 ;     // 当前行
 //  这个数值永远指向栈顶
 int include_stack_ptr = -1;
-//  文件深度 默认是0 ，解析文件1 ，将会变成1 
+//  文件深度 默认是0 ，解析文件1 ，将会变成1
 //           如果文件1包含文件2， 那么解析文件2的时候，文件深度就为2
 //           退回到文件1的时候， 文件深度就会变成1
 int fileDeep = 0 ;
@@ -70,6 +70,7 @@ int getParseLineNo();
 "const" { count(); return XCONST; }
 "local" { count(); return XLOCAL; }
 "=>"   {count();  return FUNC_OP; }
+"/>" {count(); return PIPELINE_OP; }
 "++"   {count();  return INC_OP;}
 "--"   {count();  return DEC_OP;}
 
@@ -77,7 +78,7 @@ int getParseLineNo();
 \"(\\.|[^\\"\n])*\"   {count();  yylval.sValue = strdup(yytext); return TSTRING;}
 [$_a-zA-Z][$_a-zA-Z0-9]*  {count(); /*printf("get a id: %s\n" ,yytext);*/ yylval.sValue=strdup(yytext); return IDENTIFIER;}
 
-operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(yytext); return OPERATOR_X__;  } 
+operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(yytext); return OPERATOR_X__;  }
 
 0|([1-9][0-9]*)           {count();  yylval.intValue = atoi(yytext);  return XINTEGER; }
 (0|[1-9][0-9]*)\.[0-9]+ { count(); yylval.iValue = atof(yytext); return TDOUBLE;}
@@ -119,8 +120,8 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 [ \t]  {count(); }
 [\n]   {count(); now_line++ ; }
 
-<<EOF>> { 
-	
+<<EOF>> {
+
     //printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
 	bool flag = false;
 
@@ -129,19 +130,19 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 	  yy_delete_buffer( YY_CURRENT_BUFFER );
 	  yy_switch_to_buffer(
 		include_stack[include_stack_ptr] );
-	  
+
 	  // 删除栈顶元素
 	  include_stack[include_stack_ptr] = NULL ;
 	  // 调整行信息
 	  now_line = line_stack[ include_stack_ptr ] ;
 	  line_stack[ include_stack_ptr ] = 0 ;
-	  // 
+	  //
 	  include_stack_ptr-- ;
 	  //printf("remove stack top buffer to current.\n");
 	}else{
 		flag = true;
 	}
-	
+
 	//printf("end of file: %s\n" , getParsingFilename() );
 	popStateFrame();
 	fileEOF();
@@ -162,9 +163,9 @@ int getParseLineNo(){
 }
 
 void pushBuffer(FILE *fp){
-	
+
 	//printf("pushBuffer %d\n" , include_stack_ptr);
-	
+
     if(fp == NULL )
 	  return ;
 
@@ -178,9 +179,9 @@ void pushBuffer(FILE *fp){
 		line_stack[include_stack_ptr] = now_line ;
 		//printf("add current buffer to stack.\n");
 	}
-	
+
 	now_line = 1;
-	yyin = fp;	
+	yyin = fp;
 	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
 	BEGIN(INITIAL);
 }
@@ -189,7 +190,7 @@ void pushBuffer(FILE *fp){
 void comment(void)
 {
 	char c, prev = 0;
-  
+
 	while ((c = yyinput()) != 0)      /* (EOF maps to 0) */
 	{
 		if (c == '\n') {

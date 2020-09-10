@@ -13,7 +13,7 @@ extern "C" {
 }
 
 extern int getParseLineNo();
-extern int column; 
+extern int column;
 extern char * yytext;
 
 char *namespaceNameCat(char *,char *);
@@ -29,18 +29,19 @@ char *namespaceNameCat(char *,char *);
  XArgsList *args;    /* args value */
 };
 
-%token <intValue> XINTEGER 
+%token <intValue> XINTEGER
 %token <iValue> TDOUBLE TBOOL
 %token <sValue> IDENTIFIER TSTRING OPERATOR_X__
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
-%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL REQUIRE REQUIRE_ONCE REF XCONTINUE XCONST XLOCAL 
-%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL XINCLUDE ANNOTATION
+%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL REQUIRE REQUIRE_ONCE REF XCONTINUE XCONST XLOCAL
+%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL XINCLUDE
+%token PIPELINE_OP
 
-%type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
+%type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt element_var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
 %type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
 %type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt bit_opr_factor local_declar_stmt
-%type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt const_declar_stmt annotation_declar_stmt annotation_use_stmt annotation_use_single_stmt call_statement_piping call_statement_piping_single not_expr_value self_compute_stmt
+%type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt const_declar_stmt call_statement_pipeline not_expr_value self_compute_stmt
 %type <params> param_list parameter lambda_args_stmt
 %type <args> args_list args_expr
 %type <sValue> extends_stmt namespace_name_stmt
@@ -52,20 +53,20 @@ char *namespaceNameCat(char *,char *);
 %nonassoc IFX
 %nonassoc ELSE
 
-%left ','
-%right '=' ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ 
+%left ',' PIPELINE_OP
+%right '=' ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ
 %left OR_OP
 %left AND_OP
-%left '|' 
+%left '|'
 %left '^'
-%left '&' 
+%left '&'
 %left EQ_OP NE_OP
 %left LE_OP GE_OP '>' '<'
 %left LEFT_SHIFT RIGHT_SHIFT
 %left '+' '-'
 %left '*' '/' '%'
 %right '!' '~'
-%left '(' ')' '[' ']' '.' 
+%left '(' ')' '[' ']' '.'
 %left FUNC_OP
 %nonassoc PRIORITY3
 %nonassoc PRIORITY2
@@ -81,7 +82,7 @@ program
 
 statement_list
 	: statement_list statement { execAndFreeNode($2);}
-	| 
+	|
 	;
 statement
 	: ';'      { $$ = opr(';' , 0 ); }
@@ -116,25 +117,11 @@ declar_stmt
 	| var_declar_stmt    { $$ = $1; }
 	| class_declar_stmt  %prec PRIORITY1 { $$ = $1; }
 	| namespace_declar_stmt ';' { $$ = $1; }
-	| const_declar_stmt { $$ = $1; }   
+	| const_declar_stmt { $$ = $1; }
 	| local_declar_stmt  %prec PRIORITY3 { $$ = $1; }
-	| annotation_declar_stmt %prec PRIORITY3 { $$ = $1 ;}
-	;
-	
-// 注解
-annotation_declar_stmt 
-	: '@' class_declar_stmt    { $$ = NULL ; }
 	;
 
-annotation_use_stmt
-	: annotation_use_single_stmt   { $$ = NULL; }
-	| annotation_use_stmt annotation_use_single_stmt { $$ = NULL; }
-	;
-	
-annotation_use_single_stmt
-	: '@' IDENTIFIER     { $$ = NULL ; }
-	;
-	
+
 //  带修饰的 变量声明语句
 const_declar_stmt
 	: XCONST var_declar_stmt { $$ = opr(XCONST , 1,$2); }
@@ -143,7 +130,7 @@ const_declar_stmt
 //  带 local 关键字修饰的 语句
 local_declar_stmt
 	: XLOCAL var_declar_stmt   { $$ = opr(XLOCAL , 1,$2); }
-	| XLOCAL class_declar_stmt { $$ = opr(XLOCAL , 1,$2); } 
+	| XLOCAL class_declar_stmt { $$ = opr(XLOCAL , 1,$2); }
 	;
 
 // 命名空间的声明语句
@@ -162,10 +149,6 @@ class_declar_stmt
 	| IDENTIFIER extends_stmt '{' class_body '}' { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($1 , $2, $4,false); }
 	| AUTO IDENTIFIER extends_stmt '{' '}'            { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($2 , $3, NULL,true); }
 	| AUTO IDENTIFIER extends_stmt '{' class_body '}' { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($2 , $3, $5, true); }
-	| annotation_use_stmt IDENTIFIER extends_stmt '{' '}'            { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($2 , $3, NULL,false); }
-	| annotation_use_stmt IDENTIFIER extends_stmt '{' class_body '}' { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($2 , $3, $5,false); }
-	| annotation_use_stmt AUTO IDENTIFIER extends_stmt '{' '}'            { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($3 , $4, NULL,true); }
-	| annotation_use_stmt AUTO IDENTIFIER extends_stmt '{' class_body '}' { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($3 , $4, $6, true); }
 	;
 
 //  类继承语句
@@ -191,7 +174,7 @@ this_stmt
 	: THIS    { $$ = opr(THIS , 0 ); }
 	| THIS '.' id_expr   {  $$ = opr(THIS,1,$3); }
 //	| THIS '.' class_member_stmt {  $$ = opr(THIS, 1, $3 ); }
-	| THIS '.' id_expr '(' args_list ')' { $$ = opr(THIS, 1 , opr(FUNC_CALL,2, $3, argsNode($5) ) ); } 
+	| THIS '.' id_expr '(' args_list ')' { $$ = opr(THIS, 1 , opr(FUNC_CALL,2, $3, argsNode($5) ) ); }
 //	| THIS '.' class_member_func_stmt  {}
 	;
 
@@ -208,7 +191,7 @@ class_member_stmt
 	| class_member_stmt '.' id_expr  { $$ = opr(CLAXX_MEMBER,2, $1,$3 ); }
 	;
 
-//  类的成员函数调用 
+//  类的成员函数调用
 class_member_func_stmt
 	: id_expr '.' id_expr '(' args_list ')'  { $$ = opr(CLAXX_FUNC_CALL , 2, $1, opr(FUNC_CALL,2, $3, argsNode($5) ) );}
 	| array_ele_stmt '.' id_expr '(' args_list ')'  { $$ = opr(CLAXX_FUNC_CALL , 2, $1, opr(FUNC_CALL,2, $3, argsNode($5) ) );}
@@ -256,20 +239,21 @@ parameter
 expr_list
 	: expr_list statement { $$ = opr(';',2,$1, $2); }
 	|   { $$ = NULL; }
-	;	
-
-// 变量声明语句  
-var_declar_stmt
-	: id_expr ';'  { $$ = opr(VAR_DECLAR , 1, $1 ); }
-	| id_expr ',' var_declar_stmt { $$ = opr(VAR_DECLAR , 2, $1,$3);}
-	| IDENTIFIER '[' XINTEGER ']' ';' { $$ = opr(VAR_DECLAR , 1, arrayNode($1,$3,NULL) ); }
-	| IDENTIFIER '[' XINTEGER ']' ',' var_declar_stmt  { $$ = opr(VAR_DECLAR , 2, arrayNode($1,$3,NULL),$6); }
-	| IDENTIFIER '[' IDENTIFIER ']' ';' %prec UMINUS {  $$ = opr(VAR_DECLAR , 1, arrayNode($1,-1,var($3)) ); }
-	| IDENTIFIER '[' IDENTIFIER ']' ',' var_declar_stmt {  $$ = opr(VAR_DECLAR , 2, arrayNode($1,-1,var($3)),$6); }
-	| IDENTIFIER '[' call_statement ']' ';' { $$ = opr(VAR_DECLAR , 1, arrayNode($1,-1, $3) ); } 
-	| IDENTIFIER '[' call_statement ']' ',' var_declar_stmt { $$ = opr(VAR_DECLAR , 2, arrayNode($1,-1, $3),$6 ); } 
 	;
-	
+
+element_var_declar_stmt
+	: id_expr							{ $$ = $1; }
+	| IDENTIFIER '[' XINTEGER ']'		{ $$ = arrayNode($1,$3,NULL); }
+	| IDENTIFIER '[' IDENTIFIER ']' %prec UMINUS {  $$ = arrayNode($1,-1,var($3)); }
+	| IDENTIFIER '[' call_statement ']'			{ $$ = arrayNode($1,-1,$3); }
+	;
+
+// 变量声明语句
+var_declar_stmt
+	: element_var_declar_stmt ';'  { $$ = opr(VAR_DECLAR , 1, $1 ); }
+	| element_var_declar_stmt ',' var_declar_stmt { $$ = opr(VAR_DECLAR , 2, $1,$3);}
+	;
+
 //  条件控制语句
 con_ctl_stmt
 	: selection_stmt    { $$ = $1; }
@@ -292,7 +276,7 @@ case_stmt
 	: CASE double_expr ':' expr_list        { $$ = opr(CASE, 2 , $2, $4); }
 	| DEFAULT ':' expr_list                 { $$ = opr(DEFAULT , 1, $3); }
 	;
-	
+
 loop_stmt
 	: WHILE '(' logic_stmt ')' block { $$ = opr(WHILE , 2, $3, $5 ); }
 	| FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block { $$ = opr(FOR,4,$3,$5,$7,$9); }
@@ -305,7 +289,7 @@ for_1_stmt
 	| var_declar_stmt { $$ = $1; }
 	| self_inc_dec_stmt { $$ = $1; }
 	;
-	
+
 //  简单语句
 simple_stmt
 	: self_compute_stmt { $$ = $1; }
@@ -316,10 +300,10 @@ simple_stmt
 	| new_expr       { $$ = $1; }
 	| restrict_stmt  { $$ = $1; }
 	| XCONTINUE { $$ = opr(XCONTINUE , 0 ); }
-	| call_statement_piping %prec PRIORITY3 { $$ = $1; }
+	| call_statement_pipeline %prec PRIORITY3 { $$ = $1; }
 	;
 
-// 自增 自减运算语句 
+// 自增 自减运算语句
 self_compute_stmt
 	: self_inc_dec_stmt    { $$ = $1; }
 	;
@@ -329,11 +313,11 @@ restrict_stmt
 	: RESTRICT       { $$ = opr(RESTRICT,0);}
 	| RESTRICT t_bool_expr  { $$ = opr(RESTRICT,1,$2); }
 	;
-	
+
 interrupt_stmt
 	: BREAK { $$ = opr(BREAK, 0); }
 	| RETURN { $$ = opr(RETURN , 0); }
-	| RETURN assign_stmt_value { $$ = opr(RETURN , 1 ,$2);} 
+	| RETURN assign_stmt_value { $$ = opr(RETURN , 1 ,$2);}
 	| RETURN '{' args_expr '}' { $$ = NULL; }
 	;
 
@@ -345,14 +329,11 @@ call_statement
 	| static_member_stmt '(' args_list ')' { $$ = opr(SCOPE_FUNC_CALL,2,$1,argsNode($3)); }
 	;
 
-call_statement_piping
-	: call_statement_piping_single               { $$ = $1 ;}
-	| call_statement '|' call_statement_piping_single   { $$ = NULL ;}
+call_statement_pipeline
+	: call_statement PIPELINE_OP call_statement ';' { $$ = opr(PIPELINE_OP,2, $1, $3); }
 	;
 
-call_statement_piping_single
-	: call_statement '|' call_statement    { $$ = NULL ;}
-	;
+
 
 args_list
 	:      { $$ = NULL; }
@@ -385,7 +366,7 @@ block
 	: '{' expr_list '}'  { $$ = $2;}
 	| statement { $$ = $1; }
 	;
-	
+
 
 // 数字或者 小括号表达式
 double_or_ps_expr
@@ -474,7 +455,7 @@ bool_param_expr
 	| null_expr           { $$ = $1; }
 	;
 
-//  逻辑语句 
+//  逻辑语句
 logic_stmt
 	: bool_param_expr { $$ = $1; }
 	| type_judge_stmt { $$ = $1; }
@@ -576,7 +557,7 @@ assign_stmt
 	| id_expr DIV_EQ assign_stmt_value_eq { $$ = opr(DIV_EQ,2,$1,$3);}
 	| id_expr MOD_EQ assign_stmt_value_eq { $$ = opr(MOD_EQ,2,$1,$3);}
 	;
-	
+
 %%
 
 void yyerror(char *s) {
@@ -590,7 +571,7 @@ char *namespaceNameCat(char *arg1,char *arg2){
 	strcat(p,".");
 	strcat(p,arg2);
 	p[len] = '\0' ;
-	
+
 	free(arg1);
 	free(arg2);
 	return p;
@@ -601,15 +582,15 @@ int main(int argc, char *argv[]){
 		printf("no input file.\n");
 		return 1;
 	}
-	
+
 	initLangX(argc, argv);
-	
+
 	doFile(argv[1]);
 	//for(int i = 1; i < argc; i++)
 	//	doFile(argv[i]);
-	
+
 	closeLangX();
-	
+
 	//printf("parse over!\n");
 	return 0;
 }

@@ -1,13 +1,15 @@
 //  简单的数组测试
 len = 10 ;
-a[len] ;
+a[len];
 
-for (i = 0 ; i < a.length ; i++ ){
+// print("123");
+
+for ( i = 0 ; i < a.length ; i++ ){
   a[i] = len - i;
 }
 
 for (i = 0 ; i < len ; i++ ){
   print("a[" + i+"] = " + a[i] + "\n" );
 }
- 
+
 print("Script End!\n");

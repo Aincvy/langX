@@ -99,7 +99,7 @@
      CLAXX_FUNC_CALL = 315,
      XNULL = 316,
      XINCLUDE = 317,
-     ANNOTATION = 318,
+     PIPELINE_OP = 318,
      NONASSOC = 319,
      IFX = 320,
      PRIORITY3 = 321,
@@ -169,7 +169,7 @@
 #define CLAXX_FUNC_CALL 315
 #define XNULL 316
 #define XINCLUDE 317
-#define ANNOTATION 318
+#define PIPELINE_OP 318
 #define NONASSOC 319
 #define IFX 320
 #define PRIORITY3 321
