@@ -145,10 +145,10 @@ namespace_name_stmt
 
 //  类声明语句
 class_declar_stmt
-	: IDENTIFIER extends_stmt '{' '}'            { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($1 , $2, NULL,false); }
-	| IDENTIFIER extends_stmt '{' class_body '}' { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($1 , $2, $4,false); }
-	| AUTO IDENTIFIER extends_stmt '{' '}'            { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($2 , $3, NULL,true); }
-	| AUTO IDENTIFIER extends_stmt '{' class_body '}' { /*if($2 != NULL) printf("parentName: %s\n",$2);*/ $$ = claxx($2 , $3, $5, true); }
+	: IDENTIFIER extends_stmt '{' '}'            {  $$ = claxx($1 , $2, NULL,false); }
+	| IDENTIFIER extends_stmt '{' class_body '}' { $$ = claxx($1 , $2, $4,false); }
+	| AUTO IDENTIFIER extends_stmt '{' '}'            {  $$ = claxx($2 , $3, NULL,true); }
+	| AUTO IDENTIFIER extends_stmt '{' class_body '}' {  $$ = claxx($2 , $3, $5, true); }
 	;
 
 //  类继承语句
@@ -318,7 +318,6 @@ interrupt_stmt
 	: BREAK { $$ = opr(BREAK, 0); }
 	| RETURN { $$ = opr(RETURN , 0); }
 	| RETURN assign_stmt_value { $$ = opr(RETURN , 1 ,$2);}
-	| RETURN '{' args_expr '}' { $$ = NULL; }
 	;
 
 //  函数调用
@@ -349,7 +348,7 @@ args_expr_collection
 	: lambda_stmt   %prec PRIORITY1 { $$ = $1; }
 	| t_bool_expr   { $$ = $1; }
 	| double_expr   { $$ = $1; }
-	| IDENTIFIER    %prec PRIORITY3 { /*printf("IDENTIFIER $1= %s\n" , $1);*/ $$ = var($1); }
+	| IDENTIFIER    %prec PRIORITY3 { $$ = var($1); }
 	| string_expr   { $$ = $1; }
 	| uminus_expr   { $$ = $1; }
 	| call_statement { $$ = $1; }
@@ -358,7 +357,6 @@ args_expr_collection
 	| class_member_stmt  { $$ = $1; }
 	| static_member_stmt { $$ = $1; }
 	| new_expr        { $$ = $1;}
-	| '$'             { $$ = NULL; }
 	| null_expr		  { $$ = $1; }
 	;
 
@@ -390,7 +388,7 @@ arithmetic_stmt
 	| bit_opr_factor '&' bit_opr_factor  { $$ = opr('&',2,$1,$3); }
 	| bit_opr_factor '|' bit_opr_factor  { $$ = opr('|',2,$1,$3); }
 	| bit_opr_factor '^' bit_opr_factor  { $$ = opr('^',2,$1,$3); }
-	| '~' bit_opr_factor  { /* printf("get a ~ opr.\n"); */ $$ = opr('~',1,$2); }
+	| '~' bit_opr_factor  { $$ = opr('~',1,$2); }
 	| bit_opr_factor LEFT_SHIFT bit_opr_factor  { $$ = opr(LEFT_SHIFT,2,$1,$3); }
 	| bit_opr_factor RIGHT_SHIFT bit_opr_factor  { $$ = opr(RIGHT_SHIFT,2,$1,$3); }
 	;
