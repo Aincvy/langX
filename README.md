@@ -41,13 +41,27 @@ It's a script language. I made it for quick developing.
 ## Compile and install
 
 1. Please read section `Dependent` first.
-2. 
+
+2. Install `flex`,`bison`,`log4cpp`.  
+
+3. Install `cmake`.
+
+4. ```shell
+   mkdir build && cd build
+   cmake ..
+   make
+   sudo make install 
+   ```
+
+5. Now, the simplest program is installed, you can use `langX [filename]` to test it.
+6. Note: langX do not have any options now(**include --version**).
+7. You can try to compile mods now. 
 
 
 
 ## Dependent
 
-### simple runable progame
+### simple runable program
 
 - flex
 - yacc(bison)
