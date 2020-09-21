@@ -1,0 +1,48 @@
+
+CheckListItem {
+  title ,
+  endDate;
+}
+
+CheckList {
+  name ;
+  list;
+}
+
+cl = new List();
+
+// list 的 自动类型转换工具
+// l:  列表自身， a, 参数1， b， 参数2
+// 突然发现， langX 没有可变参数的类型
+cl.setAutoConverter((l ,a, b) {
+  if ( a is CheckListItem) {
+    l.add(a);
+  }
+  if ( b is CheckListItem){
+    l.add(b);
+  }
+
+  if ( a is String && b is Date){
+    c = new CheckListItem();
+    c.title = a;
+    c.endDate = b;
+    l.add(c);
+  }
+
+})
+
+
+addTask("5 * * * * ", "进行中" , (board ) => {
+  if ( ! board) {
+    // no the board.
+    return ;
+  }
+
+  l = board.getList("杂项");
+  checkList = new CheckList();
+  checkList.title = "列表1"
+  // 无数据的 list copy
+  checkList.list = cl.original();
+  
+  l.addCard("标题", "描述", checkList)
+});
