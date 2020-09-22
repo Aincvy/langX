@@ -1,6 +1,11 @@
+// this is the comment.
+
+// this is the function.
 funa => {
 	a = 1 ;
 	funb();
+
+	// build-in function.
 	println("funa" + a);
 }
 
@@ -9,6 +14,5 @@ funb => {
   a = 101 ;
 }
 
-funa(); 
-
-// this is the comment. 
+// call function
+funa();

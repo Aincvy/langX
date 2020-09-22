@@ -5,7 +5,7 @@ funa => {
 }
 
 funb => {
-  // 当限定之后， 在funb 就看不到 funa 里面的变量了
+  // 褰撻檺瀹氫箣鍚庯紝 鍦╢unb 灏辩湅涓嶅埌 funa 閲岄潰鐨勫彉閲忎簡
   restrict ;
   print("in funb\n");
   d1 = a ;

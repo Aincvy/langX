@@ -1,0 +1,20 @@
+outerVar = "in the out";
+
+func => (){
+	println("func: " + outerVar);
+}
+
+func();    // 此时会输出 in the out
+
+
+funcTemp => (){
+  println("enter funcTemp");
+
+	outerVar = "xx " ;
+  func();
+
+  println("leave funcTemp");
+}
+
+funcTemp();
+println("out: " + outerVar);

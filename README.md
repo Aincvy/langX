@@ -2,12 +2,103 @@
 
 It's a script language. I made it for quick developing.
 
+It's in developing stage.
+
+
+
+## Features
+
+- Weak typing, interpreted script language.
+- Easy rules.
+- Bridge other languages library.
+- The last user have power to change the library's behavior.
+- No `private` keyword, field and variable are public.
+
+
+
+## Editor And Doc
+
+**Editor**
+
+Use **Atom** as editor.
+
+[langX-atom](https://github.com/Aincvy/langX-atom.git) plugin, it's used for syntax highlighting, and it works in progress. And it do **not** support auto-complete.
+
+**Document**
+
+[langX in Gitbook](https://aincvy.gitbook.io/langx/v/dev/langs)
+
+
+
+## Simple code example
+
+```
+// a.lx
+// this is the comment.
+
+// this is the function.
+funa => {
+	a = 1 ;
+	funb();
+
+	// build-in function.
+	println("funa" + a);
+}
+
+funb => {
+  println("funb: " + a);
+  a = 101 ;
+}
+
+// call function
+funa();
+
+```
+
+
+
+```
+// b.lx
+
+// declare class
+Student {
+
+  // class member
+  name;
+  age = 20 ;
+
+  // class function
+  a => { print("hello,a!\n");}
+
+  printInfo => (a3){ print("name: " + name + "\n");  print("age: " + age + "\n" ); print("a3: " + a3 + "\n");}
+
+}
+
+// new a object
+s2 = new Student();
+s1 = s2;
+
+// set class prop
+s1.age = 10 ;
+s1.name = "Mr.Ming";
+b = s2.age;
+c = s2.name;
+/*print("b: " + b + "\n");
+//print("c: " + c + "\n");  */
+
+s1.a();
+s1.printInfo("ahahahah~");
+
+```
+
+
+
 
 
 ## Directory
 
 1. `3rd`
-   1. Simple notepad config files.
+   1. Simple notepad++ config files.
 2. `cmake`
    1. `cmake` search files. (**.cmake*)
 3. `docs`
@@ -44,6 +135,13 @@ It's a script language. I made it for quick developing.
 
 2. Install `flex`,`bison`,`log4cpp`.  
 
+   1. Mac
+      1. `brew install flex`
+      2. `brew install bison`
+      3. `brew install log4cpp`
+   2. Debian
+      1. Todo.
+
 3. Install `cmake`.
 
 4. ```shell
@@ -54,7 +152,9 @@ It's a script language. I made it for quick developing.
    ```
 
 5. Now, the simplest program is installed, you can use `langX [filename]` to test it.
+
 6. Note: langX do not have any options now(**include --version**).
+
 7. You can try to compile mods now. 
 
 

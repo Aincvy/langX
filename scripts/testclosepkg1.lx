@@ -1,0 +1,21 @@
+
+// 创建一个 闭包
+funcCreate => (){
+
+  myVar = 2;
+  return a => {
+    println("myVar: " + myVar);
+
+    tmp = a * myVar;
+    println(" in close pkg, a.. : " + tmp
+    );
+  } ;
+
+}
+
+
+funcA = funcCreate();
+
+// 如果这里没有给myVar赋值 则会报错
+myVar = 5;
+funcA( 5 );
