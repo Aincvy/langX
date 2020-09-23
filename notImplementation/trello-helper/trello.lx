@@ -43,6 +43,19 @@ addTask("5 * * * * ", "进行中" , (board ) => {
   checkList.title = "列表1"
   // 无数据的 list copy
   checkList.list = cl.original();
-  
+
   l.addCard("标题", "描述", checkList)
+});
+
+
+// 0 30 8 * * 1
+addTask("0 30 8 * * 1 " , "生活资料库", (board) => {
+  if ( ! board) {
+    // no the board.
+    return ;
+  }
+
+  l = board.getList("吃饭");
+  l.cards.random().moveCardTo("进行中", "今天吃什么");
+
 });

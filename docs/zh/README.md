@@ -30,7 +30,7 @@
 
 
 
-## Simple code example
+## 简单的代码示例
 
 ```
 // a.lx
@@ -129,9 +129,9 @@ s1.printInfo("ahahahah~");
 
 
 
-## Compile and install
+## 编译和安装
 
-1. 请先阅读`Dependent`节。
+1. 请先阅读`依赖库`小节。
 
 2. 安装 `flex`,`bison`,`log4cpp`.  
 
