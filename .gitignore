@@ -48,3 +48,11 @@ Debug/
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+
+
+##  CMAKE CLION
+cmake-build-debug/*
+cmake-build-debug
+.idea
+.idea/*
+

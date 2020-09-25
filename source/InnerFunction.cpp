@@ -33,7 +33,7 @@ namespace langX {
 	}
 
 	Object * callInnerFunc(Object *obj, Node * n) {
-		// n Ó¦¸ÃÊÇÒ»¸öº¯Êýµ÷ÓÃ½Úµã
+		// n åº”è¯¥æ˜¯ä¸€ä¸ªå‡½æ•°è°ƒç”¨èŠ‚ç‚¹
 		if (n->type != NodeType::NODE_OPERATOR || n->opr_obj->opr != FUNC_CALL)
 		{
 			return Allocator::allocate(NULLOBJECT);
@@ -45,7 +45,7 @@ namespace langX {
 
 		char * name = n1->var_obj->name;
 
-		// ×ª»»²ÎÊý   , Íâ²¿´«À´µÄÊ±ºò²ÎÊýµÄÖµ¶¼ÊÇ´æÔÚµÄ£¬Ö±½ÓÊ¹ÓÃ¾ÍºÃÁË
+		// è½¬æ¢å‚æ•°   , å¤–éƒ¨ä¼ æ¥çš„æ—¶å€™å‚æ•°çš„å€¼éƒ½æ˜¯å­˜åœ¨çš„ï¼Œç›´æŽ¥ä½¿ç”¨å°±å¥½äº†
 		X3rdArgs _3rdArgs;
 		memset(&_3rdArgs, 0, sizeof(X3rdArgs));
 		if (args)
@@ -67,7 +67,7 @@ namespace langX {
 					_3rdArgs.args[i] = Allocator::allocate(NULLOBJECT);
 				}
 
-				// ÊÍ·ÅÕâ¸ö²ÎÊý½ÚµãµÄÖµ
+				// é‡Šæ”¾è¿™ä¸ªå‚æ•°èŠ‚ç‚¹çš„å€¼
 				Allocator::free(args->args[i]->value);
 				args->args[i]->value = NULL;
 			}

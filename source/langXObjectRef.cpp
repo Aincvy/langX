@@ -17,7 +17,7 @@ namespace langX {
 	{
 		if (this->m_object_ref != nullptr)
 		{
-			// µ±Ç°¶ÔÏóÕýÔÚÏú»ÙÖÐ£¬ Ôò Ö±½Ó·µ»Ø£¬ ²»¼õÉÙÒýÓÃ
+			// å½“å‰å¯¹è±¡æ­£åœ¨é”€æ¯ä¸­ï¼Œ åˆ™ ç›´æŽ¥è¿”å›žï¼Œ ä¸å‡å°‘å¼•ç”¨
 			if (this->m_object_ref->isDisposing())
 			{
 				return;

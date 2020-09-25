@@ -5,14 +5,14 @@ namespace langX {
 
 	class XArrayRef;
 
-	/*  Êı×é±ØĞëÏÈÉùÃ÷Ö®ºó²ÅÄÜÊ¹ÓÃ */
+	/*  æ•°ç»„å¿…é¡»å…ˆå£°æ˜ä¹‹åæ‰èƒ½ä½¿ç”¨ */
 
-	//  Êı×é
+	//  æ•°ç»„
 	class XArray
 	{
 	public:
 
-		// Ê¹ÓÃÕßÓ¦¸ÃÊ¹ÓÃ Allocator::allocateArray() º¯ÊıÀ´ÉêÇëÒ»¸öÊı×é£¬ ¶ø²»ÊÇÖ±½Ó new 
+		// ä½¿ç”¨è€…åº”è¯¥ä½¿ç”¨ Allocator::allocateArray() å‡½æ•°æ¥ç”³è¯·ä¸€ä¸ªæ•°ç»„ï¼Œ è€Œä¸æ˜¯ç›´æ¥ new
 		XArray(int length);
 		~XArray();
 
@@ -20,34 +20,34 @@ namespace langX {
 
 		Object * at(int index) const;
 
-		// ÔÚset µÄÊ±ºò»á»ñµÃÒ»¸ö obj µÄ¸±±¾
+		// åœ¨set çš„æ—¶å€™ä¼šè·å¾—ä¸€ä¸ª obj çš„å‰¯æœ¬
 		void set(int index, Object *);
 
-		// Ìí¼ÓÒ»¸ö¶ÔÏóµ½Ä©Î²
+		// æ·»åŠ ä¸€ä¸ªå¯¹è±¡åˆ°æœ«å°¾
 		bool add(Object *);
 
-		// Ö»ÊÇ×ÔÔöÒ»¸ö×Ô¼ºµÄÒıÓÃ´ÎÊı
+		// åªæ˜¯è‡ªå¢ä¸€ä¸ªè‡ªå·±çš„å¼•ç”¨æ¬¡æ•°
 		//void justAddRef();
-		// Éú³ÉÒ»¸öÒıÓÃ£¬ ÒıÓÃµ½Õâ¸ö¶ÔÏóÉíÉÏ
+		// ç”Ÿæˆä¸€ä¸ªå¼•ç”¨ï¼Œ å¼•ç”¨åˆ°è¿™ä¸ªå¯¹è±¡èº«ä¸Š
 		XArrayRef * addRef();
-		//  ¼õÉÙÒ»¸öÒıÓÃ
+		//  å‡å°‘ä¸€ä¸ªå¼•ç”¨
 		void subRef();
-		//  »ñµÃµ±Ç°¶ÔÏóµÄÒıÓÃ´ÎÊı
+		//  è·å¾—å½“å‰å¯¹è±¡çš„å¼•ç”¨æ¬¡æ•°
 		int getRefCount() const;
 
-		// ¿ËÂ¡µ±Ç°Êı×é | Éî¶È¿ËÂ¡
+		// å…‹éš†å½“å‰æ•°ç»„ | æ·±åº¦å…‹éš†
 		XArray *clone() const;
 
 	private:
 		Object** m_array = nullptr;
 		int m_length = 0;
-		// µ÷ÓÃÌí¼Óº¯ÊıµÄÊ±ºò ÓÎ±ê
+		// è°ƒç”¨æ·»åŠ å‡½æ•°çš„æ—¶å€™ æ¸¸æ ‡
 		int m_add_cursor = 0;
 
 		int  m_ref_count = 0;
 	};
 
-	// Ğ´Ò»Æğ°ÉÏÈ¡£  Êı×éÒıÓÃ
+	// å†™ä¸€èµ·å§å…ˆã€‚  æ•°ç»„å¼•ç”¨
 	class XArrayRef : public Object
 	{
 	public:
@@ -57,20 +57,20 @@ namespace langX {
 		XArray * getArray() const;
 
 		Object * at(int index) const;
-		// ÔÚset µÄÊ±ºò»á»ñµÃÒ»¸ö obj µÄ¸±±¾
+		// åœ¨set çš„æ—¶å€™ä¼šè·å¾—ä¸€ä¸ª obj çš„å‰¯æœ¬
 		void set(int index, Object *);
 		int getLength() const;
 
-		/* µ±Ç°Öµ¿ÉÒÔ±íÊ¾ÎªÕæÃ´£¿  null,0,false ¶¼²»»á±íÊ¾ÎªÕæ  */
+		/* å½“å‰å€¼å¯ä»¥è¡¨ç¤ºä¸ºçœŸä¹ˆï¼Ÿ  null,0,false éƒ½ä¸ä¼šè¡¨ç¤ºä¸ºçœŸ  */
 		bool isTrue() const ;
-		/* »ñµÃµ±Ç°¶ÔÏóµÄÀàĞÍ  */
+		/* è·å¾—å½“å‰å¯¹è±¡çš„ç±»å‹  */
 		ObjectType getType() const ;
-		/* ¿ËÂ¡µ±Ç°¶ÔÏó£¬ ·µ»Ø³öÒ»¸öĞÂµÄ¶ÔÏó */
+		/* å…‹éš†å½“å‰å¯¹è±¡ï¼Œ è¿”å›å‡ºä¸€ä¸ªæ–°çš„å¯¹è±¡ */
 		Object* clone() const ;
 		Object* clone(bool) const;
 
-		/* °Ñ×Ô¼ºUpdate ³ÉÄ¿±êµÄÖµ
-		Õâ¸öº¯Êı²»Ó¦¸Ã£¬ Ò²²»»áupdate ËùÔÚµÄ»·¾³   */
+		/* æŠŠè‡ªå·±Update æˆç›®æ ‡çš„å€¼
+		è¿™ä¸ªå‡½æ•°ä¸åº”è¯¥ï¼Œ ä¹Ÿä¸ä¼šupdate æ‰€åœ¨çš„ç¯å¢ƒ   */
 		void update(Object *) ;
 
 	private:

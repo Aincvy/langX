@@ -16,7 +16,7 @@ namespace langX {
 
 	langXObject::langXObject(ClassInfo *claxxInfo)
 	{
-		// ÏÈÉú³É¸¸Àà¶ÔÏó
+		// å…ˆç”Ÿæˆçˆ¶ç±»å¯¹è±¡
 		ClassInfo *pclass = claxxInfo->getParent();
 		if (pclass != nullptr)
 		{
@@ -33,10 +33,10 @@ namespace langX {
 			// printf("%s: %d\n", i->first.c_str(), i->second->getType());
 
 			Object *obj = i->second->clone(true);
-			//  ÀàµÄ×Ö¶ÎÖµ Îª¶ÔÏó×¨ÓĞ£¬ ²úÉú»·¾³Ò²ÊÇ¶ÔÏóµÄ»·¾³
+			//  ç±»çš„å­—æ®µå€¼ ä¸ºå¯¹è±¡ä¸“æœ‰ï¼Œ äº§ç”Ÿç¯å¢ƒä¹Ÿæ˜¯å¯¹è±¡çš„ç¯å¢ƒ
 			obj->setEmergeEnv(this->m_my_env);
 			obj->setName(i->first);
-			obj->regenCharacteristic();     // ÖØĞÂÉú³ÉÌØÕ÷×Ö·û´® £¬µ±Ç°¶ÔÏóºÍÀàÖĞµÄÔªËØÊÇ²»Ò»ÑùµÄ¡£ 
+			obj->regenCharacteristic();     // é‡æ–°ç”Ÿæˆç‰¹å¾å­—ç¬¦ä¸² ï¼Œå½“å‰å¯¹è±¡å’Œç±»ä¸­çš„å…ƒç´ æ˜¯ä¸ä¸€æ ·çš„ã€‚
 			this->m_members[i->first] = obj;
 		}
 
@@ -50,9 +50,9 @@ namespace langX {
 		//std::cout << "langXObject::~langXObject() " << this->m_class_info->getName() << std::endl;
 
 		this->m_disposing = true;
-		// ÏÈ¸Éµô×Ô¼º£¬ ÔÙ¸Éµô¸¸Àà¶ÔÏó
+		// å…ˆå¹²æ‰è‡ªå·±ï¼Œ å†å¹²æ‰çˆ¶ç±»å¯¹è±¡
 
-		// ÏÈµ÷ÓÃ×Ô¼ºµÄ Îö¹¹º¯Êı
+		// å…ˆè°ƒç”¨è‡ªå·±çš„ ææ„å‡½æ•°
 		std::string str = "~";
 		str += this->m_class_info->getName();
 		callFunction(str.c_str());
@@ -63,7 +63,7 @@ namespace langX {
 			this->m_my_env = NULL;
 		}
 
-		// ÇåÀíÒıÓÃ
+		// æ¸…ç†å¼•ç”¨
 		for (auto i = 0; i < this->m_refs.size(); i++)
 		{
 			langXObjectRef *r = this->m_refs.at(i);
@@ -76,7 +76,7 @@ namespace langX {
 		}
 		this->m_refs.clear();
 
-		// ¸Éµô¸¸Àà¶ÔÏó
+		// å¹²æ‰çˆ¶ç±»å¯¹è±¡
 		if (this->m_parent != NULL)
 		{
 			delete this->m_parent;
@@ -275,7 +275,7 @@ namespace langX {
 
 	void langXObject::callConstructor(ArgsList *args, const char *remark)
 	{
-		// Ç¿ĞĞÖ´ĞĞ¹¹Ôìº¯Êı
+		// å¼ºè¡Œæ‰§è¡Œæ„é€ å‡½æ•°
 		Function *func = getConstructor();
 		if (func)
 		{
@@ -285,7 +285,7 @@ namespace langX {
 			memset(&tmpNodeLink, 0, sizeof(NodeLink));
 			NodeLink *nodeLink = &tmpNodeLink;
 
-			// ÔËËã²ÎÊı
+			// è¿ç®—å‚æ•°
 			NodeLink *putNodeLink = newNodeLink(nullptr, nodeLink->node);
 			nodeLink->ptr_u = putNodeLink;
 			thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
@@ -296,7 +296,7 @@ namespace langX {
 				execNodeButLimit(t, t);
 			}
 
-			// ÔËËãº¯Êı
+			// è¿ç®—å‡½æ•°
 			Environment *env = getObjectEnvironment();
 			thread->newEnv2(env);
 			callFunc(func, args, remark, putNodeLink);
@@ -379,7 +379,7 @@ namespace langX {
 
 	}
 
-	langXObjectExtend::~langXObjectExtend() 
+	langXObjectExtend::~langXObjectExtend()
 	{
 
 	}
@@ -408,7 +408,7 @@ namespace langX {
 
 		auto it = this->m_members.find(name);
 
-		
+
 		if (it == this->m_members.end())
 		{
 			this->m_members[name] = Allocator::allocateNull();

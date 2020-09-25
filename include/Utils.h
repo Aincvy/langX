@@ -4,18 +4,18 @@
 
 namespace langX {
 
-	// »ñµÃ×Ô 1970ÄêÒ»ÔÂÒ»ÈÕµ½½ñÄê¾­¹ıµÄºÁÃëÊı
+	// è·å¾—è‡ª 1970å¹´ä¸€æœˆä¸€æ—¥åˆ°ä»Šå¹´ç»è¿‡çš„æ¯«ç§’æ•°
 	long getTime();
 
-	//  Éú³ÉÒ»¸öËæ»úµÄÌØĞÔÖµ
+	//  ç”Ÿæˆä¸€ä¸ªéšæœºçš„ç‰¹æ€§å€¼
 	void randomCharacteristic(char *,int ,void *, int randomLen);
 
 	std::vector<std::string> splitString(const std::string &str, const std::string &pattern);
 
-	// ´¦Àí×Ö·û´®ÄÚµÄ×ªÒå×Ö·û
+	// å¤„ç†å­—ç¬¦ä¸²å†…çš„è½¬ä¹‰å­—ç¬¦
 	std::string unescape(const std::string& s);
 
-	// ÅĞ¶¨Ò»¸ö×Ö·û´®ÊÇ·ñÊÇÁíÍâÒ»¸öµÄ½áÎ²
+	// åˆ¤å®šä¸€ä¸ªå­—ç¬¦ä¸²æ˜¯å¦æ˜¯å¦å¤–ä¸€ä¸ªçš„ç»“å°¾
 	bool endsWith(std::string const &fullString, std::string const &ending);
 
 }

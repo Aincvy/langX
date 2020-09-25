@@ -2,7 +2,7 @@
 #include "langX.h"
 
 /*
- * ×¢²áÒ»Ğ©¶ÔÏóµ½ ¶¥²ãµÄ¿Õ¼äÀïÃæ
+ * æ³¨å†Œä¸€äº›å¯¹è±¡åˆ° é¡¶å±‚çš„ç©ºé—´é‡Œé¢
  */
 
 namespace langX {
@@ -11,14 +11,14 @@ namespace langX {
 	class ClassInfo;
 
 
-	// Àà×¢²á
+	// ç±»æ³¨å†Œ
 	ClassInfo* regLoggerClass(langXState *state);
 
 
-	// ×¢²á
+	// æ³¨å†Œ
 	void regObjects(langXState *state);
 
-	// ´´½¨Ò»¸ö¿ÕµÄ¶ÔÏó
+	// åˆ›å»ºä¸€ä¸ªç©ºçš„å¯¹è±¡
 	langXObjectExtend *emptyObject();
 
 }

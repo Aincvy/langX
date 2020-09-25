@@ -52,7 +52,7 @@ namespace langX {
 	{
 		if (this->m_objects_map.find(name) == this->m_objects_map.end())
 		{
-			// Ñ°ÕÒÒ»ÏÂ ÒýÓÃµÄ¿Õ¼äÀïÃæµÄ¶ÔÏó
+			// å¯»æ‰¾ä¸€ä¸‹ å¼•ç”¨çš„ç©ºé—´é‡Œé¢çš„å¯¹è±¡
 			for (auto it = this->m_ref_namespace_map.begin();  it != this->m_ref_namespace_map.end(); it++)
 			{
 				XNameSpace *ns = it->second;

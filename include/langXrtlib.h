@@ -1,11 +1,11 @@
 #pragma once
 
-/* 
- * @date 2018-7-21 ´´½¨
+/*
+ * @date 2018-7-21 åˆ›å»º
  * @author hideDragon
  *
- * ±¾ÎÄ¼şµÄÄÚÈİÊÇÓÃÓÚ¼ÓÔØÔËĞĞ¿âµÄÒ»Ğ©ÄÚÈİ  
- * rt =  runtime. 
+ * æœ¬æ–‡ä»¶çš„å†…å®¹æ˜¯ç”¨äºåŠ è½½è¿è¡Œåº“çš„ä¸€äº›å†…å®¹
+ * rt =  runtime.
  *
  */
 
@@ -22,12 +22,12 @@ namespace langX {
 	private:
 
 	};
-	
+
 	class langXState;
-	// ³õÊ¼»¯ Õâ¸öÃüÃû¿Õ¼ä
+	// åˆå§‹åŒ– è¿™ä¸ªå‘½åç©ºé—´
 	void initRTNameSpace(langXState *);
 
-	// ¼ÓÔØ runtime lib 
+	// åŠ è½½ runtime lib
 	void loadRTLib(langXState *);
 
 

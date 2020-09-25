@@ -32,10 +32,10 @@ namespace langX {
 		rootSpace->putNameSpace(rtns->getName(), rtns);
 	}
 
-	// Ö´ÐÐÒ»¸öÎÄ¼þ¼Ð
+	// æ‰§è¡Œä¸€ä¸ªæ–‡ä»¶å¤¹
 	void doFolder(langXState *state, const std::string & dir) {
 
-		// ²éÕÒÄ¿Â¼ÀïÃæµÄËùÓÐµÄÎÄ¼þ
+		// æŸ¥æ‰¾ç›®å½•é‡Œé¢çš„æ‰€æœ‰çš„æ–‡ä»¶
 		DIR *dp = NULL;
 		struct dirent *dirp;
 		if ((dp = opendir(dir.c_str())) == NULL)
@@ -50,21 +50,21 @@ namespace langX {
 			std::string fullpath = dir + "/" + filename;
 			if (filename == "." || filename == ".." || filename == "notLoad")
 			{
-				// ¹ýÂËÕâÁ½¸öµ×²ãµÄÄ¿Â¼ 
+				// è¿‡æ»¤è¿™ä¸¤ä¸ªåº•å±‚çš„ç›®å½•
 				continue;
 			}
 
 			if (dirp->d_type == DT_DIR)
 			{
-				// ÊÇÒ»¸öÄ¿Â¼
+				// æ˜¯ä¸€ä¸ªç›®å½•
 				doFolder(state, fullpath);
 			}
 			else if (dirp->d_type == DT_REG)
 			{
-				 // ³£¹æÎÄ¼þ£¬ Ó¦¸ÃÊÇÒ»¸ö½Å±¾
+				 // å¸¸è§„æ–‡ä»¶ï¼Œ åº”è¯¥æ˜¯ä¸€ä¸ªè„šæœ¬
 				if (filename != "Main.lx")
 				{
-					// Ö»¼ÓÔØÎÄ¼þ¼ÐÀïÃæµÄ Main.lx ÎÄ¼þ
+					// åªåŠ è½½æ–‡ä»¶å¤¹é‡Œé¢çš„ Main.lx æ–‡ä»¶
 					continue;
 				}
 
@@ -76,20 +76,19 @@ namespace langX {
 
 	}
 
-	// 
+	//
 	void loadRTLib(langXState *state) {
-		// ÕÒµ½Ä¿Â¼£¬È»ºó¼ÓÔØÀïÃæµÄÈ«²¿½Å±¾
+		// æ‰¾åˆ°ç›®å½•ï¼Œç„¶åŽåŠ è½½é‡Œé¢çš„å…¨éƒ¨è„šæœ¬
 		const ConfigX & config = state->getConfig();
 		const std::string & dir= config.getRTLibDir();
 
 		if (dir.empty())
 		{
-			// Èç¹ûÄ¿Â¼Îª¿Õ¾ÍÖ±½Ó·µ»Ø
-			return; 
+			// å¦‚æžœç›®å½•ä¸ºç©ºå°±ç›´æŽ¥è¿”å›ž
+			return;
 		}
 
 		doFolder(state, dir);
 	}
 
 }
-

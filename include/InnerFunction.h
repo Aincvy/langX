@@ -1,21 +1,21 @@
 #pragma once
 
-// ÄÚ²¿º¯Êý  InnerFunction.h ,  
+// å†…éƒ¨å‡½æ•°  InnerFunction.h ,
 
 #include "Object.h"
 #include "Function.h"
 
 namespace langX {
 
-	// µÚÒ»¸ö²ÎÊýÎª ¶ÔÏó£¬ µÚ¶þ¸ö²ÎÊýÎª º¯Êýµ÷ÓÃµÄ½Úµã
+	// ç¬¬ä¸€ä¸ªå‚æ•°ä¸º å¯¹è±¡ï¼Œ ç¬¬äºŒä¸ªå‚æ•°ä¸º å‡½æ•°è°ƒç”¨çš„èŠ‚ç‚¹
 	Object * callInnerFunc(Object *, Node *);
-	
-	// µÚÒ»¸ö²ÎÊýÎª ¶ÔÏó£¬ µÚ¶þ¸ö²ÎÊýÎª º¯ÊýÃû×Ö£¬ µÚÈý¸öÎª²ÎÊý¶ÓÁÐ  
-	// µ÷ÓÃ´Ë·½·¨µÄÊ±ºò£¬ Ó¦¸Ã°ÑËùÓÐ²ÎÊý¸³ÖµºÃ
+
+	// ç¬¬ä¸€ä¸ªå‚æ•°ä¸º å¯¹è±¡ï¼Œ ç¬¬äºŒä¸ªå‚æ•°ä¸º å‡½æ•°åå­—ï¼Œ ç¬¬ä¸‰ä¸ªä¸ºå‚æ•°é˜Ÿåˆ—
+	// è°ƒç”¨æ­¤æ–¹æ³•çš„æ—¶å€™ï¼Œ åº”è¯¥æŠŠæ‰€æœ‰å‚æ•°èµ‹å€¼å¥½
 	Object * callInnerFunc(Object *, const char *, X3rdArgs *);
 
-	// µÚÒ»¸ö¶ÔÏóÎªÊ¹ÓÃº¯ÊýµÄ¶ÔÏó£¬ µÚ¶þ¸ö²ÎÊýÎªº¯Êý£¬ µÚÈý¸ö²ÎÊýÎª ²ÎÊýÁÐ±í 
-	// µ÷ÓÃ´Ë·½·¨µÄÊ±ºò£¬ Ó¦¸Ã°ÑËùÓÐ²ÎÊý¸³ÖµºÃ
+	// ç¬¬ä¸€ä¸ªå¯¹è±¡ä¸ºä½¿ç”¨å‡½æ•°çš„å¯¹è±¡ï¼Œ ç¬¬äºŒä¸ªå‚æ•°ä¸ºå‡½æ•°ï¼Œ ç¬¬ä¸‰ä¸ªå‚æ•°ä¸º å‚æ•°åˆ—è¡¨
+	// è°ƒç”¨æ­¤æ–¹æ³•çš„æ—¶å€™ï¼Œ åº”è¯¥æŠŠæ‰€æœ‰å‚æ•°èµ‹å€¼å¥½
 	Object * callFunction(Object *, Function *, X3rdArgs *);
 
 }

@@ -112,7 +112,7 @@ namespace langX {
 	}
 
 	/*
-	 * ÊÍ·ÅÕâ¸ö½ÚµãÕ¼ÓÃµÄÄÚ´æ
+	 * é‡Šæ”¾è¿™ä¸ªèŠ‚ç‚¹å ç”¨çš„å†…å­˜
 	 */
 	void freeNodeLink(NodeLink *nodeLink) {
 		if (nodeLink == NULL) {
