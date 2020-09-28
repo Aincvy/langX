@@ -7,7 +7,6 @@ namespace langX {
 
 	// 字符串对象
 	// 默认值为 空字符串 而不是 null
-	// 07-24  当前对象并没进行实现， 请暂时不要使用
 	class String : public Object
 	{
 	public:

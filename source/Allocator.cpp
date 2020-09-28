@@ -244,7 +244,7 @@ namespace langX {
 		std::string str(obj->characteristic());
 		m_object_map.erase(str);
 
-		delete obj;       // ½â·Å¶ÔÏóÕ¼ÓÃµÄÄÚ´æ
+		delete obj;       // è§£æ”¾å¯¹è±¡å ç”¨çš„å†…å­˜
 	}
 
 	void Allocator::gc()

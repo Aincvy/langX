@@ -182,7 +182,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 23 "a.y"
+#line 8 "a.y"
 {
  int intValue;
  double iValue; /* double value */

@@ -6,9 +6,6 @@ SET(LOG4CPP_VERSION "NO-VERSION-INFO")
 SET(Log4cpp_FIND_REQUIRED TRUE)
 
 PROJECT(LANGX)
-#ADD_SUBDIRECTORY(source bin)
-
-#LINK_LIBRARIES(${Log4cpp_LIBRARIES})
 
 SET(CMAKE_BUILD_TYPE RelWithDebInfo)
 SET(CMAKE_C_FLAGS_DEBUG "-g -Wall")
@@ -17,7 +14,7 @@ SET(CMAKE_C_COMPILER       g++ )
 ADD_DEFINITIONS(-std=c++11)
 
 ADD_SUBDIRECTORY(source target)
-#ADD_SUBDIRECTORY(extern bin)
+
 
 # 配置文件安装
 IF(NOT EXISTS /etc/langX/log4cpp.properties )

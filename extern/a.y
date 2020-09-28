@@ -1,22 +1,7 @@
 %{
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
+
 #include "../include/YLlangX.h"
-
-#define YYDEBUG 1
-
-extern "C" {
-	extern int yylex(void);
-	void yyerror(char *);
-}
-
-extern int getParseLineNo();
-extern int column;
-extern char * yytext;
-
-char *namespaceNameCat(char *,char *);
+#include "../include/Program.h"
 
 %}
 
@@ -552,37 +537,8 @@ assign_stmt
 
 %%
 
-void yyerror(char *s) {
-	fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , getParseLineNo(),column , yytext  );
-}
-
-char *namespaceNameCat(char *arg1,char *arg2){
-	int len = strlen(arg1) + strlen(arg2) + 1;
-	char *p = (char*)calloc(1, len + 1);
-	strcat(p,arg1);
-	strcat(p,".");
-	strcat(p,arg2);
-	p[len] = '\0' ;
-
-	free(arg1);
-	free(arg2);
-	return p;
-}
 
 int main(int argc, char *argv[]){
-	if(argc <= 1){
-		printf("no input file.\n");
-		return 1;
-	}
 
-	initLangX(argc, argv);
-
-	doFile(argv[1]);
-	//for(int i = 1; i < argc; i++)
-	//	doFile(argv[i]);
-
-	closeLangX();
-
-	//printf("parse over!\n");
-	return 0;
+	return programRun(argc, argv);
 }
