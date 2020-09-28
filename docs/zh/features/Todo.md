@@ -167,3 +167,9 @@ println(outString);     // world
 
 
 
+## 启动参数
+
+- `-v`， `--version`  查看版本信息
+- `-h`，`--help` 查看帮助
+- 
+

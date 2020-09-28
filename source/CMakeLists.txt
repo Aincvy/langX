@@ -7,24 +7,23 @@ FIND_PACKAGE(Log4cpp REQUIRED)
 
 # LOG4CPP
 INCLUDE_DIRECTORIES(${Log4cpp_INCLUDE_DIR})
-INCLUDE_DIRECTORIES("lib/tclap-include")
 
 MESSAGE(STATUS "OS is ${CMAKE_SYSTEM}")
 MESSAGE(STATUS "FIND LOG4CPP IN ${Log4cpp_LIBRARY}")
 MESSAGE(STATUS "FLEX STATUS ${FLEX_LIBRARIES}")
 
 AUX_SOURCE_DIRECTORY(. SRC_LIST)
-FILE(GLOB EXT_FILES "../extern/*.c")
+FILE(GLOB EXT_FILES "${CMAKE_CURRENT_LIST_DIR}/../extern/*.c")
 FILE(GLOB EXTEND_CLASS "extend/*.cpp")
 ADD_LIBRARY(liblangX.so SHARED ${SRC_LIST} ${EXT_FILES} ${EXTEND_CLASS})
-target_link_libraries(liblangX.so ${Log4cpp_LIBRARY})
-target_link_libraries(liblangX.so "dl")
-target_link_libraries(liblangX.so "pthread")
+TARGET_LINK_LIBRARIES(liblangX.so ${Log4cpp_LIBRARY})
+TARGET_LINK_LIBRARIES(liblangX.so "dl")
+TARGET_LINK_LIBRARIES(liblangX.so "pthread")
 
 IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
-	target_link_libraries(liblangX.so ${FLEX_LIBRARIES})
+	TARGET_LINK_LIBRARIES(liblangX.so ${FLEX_LIBRARIES})
 ELSE ()
-	target_link_libraries(liblangX.so "l")
+	TARGET_LINK_LIBRARIES(liblangX.so "l")
 ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
 LINK_LIBRARIES(${LOG4CPP_LIBRARIES})

@@ -9,6 +9,7 @@
 #include <string.h>
 #include <string>
 #include "../include/YLlangX.h"
+#include <tclap/CmdLine.h>
 
 #define YYDEBUG 1
 
@@ -18,7 +19,8 @@ extern int column;
 extern char * yytext;
 
 void yyerror(char *s) {
-    fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , getParseLineNo(),column , yytext  );
+    fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , getParseLineNo(),column , yytext );
+
 }
 
 char *namespaceNameCat(char *arg1,char *arg2){
@@ -41,8 +43,33 @@ int programRun(int argc, char *argv[]){
         return 1;
     }
 
-    initLangX(argc, argv);
+    // 获取启动参数
 
+
+    try {
+        TCLAP::CmdLine cmdLine("langX - a simple script language.", ' ', LANGX_VERSION);
+
+        // test name
+        TCLAP::ValueArg<std::string> testArg("n","name", "name to print", false, "default", "string");
+        cmdLine.add(testArg);
+
+        cmdLine.parse(argc, argv);
+
+        std::string name = testArg.getValue();
+        if (testArg.isSet()){
+            printf("test arg is set!\n");
+        } else{
+            printf("test arg is not set!\n");
+        }
+
+        printf("test arg: %s\n", name.c_str());
+    } catch (TCLAP::ArgException &e) {
+        // parse exception
+        fprintf(stderr, "error pass arg: %s\n%s\n", e.argId().c_str(), e.error().c_str());
+        return -1;
+    }
+
+    initLangX(argc, argv);
 
     doFile(argv[1]);
 
