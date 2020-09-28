@@ -44,7 +44,8 @@ int programRun(int argc, char *argv[]){
     }
 
     // 获取启动参数
-
+    // 脚本文件和 给予脚本文件的参数
+    std::vector<std::string> fileAndArgs;
 
     try {
         TCLAP::CmdLine cmdLine("langX - a simple script language.", ' ', LANGX_VERSION);
@@ -53,16 +54,23 @@ int programRun(int argc, char *argv[]){
         TCLAP::ValueArg<std::string> testArg("n","name", "name to print", false, "default", "string");
         cmdLine.add(testArg);
 
+        // file name and args
+        TCLAP::UnlabeledMultiArg<std::string> multiArg("file", "file and file args", true, "string");
+        cmdLine.add(multiArg);
+
         cmdLine.parse(argc, argv);
+
 
         std::string name = testArg.getValue();
         if (testArg.isSet()){
             printf("test arg is set!\n");
+            printf("test arg: %s\n", name.c_str());
         } else{
             printf("test arg is not set!\n");
         }
+        
+        fileAndArgs = multiArg.getValue();
 
-        printf("test arg: %s\n", name.c_str());
     } catch (TCLAP::ArgException &e) {
         // parse exception
         fprintf(stderr, "error pass arg: %s\n%s\n", e.argId().c_str(), e.error().c_str());
@@ -71,7 +79,8 @@ int programRun(int argc, char *argv[]){
 
     initLangX(argc, argv);
 
-    doFile(argv[1]);
+    const char * scriptFile = fileAndArgs[0].c_str();
+    doFile(scriptFile);
 
     closeLangX();
 
