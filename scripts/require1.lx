@@ -1,6 +1,6 @@
 print("in 1.lx!\n");
 
-require "require2.lx"
+require "require2.lx";
 
 print("a=" + a + "\n");
 print("b=" + b + "\n");
