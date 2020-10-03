@@ -1,24 +1,24 @@
-Student { 
+Student {
   name;
   age = 10 ;
-  
+
   Student => (name,age){
     this.name = name;
-	this.age = age;
-	printInfo("in ctor.");
+    this.age = age;
+    printInfo("in ctor.");
   }
-  
+
   a => { print("hello,a!\n");}
-  
+
   printInfo => (a3){ print("name: " + name + "\n");  print("age: " + age + "\n" ); print("a3: " + a3 + "\n");}
-  
+
 }
 
 s2 = new Student("hideDragon",20);
 b = s2.age;
 c = s2.name;
-print("b: " + b + "\n"); 
-print("c: " + c + "\n");  
+print("b: " + b + "\n");
+print("c: " + c + "\n");
 
 s1 = s2;
 s1.age = 10 ;
@@ -30,3 +30,9 @@ Class2{
 }
 
 c1 = new Class2();
+
+if( c1 == null ){
+  println("c1 == null! ");
+}
+
+printInfo(Student::age);

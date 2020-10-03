@@ -93,6 +93,10 @@ s1.printInfo("ahahahah~");
 
 
 
+### Screenshot
+
+https://github.com/Aincvy/langX-atom#screenshot
+
 
 
 ## Directory

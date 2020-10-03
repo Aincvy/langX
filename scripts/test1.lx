@@ -1,4 +1,4 @@
-//  ²âÊÔ -a 
+//  æµ‹è¯• -a
 a = 1 ;
 b = -a ;
 print("b=" + b + "\n");
@@ -18,3 +18,6 @@ println("a: " + a);
 println("b: " + b);
 
 print("script end.");
+
+
+// aaa abc

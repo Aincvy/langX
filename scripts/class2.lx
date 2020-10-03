@@ -1,25 +1,30 @@
-Student { 
+Student {
   name;
   age = 10 ;
-  // ͬѧ1
-  meta1;
-  
+  // 同学1
+  meta1 ;
+  test_number = 11;
+
   Student => (name,age){
     this .name = name;
 	this .age = age;
   }
-  
+
   a => { print("hello,a!\n");}
-  
+
   printInfo => (){ print("name: " + name + "\n");  print("age: " + age + "\n" ); }
-  
+
 }
 
 s1 = new Student("studen1", 12);
 s2 = new Student("studen2" , 13);
 
-// s2 �� s1 ��ͬѧ
+// s2 是 s1 的同学
 s1.meta1 = s2;
 
 s1.meta1.age = 12 ;
 s1.meta1.printInfo();
+
+// Student::test_number = 15;
+const s1;
+s2 = null;

@@ -1,9 +1,6 @@
-try {
-  
-  funa => {} 
 
-  funa => {} 
-  
+try {
+
 } catch ( e ){
   e.printStackTrace();
 }
@@ -11,5 +8,10 @@ try {
 Class1{}
 
 Class1{}
+
+
+funa => {}
+
+funa => {} 
 
 print("Script End!\n");

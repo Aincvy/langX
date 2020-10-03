@@ -1,19 +1,19 @@
 print("Welcome to My Calc.");
 
 while ( true ){
-	
+
 	print("please input a number(-1 exit): ");
 	num1 = scanNumber();
-	
+
 	if(num1 == -1 ){
 	  break ;
 	}
-	
+
 	print("please input a operator: ");
 	op = scanString();
 	print("please input 2rd number: ");
 	num2 = scanNumber();
-	
+
 	if (op == "+") {
 	  print("ret: " + (num1+num2) + "\n");
 	} else if (op == "-"){
@@ -26,7 +26,7 @@ while ( true ){
 	else {
 	  print("bad op: " + op + "\n");
 	}
-	
+
 }
 
 print("Thank you for using.\n");

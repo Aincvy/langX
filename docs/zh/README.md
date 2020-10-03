@@ -91,7 +91,9 @@ s1.printInfo("ahahahah~");
 
 ```
 
+### 截图
 
+https://github.com/Aincvy/langX-atom#screenshot
 
 
 
