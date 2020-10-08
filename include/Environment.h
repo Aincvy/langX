@@ -46,16 +46,22 @@ namespace langX {
 		virtual Object* getObject(const std::string & ,bool );
 		// 只从自己的环境中寻找对象
 		virtual Object* getObjectSelf(const char *) const = 0;
+		// 检测当前环境是否存在某个对象
+		virtual bool hasObject(const std::string &) const;
 
 		virtual void putFunction(const char*, Function*) = 0;
 		virtual void putFunction(const std::string &, Function*) = 0;
 		virtual Function* getFunction(const std::string &) = 0;
 		// 仅从当前环境中尝试获得函数
 		virtual Function* getFunctionSelf(const std::string &);
+		// 检测当前环境是否存在某个函数
+        virtual bool hasFunction(const std::string &) const;
 
 		virtual void putClass(const char *, ClassInfo *);
 		virtual ClassInfo *getClass(const char *);
 		virtual ClassInfo *getClassSelf(const char *);
+		// 检测当前环境是否存在某个类
+        virtual bool hasClass(const std::string &) const;
 
 		Environment *getParent() const;
 		void setParent(Environment *);
@@ -118,6 +124,8 @@ namespace langX {
 		Object* getObject(const std::string &, bool);
 		// 只从自己的环境中寻找对象
 		Object* getObjectSelf(const char *) const;
+		// 检测当前环境是否存在某个对象
+        bool hasObject(const std::string &) const;
 
 		void putFunction(const char*, Function*);
 		void putFunction(const std::string &, Function*);

@@ -168,7 +168,19 @@ namespace langX {
 		this->m_close_flag = f;
 	}
 
-	ClassBridgeEnv::ClassBridgeEnv(ClassInfo *claxx)
+    bool Environment::hasObject(const std::string &) const {
+        return false;
+    }
+
+    bool Environment::hasFunction(const std::string &) const{
+        return false;
+    }
+
+    bool Environment::hasClass(const std::string &) const {
+        return false;
+    }
+
+    ClassBridgeEnv::ClassBridgeEnv(ClassInfo *claxx)
 	{
 		this->m_class = claxx;
 	}
@@ -815,7 +827,12 @@ namespace langX {
 		return EnvironmentType::TDefaultEnvironment;
 	}
 
-	XNameSpaceEnvironment::XNameSpaceEnvironment(XNameSpace *space)
+    bool DefaultEnvironment::hasObject(const std::string &name) const {
+	    auto m = this->m_objects_map;
+        return m.find(name) != m.end();
+    }
+
+    XNameSpaceEnvironment::XNameSpaceEnvironment(XNameSpace *space)
 	{
 		this->m_space = space;
 	}

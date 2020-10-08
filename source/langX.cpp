@@ -690,7 +690,7 @@ namespace langX {
 
 	void langXState::setStartArg(int argc, char * argv[])
 	{
-		int realSize = argc - 2;
+		int realSize = argc;
 		if (realSize <= 0)
 		{
 			this->startArgSize = 0;
@@ -702,7 +702,7 @@ namespace langX {
 
 		for (size_t i = 0; i < realSize; i++)
 		{
-			int index = i + 2;
+			int index = i;
 			this->startArgValues[i] = argv[index];
 		}
 

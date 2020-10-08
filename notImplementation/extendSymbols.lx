@@ -1,0 +1,18 @@
+// $?  $1 这样的符号
+
+testFunc => (){
+  println("testFunc arg count: " + $_);
+}
+
+testFunc1 => ( a ) {
+  println("testFunc1 arg count: " + $_);
+}
+
+testFunc5 => ( a,b,c,d,e ) {
+  println("testFunc5 arg count: " + $_);
+}
+
+
+testFunc();
+testFunc1();
+testFunc5()

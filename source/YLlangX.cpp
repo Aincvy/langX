@@ -23,9 +23,15 @@
 #include "../include/LogManager.h"
 #include "../include/RegObjects.h"
 
-extern int getParseLineNo();
+// FE:  function extend   函数的扩展内容
+// 可变参数的数量 名字
+#define FE_KEY_VARIABLE_COUNT "$_"
+// 可变参数取值的 前缀名字
+#define FE_KEY_VARIABLE_PREFIX "$"
 
 using namespace langX;
+extern int getParseLineNo();
+
 
 static langXState* state = NULL;
 
@@ -72,7 +78,6 @@ langX::langXState * getState()
 
 double getNumberValue(const char *n)
 {
-	//printf("getNumberValue length: %d\n" , strlen(n));
 
 	Object*p = getValue(n);
 	if (p == NULL)
@@ -96,7 +101,14 @@ void deal_state(NodeState * state) {
 // 这里是给节点的文件信息赋值
 void deal_fileinfo(NodeFileInfo *f) {
 	f->lineno = getParseLineNo();
-	f->filename = state->getParsingFile();
+
+	auto filepath = state->getParsingFile();
+    if (filepath == nullptr) {
+        logger->debug("state file path is null .. ? ");
+    } else{
+        f->filename = filepath;
+    }
+
 }
 
 XNode *newNode() {
@@ -123,13 +135,6 @@ XNode *newNode() {
 std::string fileInfoString(const NodeFileInfo & f) {
 	std::stringstream ss;
 	ss << "at ";
-	//if (f.filename)
-	//{
-	//	ss << f.filename;
-	//}
-	//else {
-	//	ss << "<NoFile>";
-	//}
 	ss << f.filename;
 
 	ss << ":";
@@ -541,6 +546,28 @@ XObject *call3rdFunc(X3rdFunction *x3rdfunc, langXThread * thread, XArgsList *ar
 	return ret1;
 }
 
+// 执行 函数节点的 第一阶段，  参数值的运算阶段
+void callFuncNodeLink0(XFunction *function, const XArgsList *args, const char *remark, NodeLink *nodeLink,
+                       langXThread *thread) {
+    // add stackTrace
+    thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
+
+    // 计算参数的值
+    if (args != NULL)
+    {
+        for (int i = 0; i < args->index; i++)
+        {
+            if (args->args[i] != NULL)
+            {
+                // 最初的时候， 参数的值应该是一个NULL 。 然后执行参数节点， 产生一个结果
+                thread->beginExecute(args->args[i], true);
+            }
+        }
+    }
+
+    nodeLink->index = 1;
+}
+
 XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, NodeLink* nodeLink) {
 #ifdef SHOW_DETAILS
 	//printf("callFunc %s %s\n" , function->getName(), remark );
@@ -559,46 +586,22 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 			thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 		}
 		// 第三方函数
-		X3rdFunction *x3rdfunc = (X3rdFunction*)function;
-		return call3rdFunc(x3rdfunc, thread, args, nodeLink);
+		X3rdFunction *x3rdFunc = (X3rdFunction*)function;
+		return call3rdFunc(x3rdFunc, thread, args, nodeLink);
 	}
 
 	if (nodeLink->index == 0)
 	{
-		//
-		thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
-
-		// 计算参数的值
-		if (args != NULL)
-		{
-			XParamsList *params = function->getParamsList();
-			NullObject nullobj;
-			for (int i = 0; i < args->index; i++)
-			{
-				// 如果给出的参数个数大于需要的参数个数， 则无视剩余给出的参数
-				if (i >= params->index)
-				{
-					break;
-				}
-
-				if (args->args[i] != NULL)
-				{
-					// 最初的时候， 参数的值应该是一个NULL 。 然后执行参数节点， 产生一个结果
-					thread->beginExecute(args->args[i], true);
-				}
-			}
-		}
-
-		nodeLink->index = 1;
-		return nullptr;
+        callFuncNodeLink0(function, args, remark, nodeLink, thread);
+        return nullptr;
 	}
 
 	// 如果当前环境是一个对象环境， 则暂存他
-	Environment *abcEnv = NULL;
-	Environment *currEnv1 = thread->getCurrentEnv();
-	if (currEnv1->isObjectEnvironment())
+	Environment *oldEnv = NULL;
+	Environment *currEnv = thread->getCurrentEnv();
+	if (currEnv->isObjectEnvironment())
 	{
-		abcEnv = currEnv1;
+        oldEnv = currEnv;
 		thread->backEnv(false);
 	}
 
@@ -609,10 +612,12 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 	{
 		XParamsList *params = function->getParamsList();
 		NullObject nullobj;
+
+		// put real args value
 		for (int i = 0; i < args->index; i++)
 		{
 			// 如果给出的参数个数大于需要的参数个数， 则无视剩余给出的参数
-			if (i >= params->index)
+			if (i < params->index)
 			{
 				break;
 			}
@@ -644,10 +649,20 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 		}
 	}
 
-	if (abcEnv != NULL)
+    // put function extends var ...
+    if (!env->hasObject("$_")){
+        auto functionArgsCount = args == NULL ? 0 : args->index;
+        env->putObject("$_" , Allocator::allocateNumber(functionArgsCount));
+//         赋值给 $1,$2..
+
+
+    }
+
+
+	if (oldEnv != NULL)
 	{
-		thread->newEnv(abcEnv);
-		abcEnv = NULL;
+		thread->newEnv(oldEnv);
+        oldEnv = NULL;
 	}
 
 	// 如果这个函数属于某个脚本， 先用该函数的脚本环境覆盖
@@ -672,6 +687,9 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 
 	return ret;
 }
+
+
+
 
 XNode * argsNode(XArgsList * args) {
 	// 节点的文件信息里面存在了一个 std::string
@@ -849,14 +867,14 @@ void pretreatSwitch(XNode *node) {
 }
 
 void freeArgsList(XArgsList *alist) {
-	if (alist->args != NULL)
+	if (alist != nullptr && alist->index > 0)
 	{
 		for (int i = 0; i < alist->index; i++)
 		{
-			if (alist->args[i] != NULL)
+			if (alist->args[i] != nullptr)
 			{
 				freeNode(alist->args[i]);
-				alist->args[i] = NULL;
+				alist->args[i] = nullptr;
 			}
 		}
 	}

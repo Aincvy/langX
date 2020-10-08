@@ -9,20 +9,21 @@ funb => (a){
 
 
 Class1 {
-	
+
 	test1 => (){
 		return "xx01";
 	}
 
 }
 
-set abc funa;
-set qwe funb;
-set name Class1::test1;
+set alias abc funa;
+set alias qwe funb;
+set alias name Class1::test1;
+
+// 下面的代码会增加混乱性， 慎重考虑
 
 abc ;  //  call funa();
 qwe("abcc");
 
 a = new Class1();
 a.name;   // equals  a.test1();
-

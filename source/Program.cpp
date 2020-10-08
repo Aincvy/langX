@@ -51,24 +51,17 @@ int programRun(int argc, char *argv[]){
         TCLAP::CmdLine cmdLine("langX - a simple script language.", ' ', LANGX_VERSION);
 
         // test name
-        TCLAP::ValueArg<std::string> testArg("n","name", "name to print", false, "default", "string");
+        TCLAP::ValueArg<std::string> testArg("n","name", "name to print (test code, will delete)", false, "default", "string");
         cmdLine.add(testArg);
 
         // file name and args
-        TCLAP::UnlabeledMultiArg<std::string> multiArg("file", "file and file args", true, "string");
+        TCLAP::UnlabeledMultiArg<std::string> multiArg("file", "script file and file args", true, "string");
         cmdLine.add(multiArg);
 
         cmdLine.parse(argc, argv);
 
+//        std::string name = testArg.getValue();
 
-        std::string name = testArg.getValue();
-        if (testArg.isSet()){
-            printf("test arg is set!\n");
-            printf("test arg: %s\n", name.c_str());
-        } else{
-            printf("test arg is not set!\n");
-        }
-        
         fileAndArgs = multiArg.getValue();
 
     } catch (TCLAP::ArgException &e) {
@@ -77,12 +70,27 @@ int programRun(int argc, char *argv[]){
         return -1;
     }
 
-    initLangX(argc, argv);
+    // 使用 fileAndArgs 转换成langX 脚本的运行参数
+    auto langXArgc = fileAndArgs.size() - 1;
+    char* langXArgv[langXArgc];
+    for (int i = 1; i <= langXArgc; ++i) {
+        auto str = fileAndArgs[i];
+        char* tmp = (char*)calloc(1, sizeof(char) * str.size());
+        strcpy(tmp, str.c_str());
+        langXArgv[i - 1] = tmp;
+    }
+
+    initLangX(langXArgc, langXArgv);
 
     const char * scriptFile = fileAndArgs[0].c_str();
     doFile(scriptFile);
 
     closeLangX();
+
+    // 释放 参数的内容
+    for (int i = 0; i < langXArgc; ++i) {
+        free(langXArgv[i]);
+    }
 
     return 0;
 }

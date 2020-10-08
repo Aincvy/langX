@@ -26,7 +26,7 @@ Use **Atom** as editor.
 
 **Document**
 
-[langX in Gitbook](https://aincvy.gitbook.io/langx/v/dev/langs)
+[langX in Gitbook](https://aincvy.gitbook.io/langx/)
 
 
 
