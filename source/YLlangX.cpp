@@ -22,12 +22,8 @@
 #include "../include/langXThread.h"
 #include "../include/LogManager.h"
 #include "../include/RegObjects.h"
+#include "../include/langXCommon.h"
 
-// FE:  function extend   函数的扩展内容
-// 可变参数的数量 名字
-#define FE_KEY_VARIABLE_COUNT "$_"
-// 可变参数取值的 前缀名字
-#define FE_KEY_VARIABLE_PREFIX "$"
 
 using namespace langX;
 extern int getParseLineNo();
@@ -451,22 +447,27 @@ XNode * claxx(char *name, char *parent, XNode * node, bool flag) {
 	return nodeC;
 }
 
+// 根据名字调用一个函数
 XObject * call(const char *name, XArgsList* args, const char *remark, NodeLink *nodeLink)
 {
-	Function *function = getState()->curThread()->getFunction(name);
+    auto thread = getState()->curThread();
+	Function *function = thread->getFunction(name);
 	if (function == NULL)
 	{
 		char tmp[100] = { 0 };
 		sprintf(tmp, "cannot find function %s", name);
-		getState()->curThread()->throwException(newFunctionNotFoundException(tmp)->addRef());
+        thread->throwException(newFunctionNotFoundException(tmp)->addRef());
 		return NULL;
 	}
 
-	return callFunc(function, args, remark, nodeLink);
+	// auto env = thread->getCurrentEnv();
+	auto object = callFunc(function, args, remark, nodeLink);
+    // env->putObject(FE_KEY_PREV_RESULT, object);
+    return object;
 }
 
 // 调用第三方函数
-XObject *call3rdFunc(X3rdFunction *x3rdfunc, langXThread * thread, XArgsList *args, NodeLink* nodeLink) {
+XObject *call3rdFunc(X3rdFunction *x3rdFunc, langXThread * thread, XArgsList *args, NodeLink* nodeLink) {
 	X3rdArgs _3rdArgs;
 	memset(&_3rdArgs, 0, sizeof(X3rdArgs));
 	if (args != NULL)
@@ -528,7 +529,7 @@ XObject *call3rdFunc(X3rdFunction *x3rdfunc, langXThread * thread, XArgsList *ar
 	}
 
 	thread->setInFunction(true);
-	Object * ret1 = x3rdfunc->call(_3rdArgs);
+	Object * ret1 = x3rdFunc->call(_3rdArgs);
 	thread->getStackTrace().popFrame();
 	thread->setInFunction(false);
 
@@ -547,11 +548,11 @@ void callFuncNodeLink0(XFunction *function, const XArgsList *args, const char *r
     thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
     // 计算参数的值
-    if (args != NULL)
+    if (args != nullptr)
     {
         for (int i = 0; i < args->index; i++)
         {
-            if (args->args[i] != NULL)
+            if (args->args[i] != nullptr)
             {
                 // 最初的时候， 参数的值应该是一个NULL 。 然后执行参数节点， 产生一个结果
                 thread->beginExecute(args->args[i], true);
@@ -562,9 +563,31 @@ void callFuncNodeLink0(XFunction *function, const XArgsList *args, const char *r
     nodeLink->index = 1;
 }
 
-XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, NodeLink* nodeLink) {
+// 添加函数的拓展变量到 函数内部 | $_, $1,$2 等
+void addFunctionExtendsVar(Environment* env, XArgsList* args){
+    if (!env->hasObject(FE_KEY_VARIABLE_COUNT)){
+        auto functionArgsCount = args == nullptr ? 0 : args->index;
+        env->putObject(FE_KEY_VARIABLE_COUNT , Allocator::allocateNumber(functionArgsCount));
+
+//         赋值给 $1,$2..
+        for (int i = 0; i < functionArgsCount; ++i) {
+            std::stringstream  ss;
+            ss << FE_KEY_VARIABLE_PREFIX;
+            ss << (i + 1);
+            const std::string & tmpVarName = ss.str();
+
+            if (!env->hasObject(tmpVarName)){
+                // 不包含这个变量， 则赋值
+                env->putObject(tmpVarName, args->args[i]->value);
+            }
+        }
+    }
+
+}
+
+XObject * callFunc(XFunction* function, XArgsList* args, const char* remark, NodeLink* nodeLink) {
 #ifdef SHOW_DETAILS
-	//printf("callFunc %s %s\n" , function->getName(), remark );
+	// logger->debug("callFunc %s %s\n" , function->getName(), remark );
 #endif
 
 	langXThread * thread = getState()->curThread();
@@ -591,7 +614,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 	}
 
 	// 如果当前环境是一个对象环境， 则暂存他
-	Environment *oldEnv = NULL;
+	Environment *oldEnv = nullptr;
 	Environment *currEnv = thread->getCurrentEnv();
 	if (currEnv->isObjectEnvironment())
 	{
@@ -612,7 +635,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 		for (int i = 0; i < args->index; i++)
 		{
 			// 如果给出的参数个数大于需要的参数个数， 则无视剩余给出的参数
-			if (i < params->index)
+			if (i >= params->index)
 			{
 				break;
 			}
@@ -645,13 +668,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 	}
 
     // put function extends var ...
-    if (!env->hasObject(FE_KEY_VARIABLE_COUNT)){
-        auto functionArgsCount = args == NULL ? 0 : args->index;
-        env->putObject(FE_KEY_VARIABLE_COUNT , Allocator::allocateNumber(functionArgsCount));
-//         赋值给 $1,$2..
-
-
-    }
+    addFunctionExtendsVar(env, args);
 
 
 	if (oldEnv != NULL)

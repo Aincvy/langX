@@ -2,17 +2,33 @@
 
 testFunc => (){
   println("testFunc arg count: " + $_);
+
+  return "result of testFunc";
 }
 
 testFunc1 => ( a ) {
   println("testFunc1 arg count: " + $_);
+
+  if ( $_ > 1){
+    // has more than 1 args..
+    println("$2 in testFunc1: " + $2);
+  }
+
+  return "result of testFunc1: " + a;
 }
 
 testFunc5 => ( a,b,c,d,e ) {
   println("testFunc5 arg count: " + $_);
+
+  println("a: " + a);
+  println("b: " + b);
+
+  return "result of testFunc5";
 }
 
 
 testFunc(1);
-testFunc1(1,2,3);
-testFunc5(1,2,3,4,5);
+// println("$?: " + $? );
+
+testFunc1(1,"second param",3);
+testFunc5("a","b",3,4,5);

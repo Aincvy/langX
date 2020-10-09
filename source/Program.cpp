@@ -3,6 +3,7 @@
 //
 
 #include "../include/Program.h"
+#include "../include/langXCommon.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +12,6 @@
 #include "../include/YLlangX.h"
 #include <tclap/CmdLine.h>
 
-#define YYDEBUG 1
 
 
 extern int getParseLineNo();

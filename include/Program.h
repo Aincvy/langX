@@ -5,7 +5,7 @@
 #ifndef LANGX_PROGRAM_H
 #define LANGX_PROGRAM_H
 
-#define LANGX_VERSION "0.2.1"
+
 
 extern "C" {
     extern int yylex(void);
