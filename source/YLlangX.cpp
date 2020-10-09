@@ -99,7 +99,7 @@ void deal_state(NodeState * state) {
 }
 
 // 这里是给节点的文件信息赋值
-void deal_fileinfo(NodeFileInfo *f) {
+void deal_fileInfo(NodeFileInfo *f) {
 	f->lineno = getParseLineNo();
 
 	auto filepath = state->getParsingFile();
@@ -123,7 +123,7 @@ XNode *newNode() {
 	node->opr_obj = NULL;
 
 	node->freeOnExeced = true;
-	deal_fileinfo(&node->fileinfo);
+    deal_fileInfo(&node->fileinfo);
 	deal_state(&node->state);
 	node->value = NULL;
 	node->postposition = NULL;
@@ -224,7 +224,7 @@ XNode * string(char *v)
 	node->type = NODE_CONSTANT_STRING;
 	// v 是已经申请过的内存 ， 直接赋值就OK
 	node->con_obj->sValue = v;
-	//printf("createStringNode: %d\n",i);
+
 	return node;
 }
 
@@ -235,7 +235,7 @@ XNode * number(double a)
 	node->type = NODE_CONSTANT_NUMBER;
 	node->con_obj->dValue = a;
 	node->con_obj->sValue = NULL;
-	//printf("createNumberNode: %.5f\n", a);
+
 	return node;
 }
 
@@ -246,8 +246,8 @@ XNode * var(char *name)
 	node->type = NODE_VARIABLE;
 	node->var_obj->name = name;
 
-	//printf("createVarNode: %s\n", name);
-	//printf("addr: %p\n" , node);
+	// logger->debug("createVarNode: %s", name);
+
 	return node;
 }
 
@@ -287,7 +287,7 @@ XNode * xint(int i)
 	node->type = NODE_CONSTANT_INTEGER;
 	node->con_obj->iValue = i;
 	node->con_obj->sValue = NULL;
-	//printf("createNumberNode: %.5f\n", a);
+
 	return node;
 }
 
@@ -318,16 +318,15 @@ XNode * opr(int opr, int npos, ...)
 	}
 	va_end(ap);
 
-	//printf("new opr node, opr is: %d\n" , opr);
-	//printf("opr npos: %d\n", npos);
-	//printf("node npos: %d\n", node->opr_obj->op_count);
-	//printf("createOperatorNode: %p\n",node);
+	//logger->debug("new opr node, opr is: %d" , opr);
+	//logger->debug(("opr npos: %d", npos);
+	//logger->debug(("node npos: %d", node->opr_obj->op_count);
+	//logger->debug(("createOperatorNode: %p",node);
 	return node;
 }
 
 XNode * sopr(int opr, int npos, ...)
 {
-	//printf("sopr: %d\n" ,opr);
 	va_list ap;
 
 	XNode * node = newNode();
@@ -346,16 +345,16 @@ XNode * sopr(int opr, int npos, ...)
 	}
 	va_end(ap);
 
-	//printf("new opr node, opr is: %d\n" , opr);
-	//printf("opr npos: %d\n", npos);
-	//printf("node npos: %d\n", node->opr_obj->op_count);
-	//printf("createOperatorNode: %p\n",node);
+	//logger->debug("new opr node, opr is: %d\n" , opr);
+	//logger->debug("opr npos: %d\n", npos);
+	//logger->debug("node npos: %d\n", node->opr_obj->op_count);
+	//logger->debug("createOperatorNode: %p\n",node);
 	return node;
 }
 
 XNode * func(char *name, XParamsList *params, XNode *node)
 {
-	//printf("create Func: %s\n" , name);
+
 	if (node != NULL)
 	{
 		node->freeOnExeced = false;
@@ -363,8 +362,6 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 
 	Function *func = new Function(name, node);
 	func->setParamsList(params);
-	//  在执行他的时候再把它放入环境中
-	//getState()->getCurrentEnv()->putFunction(name, func);
 	free(name);
 	XNode * nodeF = newNode();
 	nodeF->type = NODE_FUNCTION;
@@ -383,8 +380,6 @@ XNode * dtrt(char *name, XParamsList *params, XNode *node)
 	str += name;
 	Function *func = new Function(str.c_str(), node);
 	func->setParamsList(params);
-	//  在执行他的时候再把它放入环境中
-	//getState()->getCurrentEnv()->putFunction(name, func);
 	free(name);
 	XNode * nodeF = newNode();
 	nodeF->type = NODE_FUNCTION;
@@ -464,7 +459,6 @@ XObject * call(const char *name, XArgsList* args, const char *remark, NodeLink *
 		char tmp[100] = { 0 };
 		sprintf(tmp, "cannot find function %s", name);
 		getState()->curThread()->throwException(newFunctionNotFoundException(tmp)->addRef());
-		//printf("cannot find function %s\n", name);
 		return NULL;
 	}
 
@@ -606,11 +600,12 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 	}
 
 	Environment * env = new DefaultEnvironment();
-	Object * ret = NULL;
+	Object * ret = nullptr;
 
-	if (args != NULL)
+    XParamsList *params = function->getParamsList();
+	if (args != nullptr && params != nullptr)
 	{
-		XParamsList *params = function->getParamsList();
+
 		NullObject nullobj;
 
 		// put real args value
@@ -622,7 +617,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 				break;
 			}
 
-			if (args->args[i] != NULL)
+			if (args->args[i] != nullptr)
 			{
 				if (args->args[i]->value)
 				{
@@ -638,7 +633,7 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 
 				// 释放这个参数节点的值
 				Allocator::free(args->args[i]->value);
-				args->args[i]->value = NULL;
+				args->args[i]->value = nullptr;
 
 				//printf("put param %s object: %d.on env: %p. number value: %f. \n", params->args[i] , t ,env, t == NUMBER ? ((Number*)args->args[i]->value)->getDoubleValue() : -1 );
 			}
@@ -650,9 +645,9 @@ XObject * callFunc(XFunction* function, XArgsList *args, const char *remark, Nod
 	}
 
     // put function extends var ...
-    if (!env->hasObject("$_")){
+    if (!env->hasObject(FE_KEY_VARIABLE_COUNT)){
         auto functionArgsCount = args == NULL ? 0 : args->index;
-        env->putObject("$_" , Allocator::allocateNumber(functionArgsCount));
+        env->putObject(FE_KEY_VARIABLE_COUNT , Allocator::allocateNumber(functionArgsCount));
 //         赋值给 $1,$2..
 
 
@@ -700,7 +695,7 @@ XNode * argsNode(XArgsList * args) {
 	node->value = NULL;
 	node->postposition = NULL;
 	node->ptr_u = args;
-	deal_fileinfo(&node->fileinfo);
+    deal_fileInfo(&node->fileinfo);
 	deal_state(&node->state);
 
 	return node;
