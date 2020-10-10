@@ -2935,7 +2935,7 @@ namespace langX {
 
 			langXObjectRef* objectRef = (langXObjectRef*)n1->value;
 			Environment *env = objectRef->getRefObject()->getObjectEnvironment();
-			thread->newEnv2(env);
+            thread->newEnvByBridge(env);
 		}
 
 		// 根据语法解析文件可知， 第二个节点为一个函数调用节点
@@ -3010,7 +3010,7 @@ namespace langX {
 				return;
 			}
 
-			thread->newEnv2(env);
+            thread->newEnvByBridge(env);
 
 			langXObject *thisObj = objEnv->getEnvObject();
 

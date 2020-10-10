@@ -112,7 +112,7 @@ namespace langX {
 		// 将参数作为 当前环境， 并将原当前环境至为 参数的 父级环境
 		Environment* newEnv(Environment *);
 		// 并不会将参数赋值， 而是 new 一个 环境的桥接环境
-		Environment* newEnv2(Environment *);
+		Environment* newEnvByBridge(Environment *);
 		/* 将环境退回一级，如果当前只有一级环境，则什么也不做
 		如果退回上级环境， 当前环境内的所有变量的内存都将会被释放. 当前环境也会被释放 */
 		void backEnv();

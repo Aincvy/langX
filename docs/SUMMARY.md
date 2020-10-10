@@ -8,8 +8,12 @@
     * [BUG LIST](zh/BUG LIST.md)
 * [特性](zh/features/README.md)
     * [数据类型](zh/features/dataTypes.md)
+    * [函数](zh/features/function.md)
     * [Todo](zh/features/Todo.md)
 
 ## English(Incomplete)
 
+* [Base Content](en/README.md)
+  * [DataTypes](en/features/dataTypes.md)
 * [README](README.md)
+

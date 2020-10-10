@@ -300,11 +300,11 @@ namespace langX {
 		return env;
 	}
 
-	Environment * langXThread::newEnv2(Environment *env)
+	Environment * langXThread::newEnvByBridge(Environment *env)
 	{
-		if (env == NULL)
+		if (env == nullptr)
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		EnvironmentBridgeEnv *bEnv = new EnvironmentBridgeEnv(env);

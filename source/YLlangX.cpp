@@ -683,7 +683,7 @@ XObject * callFunc(XFunction* function, XArgsList* args, const char* remark, Nod
 	if (fsenv != nullptr)
 	{
 		flagfsenv = true;
-		thread->newEnv2(fsenv);
+        thread->newEnvByBridge(fsenv);
 	}
 
 	thread->newEnv(env);

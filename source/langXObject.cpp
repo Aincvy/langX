@@ -264,7 +264,7 @@ namespace langX {
 			}
 
 			Environment *env = getObjectEnvironment();
-			thread->newEnv2(env);
+            thread->newEnvByBridge(env);
 			callFunc(func, args, remark, putNodeLink);
 			thread->getStackTrace().popFrame();
 			thread->backEnv();
@@ -298,7 +298,7 @@ namespace langX {
 
 			// 运算函数
 			Environment *env = getObjectEnvironment();
-			thread->newEnv2(env);
+            thread->newEnvByBridge(env);
 			callFunc(func, args, remark, putNodeLink);
 			thread->getStackTrace().popFrame();
 			thread->backEnv();
@@ -315,7 +315,7 @@ namespace langX {
 			return NULL;
 		}
 
-		getState()->curThread()->newEnv2(this->m_my_env);
+        getState()->curThread()->newEnvByBridge(this->m_my_env);
 		Object *obj = func->call();
 		getState()->curThread()->backEnv();
 
