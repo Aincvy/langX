@@ -139,10 +139,10 @@ namespace langX {
 	{
 		if (m_node_root == nullptr)
 		{
-			return NULL;
+			return nullptr;
 		}
 
-		// printf("Function.call() %s\n", getName());
+
 		resetNodeState(this->m_node_root);
 
 		langXThread *thread = getState()->curThread();
@@ -154,21 +154,15 @@ namespace langX {
 		thread->setInFunction(false);
 		thread->setFuncRootNode(lastFuncCallRoot);
 
-		if (m_node_root->value != NULL)
+		if (m_node_root->value != nullptr)
 		{
 			Allocator::free(m_node_root->value);
-			m_node_root->value = NULL;
+			m_node_root->value = nullptr;
 		}
 
 		Object * tmp = thread->getFunctionResult();
-		if (tmp != nullptr) {
-			Object * obj = tmp->clone();
-			//Allocator::free(tmp);
-			thread->setFunctionResult(nullptr);
-			return obj;
-		}
 
-		return nullptr;
+		return tmp == nullptr ? tmp : tmp->clone();
 	}
 
 	bool Function::is3rd() const

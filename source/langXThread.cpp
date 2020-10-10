@@ -10,6 +10,7 @@
 #include "../include/langXObjectRef.h"
 #include "../include/Function.h"
 #include "../include/LogManager.h"
+#include "../include/langXCommon.h"
 
 #ifdef WIN32
 // win32的库
@@ -94,8 +95,12 @@ namespace langX {
 		this->m_exec_status.inLoop = 0;
 		this->m_exec_status.inSwitch = 0;
 
-		this->m_current_env = nullptr;
-		this->m_current_deep = 0;
+		this->m_thread_env = new DefaultEnvironment();
+		this->m_current_deep = 1;
+
+		this->m_thread_env->setParent(nullptr);
+		this->m_thread_env->setClose(false);
+        this->m_current_env = this->m_thread_env;
 	}
 
 	langXThread::~langXThread()
@@ -104,7 +109,7 @@ namespace langX {
 
 		// 清理掉环境
 
-		while (this->m_current_env != NULL && this->m_current_env->getParent() != NULL)
+		while (this->m_current_env != nullptr && this->m_current_env->getParent() != nullptr)
 		{
 			backEnv();
 		}
@@ -257,7 +262,7 @@ namespace langX {
 
 	Environment * langXThread::getCurrentEnv() const
 	{
-		if (this->m_current_deep == 0)
+		if (this->m_current_deep == 1)
 		{
 			return getState()->getScriptOrNSEnv();
 		}
@@ -459,24 +464,12 @@ namespace langX {
 
 	Object * langXThread::getFunctionResult()
 	{
-		return this->m_function_result;
+		return this->m_thread_env->getObject(FE_KEY_PREV_RESULT);
 	}
 
 	void langXThread::setFunctionResult(Object *obj)
 	{
-		if (this->m_function_result)
-		{
-			Allocator::free(this->m_function_result);
-			this->m_function_result = nullptr;
-		}
-
-		if (!obj)
-		{
-			this->m_function_result = nullptr;
-		}
-		else {
-			this->m_function_result = obj->clone();
-		}
+	    this->m_thread_env->putObject(FE_KEY_PREV_RESULT, obj );
 	}
 
 	NodeFileInfo langXThread::getCurrentNodeFileInfo()
@@ -575,16 +568,11 @@ namespace langX {
 	void langXThread::backEnv(bool flag)
 	{
 		Environment *env = this->m_current_env->getParent();
-		//if (env == NULL)
-		//{
-		//	return;
-		//}
-		//printf("backEnv %p,type: %d\n", m_current_env, m_current_env->getType());
+
 		if (flag)
 		{
 			//  子类
 			freeEnv(&this->m_current_env);
-			//this->m_current_env = NULL;
 		}
 		this->m_current_deep--;
 		this->m_current_env = env;

@@ -1480,7 +1480,7 @@ namespace langX {
 
 	void __execRETURN(NodeLink *nodeLink, langXThread * thread) {
 		Node *n = nodeLink->node;
-		//printf("call return %p\n", n);
+
 		nodeLink->backAfterExec = false;
 
 		if (nodeLink->index == 0) {
@@ -1520,7 +1520,7 @@ namespace langX {
 			n->value = a->value->clone();
 		}
 
-		//printf("return %p\n",n->value);
+
 		freeSubNodes(n);
 		thread->setFunctionResult(n->value);
 		Allocator::free(n->value);

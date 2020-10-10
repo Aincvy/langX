@@ -64,9 +64,9 @@ namespace langX {
 		this->m_script_env_map.clear();
 
 		// 清理命名空间
-		for (std::map<std::string, XNameSpace*>::iterator i = this->m_namespace_map.begin(); i != this->m_namespace_map.end(); i++)
+		for (auto & i : this->m_namespace_map)
 		{
-			XNameSpace *p = i->second;
+			XNameSpace *p = i.second;
 			delete p;
 		}
 		this->m_namespace_map.clear();
@@ -301,7 +301,7 @@ namespace langX {
 
 	void langXState::newScriptEnv(ScriptEnvironment *env)
 	{
-		if (env == NULL)
+		if (env == nullptr)
 		{
 			return;
 		}
@@ -310,7 +310,7 @@ namespace langX {
 			return;
 		}
 
-		if (this->m_script_env != NULL && this->m_script_env->getType() == EnvironmentType::TScriptEnvironment)
+		if (this->m_script_env != nullptr && this->m_script_env->getType() == EnvironmentType::TScriptEnvironment)
 		{
 			this->m_doing_script_envs.push_front((ScriptEnvironment*)this->m_script_env);
 		}

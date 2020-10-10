@@ -538,6 +538,7 @@ XObject *call3rdFunc(X3rdFunction *x3rdFunc, langXThread * thread, XArgsList *ar
 		Allocator::free(_3rdArgs.args[i]);
 	}
 
+	thread->setFunctionResult(ret1);
 	return ret1;
 }
 
@@ -596,6 +597,7 @@ XObject * callFunc(XFunction* function, XArgsList* args, const char* remark, Nod
 		thread->throwException(newException("function is null when call function.")->addRef());
 		return NULL;
 	}
+    // thread->setFunctionResult(nullptr);
 
 	if (function->is3rd())
 	{

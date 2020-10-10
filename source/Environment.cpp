@@ -621,12 +621,11 @@ namespace langX {
 
 	Object * EnvironmentBridgeEnv::getObject(const std::string &name)
 	{
-		//printf("getObject on env-p: %p\n", this);
 
 		Object *o = this->m_env->getObject(name);
-		if (o == NULL)
+		if (o == nullptr)
 		{
-			if (this->getParent() != NULL)
+			if (this->getParent() != nullptr)
 			{
 				return this->getParent()->getObject(name);
 			}
@@ -768,7 +767,6 @@ namespace langX {
 	Object * DefaultEnvironment::getObject(const std::string &name, bool firstLevel)
 	{
 
-		// printf("DefaultEnvironment getObject: %s\n", name.c_str());
 		auto index = this->m_objects_map.find(name);
 		bool flag = false;
 		if (index == this->m_objects_map.end())
@@ -1220,7 +1218,7 @@ namespace langX {
 				}
 			}
 
-			if (this->m_parent != NULL && !m_restrict)
+			if (this->m_parent != nullptr && !m_restrict)
 			{
 				return this->m_parent->getObject(name, false);
 			}

@@ -26,9 +26,18 @@ testFunc5 => ( a,b,c,d,e ) {
   return "result of testFunc5";
 }
 
+testFuncInside => ( t ){
+  println("the last call result is: " + $?);
+}
 
 testFunc(1);
-// println("$?: " + $? );
+println("$?: " + $? );
 
 testFunc1(1,"second param",3);
 testFunc5("a","b",3,4,5);
+testFuncInside();
+
+testFuncInside( testFunc() );
+
+
+println("script over!");

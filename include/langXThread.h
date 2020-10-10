@@ -169,12 +169,12 @@ namespace langX {
 
 		// 线程的当前环境
 		Environment *m_current_env = nullptr;
+		// 当前线程的环境
+        Environment *m_thread_env = nullptr;
 		// 线程是否是主线程
 		bool m_is_main_thread = false;
 
 		int m_current_deep = 0;
-		// 函数的返回值 | 可能用用不到这个值
-		Object *m_function_result = nullptr;
 		// 丢出来的那个对象
 		langXObjectRef * m_thrown_obj = nullptr;
 		// 在丢出一个对象（异常）的时候， 正在执行的那个节点

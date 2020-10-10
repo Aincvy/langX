@@ -84,7 +84,7 @@ namespace langX {
 
 	void Allocator::free(Object *obj)
 	{
-		if (obj == NULL)
+		if (obj == nullptr)
 		{
 			return;
 		}
