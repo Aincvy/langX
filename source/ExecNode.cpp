@@ -2880,6 +2880,31 @@ namespace langX {
 		freeSubNodes(n);
 	}
 
+	// 执行字符串的内部函数
+    void __execStringInnerFunc(Node *n, Node *n1, NodeLink *nodeLink, langXThread *thread){
+        // 从语法解析文件可知 此节点是一个函数调用节点
+        Node *n2 = n->opr_obj->op[1];
+        XArgsList *args = (XArgsList *)n2->opr_obj->op[1]->ptr_u;
+        if (nodeLink->index == 1)
+        {
+            nodeLink->index = 2;
+            if (args) {
+                for (int i = 0; i < args->index; i++)
+                {
+                    if (args->args[i] == NULL)
+                    {
+                        continue;
+                    }
+
+                    thread->beginExecute(args->args[i], true);
+                }
+                return;
+            }
+        }
+        //  上面的写法是为了确保 无论如何到这个地方 index都是2
+        n->value = callInnerFunc(n1->value, n2);
+	}
+
 	void __execCLAXX_FUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
 		Node *n = nodeLink->node;
 		Node *n1 = n->opr_obj->op[0];
@@ -2889,36 +2914,17 @@ namespace langX {
 			return;
 		}
 
-		if (n1->value == NULL)
+		if (n1->value == nullptr)
 		{
-			thread->throwException(newTypeErrorException("left value is not class object !")->addRef());
+			thread->throwException(newTypeErrorException("left value is not class object!It's a null value.")->addRef());
 			freeSubNodes(n);
 			return;
 		}
 
+
 		if (n1->value->getType() == STRING)
 		{
-			// 从语法解析文件可知 此节点是一个函数调用节点
-			Node *n2 = n->opr_obj->op[1];
-			XArgsList *args = (XArgsList *)n2->opr_obj->op[1]->ptr_u;
-			if (nodeLink->index == 1)
-			{
-				nodeLink->index = 2;
-				if (args) {
-					for (int i = 0; i < args->index; i++)
-					{
-						if (args->args[i] == NULL)
-						{
-							continue;
-						}
-
-						thread->beginExecute(args->args[i], true);
-					}
-					return;
-				}
-			}
-			//  上面的写法是为了确保 无论如何到这个地方 index都是2
-			n->value = callInnerFunc(n1->value, n2);
+            __execStringInnerFunc(n, n1, nodeLink, thread);
 			return;
 		}
 
@@ -2946,12 +2952,12 @@ namespace langX {
 			return;
 		}
 
-		if (n2->value != NULL)
+		if (n2->value != nullptr)
 		{
 			n->value = n2->value->clone();
 		}
 		else {
-			n->value = NULL;
+			n->value = nullptr;
 		}
 
 		thread->backEnv();
@@ -3872,7 +3878,6 @@ namespace langX {
 
 		nodeLink->backAfterExec = nodeLinkBackAfterExec;
 
-		//printf("exec operator node. opr is: %d\n", node->opr_obj->opr);
 		switch (node->opr_obj->opr)
 		{
 		case '+':
