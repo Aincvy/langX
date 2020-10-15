@@ -597,7 +597,7 @@ XObject * callFunc(XFunction* function, XArgsList* args, const char* remark, Nod
 		thread->throwException(newException("function is null when call function.")->addRef());
 		return NULL;
 	}
-    // thread->setFunctionResult(nullptr);
+
 
 	if (function->is3rd())
 	{
@@ -660,7 +660,6 @@ XObject * callFunc(XFunction* function, XArgsList* args, const char* remark, Nod
 				Allocator::free(args->args[i]->value);
 				args->args[i]->value = nullptr;
 
-				//printf("put param %s object: %d.on env: %p. number value: %f. \n", params->args[i] , t ,env, t == NUMBER ? ((Number*)args->args[i]->value)->getDoubleValue() : -1 );
 			}
 			else {
 				// 没给出的参数 给个NULL

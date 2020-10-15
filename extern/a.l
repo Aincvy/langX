@@ -45,8 +45,8 @@ int getParseLineNo();
 "while" {count(); return WHILE;}
 "for" {count(); return FOR;}
 "delete" {count(); return DELETE;}
-"false" {count();  yylval.iValue = 0.0; return TBOOL;}
-"true" {count();  yylval.iValue = 1.0; return TBOOL;}
+"false" {count();  yylval.iValue = 0; return TBOOL;}
+"true" {count();  yylval.iValue = 1; return TBOOL;}
 "break" {count(); return BREAK;}
 "return" {count(); return RETURN; }
 "switch" { count(); return SWITCH;}
@@ -81,8 +81,8 @@ $[\?#]+              {count(); yylval.sValue=strdup(yytext); return IDENTIFIER;}
 
 operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(yytext); return OPERATOR_X__;  }
 
-0|([1-9][0-9]*)           {count();  yylval.intValue = atoi(yytext);  return XINTEGER; }
-(0|[1-9][0-9]*)\.[0-9]+ { count(); yylval.iValue = atof(yytext); return TDOUBLE;}
+0|([1-9][0-9]*)           {count();  yylval.iValue = atoi(yytext);  return XINTEGER; }
+(0|[1-9][0-9]*)\.[0-9]+ { count(); yylval.dValue = atof(yytext); return TDOUBLE;}
 
 "<=" {count(); return LE_OP;}
 ">=" {count(); return GE_OP;}

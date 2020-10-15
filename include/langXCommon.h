@@ -23,5 +23,7 @@
 // 上一个函数的执行结果
 #define FE_KEY_PREV_RESULT "$?"
 
+// 线程环境深度的初始值
+#define THREAD_ENV_DEEP_INITIAL 1
 
 #endif //LANGX_LANGX_COMMON_H

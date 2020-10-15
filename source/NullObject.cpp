@@ -4,6 +4,7 @@
 #include "../include/NullObject.h"
 
 namespace langX {
+
 	NullObject::NullObject()
 	{
 		setCharacteristic("no_pointer_to_anything");
@@ -37,4 +38,5 @@ namespace langX {
 	void NullObject::finalize()
 	{
 	}
+
 }

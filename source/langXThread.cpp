@@ -96,7 +96,7 @@ namespace langX {
 		this->m_exec_status.inSwitch = 0;
 
 		this->m_thread_env = new DefaultEnvironment();
-		this->m_current_deep = 1;
+		this->m_current_deep = THREAD_ENV_DEEP_INITIAL;
 
 		this->m_thread_env->setParent(nullptr);
 		this->m_thread_env->setClose(false);
@@ -262,7 +262,7 @@ namespace langX {
 
 	Environment * langXThread::getCurrentEnv() const
 	{
-		if (this->m_current_deep == 1)
+		if (this->m_current_deep == THREAD_ENV_DEEP_INITIAL)
 		{
 			return getState()->getScriptOrNSEnv();
 		}
@@ -410,7 +410,7 @@ namespace langX {
 
 	void langXThread::putObject(const char * name, Object *obj)
 	{
-		if (this->m_current_deep > 0)
+		if (this->m_current_deep > THREAD_ENV_DEEP_INITIAL)
 		{
 			this->m_current_env->putObject(name, obj);
 		}
@@ -421,7 +421,7 @@ namespace langX {
 
 	void langXThread::putObject(const std::string &name, Object *obj)
 	{
-		if (this->m_current_deep > 0)
+		if (this->m_current_deep > THREAD_ENV_DEEP_INITIAL)
 		{
 			this->m_current_env->putObject(name, obj);
 		}
@@ -434,7 +434,7 @@ namespace langX {
 	{
 		Object * obj = nullptr;
 
-		if (this->m_current_deep > 0)
+		if (this->m_current_deep > THREAD_ENV_DEEP_INITIAL)
 		{
 			obj = this->m_current_env->getObject(name);
 		}
@@ -450,7 +450,7 @@ namespace langX {
 	Function * langXThread::getFunction(const std::string & name)
 	{
 		Function * func = nullptr;
-		if (this->m_current_deep > 0)
+		if (this->m_current_deep > THREAD_ENV_DEEP_INITIAL)
 		{
 			func = this->m_current_env->getFunction(name);
 		}
@@ -548,7 +548,7 @@ namespace langX {
 
 	void langXThread::resetCurrentDeep()
 	{
-		this->m_current_deep = 0;
+		this->m_current_deep = THREAD_ENV_DEEP_INITIAL;
 	}
 
 	void langXThread::freeThrownObj()

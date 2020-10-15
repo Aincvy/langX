@@ -40,8 +40,8 @@
       know about them.  */
    enum yytokentype {
      XINTEGER = 258,
-     TDOUBLE = 259,
-     TBOOL = 260,
+     TBOOL = 259,
+     TDOUBLE = 260,
      IDENTIFIER = 261,
      TSTRING = 262,
      OPERATOR_X__ = 263,
@@ -110,8 +110,8 @@
 #endif
 /* Tokens.  */
 #define XINTEGER 258
-#define TDOUBLE 259
-#define TBOOL 260
+#define TBOOL 259
+#define TDOUBLE 260
 #define IDENTIFIER 261
 #define TSTRING 262
 #define OPERATOR_X__ 263
@@ -184,8 +184,8 @@
 typedef union YYSTYPE
 #line 8 "a.y"
 {
- int intValue;
- double iValue; /* double value */
+ int iValue;
+ double dValue; /* double value */
  char* sValue; /* string value */
  XNode* node;  /* var value */
  XParamsList* params; /* params value */

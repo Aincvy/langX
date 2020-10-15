@@ -6,16 +6,16 @@
 %}
 
 %union {
- int intValue;
- double iValue; /* double value */
+ int iValue;
+ double dValue; /* double value */
  char* sValue; /* string value */
  XNode* node;  /* var value */
  XParamsList* params; /* params value */
  XArgsList *args;    /* args value */
 };
 
-%token <intValue> XINTEGER
-%token <iValue> TDOUBLE TBOOL
+%token <iValue> XINTEGER TBOOL
+%token <dValue> TDOUBLE
 %token <sValue> IDENTIFIER TSTRING OPERATOR_X__
 %token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL REQUIRE REQUIRE_ONCE REF XCONTINUE XCONST XLOCAL

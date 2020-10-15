@@ -1922,6 +1922,7 @@ namespace langX {
 			{
 				double a = ((Number*)n1->value)->getDoubleValue();
 				double b = ((Number*)n2->value)->getDoubleValue();
+                logger->debug("eq op: a: %.4f, b: %.4f", a, b);
 
 				if (a == b)
 				{
@@ -3712,7 +3713,7 @@ namespace langX {
 		}
 		else if (node->type == NODE_CONSTANT_NUMBER)
 		{
-			//printf("__execNode NODE_CONSTANT_NUMBER\n");
+			logger->debug("__execNode NODE_CONSTANT_NUMBER: %.4f", node->con_obj->dValue);
 			node->value = Allocator::allocateNumber(node->con_obj->dValue);
 			return;
 		}
@@ -3728,6 +3729,7 @@ namespace langX {
 		}
 		else if (node->type == NODE_CONSTANT_INTEGER)
 		{
+            logger->debug("__execNode NODE_CONSTANT_INTEGER: %.4f", node->con_obj->iValue);
 			node->value = Allocator::allocateNumber(node->con_obj->iValue);
 			return;
 		}
@@ -3869,9 +3871,8 @@ namespace langX {
 
 		if (node->type != NODE_OPERATOR)
 		{
-			//printf("undeal type: %d\n", node->type);
 			char tmp[100] = { 0 };
-			sprintf(tmp, "undeal type: %d", node->type);
+			sprintf(tmp, "unknown type: %d", node->type);
 			getState()->curThread()->throwException(newException(tmp)->addRef());
 			return;
 		}

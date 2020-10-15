@@ -341,8 +341,8 @@ $end (0) 0
 '~' (126) 55 140
 error (256)
 XINTEGER (258) 71 143 152 210 213 216
-TDOUBLE (259) 151
-TBOOL (260) 150
+TBOOL (259) 150
+TDOUBLE (260) 151
 IDENTIFIER (261) 27 28 29 30 31 32 34 47 51 55 56 59 61 62 65 66 71
     72 73 94 106 117 149 210 211 212 214 217
 TSTRING (262) 155 212 215 218
@@ -847,8 +847,8 @@ state 24
   104               | RETURN . assign_stmt_value
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 93
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -1213,8 +1213,8 @@ state 63
   106 call_statement: IDENTIFIER '(' . args_list ')'
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 151
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -1473,8 +1473,8 @@ state 87
    79               | IF '(' . logic_stmt ')' block ELSE block
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 179
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -1513,8 +1513,8 @@ state 88
    85 loop_stmt: WHILE '(' . logic_stmt ')' block
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 179
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -1974,8 +1974,8 @@ state 124
   209 class_member_assign_stmt: this_member_stmt '=' . assign_stmt_value
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 93
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -2015,8 +2015,8 @@ state 125
   208 class_member_assign_stmt: class_member_stmt '=' . assign_stmt_value
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 93
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -2087,8 +2087,8 @@ state 129
   108 call_statement: static_member_stmt '(' . args_list ')'
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 151
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -2341,8 +2341,8 @@ state 143
   207                   | id_expr '=' . single_assign_stmt
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 93
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -2393,8 +2393,8 @@ state 145
   219 array_ele_assign_stmt: array_ele_stmt '=' . assign_stmt_value
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 93
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -2434,8 +2434,8 @@ state 146
   105 call_statement: array_ele_stmt '(' . args_list ')'
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 151
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -3670,8 +3670,8 @@ state 241
   148 new_expr: NEW id_expr '(' . args_list ')'
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 151
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -3996,8 +3996,8 @@ state 274
   113 args_expr: args_expr ',' . args_expr_collection
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 151
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -4301,8 +4301,8 @@ state 301
   170 logic_stmt: bool_param_expr LE_OP . bool_param_expr
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 179
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -4338,8 +4338,8 @@ state 302
   171 logic_stmt: bool_param_expr GE_OP . bool_param_expr
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 179
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -4375,8 +4375,8 @@ state 303
   172 logic_stmt: bool_param_expr EQ_OP . bool_param_expr
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 179
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -4412,8 +4412,8 @@ state 304
   173 logic_stmt: bool_param_expr NE_OP . bool_param_expr
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 179
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -4449,8 +4449,8 @@ state 305
   168 logic_stmt: bool_param_expr '>' . bool_param_expr
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 179
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -4486,8 +4486,8 @@ state 306
   169 logic_stmt: bool_param_expr '<' . bool_param_expr
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 179
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -4523,8 +4523,8 @@ state 307
   174 logic_stmt: logic_stmt AND_OP . logic_stmt
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 179
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -4563,8 +4563,8 @@ state 308
   175 logic_stmt: logic_stmt OR_OP . logic_stmt
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 179
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -4736,8 +4736,8 @@ state 311
    86 loop_stmt: FOR '(' for_1_stmt ';' . logic_stmt ';' for_1_stmt ')' block
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 179
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -5012,8 +5012,8 @@ state 340
    52 class_member_func_stmt: class_member_stmt '.' id_expr '(' . args_list ')'
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 151
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -5057,8 +5057,8 @@ state 341
    53 class_member_func_stmt: class_member_func_stmt '.' id_expr '(' . args_list ')'
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 151
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -5137,8 +5137,8 @@ state 347
    49 class_member_func_stmt: id_expr '.' id_expr '(' . args_list ')'
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 151
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -5189,8 +5189,8 @@ state 349
    50 class_member_func_stmt: array_ele_stmt '.' id_expr '(' . args_list ')'
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 151
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -5657,8 +5657,8 @@ state 381
    42 this_stmt: THIS '.' id_expr '(' . args_list ')'
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 151
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6
@@ -6204,8 +6204,8 @@ state 414
    51 class_member_func_stmt: IDENTIFIER '(' args_list ')' '.' id_expr '(' . args_list ')'
 
     XINTEGER    shift, and go to state 91
-    TDOUBLE     shift, and go to state 92
     TBOOL       shift, and go to state 70
+    TDOUBLE     shift, and go to state 92
     IDENTIFIER  shift, and go to state 151
     TSTRING     shift, and go to state 75
     INC_OP      shift, and go to state 6

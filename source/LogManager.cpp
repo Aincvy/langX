@@ -27,4 +27,5 @@ namespace langX {
 		this->m_category = &root;
 		langX::logger = this->m_category;
 	}
+
 }

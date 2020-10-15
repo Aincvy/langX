@@ -952,12 +952,12 @@ YY_RULE_SETUP
 case 9:
 YY_RULE_SETUP
 #line 48 "a.l"
-{count();  yylval.iValue = 0.0; return TBOOL;}
+{count();  yylval.iValue = 0; return TBOOL;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 49 "a.l"
-{count();  yylval.iValue = 1.0; return TBOOL;}
+{count();  yylval.iValue = 1; return TBOOL;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
@@ -1112,12 +1112,12 @@ YY_RULE_SETUP
 case 41:
 YY_RULE_SETUP
 #line 84 "a.l"
-{count();  yylval.intValue = atoi(yytext);  return XINTEGER; }
+{count();  yylval.iValue = atoi(yytext);  return XINTEGER; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 85 "a.l"
-{ count(); yylval.iValue = atof(yytext); return TDOUBLE;}
+{ count(); yylval.dValue = atof(yytext); return TDOUBLE;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
