@@ -1,0 +1,101 @@
+
+// Card
+TrelloCard {
+
+  // 卡的 id, 名字(显示出来的那一行)， 描述（ 在里面的描述信息）
+  id, name, description;
+
+  /*
+  * 移动一个卡片到别的列表 或者别的 看板的列表
+  * @param list   列表    可为列表id或者 TrelloList 对象
+  * @param board  看板    可为空
+  */
+  moveTo => ( list, board ){
+
+  }
+
+  // 删除当前这张卡
+  deleteCard => () {
+
+  }
+
+  // 归档这张卡
+  archive => (){
+
+  }
+
+
+}
+
+// List
+TrelloList {
+
+  id, name;
+
+  // 根据一个 id 获取一张卡
+  // return:  a card.
+  getCardById => ( id ){
+    return null;
+  }
+
+  // 建立一张 新的卡
+  // return:  a card.
+  newCard => ( name, description, dueDate ){
+    return null;
+  }
+
+  // 随机一张卡
+  // return a card.
+  randomCard => (){
+    return null;
+  }
+
+}
+
+
+// Board
+TrelloBoard{
+  id, name;
+
+  // 根据一个列表的名字 来获取列表
+  // return a list
+  getListByName => ( name ) {
+    return null;
+  }
+
+  // 根据一个列表的id 来获取列表
+  // return a list.
+  getListById => ( id ) {
+    return null;
+  }
+
+
+}
+
+// Client
+TrelloClient {
+
+  // 用于请求数据的 三个 属性
+  apiKey, apiSecret, token ;
+
+
+  // 构造方法
+  TrelloClient => (apiKey, apiSecret, token){
+    this.apiKey = apiKey;
+    this.apiSecret = apiSecret;
+    this.token = token;
+  }
+
+
+  // 根据名字 获取一个 看板
+  getBoardByName => ( name ){
+    return null;
+  }
+
+  // 根据id 来获取一个看板
+  getBoardById => ( id ) {
+    return null;
+  }
+
+
+}

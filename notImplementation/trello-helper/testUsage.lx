@@ -1,4 +1,8 @@
 
+/*
+* 本文是一个记录随意想法的脚本， 仅作为草稿，具有参考作用。
+*/
+
 CheckListItem {
   title ,
   endDate;
