@@ -24,9 +24,11 @@
 
 %type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt element_var_declar_stmt expr_list  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
 %type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
-%type <node> id_expr t_bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
+%type <node> id_expr bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
 %type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt bit_opr_factor local_declar_stmt
 %type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt const_declar_stmt call_statement_pipeline not_expr_value
+%type <node> number_expr positive_number_expr common_types_expr common_others_values_expr common_values_expr common_result_of_call_expr common_assignable_expr common_number_expr
+%type <node> common_object_expr common_string_expr common_expr
 %type <params> param_list parameter lambda_args_stmt
 %type <args> args_list args_expr
 %type <sValue> extends_stmt namespace_name_stmt
@@ -291,7 +293,7 @@ simple_stmt
 //  限定语句， 限定环境
 restrict_stmt
 	: RESTRICT       { $$ = opr(RESTRICT,0);}
-	| RESTRICT t_bool_expr  { $$ = opr(RESTRICT,1,$2); }
+	| RESTRICT bool_expr  { $$ = opr(RESTRICT,1,$2); }
 	;
 
 interrupt_stmt
@@ -326,7 +328,7 @@ args_expr
 
 args_expr_collection
 	: lambda_stmt   %prec PRIORITY1 { $$ = $1; }
-	| t_bool_expr   { $$ = $1; }
+	| bool_expr   { $$ = $1; }
 	| double_expr   { $$ = $1; }
 	| IDENTIFIER    %prec PRIORITY3 { $$ = var($1); }
 	| string_expr   { $$ = $1; }
@@ -391,32 +393,6 @@ new_expr
 	: NEW id_expr '(' args_list ')' { $$ = opr(NEW ,2, $2 , argsNode($4) ); }
 	;
 
-id_expr
-	: IDENTIFIER { $$ = var($1); }
-	;
-
-t_bool_expr
-	: TBOOL   { $$ = number($1); }
-	;
-
-double_expr
-	: TDOUBLE { $$ = number($1); }
-	| XINTEGER { $$ = number($1); }
-	;
-
-uminus_expr
-	: '-' double_or_ps_expr %prec UMINUS { $$ = opr(UMINUS, 1, $2 ); }
-	| '-' id_expr %prec UMINUS           { $$ = opr(UMINUS, 1, $2 ); }
-	;
-
-string_expr
-	: TSTRING  { $$ = string($1); }
-	;
-
-null_expr
-	: XNULL   { $$ = xnull();}
-	;
-
 not_expr_value
 	: id_expr				{ $$ = $1; }
 	| call_statement  		{ $$ = $1; }
@@ -428,7 +404,7 @@ not_expr_value
 bool_param_expr
 	: assign_stmt_value_eq { $$ = $1; }
 	| arithmetic_stmt     { $$ = $1; }
-	| t_bool_expr         { $$ = $1; }
+	| bool_expr         { $$ = $1; }
 	| null_expr           { $$ = $1; }
 	;
 
@@ -464,7 +440,7 @@ self_inc_dec_stmt
 assign_stmt_value
 	: double_expr   { $$ = $1; }
 	| uminus_expr   { $$ = $1; }
-	| t_bool_expr   { $$ = $1; }
+	| bool_expr   { $$ = $1; }
 	| arithmetic_stmt { $$ = $1; }
 	| call_statement  { $$ = $1; }
 	| lambda_stmt   { $$ = $1; }
@@ -534,6 +510,105 @@ assign_stmt
 	| id_expr DIV_EQ assign_stmt_value_eq { $$ = opr(DIV_EQ,2,$1,$3);}
 	| id_expr MOD_EQ assign_stmt_value_eq { $$ = opr(MOD_EQ,2,$1,$3);}
 	;
+
+
+//  base element statement ..
+id_expr
+	: IDENTIFIER { $$ = var($1); }
+	;
+
+bool_expr
+	: TBOOL   { $$ = number($1); }
+	;
+
+number_expr
+  : positive_number_expr    { $$ = $1; }
+  | uminus_expr             { $$ = $1; }
+  ;
+
+positive_number_expr
+  : double_expr     { $$ = $1; }
+  | int_expr        { $$ = $1; }
+  ;
+
+int_expr
+  : XINTEGER { $$ = number($1); }
+  ;
+
+double_expr
+	: TDOUBLE { $$ = number($1); }
+	;
+
+uminus_expr
+	: '-' double_or_ps_expr %prec UMINUS { $$ = opr(UMINUS, 1, $2 ); }
+	| '-' id_expr %prec UMINUS           { $$ = opr(UMINUS, 1, $2 ); }
+	;
+
+string_expr
+	: TSTRING  { $$ = string($1); }
+	;
+
+null_expr
+	: XNULL   { $$ = xnull(); }
+	;
+
+
+//   common_xxx_expr 注释可见 grammar.js 文件
+
+common_types_expr
+  : number_expr       { $$ = $1; }
+  | string_expr       { $$ = $1; }
+  | null_expr         { $$ = $1; }
+  | lambda_stmt       { $$ = $1; }
+  | bool_expr         { $$ = $1; }
+  ;
+
+common_others_values_expr
+  : id_expr           { $$ = $1; }
+  | array_ele_stmt    { $$ = $1; }
+  | class_member_stmt { $$ = $1; }
+  | static_member_stmt { $$ = $1; }
+  ;
+
+common_values_expr
+  : common_others_values_expr { $$ = $1; }
+  | this_stmt                 { $$ = $1; }
+  | new_expr                  { $$ = $1; }
+  ;
+
+common_result_of_call_expr
+  : self_inc_dec_stmt         { $$ = $1; }
+  | call_statement            { $$ = $1; }
+  | arithmetic_stmt           { $$ = $1; }
+  | number_parentheses_stmt   { $$ = $1; }
+  ;
+
+common_assignable_expr
+  : common_others_values_expr { $$ = $1; }
+  ;
+
+common_number_expr
+  : number_expr                 { $$ = $1; }
+  | common_values_expr          { $$ = $1; }
+  | common_result_of_call_expr  { $$ = $1; }
+  ;
+
+common_object_expr
+  : common_values_expr        { $$ = $1; }
+  | call_statement            { $$ = $1; }
+  ;
+
+common_string_expr
+  : string_expr               { $$ = $1; }
+  | common_object_expr        { $$ = $1; }
+  ;
+
+common_expr
+  : common_types_expr       { $$ = $1; }
+  | common_values_expr      { $$ = $1; }
+  | common_result_of_call_expr  { $$ = $1; }
+  | string_plus_stmt        { $$ = $1; }
+  ;
 
 %%
 
