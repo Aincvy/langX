@@ -1,14 +1,14 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+/* A Bison parser, made by GNU Bison 3.7.2.  */
 
-/* Skeleton interface for Bison's Yacc-like parsers in C
+/* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
+   Inc.
 
-   This program is free software; you can redistribute it and/or modify
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,9 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -33,82 +31,103 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Tokens.  */
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
+#ifndef YY_YY_Y_TAB_H_INCLUDED
+# define YY_YY_Y_TAB_H_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     XINTEGER = 258,
-     TBOOL = 259,
-     TDOUBLE = 260,
-     IDENTIFIER = 261,
-     TSTRING = 262,
-     OPERATOR_X__ = 263,
-     OP_CALC = 264,
-     AND_OP = 265,
-     OR_OP = 266,
-     LE_OP = 267,
-     GE_OP = 268,
-     EQ_OP = 269,
-     NE_OP = 270,
-     FUNC_OP = 271,
-     INC_OP = 272,
-     DEC_OP = 273,
-     FUNC_CALL = 274,
-     VAR_DECLAR = 275,
-     RESTRICT = 276,
-     THIS = 277,
-     EXTENDS = 278,
-     ARRAY_ELE = 279,
-     XTRY = 280,
-     XCATCH = 281,
-     ADD_EQ = 282,
-     SUB_EQ = 283,
-     MUL_EQ = 284,
-     DIV_EQ = 285,
-     LEFT_SHIFT = 286,
-     RIGHT_SHIFT = 287,
-     MOD_EQ = 288,
-     XPUBLIC = 289,
-     XSET = 290,
-     XIS = 291,
-     SCOPE = 292,
-     SCOPE_FUNC_CALL = 293,
-     REQUIRE = 294,
-     REQUIRE_ONCE = 295,
-     REF = 296,
-     XCONTINUE = 297,
-     XCONST = 298,
-     XLOCAL = 299,
-     AUTO = 300,
-     IF = 301,
-     ELSE = 302,
-     WHILE = 303,
-     FOR = 304,
-     DELETE = 305,
-     BREAK = 306,
-     RETURN = 307,
-     SWITCH = 308,
-     CASE = 309,
-     DEFAULT = 310,
-     CASE_LIST = 311,
-     CLAXX_BODY = 312,
-     NEW = 313,
-     CLAXX_MEMBER = 314,
-     CLAXX_FUNC_CALL = 315,
-     XNULL = 316,
-     XINCLUDE = 317,
-     PIPELINE_OP = 318,
-     NONASSOC = 319,
-     IFX = 320,
-     PRIORITY3 = 321,
-     PRIORITY2 = 322,
-     PRIORITY1 = 323,
-     UMINUS = 324
-   };
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    XINTEGER = 258,                /* XINTEGER  */
+    TBOOL = 259,                   /* TBOOL  */
+    TDOUBLE = 260,                 /* TDOUBLE  */
+    IDENTIFIER = 261,              /* IDENTIFIER  */
+    TSTRING = 262,                 /* TSTRING  */
+    OPERATOR_X__ = 263,            /* OPERATOR_X__  */
+    OP_CALC = 264,                 /* OP_CALC  */
+    AND_OP = 265,                  /* AND_OP  */
+    OR_OP = 266,                   /* OR_OP  */
+    LE_OP = 267,                   /* LE_OP  */
+    GE_OP = 268,                   /* GE_OP  */
+    EQ_OP = 269,                   /* EQ_OP  */
+    NE_OP = 270,                   /* NE_OP  */
+    FUNC_OP = 271,                 /* FUNC_OP  */
+    INC_OP = 272,                  /* INC_OP  */
+    DEC_OP = 273,                  /* DEC_OP  */
+    FUNC_CALL = 274,               /* FUNC_CALL  */
+    VAR_DECLAR = 275,              /* VAR_DECLAR  */
+    RESTRICT = 276,                /* RESTRICT  */
+    THIS = 277,                    /* THIS  */
+    EXTENDS = 278,                 /* EXTENDS  */
+    ARRAY_ELE = 279,               /* ARRAY_ELE  */
+    XTRY = 280,                    /* XTRY  */
+    XCATCH = 281,                  /* XCATCH  */
+    ADD_EQ = 282,                  /* ADD_EQ  */
+    SUB_EQ = 283,                  /* SUB_EQ  */
+    MUL_EQ = 284,                  /* MUL_EQ  */
+    DIV_EQ = 285,                  /* DIV_EQ  */
+    LEFT_SHIFT = 286,              /* LEFT_SHIFT  */
+    RIGHT_SHIFT = 287,             /* RIGHT_SHIFT  */
+    MOD_EQ = 288,                  /* MOD_EQ  */
+    XPUBLIC = 289,                 /* XPUBLIC  */
+    XSET = 290,                    /* XSET  */
+    XIS = 291,                     /* XIS  */
+    SCOPE = 292,                   /* SCOPE  */
+    SCOPE_FUNC_CALL = 293,         /* SCOPE_FUNC_CALL  */
+    REQUIRE = 294,                 /* REQUIRE  */
+    REQUIRE_ONCE = 295,            /* REQUIRE_ONCE  */
+    REF = 296,                     /* REF  */
+    XCONTINUE = 297,               /* XCONTINUE  */
+    XCONST = 298,                  /* XCONST  */
+    XLOCAL = 299,                  /* XLOCAL  */
+    AUTO = 300,                    /* AUTO  */
+    IF = 301,                      /* IF  */
+    ELSE = 302,                    /* ELSE  */
+    WHILE = 303,                   /* WHILE  */
+    FOR = 304,                     /* FOR  */
+    DELETE = 305,                  /* DELETE  */
+    BREAK = 306,                   /* BREAK  */
+    RETURN = 307,                  /* RETURN  */
+    SWITCH = 308,                  /* SWITCH  */
+    CASE = 309,                    /* CASE  */
+    DEFAULT = 310,                 /* DEFAULT  */
+    CASE_LIST = 311,               /* CASE_LIST  */
+    CLAXX_BODY = 312,              /* CLAXX_BODY  */
+    NEW = 313,                     /* NEW  */
+    CLAXX_MEMBER = 314,            /* CLAXX_MEMBER  */
+    CLAXX_FUNC_CALL = 315,         /* CLAXX_FUNC_CALL  */
+    XNULL = 316,                   /* XNULL  */
+    XINCLUDE = 317,                /* XINCLUDE  */
+    PIPELINE_OP = 318,             /* PIPELINE_OP  */
+    NONASSOC = 319,                /* NONASSOC  */
+    IFX = 320,                     /* IFX  */
+    PRIORITY3 = 321,               /* PRIORITY3  */
+    PRIORITY2 = 322,               /* PRIORITY2  */
+    PRIORITY1 = 323,               /* PRIORITY1  */
+    UMINUS = 324                   /* UMINUS  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Tokens.  */
+/* Token kinds.  */
+#define YYEOF 0
+#define YYerror 256
+#define YYUNDEF 257
 #define XINTEGER 258
 #define TBOOL 259
 #define TDOUBLE 260
@@ -177,27 +196,30 @@
 #define PRIORITY1 323
 #define UMINUS 324
 
-
-
-
+/* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-#line 8 "a.y"
+union YYSTYPE
 {
+#line 8 "a.y"
+
  int iValue;
  double dValue; /* double value */
  char* sValue; /* string value */
  XNode* node;  /* var value */
  XParamsList* params; /* params value */
  XArgsList *args;    /* args value */
-}
-/* Line 1529 of yacc.c.  */
-#line 196 "y.tab.h"
-	YYSTYPE;
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
+
+#line 213 "y.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
 #endif
+
 
 extern YYSTYPE yylval;
 
+int yyparse (void);
+
+#endif /* !YY_YY_Y_TAB_H_INCLUDED  */

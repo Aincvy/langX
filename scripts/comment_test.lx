@@ -1,0 +1,8 @@
+// _array_var_declar_stmt
+
+/* line comment */
+
+abc; 
+/* second line comment */
+
+println("hello");
