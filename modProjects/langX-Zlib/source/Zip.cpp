@@ -80,5 +80,3 @@ namespace langX {
 		return 0;
 	}
 }
-
-

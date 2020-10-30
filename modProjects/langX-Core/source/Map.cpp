@@ -129,7 +129,7 @@ namespace langX {
 			auto i = map->find(c);
 			if (i != map->end())
 			{
-				// t »á±»´ÓmapÖĞÒÆ³ı£¬ ËùÒÔÖ±½Ó·µ»Ø³öÈ¥¾ÍºÃÁË¡£
+				// t ä¼šè¢«ä»mapä¸­ç§»é™¤ï¼Œ æ‰€ä»¥ç›´æ¥è¿”å›å‡ºå»å°±å¥½äº†ã€‚
 				Object * t = i->second;
 				map->erase(i++);
 				return t;

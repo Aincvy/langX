@@ -39,11 +39,11 @@ namespace langX {
 				 // ok
 				char * abc = (char *)destData;
 				std::string s1(abc, destLen);
-				
+
 				ret = Allocator::allocateString(s1);
 			}
 			else {
-				// error  
+				// error
 				// TODO throw excepltions.
 
 			}
@@ -89,19 +89,19 @@ namespace langX {
 			strm.next_out = (Bytef*)out;
 
 			ret = inflate(&strm, Z_NO_FLUSH);
-			
+
 			Object *objReturn = nullptr;
 			if (ret == Z_OK || ret == Z_STREAM_END)
 			{
 				if (strm.avail_out > 0 || ret == Z_STREAM_END)
 				{
-					// ½âÑ¹Ëõ³É¹¦
+					// è§£å‹ç¼©æˆåŠŸ
 					int strSize = CHUNK_SIZE - strm.avail_out;
 					std::string t(out, strSize);
 					objReturn = Allocator::allocateString(t);
 				}
 			}
-			
+
 			free(in);
 			inflateEnd(&strm);
 
@@ -161,5 +161,3 @@ namespace langX {
 		return 0;
 	}
 }
-
-
