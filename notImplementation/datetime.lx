@@ -1,0 +1,72 @@
+// 本文是对 langX.core.DateTime 类的扩充
+
+// 时间单位
+TimeUnit {
+
+    MilliSecond = 1;
+    Second = 2;
+    Minute = 3;
+    Hour = 4;
+    Day = 5;
+    Week = 6;
+    Month = 7;
+    Year = 8;
+
+}
+
+//
+auto DateTime {
+
+    /*
+     * value:  数值
+     * unit:  时间单位 ，TimeUnit
+     */
+    plus => ( value, unit) {
+
+    }
+
+    /*
+     * 增加一定的秒数
+     */
+    plusSeconds => ( seconds ){
+        plus( seconds, TimeUnit::Second );
+    }
+
+    //  plusXXXXX  等单位。。。
+
+    /**
+     * 返回一个 当前对象的 复制
+     */
+    duplicate => (){
+        return _copy_of_this;
+    }
+
+    /**
+     * 返回 自 1970年到现在所经过的毫秒数
+     */
+    timestamp => (){
+        return 0;
+    }
+
+    /**
+     * 使用 年份，月份， 日期创建一个 日期对象
+     */
+    fromDate => ( year, month, date ){
+        return fromDateTime(year, month, date , 0,0,0);
+    }
+
+    /*
+     * 使用 年月日， 小时，分钟，秒数 创建一个时间对象
+     */
+    fromDateTime => ( year, month, date, hour, minute, second){
+        return null;
+    }
+
+    /**
+     * 使用 unix 时间戳尝试创建一个 日期对象
+     */
+    fromTimestamp => ( l ) {
+        return null;
+    }
+    
+}

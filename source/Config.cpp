@@ -68,14 +68,14 @@ namespace langX {
 					}
 				continue;
 			}
-			
+
 			if (key == "rtlibDir")
 			{
 				this->m_rtlib_dir = std::string(value);
 				continue;
 			}
 
-			// ÅäÖÃµÄ¿âÁĞ±í
+			// é…ç½®çš„åº“åˆ—è¡¨
 			std::string tmpStr = std::string(value);
 
 			char tmpChar = value[value.length() - 1];

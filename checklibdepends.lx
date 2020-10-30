@@ -1,0 +1,60 @@
+// 检测 库需要的库是否存在
+
+println("check lib depends... ");
+
+
+checkBrew => (){
+
+    versionString = sy_run("brew --version");
+    if(versionString.contains("Homebrew ")){
+        // 存在
+        println("Found Homebrew");
+        println(versionString);
+    } else {
+        println("Do not find Homebrew, do you want to install it? (Y/N)");
+
+        t = scanString();
+        if ( t == "Y") {
+            installBrew();
+        } else {
+            println("Then you cann't install depends. Exit ");
+            exit(-1);
+        }
+    }
+}
+
+installBrew => (){
+
+    brewInstallCmd = "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)\"";
+
+
+    sy_run_and_print(brewInstallCmd);
+}
+
+
+// 检测某个lib 是否安装了
+checkLibInstall => (lib) {
+
+    checkCmd = "brew list --formula | grep " + lib;
+    tmp = sy_run(checkCmd);
+    if( tmp.contains(lib)){
+        println("[Jump] found: " + tmp );
+    } else {
+        // install
+        installLib( lib );
+    }
+
+}
+
+// 安装某个 lib
+installLib => ( lib ){
+    sy_run_and_print("brew install " + lib);
+}
+
+checkBrew();
+checkLibInstall("python");
+checkLibInstall("hiredis");
+checkLibInstall("cjson");
+checkLibInstall("mysql-client");
+checkLibInstall("zlib");
+checkLibInstall("libevent");

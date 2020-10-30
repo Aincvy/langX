@@ -17,7 +17,7 @@ namespace langX {
 
 	langX::ClassInfo::~ClassInfo()
 	{
-		// ÊÍ·Å member £¬ º¯Êý»ØÍ·ÔÙ½øÐÐÊÍ·Å
+		// é‡Šæ”¾ member ï¼Œ å‡½æ•°å›žå¤´å†è¿›è¡Œé‡Šæ”¾
 		for (auto i = this->m_members.begin(); i != this->m_members.end(); i++)
 		{
 			if (i->second)
@@ -39,7 +39,7 @@ namespace langX {
 		auto i = this->m_members.find(name);
 		if (i != this->m_members.end())
 		{
-			// ´æÔÚ¾ÉÖµ
+			// å­˜åœ¨æ—§å€¼
 			Allocator::free(i->second);
 		}
 		Object *t = obj->clone();
@@ -195,7 +195,7 @@ namespace langX {
 			auto abc = this->m_members.find(str);
 			if (abc != this->m_members.end())
 			{
-				// ´æÔÚ¾ÉÖµ
+				// å­˜åœ¨æ—§å€¼
 				Allocator::free(abc->second);
 			}
 
@@ -211,11 +211,11 @@ namespace langX {
 			auto abc = this->m_functions.find(str);
 			if (abc != this->m_functions.end())
 			{
-				// ´æÔÚ¾ÉÖµ
+				// å­˜åœ¨æ—§å€¼
 				delete (abc->second);
 			}
 
-			obj->setClassInfo(this);    // °ÑÀàÐÅÏ¢ÖØÐÂ¶¨Î»µ½µ±Ç°ÀàÐÅÏ¢¶ÔÏó
+			obj->setClassInfo(this);    // æŠŠç±»ä¿¡æ¯é‡æ–°å®šä½åˆ°å½“å‰ç±»ä¿¡æ¯å¯¹è±¡
 			this->m_functions[str] = obj;
 		}
 
