@@ -85,11 +85,11 @@ _extra_nothing
   ;
 
 out_declar_stmt
-    : func_declar_stmt          { $$ = $1; }
-    | class_declar_stmt         { $$ = $1; }
-    | namespace_declar_stmt     { $$ = $1; }
-    | namespace_ref_stmt        { $$ = $1; }
-    ;
+  : func_declar_stmt          { $$ = $1; }
+  | class_declar_stmt         { $$ = $1; }
+  | namespace_declar_stmt     { $$ = $1; }
+  | namespace_ref_stmt        { $$ = $1; }
+  ;
 
 // 需求语句
 require_stmt
@@ -104,8 +104,8 @@ require_operators
 
 // try 语句
 try_stmt
-	: XTRY '{' code_block '}'   { $$ = opr(XTRY, 2,$3,NULL); }
-	| XTRY '{' code_block '}' catch_block_stmt  { $$ = opr(XTRY, 2,$3,$5); }
+	: XTRY code_block   { $$ = opr(XTRY, 2,$3,NULL); }
+	| XTRY code_block catch_block_stmt  { $$ = opr(XTRY, 2,$3,$5); }
 	;
 
 catch_block_stmt
@@ -169,32 +169,12 @@ class_body_item
 //  this 语句， 暂只支持1级调用
 this_stmt
 	: THIS    { $$ = opr(THIS , 0 ); }
-	| THIS '.' id_expr   {  $$ = opr(THIS,1,$3); }
-//	| THIS '.' class_member_stmt {  $$ = opr(THIS, 1, $3 ); }
-	| THIS '.' id_expr '(' args_list ')' { $$ = opr(THIS, 1 , opr(FUNC_CALL,2, $3, argsNode($5) ) ); }
-//	| THIS '.' class_member_func_stmt  {}
 	;
 
-this_member_stmt
-	: THIS '.' id_expr    {  $$ = opr(THIS,1,$3); }
-	| THIS '.' class_member_stmt  {  $$ = opr(THIS, 1, $3 ); }
-	;
 
 //  类成员。  比如 a.x  a.y  这样 a.y.x
 class_member_stmt
-	: id_expr '.' id_expr   { $$ = opr(CLAXX_MEMBER,2, $1,$3 ); }
-	| class_member_func_stmt '.' id_expr %prec UMINUS { $$ =  opr(CLAXX_MEMBER,2, $1,$3 );  }
-	| IDENTIFIER '(' args_list ')' '.' id_expr { $$ = opr( CLAXX_MEMBER ,2, opr(FUNC_CALL,2, var($1), argsNode($3) ) , $6); }
-	| class_member_stmt '.' id_expr  { $$ = opr(CLAXX_MEMBER,2, $1,$3 ); }
-	;
-
-//  类的成员函数调用
-class_member_func_stmt
-	: id_expr '.' id_expr '(' args_list ')'  { $$ = opr(CLAXX_FUNC_CALL , 2, $1, opr(FUNC_CALL,2, $3, argsNode($5) ) );}
-	| array_ele_stmt '.' id_expr '(' args_list ')'  { $$ = opr(CLAXX_FUNC_CALL , 2, $1, opr(FUNC_CALL,2, $3, argsNode($5) ) );}
-	| IDENTIFIER '(' args_list ')' '.' id_expr '(' args_list ')' { $$ = opr(CLAXX_FUNC_CALL ,2, opr(FUNC_CALL,2, var($1), argsNode($3) ) , opr(FUNC_CALL,2, $6, argsNode($8) )); }
-	| class_member_stmt '.' id_expr '(' args_list ')'         { $$ = opr(CLAXX_FUNC_CALL,2,$1,opr(FUNC_CALL,2, $3, argsNode($5) ) ); }
-	| class_member_func_stmt '.' id_expr '(' args_list ')'    { $$ = opr(CLAXX_FUNC_CALL,2,$1,opr(FUNC_CALL,2, $3, argsNode($5) ) ); }
+	: common_object_expr '.' id_expr       { $$ = NULL; }
 	;
 
 //  静态成员
@@ -306,17 +286,39 @@ case_stmt
 	;
 
 loop_stmt
-	: WHILE '(' logic_stmt ')' block { $$ = opr(WHILE , 2, $3, $5 ); }
-	| FOR '(' for_1_stmt ';' logic_stmt ';' for_1_stmt ')' block { $$ = opr(FOR,4,$3,$5,$7,$9); }
+	: WHILE '(' logic_stmt ')' code_block { $$ = opr(WHILE , 2, $3, $5 ); }
+	| FOR '(' for_1_stmt_list ';' for_logic_stmt ';' for_3_stmt_list ')' code_block { $$ = opr(FOR,4,$3,$5,$7,$9); }
 	;
+
+for_logic_stmt
+  :       { $$ = NULL;  }    // true
+  | logic_stmt    { $$ = $1; }
+  ;
+
+for_1_stmt_list
+  :      { $$ = NULL ; }
+  | for_1_stmt    { $$ = $1; }
+  | for_1_stmt_list ',' for_1_stmt    { $$ = NULL; }
+  ;
 
 //  for 括号内的东西
 for_1_stmt
-	:     { $$ = NULL ; }
-	| assign_stmt  { $$ = $1; }
-	| var_declar_stmt { $$ = $1; }
-	| self_inc_dec_stmt { $$ = $1; }
+	: assign_stmt  { $$ = $1; }
+//	| var_declar_stmt { $$ = $1; }
+//	| self_inc_dec_stmt { $$ = $1; }
 	;
+
+for_3_stmt_list
+  :      { $$ = NULL ; }
+  | for_3_stmt    { $$ = $1; }
+  | for_3_stmt_list ',' for_3_stmt    { $$ = NULL; }
+  ;
+
+//  for 括号里面的第三段
+for_3_stmt
+  : assign_stmt         { $$ = $1; }
+  | self_inc_dec_stmt   { $$ = $1; }
+  ;
 
 //  简单语句
 simple_stmt
@@ -478,81 +480,48 @@ self_inc_dec_operators
   | DEC_OP        { $$ = $1; }
   ;
 
-//  赋值语句的值
-assign_stmt_value
-	: double_expr   { $$ = $1; }
-	| uminus_expr   { $$ = $1; }
-	| bool_expr   { $$ = $1; }
-	| arithmetic_stmt { $$ = $1; }
-	| call_statement  { $$ = $1; }
-	| lambda_stmt   { $$ = $1; }
-	| id_expr       { $$ = $1; }
-	| string_expr   { $$ = $1; }
-	| self_inc_dec_stmt { $$ = $1; }
-	| new_expr       { $$ = $1; }
-	| class_member_stmt  %prec NONASSOC { $$ = $1; }
-	| null_expr      { $$ = $1; }
-	| this_stmt    %prec UMINUS  { $$ = $1; }
-	| array_ele_stmt  { $$ = $1; }
-	| static_member_stmt { $$ =$1 ;}
-	;
 
 //  += -= *= /=  的值
 assign_stmt_value_eq
-	: double_expr   { $$ = $1; }
-	| uminus_expr   { $$ = $1; }
-	| string_expr   { $$ = $1; }
-	| call_statement    { $$ = $1; }
-	| id_expr       { $$ = $1; }
-	| self_inc_dec_stmt { $$ = $1; }
-	| class_member_stmt  %prec NONASSOC  { $$ = $1; }
-	| static_member_stmt { $$ = $1; }
-	| this_stmt        %prec UMINUS  { $$ = $1; }
-	| array_ele_stmt  { $$ = $1; }
+	: number_expr          { $$ = $1; }
+  | common_values_expr    { $$ = $1; }
+  | common_result_of_call_expr      { $$ = $1; }
 	;
 
 // 赋值
-single_assign_stmt
-	: id_expr '=' assign_stmt_value { $$ = opr('=',2, $1,$3 ); }
-	| id_expr '=' single_assign_stmt { $$ = opr('=',2, $1, $3 ); }
-	;
-
-class_member_assign_stmt
-	: class_member_stmt '=' assign_stmt_value  { $$ = opr('=',2, $1,$3 ); }
-	| this_member_stmt '=' assign_stmt_value   { $$ = opr('=',2, $1,$3 ); }
-	;
-
-// 数组元素获取语句
-array_ele_stmt
-	: IDENTIFIER '[' XINTEGER ']'    { $$ = arr($1, $3, NULL); }
-	| IDENTIFIER '[' IDENTIFIER ']'  { $$ = arr($1, -1, var($3)) ; }
-	| IDENTIFIER '[' TSTRING ']'  { $$ = arr($1, -1, string($3)) ; }
-	| class_member_stmt '[' XINTEGER ']'  {  $$ = arr2($1, $3, NULL) ; }
-	| class_member_stmt '[' IDENTIFIER ']'  {  $$ = arr2($1, -1, var($3)) ; }
-	| class_member_stmt '[' TSTRING ']'  {  $$ = arr2($1, -1, string($3)) ; }
-	| call_statement '[' XINTEGER ']'  {  $$ = arr2($1,  $3, NULL ) ; }
-	| call_statement '[' IDENTIFIER ']'  {  $$ = arr2($1, -1, var($3)) ; }
-	| call_statement '[' TSTRING ']'  {  $$ = arr2($1, -1, string($3)) ; }
-	;
 
 // ARRAY_ELE 意思是获得数组元素
-// 数组元素 赋值语句
-array_ele_assign_stmt
-	: array_ele_stmt '=' assign_stmt_value  { $$ = opr('=',2, $1,$3 );  }
+// 数组元素获取语句
+array_ele_stmt
+	: common_object_expr '[' common_number_expr ']'  { $$ = NULL; }
 	;
 
 //  赋值语句
 assign_stmt
 	: single_assign_stmt   { $$ = $1; }
-	| class_member_assign_stmt { $$ = $1 ;}
-	| array_ele_assign_stmt  { $$ = $1; }
-	| id_expr ADD_EQ assign_stmt_value_eq { $$ = opr(ADD_EQ,2,$1,$3);}
-	| id_expr SUB_EQ assign_stmt_value_eq { $$ = opr(SUB_EQ,2,$1,$3);}
-	| id_expr MUL_EQ assign_stmt_value_eq { $$ = opr(MUL_EQ,2,$1,$3);}
-	| id_expr DIV_EQ assign_stmt_value_eq { $$ = opr(DIV_EQ,2,$1,$3);}
-	| id_expr MOD_EQ assign_stmt_value_eq { $$ = opr(MOD_EQ,2,$1,$3);}
+	| number_change_assign_stmt { $$ = $1 ;}
+  ;
+
+single_assign_stmt
+	: common_assignable_expr '=' single_assign_stmt_value { $$ = opr('=',2, $1,$3 ); }
 	;
 
+single_assign_stmt_value
+  : common_expr         { $$ = $1; }
+  | single_assign_stmt    { $$ = $1; }
+  ;
+
+number_change_assign_stmt
+  : common_assignable_expr symbol_change_assign common_number_expr  { $$ = NULL; }
+  ;
+
+symbol_change_assign
+  : ADD_EQ      { $$ = $1; }
+  | SUB_EQ      { $$ = $1; }
+  | MUL_EQ      { $$ = $1; }
+  | DIV_EQ      { $$ = $1; }
+  | MOD_EQ      { $$ = $1; }
+  ;
 
 // code block
 code_block
@@ -574,7 +543,16 @@ block_item
 
 // string plus string  and some others
 string_plus_stmt
-  : string_expr '+' string_expr    { $$ = NULL; }
+  : string_expr '+' string_plus_stmt_value    { $$ = NULL; }
+  | string_plus_stmt_value '+' string_expr    { $$ = NULL; }
+  ;
+
+string_plus_stmt_value
+  : common_object_expr      { $$ = $1; }
+  | common_types_expr       { $$ = $1; }
+  | string_plus_stmt        { $$ = $1; }
+  | self_inc_dec_stmt       { $$ = $1; }
+  | number_parentheses_stmt     { $$ = $1; }
   ;
 
 number_parentheses_stmt
@@ -615,9 +593,15 @@ double_expr
 	;
 
 uminus_expr
-	: '-' double_or_ps_expr %prec UMINUS { $$ = opr(UMINUS, 1, $2 ); }
-	| '-' id_expr %prec UMINUS           { $$ = opr(UMINUS, 1, $2 ); }
+	: '-' uminus_expr_values %prec UMINUS { $$ = opr(UMINUS, 1, $2 ); }
 	;
+
+uminus_expr_values
+  : positive_number_expr        { $$ = $1; }
+  | common_others_values_expr   { $$ = $1; }
+  | call_statement              { $$ = $1; }
+  | number_parentheses_stmt     { $$ = $1; }
+  ;
 
 string_expr
 	: TSTRING  { $$ = string($1); }
