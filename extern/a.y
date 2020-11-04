@@ -15,24 +15,32 @@
 };
 
 %token <iValue> XINTEGER TBOOL
-%token <iValue> self_inc_dec_operators require_operators
 %token <dValue> TDOUBLE
 %token <sValue> IDENTIFIER TSTRING OPERATOR_X__
-%token OP_CALC AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP FUNC_OP INC_OP DEC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
-%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ LEFT_SHIFT RIGHT_SHIFT MOD_EQ XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL REQUIRE REQUIRE_ONCE REF XCONTINUE XCONST XLOCAL
-%token AUTO IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL XINCLUDE
-%token PIPELINE_OP
+%token OP_CALC AND_OP OR_OP FUNC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
+%token LEFT_SHIFT RIGHT_SHIFT  XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL  REF XCONTINUE
+%token IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
+%token <iValue> REQUIRE REQUIRE_ONCE XINCLUDE AUTO XCONST XLOCAL
+%token <iValue> ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<' INC_OP DEC_OP
 
-%type <node> statement declar_stmt con_ctl_stmt simple_stmt func_declar_stmt var_declar_stmt element_var_declar_stmt  selection_stmt loop_stmt logic_stmt block for_1_stmt assign_stmt arithmetic_stmt self_inc_dec_stmt
-%type <node> call_statement args_expr_collection double_or_ps_expr parentheses_stmt assign_stmt_value_eq assign_stmt_value single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
-%type <node> id_expr bool_expr double_expr uminus_expr string_expr arithmetic_stmt_factor case_stmt_list case_stmt class_declar_stmt class_body class_body_stmt namespace_declar_stmt
-%type <node> class_member_stmt class_member_assign_stmt class_member_func_stmt null_expr restrict_stmt this_stmt this_member_stmt array_ele_stmt array_ele_assign_stmt bit_opr_factor local_declar_stmt
-%type <node> type_judge_stmt lambda_stmt static_member_stmt require_stmt const_declar_stmt call_statement_pipeline not_expr_value
+%type <node> statement con_ctl_stmt simple_stmt simple_stmt_types func_declar_stmt out_declar_stmt var_declar_stmt element_var_declar_stmt _elements_var_declar_stmt require_stmt
+%type <node> call_statement assign_stmt_value_eq single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
+%type <node> id_expr bool_expr double_expr uminus_expr string_expr case_stmt_list case_stmt class_declar_stmt class_body class_body_items class_body_item
+%type <node> class_member_stmt null_expr restrict_stmt this_stmt array_ele_stmt
+%type <node> selection_stmt loop_stmt logic_stmt for_1_stmt for_3_stmt assign_stmt arithmetic_stmt type_judge_stmt static_member_stmt
 %type <node> number_expr positive_number_expr common_types_expr common_others_values_expr common_values_expr common_result_of_call_expr common_assignable_expr common_number_expr
-%type <node> common_object_expr common_string_expr common_expr number_parentheses_stmt string_plus_stmt int_expr
-%type <params> param_list parameter lambda_args_stmt
-%type <args> args_list args_expr
-%type <sValue> extends_stmt namespace_name_stmt
+%type <node> common_object_expr common_string_expr common_expr number_parentheses_stmt string_plus_stmt int_expr lambda_stmt
+%type <node> self_inc_dec_stmt func_param_list
+%type <params> lambda_args_stmt
+%type <args> args_list
+%type <sValue> namespace_name_stmt
+
+%type <iValue> require_operators class_name_prefix var_prefix _symbol_compare symbol_change_assign self_inc_dec_operators _symbol_equals_not
+%type <node> class_name_suffix func_name_types multiple_id_expr code_block args_list_with_parentheses delete_expr
+
+%type <node> namespace_declar_stmt namespace_ref_stmt single_assign_stmt_value string_plus_stmt_value block_item_list block_item
+%type <node> if_stmt single_if_stmt else_stmt single_else_stmt else_if_stmt else_if_stmts for_1_stmt_list for_logic_stmt for_3_stmt_list
+%type <node> uminus_expr_values _extra_nothing compare_expr number_compare_expr object_compare_expr not_bool_param_expr number_change_assign_stmt
 
 /* 优先级是从低到高 */
 
@@ -104,12 +112,12 @@ require_operators
 
 // try 语句
 try_stmt
-	: XTRY code_block   { $$ = opr(XTRY, 2,$3,NULL); }
-	| XTRY code_block catch_block_stmt  { $$ = opr(XTRY, 2,$3,$5); }
+	: XTRY code_block   { $$ = opr(XTRY, 2,$2,NULL); }
+	| XTRY code_block catch_block_stmt  { $$ = opr(XTRY, 2,$2,$3); }
 	;
 
 catch_block_stmt
-	: XCATCH '(' id_expr ')' code_block  { $$ = opr(XCATCH, 2, $3,$6); }
+	: XCATCH '(' id_expr ')' code_block  { $$ = opr(XCATCH, 2, $3,$5); }
 	;
 
 
@@ -146,7 +154,7 @@ class_name_prefix
 //  类继承语句
 class_name_suffix
 	:                     { $$ = NULL; }
-	| EXTENDS multiple_id_expr  { $$ = $2; }
+	| EXTENDS multiple_id_expr  { $$ = NULL; }
 	;
 
 class_body
@@ -268,7 +276,7 @@ else_if_stmts
   ;
 
 else_if_stmt
-  : ELSE single_if_stmt   { $$ = $1; }
+  : ELSE single_if_stmt   { $$ = $2; }
   ;
 
 single_else_stmt
@@ -329,7 +337,7 @@ simple_stmt_types
 	: self_inc_dec_stmt { $$ = $1; }
 	| assign_stmt   { $$ = $1; }
 	| call_statement  %prec PRIORITY1 { $$ = $1; }
-	| delete_expr { $$ = opr(DELETE, 1 ,$2 ); }
+	| delete_expr    { $$ = $1; }
 	| interrupt_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
 	| restrict_stmt  { $$ = $1; }
@@ -346,7 +354,7 @@ restrict_stmt
 interrupt_stmt
 	: BREAK { $$ = opr(BREAK, 0); }
 	| RETURN { $$ = opr(RETURN , 0); }
-	| RETURN assign_stmt_value { $$ = opr(RETURN , 1 ,$2);}
+	| RETURN common_expr { $$ = opr(RETURN , 1 ,$2);}
   | XCONTINUE { $$ = opr(XCONTINUE); }
 	;
 
@@ -355,13 +363,6 @@ call_statement
 	: common_values_expr args_list_with_parentheses { $$ = NULL; }
   | call_statement '.' id_expr args_list_with_parentheses { $$ = NULL; }
 	;
-
-
-//  小括号表达式
-parentheses_stmt
-	: '(' common_number_expr ')'  { $$ = $2; }
-	;
-
 
 //  运算语句
 arithmetic_stmt
@@ -376,13 +377,6 @@ arithmetic_stmt
 	| common_number_expr LEFT_SHIFT common_number_expr  { $$ = opr(LEFT_SHIFT,2,$1,$3); }
 	| common_number_expr RIGHT_SHIFT common_number_expr  { $$ = opr(RIGHT_SHIFT,2,$1,$3); }
   | '~' common_number_expr  { $$ = opr('~',1,$2); }
-	;
-
-//  运算语句的分子
-arithmetic_stmt_factor
-	: assign_stmt_value_eq    { $$ = $1 ; }
-	| arithmetic_stmt         { $$ = $1 ; }
-	| '(' arithmetic_stmt ')' { $$ = $2 ; }
 	;
 
 //   new 表达式
@@ -403,13 +397,6 @@ args_list
 delete_expr
   : DELETE multiple_id_expr   { $$ = NULL; }
   ;
-
-not_expr_value
-	: id_expr				{ $$ = $1; }
-	| call_statement  		{ $$ = $1; }
-	| class_member_stmt 	{ $$ = $1; }
-	| this_stmt        		{ $$ = $1; }
-	;
 
 
 //  逻辑语句

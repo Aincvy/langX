@@ -2,7 +2,7 @@
 
 /* line comment */
 
-abc; 
+abc;
 /* second line comment */
 
 println("hello");

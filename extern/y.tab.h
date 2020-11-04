@@ -63,60 +63,60 @@ extern int yydebug;
     OP_CALC = 264,                 /* OP_CALC  */
     AND_OP = 265,                  /* AND_OP  */
     OR_OP = 266,                   /* OR_OP  */
-    LE_OP = 267,                   /* LE_OP  */
-    GE_OP = 268,                   /* GE_OP  */
-    EQ_OP = 269,                   /* EQ_OP  */
-    NE_OP = 270,                   /* NE_OP  */
-    FUNC_OP = 271,                 /* FUNC_OP  */
-    INC_OP = 272,                  /* INC_OP  */
-    DEC_OP = 273,                  /* DEC_OP  */
-    FUNC_CALL = 274,               /* FUNC_CALL  */
-    VAR_DECLAR = 275,              /* VAR_DECLAR  */
-    RESTRICT = 276,                /* RESTRICT  */
-    THIS = 277,                    /* THIS  */
-    EXTENDS = 278,                 /* EXTENDS  */
-    ARRAY_ELE = 279,               /* ARRAY_ELE  */
-    XTRY = 280,                    /* XTRY  */
-    XCATCH = 281,                  /* XCATCH  */
-    ADD_EQ = 282,                  /* ADD_EQ  */
-    SUB_EQ = 283,                  /* SUB_EQ  */
-    MUL_EQ = 284,                  /* MUL_EQ  */
-    DIV_EQ = 285,                  /* DIV_EQ  */
-    LEFT_SHIFT = 286,              /* LEFT_SHIFT  */
-    RIGHT_SHIFT = 287,             /* RIGHT_SHIFT  */
-    MOD_EQ = 288,                  /* MOD_EQ  */
-    XPUBLIC = 289,                 /* XPUBLIC  */
-    XSET = 290,                    /* XSET  */
-    XIS = 291,                     /* XIS  */
-    SCOPE = 292,                   /* SCOPE  */
-    SCOPE_FUNC_CALL = 293,         /* SCOPE_FUNC_CALL  */
-    REQUIRE = 294,                 /* REQUIRE  */
-    REQUIRE_ONCE = 295,            /* REQUIRE_ONCE  */
-    REF = 296,                     /* REF  */
-    XCONTINUE = 297,               /* XCONTINUE  */
-    XCONST = 298,                  /* XCONST  */
-    XLOCAL = 299,                  /* XLOCAL  */
-    AUTO = 300,                    /* AUTO  */
-    IF = 301,                      /* IF  */
-    ELSE = 302,                    /* ELSE  */
-    WHILE = 303,                   /* WHILE  */
-    FOR = 304,                     /* FOR  */
-    DELETE = 305,                  /* DELETE  */
-    BREAK = 306,                   /* BREAK  */
-    RETURN = 307,                  /* RETURN  */
-    SWITCH = 308,                  /* SWITCH  */
-    CASE = 309,                    /* CASE  */
-    DEFAULT = 310,                 /* DEFAULT  */
-    CASE_LIST = 311,               /* CASE_LIST  */
-    CLAXX_BODY = 312,              /* CLAXX_BODY  */
-    NEW = 313,                     /* NEW  */
-    CLAXX_MEMBER = 314,            /* CLAXX_MEMBER  */
-    CLAXX_FUNC_CALL = 315,         /* CLAXX_FUNC_CALL  */
-    XNULL = 316,                   /* XNULL  */
-    XINCLUDE = 317,                /* XINCLUDE  */
-    PIPELINE_OP = 318,             /* PIPELINE_OP  */
-    NONASSOC = 319,                /* NONASSOC  */
-    IFX = 320,                     /* IFX  */
+    FUNC_OP = 267,                 /* FUNC_OP  */
+    FUNC_CALL = 268,               /* FUNC_CALL  */
+    VAR_DECLAR = 269,              /* VAR_DECLAR  */
+    RESTRICT = 270,                /* RESTRICT  */
+    THIS = 271,                    /* THIS  */
+    EXTENDS = 272,                 /* EXTENDS  */
+    ARRAY_ELE = 273,               /* ARRAY_ELE  */
+    XTRY = 274,                    /* XTRY  */
+    XCATCH = 275,                  /* XCATCH  */
+    LEFT_SHIFT = 276,              /* LEFT_SHIFT  */
+    RIGHT_SHIFT = 277,             /* RIGHT_SHIFT  */
+    XPUBLIC = 278,                 /* XPUBLIC  */
+    XSET = 279,                    /* XSET  */
+    XIS = 280,                     /* XIS  */
+    SCOPE = 281,                   /* SCOPE  */
+    SCOPE_FUNC_CALL = 282,         /* SCOPE_FUNC_CALL  */
+    REF = 283,                     /* REF  */
+    XCONTINUE = 284,               /* XCONTINUE  */
+    IF = 285,                      /* IF  */
+    ELSE = 286,                    /* ELSE  */
+    WHILE = 287,                   /* WHILE  */
+    FOR = 288,                     /* FOR  */
+    DELETE = 289,                  /* DELETE  */
+    BREAK = 290,                   /* BREAK  */
+    RETURN = 291,                  /* RETURN  */
+    SWITCH = 292,                  /* SWITCH  */
+    CASE = 293,                    /* CASE  */
+    DEFAULT = 294,                 /* DEFAULT  */
+    CASE_LIST = 295,               /* CASE_LIST  */
+    CLAXX_BODY = 296,              /* CLAXX_BODY  */
+    NEW = 297,                     /* NEW  */
+    CLAXX_MEMBER = 298,            /* CLAXX_MEMBER  */
+    CLAXX_FUNC_CALL = 299,         /* CLAXX_FUNC_CALL  */
+    XNULL = 300,                   /* XNULL  */
+    REQUIRE = 301,                 /* REQUIRE  */
+    REQUIRE_ONCE = 302,            /* REQUIRE_ONCE  */
+    XINCLUDE = 303,                /* XINCLUDE  */
+    AUTO = 304,                    /* AUTO  */
+    XCONST = 305,                  /* XCONST  */
+    XLOCAL = 306,                  /* XLOCAL  */
+    ADD_EQ = 307,                  /* ADD_EQ  */
+    SUB_EQ = 308,                  /* SUB_EQ  */
+    MUL_EQ = 309,                  /* MUL_EQ  */
+    DIV_EQ = 310,                  /* DIV_EQ  */
+    MOD_EQ = 311,                  /* MOD_EQ  */
+    LE_OP = 312,                   /* LE_OP  */
+    GE_OP = 313,                   /* GE_OP  */
+    EQ_OP = 314,                   /* EQ_OP  */
+    NE_OP = 315,                   /* NE_OP  */
+    INC_OP = 316,                  /* INC_OP  */
+    DEC_OP = 317,                  /* DEC_OP  */
+    NONASSOC = 318,                /* NONASSOC  */
+    IFX = 319,                     /* IFX  */
+    PIPELINE_OP = 320,             /* PIPELINE_OP  */
     PRIORITY3 = 321,               /* PRIORITY3  */
     PRIORITY2 = 322,               /* PRIORITY2  */
     PRIORITY1 = 323,               /* PRIORITY1  */
@@ -137,60 +137,60 @@ extern int yydebug;
 #define OP_CALC 264
 #define AND_OP 265
 #define OR_OP 266
-#define LE_OP 267
-#define GE_OP 268
-#define EQ_OP 269
-#define NE_OP 270
-#define FUNC_OP 271
-#define INC_OP 272
-#define DEC_OP 273
-#define FUNC_CALL 274
-#define VAR_DECLAR 275
-#define RESTRICT 276
-#define THIS 277
-#define EXTENDS 278
-#define ARRAY_ELE 279
-#define XTRY 280
-#define XCATCH 281
-#define ADD_EQ 282
-#define SUB_EQ 283
-#define MUL_EQ 284
-#define DIV_EQ 285
-#define LEFT_SHIFT 286
-#define RIGHT_SHIFT 287
-#define MOD_EQ 288
-#define XPUBLIC 289
-#define XSET 290
-#define XIS 291
-#define SCOPE 292
-#define SCOPE_FUNC_CALL 293
-#define REQUIRE 294
-#define REQUIRE_ONCE 295
-#define REF 296
-#define XCONTINUE 297
-#define XCONST 298
-#define XLOCAL 299
-#define AUTO 300
-#define IF 301
-#define ELSE 302
-#define WHILE 303
-#define FOR 304
-#define DELETE 305
-#define BREAK 306
-#define RETURN 307
-#define SWITCH 308
-#define CASE 309
-#define DEFAULT 310
-#define CASE_LIST 311
-#define CLAXX_BODY 312
-#define NEW 313
-#define CLAXX_MEMBER 314
-#define CLAXX_FUNC_CALL 315
-#define XNULL 316
-#define XINCLUDE 317
-#define PIPELINE_OP 318
-#define NONASSOC 319
-#define IFX 320
+#define FUNC_OP 267
+#define FUNC_CALL 268
+#define VAR_DECLAR 269
+#define RESTRICT 270
+#define THIS 271
+#define EXTENDS 272
+#define ARRAY_ELE 273
+#define XTRY 274
+#define XCATCH 275
+#define LEFT_SHIFT 276
+#define RIGHT_SHIFT 277
+#define XPUBLIC 278
+#define XSET 279
+#define XIS 280
+#define SCOPE 281
+#define SCOPE_FUNC_CALL 282
+#define REF 283
+#define XCONTINUE 284
+#define IF 285
+#define ELSE 286
+#define WHILE 287
+#define FOR 288
+#define DELETE 289
+#define BREAK 290
+#define RETURN 291
+#define SWITCH 292
+#define CASE 293
+#define DEFAULT 294
+#define CASE_LIST 295
+#define CLAXX_BODY 296
+#define NEW 297
+#define CLAXX_MEMBER 298
+#define CLAXX_FUNC_CALL 299
+#define XNULL 300
+#define REQUIRE 301
+#define REQUIRE_ONCE 302
+#define XINCLUDE 303
+#define AUTO 304
+#define XCONST 305
+#define XLOCAL 306
+#define ADD_EQ 307
+#define SUB_EQ 308
+#define MUL_EQ 309
+#define DIV_EQ 310
+#define MOD_EQ 311
+#define LE_OP 312
+#define GE_OP 313
+#define EQ_OP 314
+#define NE_OP 315
+#define INC_OP 316
+#define DEC_OP 317
+#define NONASSOC 318
+#define IFX 319
+#define PIPELINE_OP 320
 #define PRIORITY3 321
 #define PRIORITY2 322
 #define PRIORITY1 323
