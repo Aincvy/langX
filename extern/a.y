@@ -23,29 +23,32 @@
 %token <iValue> REQUIRE REQUIRE_ONCE XINCLUDE AUTO XCONST XLOCAL
 %token <iValue> ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<' INC_OP DEC_OP
 
-%type <node> statement con_ctl_stmt simple_stmt simple_stmt_types func_declar_stmt out_declar_stmt var_declar_stmt element_var_declar_stmt _elements_var_declar_stmt require_stmt
-%type <node> call_statement assign_stmt_value_eq single_assign_stmt bool_param_expr interrupt_stmt new_expr try_stmt catch_block_stmt
-%type <node> id_expr bool_expr double_expr uminus_expr string_expr case_stmt_list case_stmt class_declar_stmt class_body class_body_items class_body_item
-%type <node> class_member_stmt null_expr restrict_stmt this_stmt array_ele_stmt
-%type <node> selection_stmt loop_stmt logic_stmt for_1_stmt for_3_stmt assign_stmt arithmetic_stmt type_judge_stmt static_member_stmt
-%type <node> number_expr positive_number_expr common_types_expr common_others_values_expr common_values_expr common_result_of_call_expr common_assignable_expr common_number_expr
-%type <node> common_object_expr common_string_expr common_expr number_parentheses_stmt string_plus_stmt int_expr lambda_stmt
-%type <node> self_inc_dec_stmt func_param_list
+%type <node> statement _extra_nothing con_ctl_stmt simple_stmt simple_stmt_types require_stmt interrupt_stmt new_expr null_expr delete_expr
+%type <node> func_declar_stmt out_declar_stmt var_declar_stmt element_var_declar_stmt _elements_var_declar_stmt class_declar_stmt namespace_declar_stmt
+%type <node> call_statement assign_stmt_value_eq single_assign_stmt bool_param_expr try_stmt catch_block_stmt
+%type <node> id_expr bool_expr double_expr uminus_expr uminus_expr_values string_expr number_expr positive_number_expr int_expr
+%type <node> this_stmt array_ele_stmt static_member_stmt class_member_stmt
+%type <node> selection_stmt loop_stmt code_block block_item_list block_item
+%type <node> case_stmt_list case_stmt logic_stmt
+%type <node> common_types_expr common_others_values_expr common_values_expr common_result_of_call_expr common_assignable_expr common_number_expr
+%type <node> common_object_expr common_string_expr common_expr number_parentheses_stmt string_plus_stmt lambda_stmt
+%type <node> func_param_list func_name_types multiple_id_expr args_list_with_parentheses
+
 %type <params> lambda_args_stmt
 %type <args> args_list
 %type <sValue> namespace_name_stmt
-
 %type <iValue> require_operators class_name_prefix var_prefix _symbol_compare symbol_change_assign self_inc_dec_operators _symbol_equals_not
-%type <node> class_name_suffix func_name_types multiple_id_expr code_block args_list_with_parentheses delete_expr
 
-%type <node> namespace_declar_stmt namespace_ref_stmt single_assign_stmt_value string_plus_stmt_value block_item_list block_item
-%type <node> if_stmt single_if_stmt else_stmt single_else_stmt else_if_stmt else_if_stmts for_1_stmt_list for_logic_stmt for_3_stmt_list
-%type <node> uminus_expr_values _extra_nothing compare_expr number_compare_expr object_compare_expr not_bool_param_expr number_change_assign_stmt
+%type <node> class_name_suffix class_body class_body_items class_body_item
+%type <node> namespace_ref_stmt single_assign_stmt_value string_plus_stmt_value
+%type <node> if_stmt single_if_stmt else_stmt single_else_stmt else_if_stmt else_if_stmts
+%type <node> for_1_stmt for_1_stmt_list for_logic_stmt for_3_stmt for_3_stmt_list
+%type <node> compare_expr number_compare_expr object_compare_expr not_bool_param_expr type_judge_stmt
+%type <node> restrict_stmt assign_stmt number_change_assign_stmt arithmetic_stmt self_inc_dec_stmt
+
+
 
 /* 优先级是从低到高 */
-
-%nonassoc NONASSOC
-
 %nonassoc IFX
 %nonassoc ELSE
 
@@ -61,8 +64,8 @@
 %left LEFT_SHIFT RIGHT_SHIFT
 %left '+' '-'
 %left '*' '/' '%'
-%right '!' '~'
-%left '(' ')' '[' ']' '.'
+%right '!' '~' INC_OP_BACK
+%left '(' ')' '[' ']' '.' INC_OP DEC_OP
 %left FUNC_OP
 %nonassoc PRIORITY3
 %nonassoc PRIORITY2
@@ -360,8 +363,8 @@ interrupt_stmt
 
 //  函数调用
 call_statement
-	: common_values_expr args_list_with_parentheses { $$ = NULL; }
-  | call_statement '.' id_expr args_list_with_parentheses { $$ = NULL; }
+	: common_values_expr args_list_with_parentheses %prec PRIORITY3 { $$ = NULL; }
+  | call_statement '.' id_expr args_list_with_parentheses  %prec PRIORITY2 { $$ = NULL; }
 	;
 
 //  运算语句
@@ -459,7 +462,7 @@ _symbol_equals_not
 //  自增 OR 自减
 self_inc_dec_stmt
 	: self_inc_dec_operators common_values_expr { $$ = opr($1,1, $2 ); }
-	| common_values_expr self_inc_dec_operators { $$ = sopr($1,1, $1 ); }
+	| common_values_expr self_inc_dec_operators  %prec INC_OP_BACK { $$ = sopr($1,1, $1 ); }
 	;
 
 self_inc_dec_operators

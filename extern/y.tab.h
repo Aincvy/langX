@@ -114,9 +114,9 @@ extern int yydebug;
     NE_OP = 315,                   /* NE_OP  */
     INC_OP = 316,                  /* INC_OP  */
     DEC_OP = 317,                  /* DEC_OP  */
-    NONASSOC = 318,                /* NONASSOC  */
-    IFX = 319,                     /* IFX  */
-    PIPELINE_OP = 320,             /* PIPELINE_OP  */
+    IFX = 318,                     /* IFX  */
+    PIPELINE_OP = 319,             /* PIPELINE_OP  */
+    INC_OP_BACK = 320,             /* INC_OP_BACK  */
     PRIORITY3 = 321,               /* PRIORITY3  */
     PRIORITY2 = 322,               /* PRIORITY2  */
     PRIORITY1 = 323,               /* PRIORITY1  */
@@ -188,9 +188,9 @@ extern int yydebug;
 #define NE_OP 315
 #define INC_OP 316
 #define DEC_OP 317
-#define NONASSOC 318
-#define IFX 319
-#define PIPELINE_OP 320
+#define IFX 318
+#define PIPELINE_OP 319
+#define INC_OP_BACK 320
 #define PRIORITY3 321
 #define PRIORITY2 322
 #define PRIORITY1 323
