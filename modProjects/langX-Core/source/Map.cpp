@@ -4,7 +4,7 @@
 #include "../include/RegCoreModule.h"
 #include "../include/RegCoreModule.h"
 #include "../../../include/ClassInfo.h"
-#include "../../../include/YLlangX.h"
+#include "../../../include/NodeCreator.h"
 #include "../../../include/Object.h"
 #include "../../../include/langXObject.h"
 #include "../../../include/Allocator.h"
@@ -129,7 +129,7 @@ namespace langX {
 			auto i = map->find(c);
 			if (i != map->end())
 			{
-				// t »á±»´ÓmapÖÐÒÆ³ý£¬ ËùÒÔÖ±½Ó·µ»Ø³öÈ¥¾ÍºÃÁË¡£
+				// t ä¼šè¢«ä»Žmapä¸­ç§»é™¤ï¼Œ æ‰€ä»¥ç›´æŽ¥è¿”å›žå‡ºåŽ»å°±å¥½äº†ã€‚
 				Object * t = i->second;
 				map->erase(i++);
 				return t;
@@ -147,7 +147,7 @@ namespace langX {
 		}
 
 		std::map<std::string, Object*> * map = (std::map<std::string, Object*> *)args.object->get3rdObj();
-		
+
 		Object *a = args.args[0];
 		if (a)
 		{

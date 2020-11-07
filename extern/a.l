@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "y.tab.h"
 
 extern "C"{
@@ -149,7 +149,7 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 	fileEOF();
 
 	if(flag){
-		yyParseStoped();
+		yyParseStopped();
 
 		// yyterminate() 是一个宏。。  不是一个方法。。 会执行return 语句
 		yyterminate();

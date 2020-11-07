@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include <tclap/CmdLine.h>
 
 

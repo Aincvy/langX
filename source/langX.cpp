@@ -15,7 +15,7 @@
 #include "../include/ExecNode.h"
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "../include/Exception.h"
 #include "../include/Function.h"
 #include "../include/XNameSpace.h"

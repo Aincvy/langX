@@ -7,7 +7,7 @@
 #include "../include/Function.h"
 #include "../include/langXObject.h"
 #include "../include/XNameSpace.h"
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "../include/Exception.h"
 #include "../include/Allocator.h"
 #include "../include/langXThread.h"

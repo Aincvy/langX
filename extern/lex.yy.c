@@ -17,7 +17,7 @@
 
 /* begin standard C headers. */
 #include <stdio.h>
-#include <StringType.h>
+#include <string.h>
 #include <errno.h>
 #include <stdlib.h>
 
@@ -610,9 +610,9 @@ char *yytext;
 #line 2 "a.l"
 #include <stdlib.h>
 #include <stdio.h>
-#include <StringType.h>
+#include <string.h>
 #include <string>
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "y.tab.h"
 
 extern "C"{
@@ -1324,7 +1324,7 @@ case YY_STATE_EOF(INITIAL):
 	fileEOF();
 
 	if(flag){
-		yyParseStoped();
+		yyParseStopped();
 
 		// yyterminate() 是一个宏。。  不是一个方法。。 会执行return 语句
 		yyterminate();

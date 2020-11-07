@@ -102,7 +102,7 @@ extern "C" {
 	void doFile(const char *);
 
 	// yy 解析停止了 
-	void yyParseStoped();
+	void yyParseStopped();
 }
 
 langX::Object* getValue(const char*);

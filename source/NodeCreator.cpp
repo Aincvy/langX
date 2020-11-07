@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <sstream>
 #include <iostream>
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "../include/langX.h"
 #include "../include/Object.h"
 #include "../include/Number.h"
@@ -1034,7 +1034,7 @@ void doFile(const char *f)
 	state->doFile(f);
 }
 
-void yyParseStoped()
+void yyParseStopped()
 {
 	state->setYYParsing(false);
 }

@@ -2,7 +2,7 @@
 
 #include "../include/RegDefaultClasses.h"
 #include "../../../include/ClassInfo.h"
-#include "../../../include/YLlangX.h"
+#include "../../../include/NodeCreator.h"
 #include "../../../include/Object.h"
 #include "../../../include/langXObject.h"
 #include "../../../include/Allocator.h"

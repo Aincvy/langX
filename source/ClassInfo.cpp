@@ -6,7 +6,7 @@
 #include "../include/ClassInfo.h"
 #include "../include/Allocator.h"
 #include "../include/Environment.h"
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 
 namespace langX {
 	langX::ClassInfo::ClassInfo(const char*name)

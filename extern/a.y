@@ -1,6 +1,6 @@
 %{
 
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "../include/Program.h"
 
 %}

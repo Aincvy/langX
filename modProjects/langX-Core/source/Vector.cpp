@@ -3,7 +3,7 @@
 
 #include "../include/RegCoreModule.h"
 #include "../../../include/ClassInfo.h"
-#include "../../../include/YLlangX.h"
+#include "../../../include/NodeCreator.h"
 #include "../../../include/Object.h"
 #include "../../../include/langXObject.h"
 #include "../../../include/Allocator.h"
@@ -97,7 +97,7 @@ namespace langX {
 				{
 					if (strcmp(str, (*i)->characteristic()) == 0)
 					{
-						// 相等
+						// 鐩哥瓑
 						vector->erase(i++);
 						break;
 					}
@@ -125,7 +125,7 @@ namespace langX {
 				int index = ((Number*)a)->getIntValue();
 				if (index < vector->size())
 				{
-					//  返回值的 copy
+					//  杩斿洖鍊肩殑 copy
 					return Allocator::copy( vector->at(index));
 				}
 			}
@@ -142,7 +142,7 @@ namespace langX {
 		}
 
 		std::vector<Object*> * vector = (std::vector<Object*> *)args.object->get3rdObj();
-		
+
 		return Allocator::allocateNumber(vector->size());
 	}
 
