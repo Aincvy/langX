@@ -2,7 +2,7 @@
 #include "../include/Object.h"
 #include "../include/ExecNode.h"
 #include "../include/YLlangX.h"
-#include "../include/String.h"
+#include "../include/StringType.h"
 #include "../include/Allocator.h"
 #include "../include/Number.h"
 #include "../include/Environment.h"

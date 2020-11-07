@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <stdarg.h>
-#include <string.h>
 #include <stdlib.h>
 
 #ifdef WIN32
@@ -11,19 +10,17 @@
 #include <sys/stat.h>
 #endif
 
-#include "../include/RegFunctions.h"
-#include "../include/Function.h"
-#include "../include/Object.h"
-#include "../include/String.h"
-#include "../include/Number.h"
-#include "../include/YLlangX.h"
-#include "../include/langXThread.h"
-#include "../include/ClassInfo.h"
-#include "../include/NullObject.h"
-#include "../include/langXObject.h"
-#include "../include/langXObjectRef.h"
-#include "../include/Allocator.h"
-#include "../include/XArray.h"
+#include "RegFunctions.h"
+#include "StringType.h"
+#include "Number.h"
+#include "YLlangX.h"
+#include "langXThread.h"
+#include "ClassInfo.h"
+#include "NullObject.h"
+#include "langXObject.h"
+#include "langXObjectRef.h"
+#include "Allocator.h"
+#include "XArray.h"
 
 static struct termios old, newone;
 

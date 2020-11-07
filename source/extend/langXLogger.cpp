@@ -9,7 +9,7 @@
 #include "../../include/Number.h"
 #include "../../include/XNameSpace.h"
 #include "../../include/LogManager.h"
-#include "../../include/String.h"
+#include "../../include/StringType.h"
 
 namespace langX {
 

@@ -7,7 +7,7 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
-#include "../../../include/String.h"
+#include "../../../include/StringType.h"
 
 #ifdef WIN32
 #include "../../../lib/libevent-2.0.21-stable/include/event2/bufferevent.h"

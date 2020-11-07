@@ -11,7 +11,7 @@
 #include "../../../include/Function.h"
 #include "../../../include/YLlangX.h"
 #include "../../../include/langXObject.h"
-#include "../../../include/String.h"
+#include "../../../include/StringType.h"
 
 static langX::ClassInfo *pyExceptionClasxx;
 
@@ -42,8 +42,8 @@ namespace langX {
 	}
 
 	int regPyException(langXState *state, XNameSpace* space) {
-		
-		// python ¿â ÔËÐÐµÄÊ±ºò³öÏÖµÄÒì³£
+
+		// python åº“ è¿è¡Œçš„æ—¶å€™å‡ºçŽ°çš„å¼‚å¸¸
 		ClassInfo * exception = state->getGlobalEnv()->getClass("Exception");
 
 		ClassInfo *pyException = new ClassInfo("PyException");

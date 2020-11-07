@@ -7,7 +7,7 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
-#include "../../../include/String.h"
+#include "../../../include/StringType.h"
 
 #include <string.h>
 
@@ -55,7 +55,7 @@ namespace langX {
 		case REDIS_REPLY_STRING:
 			return Allocator::allocateString(reply->str);
 		case REDIS_REPLY_ARRAY:
-			// TODO 
+			// TODO
 			break;
 		case REDIS_REPLY_ERROR:
 			break;
@@ -152,12 +152,12 @@ namespace langX {
 		}
 		else if (b->getType() == ObjectType::XARRAY)
 		{
-			// 数组
+			// 鏁扮粍
 
 		}
 		else if (b->getType() == ObjectType::OBJECT)
 		{
-			// 对象
+			// 瀵硅薄
 			langXObjectRef *objectRef = (langXObjectRef*)b;
 
 			Object *str1 = objectRef->callFunction("toRedisString");
@@ -286,12 +286,12 @@ namespace langX {
 		}
 		else if (c->getType() == ObjectType::XARRAY)
 		{
-			// 数组
+			// 鏁扮粍
 
 		}
 		else if (c->getType() == ObjectType::OBJECT)
 		{
-			// 对象
+			// 瀵硅薄
 			langXObjectRef *objectRef = (langXObjectRef*)c;
 
 			Object *str1 = objectRef->callFunction("toRedisString");
@@ -606,5 +606,3 @@ namespace langX {
 		return 0;
 	}
 }
-
-

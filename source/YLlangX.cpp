@@ -17,7 +17,7 @@
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
 #include "../include/NullObject.h"
-#include "../include/String.h"
+#include "../include/StringType.h"
 #include "../extern/y.tab.h"
 #include "../include/langXThread.h"
 #include "../include/LogManager.h"

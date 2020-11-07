@@ -7,7 +7,7 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
-#include "../../../include/String.h"
+#include "../../../include/StringType.h"
 
 static langX::ClassInfo *httpServerRouteClass;
 

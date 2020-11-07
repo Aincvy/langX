@@ -509,7 +509,7 @@ Nonterminals, with rules where they appear
     namespace_ref_stmt <node> (104)
         on left: 22
         on right: 13
-    namespace_name_stmt <sValue> (105)
+    namespace_name_stmt <node> (105)
         on left: 23 24
         on right: 21 22 24
     class_declar_stmt <node> (106)
@@ -872,31 +872,6 @@ State 2
     common_values_expr         go to state 69
     common_assignable_expr     go to state 70
     common_object_expr         go to state 71
-
-    shift/reduce conflict on token IDENTIFIER:
-       26 class_name_prefix: • %empty
-      183 id_expr: • IDENTIFIER
-      First example: statement_list • IDENTIFIER FUNC_OP code_block $end
-      Shift derivation
-        $accept
-        ↳ statement_list                                             $end
-          ↳ statement_list statement
-                           ↳ out_declar_stmt
-                             ↳ func_declar_stmt
-                               ↳ func_name_types  FUNC_OP code_block
-                                 ↳ id_expr
-                                   ↳ • IDENTIFIER
-      Second example: statement_list • IDENTIFIER class_name_suffix class_body $end
-      Reduce derivation
-        $accept
-        ↳ program                                                                              $end
-          ↳ statement_list
-            ↳ statement_list statement
-                             ↳ out_declar_stmt
-                               ↳ class_declar_stmt
-                                 ↳ class_name_prefix id_expr      class_name_suffix class_body
-                                   ↳ •               ↳ IDENTIFIER
-
 
 
 State 3
@@ -1381,23 +1356,6 @@ State 58
     '.'       [reduce using rule 221 (common_object_expr)]
     $default  reduce using rule 93 (simple_stmt_types)
 
-    shift/reduce conflict on token '.':
-      221 common_object_expr: call_statement •
-      107 call_statement: call_statement • '.' id_expr args_list_with_parentheses
-      Example: call_statement • '.' IDENTIFIER args_list_with_parentheses
-      Shift derivation
-        call_statement
-        ↳ call_statement • id_expr          args_list_with_parentheses
-                           ↳ '.' IDENTIFIER
-      Reduce derivation
-        call_statement
-        ↳ common_values_expr                        args_list_with_parentheses
-          ↳ common_others_values_expr
-            ↳ class_member_stmt
-              ↳ common_object_expr '.' id_expr
-                ↳ call_statement •     ↳ IDENTIFIER
-
-
 
 State 59
 
@@ -1486,38 +1444,6 @@ State 67
     '['       [reduce using rule 205 (common_others_values_expr)]
     ';'       reduce using rule 58 (element_var_declar_stmt)
     $default  reduce using rule 205 (common_others_values_expr)
-
-    shift/reduce conflict on token '[':
-      205 common_others_values_expr: id_expr •
-       59 element_var_declar_stmt: id_expr • '[' common_number_expr ']'
-      First example: statement_list id_expr • '[' common_number_expr ']' ';' $end
-      Shift derivation
-        $accept
-        ↳ statement_list                                                        $end
-          ↳ statement_list statement
-                           ↳ simple_stmt
-                             ↳ simple_stmt_types                            ';'
-                               ↳ var_declar_stmt
-                                 ↳ _elements_var_declar_stmt
-                                   ↳ element_var_declar_stmt
-                                     ↳ id_expr • '[' common_number_expr ']'
-      Second example: statement_list id_expr • '[' common_number_expr ']' self_inc_dec_operators ';' $end
-      Reduce derivation
-        $accept
-        ↳ program                                                                                                              $end
-          ↳ statement_list
-            ↳ statement_list statement
-                             ↳ simple_stmt
-                               ↳ simple_stmt_types                                                                         ';'
-                                 ↳ self_inc_dec_stmt
-                                   ↳ common_values_expr                                             self_inc_dec_operators
-                                     ↳ common_others_values_expr
-                                       ↳ array_ele_stmt
-                                         ↳ common_object_expr            '[' common_number_expr ']'
-                                           ↳ common_values_expr
-                                             ↳ common_others_values_expr
-                                               ↳ id_expr •
-
 
 
 State 68
@@ -2002,53 +1928,6 @@ State 93
     '.'       [reduce using rule 221 (common_object_expr)]
     $default  reduce using rule 213 (common_result_of_call_expr)
 
-    reduce/reduce conflict on tokens EQ_OP, NE_OP, '+':
-      213 common_result_of_call_expr: call_statement •
-      221 common_object_expr: call_statement •
-      First example: statement_list WHILE '(' call_statement • EQ_OP common_number_expr ')' code_block $end
-      First reduce derivation
-        $accept
-        ↳ program                                                                                                                 $end
-          ↳ statement_list
-            ↳ statement_list statement
-                             ↳ con_ctl_stmt
-                               ↳ loop_stmt
-                                 ↳ WHILE '(' logic_stmt                                                            ')' code_block
-                                             ↳ compare_expr
-                                               ↳ number_compare_expr
-                                                 ↳ common_number_expr           _symbol_compare common_number_expr
-                                                   ↳ common_result_of_call_expr ↳ EQ_OP
-                                                     ↳ call_statement •
-      Second example: statement_list WHILE '(' call_statement • EQ_OP common_types_expr ')' code_block $end
-      Second reduce derivation
-        $accept
-        ↳ program                                                                                                         $end
-          ↳ statement_list
-            ↳ statement_list statement
-                             ↳ con_ctl_stmt
-                               ↳ loop_stmt
-                                 ↳ WHILE '(' logic_stmt                                                    ')' code_block
-                                             ↳ compare_expr
-                                               ↳ object_compare_expr
-                                                 ↳ common_object_expr _symbol_equals_not common_types_expr
-                                                   ↳ call_statement • ↳ EQ_OP
-
-    shift/reduce conflict on token '.':
-      221 common_object_expr: call_statement •
-      107 call_statement: call_statement • '.' id_expr args_list_with_parentheses
-      Example: call_statement • '.' id_expr args_list_with_parentheses
-      Shift derivation
-        call_statement
-        ↳ call_statement • '.' id_expr args_list_with_parentheses
-      Reduce derivation
-        call_statement
-        ↳ common_values_expr                   args_list_with_parentheses
-          ↳ common_others_values_expr
-            ↳ class_member_stmt
-              ↳ common_object_expr '.' id_expr
-                ↳ call_statement •
-
-
 
 State 94
 
@@ -2072,19 +1951,6 @@ State 96
     '+'       reduce using rule 180 (string_plus_stmt_value)
     '+'       [reduce using rule 212 (common_result_of_call_expr)]
     $default  reduce using rule 212 (common_result_of_call_expr)
-
-    reduce/reduce conflict on token '+':
-      180 string_plus_stmt_value: self_inc_dec_stmt •
-      212 common_result_of_call_expr: self_inc_dec_stmt •
-      Example: self_inc_dec_stmt •
-      First reduce derivation
-        string_plus_stmt_value
-        ↳ self_inc_dec_stmt •
-      Second reduce derivation
-        common_expr
-        ↳ common_result_of_call_expr
-          ↳ self_inc_dec_stmt •
-
 
 
 State 97
@@ -2112,19 +1978,6 @@ State 99
     '+'       [reduce using rule 215 (common_result_of_call_expr)]
     $default  reduce using rule 215 (common_result_of_call_expr)
 
-    reduce/reduce conflict on token '+':
-      181 string_plus_stmt_value: number_parentheses_stmt •
-      215 common_result_of_call_expr: number_parentheses_stmt •
-      Example: number_parentheses_stmt •
-      First reduce derivation
-        string_plus_stmt_value
-        ↳ number_parentheses_stmt •
-      Second reduce derivation
-        common_expr
-        ↳ common_result_of_call_expr
-          ↳ number_parentheses_stmt •
-
-
 
 State 100
 
@@ -2140,21 +1993,6 @@ State 100
     ')'       reduce using rule 184 (multiple_id_expr)
     ')'       [reduce using rule 205 (common_others_values_expr)]
     $default  reduce using rule 205 (common_others_values_expr)
-
-    reduce/reduce conflict on tokens ',', ')':
-      184 multiple_id_expr: id_expr •
-      205 common_others_values_expr: id_expr •
-      Example: id_expr •
-      First reduce derivation
-        lambda_args_stmt
-        ↳ multiple_id_expr
-          ↳ id_expr •
-      Second reduce derivation
-        common_expr
-        ↳ common_values_expr
-          ↳ common_others_values_expr
-            ↳ id_expr •
-
 
 
 State 101
@@ -2185,19 +2023,6 @@ State 103
     ')'       reduce using rule 200 (common_types_expr)
     ';'       reduce using rule 200 (common_types_expr)
     $default  reduce using rule 217 (common_number_expr)
-
-    reduce/reduce conflict on token '+':
-      200 common_types_expr: number_expr •
-      217 common_number_expr: number_expr •
-      Example: number_expr •
-      First reduce derivation
-        common_expr
-        ↳ common_types_expr
-          ↳ number_expr •
-      Second reduce derivation
-        common_number_expr
-        ↳ number_expr •
-
 
 
 State 104
@@ -2237,22 +2062,6 @@ State 108
 
     '+'       [reduce using rule 201 (common_types_expr)]
     $default  reduce using rule 201 (common_types_expr)
-
-    shift/reduce conflict on token '+':
-      201 common_types_expr: string_expr •
-      175 string_plus_stmt: string_expr • '+' string_plus_stmt_value
-      Example: string_expr • '+' string_expr
-      Shift derivation
-        string_plus_stmt
-        ↳ string_expr • string_plus_stmt_value
-                        ↳ common_types_expr
-                          ↳ '+' string_expr
-      Reduce derivation
-        string_plus_stmt
-        ↳ string_plus_stmt_value '+' string_expr
-          ↳ common_types_expr
-            ↳ string_expr •
-
 
 
 State 109
@@ -2301,39 +2110,6 @@ State 112
 
     args_list_with_parentheses  go to state 139
     self_inc_dec_operators      go to state 140
-
-    reduce/reduce conflict on token '+':
-      218 common_number_expr: common_values_expr •
-      220 common_object_expr: common_values_expr •
-      First example: statement_list RETURN common_values_expr • '+' common_number_expr ';' $end
-      First reduce derivation
-        $accept
-        ↳ program                                                                                   $end
-          ↳ statement_list
-            ↳ statement_list statement
-                             ↳ simple_stmt
-                               ↳ simple_stmt_types                                              ';'
-                                 ↳ interrupt_stmt
-                                   ↳ RETURN common_expr
-                                            ↳ common_result_of_call_expr
-                                              ↳ arithmetic_stmt
-                                                ↳ common_number_expr     '+' common_number_expr
-                                                  ↳ common_values_expr •
-      Second example: statement_list RETURN common_values_expr • '+' string_expr ';' $end
-      Second reduce derivation
-        $accept
-        ↳ program                                                                            $end
-          ↳ statement_list
-            ↳ statement_list statement
-                             ↳ simple_stmt
-                               ↳ simple_stmt_types                                       ';'
-                                 ↳ interrupt_stmt
-                                   ↳ RETURN common_expr
-                                            ↳ string_plus_stmt
-                                              ↳ string_plus_stmt_value   '+' string_expr
-                                                ↳ common_object_expr
-                                                  ↳ common_values_expr •
-
 
 
 State 113
@@ -2574,22 +2350,6 @@ State 133
 
     '.'       [reduce using rule 221 (common_object_expr)]
     $default  reduce using rule 221 (common_object_expr)
-
-    shift/reduce conflict on token '.':
-      221 common_object_expr: call_statement •
-      107 call_statement: call_statement • '.' id_expr args_list_with_parentheses
-      Example: call_statement • '.' id_expr args_list_with_parentheses
-      Shift derivation
-        call_statement
-        ↳ call_statement • '.' id_expr args_list_with_parentheses
-      Reduce derivation
-        call_statement
-        ↳ common_values_expr                   args_list_with_parentheses
-          ↳ common_others_values_expr
-            ↳ class_member_stmt
-              ↳ common_object_expr '.' id_expr
-                ↳ call_statement •
-
 
 
 State 134
@@ -3028,47 +2788,6 @@ State 157
     ';'       reduce using rule 58 (element_var_declar_stmt)
     $default  reduce using rule 205 (common_others_values_expr)
 
-    shift/reduce conflict on token '[':
-      205 common_others_values_expr: id_expr •
-       59 element_var_declar_stmt: id_expr • '[' common_number_expr ']'
-      First example: statement_list '{' id_expr • '[' common_number_expr ']' ';' '}' code_block $end
-      Shift derivation
-        $accept
-        ↳ program                                                                                            $end
-          ↳ statement_list
-            ↳ statement_list statement
-                             ↳ try_stmt
-                               ↳ code_block                                                       code_block
-                                 ↳ '{' block_item_list                                        '}'
-                                       ↳ block_item
-                                         ↳ simple_stmt
-                                           ↳ simple_stmt_types                            ';'
-                                             ↳ var_declar_stmt
-                                               ↳ _elements_var_declar_stmt
-                                                 ↳ element_var_declar_stmt
-                                                   ↳ id_expr • '[' common_number_expr ']'
-      Second example: statement_list XTRY '{' id_expr • '[' common_number_expr ']' self_inc_dec_operators ';' '}' $end
-      Reduce derivation
-        $accept
-        ↳ program                                                                                                                                   $end
-          ↳ statement_list
-            ↳ statement_list statement
-                             ↳ try_stmt
-                               ↳ XTRY code_block
-                                      ↳ '{' block_item_list                                                                                     '}'
-                                            ↳ block_item
-                                              ↳ simple_stmt
-                                                ↳ simple_stmt_types                                                                         ';'
-                                                  ↳ self_inc_dec_stmt
-                                                    ↳ common_values_expr                                             self_inc_dec_operators
-                                                      ↳ common_others_values_expr
-                                                        ↳ array_ele_stmt
-                                                          ↳ common_object_expr            '[' common_number_expr ']'
-                                                            ↳ common_values_expr
-                                                              ↳ common_others_values_expr
-                                                                ↳ id_expr •
-
-
 
 State 158
 
@@ -3305,37 +3024,6 @@ State 176
     args_list_with_parentheses  go to state 139
     self_inc_dec_operators      go to state 140
 
-    reduce/reduce conflict on tokens EQ_OP, NE_OP:
-      218 common_number_expr: common_values_expr •
-      220 common_object_expr: common_values_expr •
-      First example: statement_list WHILE '(' common_values_expr • EQ_OP common_number_expr ')' code_block $end
-      First reduce derivation
-        $accept
-        ↳ program                                                                                                           $end
-          ↳ statement_list
-            ↳ statement_list statement
-                             ↳ con_ctl_stmt
-                               ↳ loop_stmt
-                                 ↳ WHILE '(' logic_stmt                                                      ')' code_block
-                                             ↳ compare_expr
-                                               ↳ number_compare_expr
-                                                 ↳ common_number_expr     _symbol_compare common_number_expr
-                                                   ↳ common_values_expr • ↳ EQ_OP
-      Second example: statement_list WHILE '(' common_values_expr • EQ_OP common_types_expr ')' code_block $end
-      Second reduce derivation
-        $accept
-        ↳ program                                                                                                             $end
-          ↳ statement_list
-            ↳ statement_list statement
-                             ↳ con_ctl_stmt
-                               ↳ loop_stmt
-                                 ↳ WHILE '(' logic_stmt                                                        ')' code_block
-                                             ↳ compare_expr
-                                               ↳ object_compare_expr
-                                                 ↳ common_object_expr     _symbol_equals_not common_types_expr
-                                                   ↳ common_values_expr • ↳ EQ_OP
-
-
 
 State 177
 
@@ -3466,23 +3154,6 @@ State 186
     '['       reduce using rule 221 (common_object_expr)
     '.'       [reduce using rule 221 (common_object_expr)]
     $default  reduce using rule 196 (uminus_expr_values)
-
-    shift/reduce conflict on token '.':
-      221 common_object_expr: call_statement •
-      107 call_statement: call_statement • '.' id_expr args_list_with_parentheses
-      Example: call_statement • '.' IDENTIFIER args_list_with_parentheses
-      Shift derivation
-        call_statement
-        ↳ call_statement • id_expr          args_list_with_parentheses
-                           ↳ '.' IDENTIFIER
-      Reduce derivation
-        call_statement
-        ↳ common_values_expr                        args_list_with_parentheses
-          ↳ common_others_values_expr
-            ↳ class_member_stmt
-              ↳ common_object_expr '.' id_expr
-                ↳ call_statement •     ↳ IDENTIFIER
-
 
 
 State 187
@@ -5148,35 +4819,6 @@ State 295
     $default  reduce using rule 129 (logic_stmt)
 
     _symbol_logic_connection  go to state 245
-
-    shift/reduce conflict on token AND_OP:
-      129 logic_stmt: logic_stmt _symbol_logic_connection logic_stmt •
-      130 _symbol_logic_connection: • AND_OP
-      Example: logic_stmt _symbol_logic_connection logic_stmt • AND_OP logic_stmt
-      Shift derivation
-        logic_stmt
-        ↳ logic_stmt _symbol_logic_connection logic_stmt
-                                              ↳ logic_stmt _symbol_logic_connection logic_stmt
-                                                           ↳ • AND_OP
-      Reduce derivation
-        logic_stmt
-        ↳ logic_stmt                                         _symbol_logic_connection logic_stmt
-          ↳ logic_stmt _symbol_logic_connection logic_stmt • ↳ AND_OP
-
-    shift/reduce conflict on token OR_OP:
-      129 logic_stmt: logic_stmt _symbol_logic_connection logic_stmt •
-      131 _symbol_logic_connection: • OR_OP
-      Example: logic_stmt _symbol_logic_connection logic_stmt • OR_OP logic_stmt
-      Shift derivation
-        logic_stmt
-        ↳ logic_stmt _symbol_logic_connection logic_stmt
-                                              ↳ logic_stmt _symbol_logic_connection logic_stmt
-                                                           ↳ • OR_OP
-      Reduce derivation
-        logic_stmt
-        ↳ logic_stmt                                         _symbol_logic_connection logic_stmt
-          ↳ logic_stmt _symbol_logic_connection logic_stmt • ↳ OR_OP
-
 
 
 State 296

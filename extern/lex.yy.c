@@ -17,7 +17,7 @@
 
 /* begin standard C headers. */
 #include <stdio.h>
-#include <string.h>
+#include <StringType.h>
 #include <errno.h>
 #include <stdlib.h>
 
@@ -610,7 +610,7 @@ char *yytext;
 #line 2 "a.l"
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include <StringType.h>
 #include <string>
 #include "../include/YLlangX.h"
 #include "y.tab.h"

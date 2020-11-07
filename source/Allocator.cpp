@@ -2,7 +2,7 @@
 #include <string>
 #include "../include/Object.h"
 #include "../include/Number.h"
-#include "../include/String.h"
+#include "../include/StringType.h"
 #include "../include/NullObject.h"
 #include "../include/Allocator.h"
 #include "../include/NullObject.h"

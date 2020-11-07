@@ -2,7 +2,7 @@
 #include "../include/Object.h"
 #include "../include/YLlangX.h"
 #include "../include/ClassInfo.h"
-#include "../include/String.h"
+#include "../include/StringType.h"
 #include "../include/Function.h"
 #include "../include/langXObject.h"
 #include "../include/langXThread.h"

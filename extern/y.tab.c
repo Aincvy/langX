@@ -1944,25 +1944,25 @@ yyreduce:
 
   case 22: /* namespace_declar_stmt: XSET XPUBLIC '=' namespace_name_stmt  */
 #line 129 "a.y"
-                                               { (yyval.node) = changeNameSpace((yyvsp[0].sValue)); }
+                                               { (yyval.node) = NULL; }
 #line 1949 "y.tab.c"
     break;
 
   case 23: /* namespace_ref_stmt: REF namespace_name_stmt  */
 #line 134 "a.y"
-                                    { (yyval.node) = opr(REF, 1, (yyvsp[0].sValue)); }
+                                    { (yyval.node) = opr(REF, 1, (yyvsp[0].node)); }
 #line 1955 "y.tab.c"
     break;
 
   case 24: /* namespace_name_stmt: id_expr  */
 #line 138 "a.y"
-                   { (yyval.sValue) = (yyvsp[0].node) ; }
+                   { (yyval.node) = (yyvsp[0].node); }
 #line 1961 "y.tab.c"
     break;
 
   case 25: /* namespace_name_stmt: namespace_name_stmt '.' id_expr  */
 #line 139 "a.y"
-                                          { (yyval.sValue) = namespaceNameCat((yyvsp[-2].sValue),(yyvsp[0].node)) ; }
+                                          { (yyval.node) = NULL; }
 #line 1967 "y.tab.c"
     break;
 
@@ -1974,7 +1974,7 @@ yyreduce:
 
   case 27: /* class_name_prefix: %empty  */
 #line 153 "a.y"
-             { (yyval.iValue) = NULL; }
+             { (yyval.iValue) = -1; }
 #line 1979 "y.tab.c"
     break;
 
@@ -2112,19 +2112,19 @@ yyreduce:
 
   case 50: /* lambda_args_stmt: '(' ')'  */
 #line 224 "a.y"
-                           { (yyval.params) = NULL; }
+                     { (yyval.params) = NULL; }
 #line 2117 "y.tab.c"
     break;
 
   case 51: /* lambda_args_stmt: '(' multiple_id_expr ')'  */
 #line 225 "a.y"
-                                { (yyval.params) = (yyvsp[-1].node); }
+                              { (yyval.params) = NULL; }
 #line 2123 "y.tab.c"
     break;
 
   case 52: /* lambda_args_stmt: multiple_id_expr  */
 #line 226 "a.y"
-                                { (yyval.params) = (yyvsp[0].node); }
+                              { (yyval.params) = NULL; }
 #line 2129 "y.tab.c"
     break;
 
@@ -2142,25 +2142,25 @@ yyreduce:
 
   case 55: /* var_prefix: XCONST  */
 #line 236 "a.y"
-                { (yyval.iValue) = (yyvsp[0].iValue); }
+              { (yyval.iValue) = (yyvsp[0].iValue); }
 #line 2147 "y.tab.c"
     break;
 
   case 56: /* var_prefix: XLOCAL  */
 #line 237 "a.y"
-                { (yyval.iValue) = (yyvsp[0].iValue); }
+              { (yyval.iValue) = (yyvsp[0].iValue); }
 #line 2153 "y.tab.c"
     break;
 
   case 57: /* _elements_var_declar_stmt: element_var_declar_stmt  */
 #line 241 "a.y"
-                                    { (yyval.node) = (yyvsp[0].node); }
+                                  { (yyval.node) = (yyvsp[0].node); }
 #line 2159 "y.tab.c"
     break;
 
   case 58: /* _elements_var_declar_stmt: _elements_var_declar_stmt ',' element_var_declar_stmt  */
 #line 242 "a.y"
-                                                             { (yyval.node) = NULL; }
+                                                           { (yyval.node) = NULL; }
 #line 2165 "y.tab.c"
     break;
 
@@ -2448,7 +2448,7 @@ yyreduce:
 
   case 106: /* interrupt_stmt: XCONTINUE  */
 #line 361 "a.y"
-              { (yyval.node) = opr(XCONTINUE); }
+              { (yyval.node) = opr(XCONTINUE,0); }
 #line 2453 "y.tab.c"
     break;
 
@@ -2544,13 +2544,13 @@ yyreduce:
 
   case 122: /* args_list_with_parentheses: '(' args_list ')'  */
 #line 392 "a.y"
-                        { (yyval.node) = (yyvsp[-1].args); }
+                        { (yyval.node) = NULL; }
 #line 2549 "y.tab.c"
     break;
 
   case 123: /* args_list: common_expr  */
 #line 396 "a.y"
-                    { (yyval.args) = (yyvsp[0].node); }
+                    { (yyval.args) = NULL; }
 #line 2555 "y.tab.c"
     break;
 
@@ -2700,7 +2700,7 @@ yyreduce:
 
   case 150: /* self_inc_dec_stmt: common_values_expr self_inc_dec_operators  */
 #line 465 "a.y"
-                                                                       { (yyval.node) = sopr((yyvsp[-1].node),1, (yyvsp[-1].node) ); }
+                                                                       { (yyval.node) = NULL; }
 #line 2705 "y.tab.c"
     break;
 

@@ -7,7 +7,7 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
-#include "../../../include/String.h"
+#include "../../../include/StringType.h"
 #include "../../../include/XArray.h"
 #include "../../../include/NullObject.h"
 

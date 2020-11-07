@@ -15,7 +15,7 @@
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
-#include "../../../include/String.h"
+#include "../../../include/StringType.h"
 
 #ifdef WIN32
 #include "../../../lib/libevent-2.0.21-stable/include/event2/buffer.h"
@@ -24,7 +24,7 @@
 #include "../../../lib/libevent-2.0.21-stable/include/event2/util.h"
 #include "../../../lib/libevent-2.0.21-stable/include/event2/event.h"
 
-// windows ÏÂ ´Ë¹¤¾ß²¢²»¿ÉÓÃ¡£ ÒòÎªÏîÄ¿µÄÄ³Ğ©±ğµÄÎÊÌâËùÒÔÔİÊ±ÕâÑùĞ´£¬ÒÔÂú×ãĞèÇó
+// windows ä¸‹ æ­¤å·¥å…·å¹¶ä¸å¯ç”¨ã€‚ å› ä¸ºé¡¹ç›®çš„æŸäº›åˆ«çš„é—®é¢˜æ‰€ä»¥æš‚æ—¶è¿™æ ·å†™ï¼Œä»¥æ»¡è¶³éœ€æ±‚
 short AF_INET = 1;
 u_short htons(int port);
 
@@ -41,7 +41,7 @@ namespace langX {
 
 	static void conn_readcb(struct bufferevent *bev, void *user_data)
 	{
-		// ¶ÁµÄ»Øµ÷
+		// è¯»çš„å›è°ƒ
 		char msg[4096] = { 0 };
 		size_t len = bufferevent_read(bev, msg, sizeof(msg) - 1);
 
@@ -63,7 +63,7 @@ namespace langX {
 			}
 		}
 		else {
-			// ÏÈÊ¹ÓÃ½âÂëÆ÷
+			// å…ˆä½¿ç”¨è§£ç å™¨
 
 		}
 
@@ -114,7 +114,7 @@ namespace langX {
 			return;
 		}
 
-		// µ÷ÓÃ onaccept »Øµ÷
+		// è°ƒç”¨ onaccept å›è°ƒ
 		langXObject * clientObject = getState()->getNameSpace("langX.libevent")->getClass("TcpClient")->newObject();
 		TcpClientArgs *clientArgs = (TcpClientArgs*)calloc(1, sizeof(TcpClientArgs));
 		clientArgs->bev = bev;
@@ -145,7 +145,7 @@ namespace langX {
 		bytesDecoder = new DefaultBytesDecoder();
 	}
 
-	// Õâ¸öº¯ÊıÄÚ²¿²¢²»»áfree arg ²ÎÊı
+	// è¿™ä¸ªå‡½æ•°å†…éƒ¨å¹¶ä¸ä¼šfree arg å‚æ•°
 	void freeTcpServerArg(TcpServerArgs *arg) {
 
 		if (arg->listener)
@@ -384,7 +384,7 @@ namespace langX {
 		}
 
 		TcpServerArgs *arg = (TcpServerArgs*)args.object->get3rdObj();
-		//free(arg);       wtf...  Õâ¶¼ÊÇÉ¶- - 
+		//free(arg);       wtf...  è¿™éƒ½æ˜¯å•¥- -
 		event_base_loopbreak(arg->base);
 		event_base_free(arg->base);
 		arg->base = nullptr;
@@ -396,7 +396,7 @@ namespace langX {
 		return nullptr;
 	}
 
-	// Ìí¼ÓÒ»¸ö½âÂëÆ÷ »òÕß±àÂëÆ÷
+	// æ·»åŠ ä¸€ä¸ªè§£ç å™¨ æˆ–è€…ç¼–ç å™¨
 	Object * langX_TcpServer_addXCoder(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
@@ -418,7 +418,7 @@ namespace langX {
 		for (size_t i = 0; i < args.index; i++)
 		{
 			Object *obj = args.args[i];
-			
+
 			if (obj == nullptr || obj->getType() != ObjectType::OBJECT)
 			{
 				continue;
@@ -464,5 +464,3 @@ namespace langX {
 		return 0;
 	}
 }
-
-

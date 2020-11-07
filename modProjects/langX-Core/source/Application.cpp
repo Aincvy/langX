@@ -11,7 +11,7 @@
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
 #include "../../../include/Utils.h"
-#include "../../../include/String.h"
+#include "../../../include/StringType.h"
 
 namespace langX {
 

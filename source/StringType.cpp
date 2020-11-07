@@ -1,10 +1,9 @@
 #include <string>
 #include <algorithm>
-#include <string.h>
 #include <sstream>
 
-#include "../include/String.h"
-#include "../include/Utils.h"
+#include "StringType.h"
+#include "Utils.h"
 
 namespace langX {
 	String::String(const char *v)

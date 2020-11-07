@@ -36,10 +36,10 @@
 
 %type <params> lambda_args_stmt
 %type <args> args_list
-%type <sValue> namespace_name_stmt
+/* %type <sValue>       */
 %type <iValue> require_operators class_name_prefix var_prefix _symbol_compare symbol_change_assign self_inc_dec_operators _symbol_equals_not
 
-%type <node> class_name_suffix class_body class_body_items class_body_item
+%type <node> class_name_suffix class_body class_body_items class_body_item namespace_name_stmt
 %type <node> namespace_ref_stmt single_assign_stmt_value string_plus_stmt_value
 %type <node> if_stmt single_if_stmt else_stmt single_else_stmt else_if_stmt else_if_stmts
 %type <node> for_1_stmt for_1_stmt_list for_logic_stmt for_3_stmt for_3_stmt_list
@@ -126,7 +126,7 @@ catch_block_stmt
 
 // 命名空间的声明语句
 namespace_declar_stmt
-	: XSET XPUBLIC '=' namespace_name_stmt { $$ = changeNameSpace($4); }
+	: XSET XPUBLIC '=' namespace_name_stmt { $$ = NULL; }
 	;
 
 // 引用命名空间
@@ -135,8 +135,8 @@ namespace_ref_stmt
     ;
 
 namespace_name_stmt
-	: id_expr  { $$ = $1 ; }
-	| namespace_name_stmt '.' id_expr { $$ = namespaceNameCat($1,$3) ; }
+	: id_expr  { $$ = $1; }
+	| namespace_name_stmt '.' id_expr { $$ = NULL; }
 	;
 
 
@@ -150,7 +150,7 @@ class_declar_stmt
 	;
 
 class_name_prefix
-    :        { $$ = NULL; }
+    :        { $$ = -1; }
     | AUTO   { $$ = $1; }
     ;
 
@@ -221,9 +221,9 @@ lambda_stmt
 	;
 
 lambda_args_stmt
-	: '(' ')'          { $$ = NULL; }
-    | '(' multiple_id_expr ')'  { $$ = $2; }
-    | multiple_id_expr          { $$ = $1; }
+  : '(' ')'          { $$ = NULL; }
+  | '(' multiple_id_expr ')'  { $$ = NULL; }
+  | multiple_id_expr          { $$ = NULL; }
 	;
 
 // 变量声明语句
@@ -233,14 +233,14 @@ var_declar_stmt
 	;
 
 var_prefix
-    : XCONST    { $$ = $1; }
-    | XLOCAL    { $$ = $1; }
-    ;
+  : XCONST    { $$ = $1; }
+  | XLOCAL    { $$ = $1; }
+  ;
 
 _elements_var_declar_stmt
-    : element_var_declar_stmt       { $$ = $1; }
-    | _elements_var_declar_stmt ',' element_var_declar_stmt  { $$ = NULL; }
-    ;
+  : element_var_declar_stmt       { $$ = $1; }
+  | _elements_var_declar_stmt ',' element_var_declar_stmt  { $$ = NULL; }
+  ;
 
 element_var_declar_stmt
 	: id_expr							{ $$ = $1; }
@@ -358,7 +358,7 @@ interrupt_stmt
 	: BREAK { $$ = opr(BREAK, 0); }
 	| RETURN { $$ = opr(RETURN , 0); }
 	| RETURN common_expr { $$ = opr(RETURN , 1 ,$2);}
-  | XCONTINUE { $$ = opr(XCONTINUE); }
+  | XCONTINUE { $$ = opr(XCONTINUE,0); }
 	;
 
 //  函数调用
@@ -389,11 +389,11 @@ new_expr
 
 args_list_with_parentheses
   : '(' ')'       { $$ = NULL; }
-  | '(' args_list ')'   { $$ = $2; }
+  | '(' args_list ')'   { $$ = NULL; }
   ;
 
 args_list
-  : common_expr     { $$ = $1; }
+  : common_expr     { $$ = NULL; }
   | args_list ',' common_expr  { $$ = NULL; }
   ;
 
@@ -462,7 +462,7 @@ _symbol_equals_not
 //  自增 OR 自减
 self_inc_dec_stmt
 	: self_inc_dec_operators common_values_expr { $$ = opr($1,1, $2 ); }
-	| common_values_expr self_inc_dec_operators  %prec INC_OP_BACK { $$ = sopr($1,1, $1 ); }
+	| common_values_expr self_inc_dec_operators  %prec INC_OP_BACK { $$ = NULL; }
 	;
 
 self_inc_dec_operators
