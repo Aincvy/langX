@@ -39,7 +39,7 @@ namespace langX{
                     return;
                 }
             }
-            else if (left->opr_obj->opr == THIS)
+            else if (left->opr_obj->opr == KEY_THIS)
             {
                 if (nodeLink->index == 0) {
                     thread->beginExecute(left, true);

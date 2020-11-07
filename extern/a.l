@@ -39,36 +39,37 @@ int getParseLineNo();
 "/*"			{ comment(); }
 "//"[^\n]*      { /* consume //-comment */  }
 
-"auto" {count(); return AUTO;}
-"if" {count(); return IF;}
-"else" {count(); return ELSE;}
-"while" {count(); return WHILE;}
-"for" {count(); return FOR;}
-"delete" {count(); return DELETE;}
+"auto" {count(); return KEY_AUTO;}
+"if" {count(); return KEY_IF;}
+"else" {count(); return KEY_ELSE;}
+"while" {count(); return KEY_WHILE;}
+"for" {count(); return KEY_FOR;}
+"delete" {count(); return KEY_DELETE;}
 "false" {count();  yylval.iValue = 0; return TBOOL;}
 "true" {count();  yylval.iValue = 1; return TBOOL;}
-"break" {count(); return BREAK;}
-"return" {count(); return RETURN; }
-"switch" { count(); return SWITCH;}
-"case"  { count(); return CASE;}
-"default" { count(); return DEFAULT; }
-"new"  { count();  return NEW; }
-"null" { count(); return XNULL; }
-"restrict" { count(); return RESTRICT;}
-"this" {count();  return THIS; }
-"extends"  { count(); return EXTENDS; }
-"try"  {count();  return XTRY; }
-"catch" {count();  return XCATCH; }
-"public" {count(); return XPUBLIC;}
-"set"  {count();  return XSET; }
-"is"   {count();  return XIS; }
-"require" {count(); return REQUIRE;}
-"require_once" { count(); return REQUIRE_ONCE; }
-"include" { count(); return XINCLUDE; }
-"ref"  {count();  return REF ;}
-"continue" { count(); return XCONTINUE; }
-"const" { count(); return XCONST; }
-"local" { count(); return XLOCAL; }
+"break" {count(); return KEY_BREAK;}
+"return" {count(); return KEY_RETURN; }
+"switch" { count(); return KEY_SWITCH;}
+"case"  { count(); return KEY_CASE;}
+"default" { count(); return KEY_DEFAULT; }
+"new"  { count();  return KEY_NEW; }
+"null" { count(); return KEY_NULL; }
+"restrict" { count(); return KEY_RESTRICT;}
+"this" {count();  return KEY_THIS; }
+"extends"  { count(); return KEY_EXTENDS; }
+"try"  {count();  return KEY_TRY; }
+"catch" {count();  return KEY_CATCH; }
+"public" {count(); return KEY_PUBLIC;}
+"set"  {count();  return KEY_SET; }
+"is"   {count();  return KEY_IS; }
+"ref"  {count();  return KEY_REF ;}
+"continue" { count(); return KEY_CONTINUE; }
+"const" { count(); return KEY_CONST; }
+"local" { count(); return KEY_LOCAL; }
+"require" {count(); return KEY_REQUIRE;}
+"require_once" { count(); return KEY_REQUIRE_ONCE; }
+"include" { count(); return KEY_INCLUDE; }
+
 "=>"   {count();  return FUNC_OP; }
 "/>" {count(); return PIPELINE_OP; }
 "++"   {count();  return INC_OP;}
@@ -81,7 +82,7 @@ $[\?#]+              {count(); yylval.sValue=strdup(yytext); return IDENTIFIER;}
 
 operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(yytext); return OPERATOR_X__;  }
 
-0|([1-9][0-9]*)           {count();  yylval.iValue = atoi(yytext);  return XINTEGER; }
+0|([1-9][0-9]*)           {count();  yylval.iValue = atoi(yytext);  return TINTEGER; }
 (0|[1-9][0-9]*)\.[0-9]+ { count(); yylval.dValue = atof(yytext); return TDOUBLE;}
 
 "<=" {count(); return LE_OP;}

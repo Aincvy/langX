@@ -329,7 +329,7 @@ namespace langX {
 		}
 
 		// 不是变量，也不是this 操作  就不做任何处理
-		if (left->type != NODE_VARIABLE && !(left->type == NODE_OPERATOR && left->opr_obj->opr == THIS))
+		if (left->type != NODE_VARIABLE && !(left->type == NODE_OPERATOR && left->opr_obj->opr == KEY_THIS))
 		{
 			return;
 		}
@@ -443,7 +443,7 @@ namespace langX {
 
 			if (n->type == NodeType::NODE_OPERATOR) {
 				int opr = n->opr_obj->opr;
-				if (opr == WHILE || opr == FOR || opr == SWITCH) {
+				if (opr == KEY_WHILE || opr == KEY_FOR || opr == KEY_SWITCH) {
 					// 找到了该节点
 					break;
 				}
@@ -1410,13 +1410,13 @@ namespace langX {
 			freeSubNodes(n);
 			if (n->type == NodeType::NODE_OPERATOR) {
 				int opr = n->opr_obj->opr;
-				if (opr == WHILE || opr == FOR) {
+				if (opr == KEY_WHILE || opr == KEY_FOR) {
 					// 找到了该节点
-					if (opr == WHILE) {
+					if (opr == KEY_WHILE) {
 						// 跳到判定条件的地方
 						nodeLink->index = 2;
 					}
-					else if (opr == FOR) {
+					else if (opr == KEY_FOR) {
 						// 跳到后置节点的地方
 						nodeLink->index = 3;
 					}
@@ -1733,37 +1733,37 @@ namespace langX {
 		case OR_OP:
 			__execOPOR(nodeLink);
 			break;
-		case IF:
+		case KEY_IF:
 			__execIF(nodeLink, thread);
 			break;
-		case WHILE:
+		case KEY_WHILE:
 			__execWHILE(nodeLink, thread);
 			break;
-		case FOR:
+		case KEY_FOR:
 			__execFOR(nodeLink, thread);
 			break;
 		case FUNC_CALL:
 			__execFUNC_CALL(nodeLink, thread);
 			break;
-		case BREAK:
+		case KEY_BREAK:
 			__execBREAK(nodeLink, thread);
 			break;
-		case RETURN:
+		case KEY_RETURN:
 			__execRETURN(nodeLink, thread);
 			break;
-		case SWITCH:
+		case KEY_SWITCH:
 			__execSWITCH(nodeLink, thread);
 			break;
 		case CASE_LIST:
 			__execCASE_LIST(nodeLink, thread);
 			break;
-		case CASE:
+		case KEY_CASE:
 			__execCASE(nodeLink, thread);
 			break;
-		case DEFAULT:
+		case KEY_DEFAULT:
             __execDefault(nodeLink, thread);
 			break;
-		case NEW:
+		case KEY_NEW:
 			__execNEW(nodeLink, thread);
 			break;
 		case CLAXX_BODY:
@@ -1778,13 +1778,13 @@ namespace langX {
 		case VAR_DECLAR:
 			__execVAR_DECLAR(nodeLink, thread);
 			break;
-		case RESTRICT:
+		case KEY_RESTRICT:
 			__execRESTRICT(nodeLink, thread);
 			break;
-		case THIS:
+		case KEY_THIS:
 			__execTHIS(nodeLink, thread);
 			break;
-		case XTRY:
+		case KEY_TRY:
 			__execXTRY(nodeLink, thread);
 			break;
 		case LEFT_SHIFT:
@@ -1793,7 +1793,7 @@ namespace langX {
 		case RIGHT_SHIFT:
 			__execRIGHT_SHIFT(nodeLink);
 			break;
-		case XIS:
+		case KEY_IS:
 			__execXIS(nodeLink, thread);
 			break;
 		case SCOPE:
@@ -1802,25 +1802,25 @@ namespace langX {
 		case SCOPE_FUNC_CALL:
 			__execSCOPE_FUNC_CALL(nodeLink, thread);
 			break;
-		case REQUIRE:
+		case KEY_REQUIRE:
 			__execREQUIRE(nodeLink);
 			break;
-		case  REQUIRE_ONCE:
+		case  KEY_REQUIRE_ONCE:
 			__execREQUIRE_ONCE(nodeLink);
 			break;
-		case XINCLUDE:
+		case KEY_INCLUDE:
 			__execINCLUDE(nodeLink);
 			break;
-		case REF:
+		case KEY_REF:
 			__execREF(nodeLink);
 			break;
-		case XCONST:
+		case KEY_CONST:
 			__execCONST(nodeLink, thread);
 			break;
-		case XCONTINUE:
+		case KEY_CONTINUE:
 			__execCONTINUE(nodeLink, thread);
 			break;
-		case XLOCAL:
+		case KEY_LOCAL:
 			__execLOCAL(nodeLink, thread);
 			break;
 		default:

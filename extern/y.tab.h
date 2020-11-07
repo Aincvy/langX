@@ -54,7 +54,7 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    XINTEGER = 258,                /* XINTEGER  */
+    TINTEGER = 258,                /* TINTEGER  */
     TBOOL = 259,                   /* TBOOL  */
     TDOUBLE = 260,                 /* TDOUBLE  */
     IDENTIFIER = 261,              /* IDENTIFIER  */
@@ -66,43 +66,43 @@ extern int yydebug;
     FUNC_OP = 267,                 /* FUNC_OP  */
     FUNC_CALL = 268,               /* FUNC_CALL  */
     VAR_DECLAR = 269,              /* VAR_DECLAR  */
-    RESTRICT = 270,                /* RESTRICT  */
-    THIS = 271,                    /* THIS  */
-    EXTENDS = 272,                 /* EXTENDS  */
-    ARRAY_ELE = 273,               /* ARRAY_ELE  */
-    XTRY = 274,                    /* XTRY  */
-    XCATCH = 275,                  /* XCATCH  */
-    LEFT_SHIFT = 276,              /* LEFT_SHIFT  */
-    RIGHT_SHIFT = 277,             /* RIGHT_SHIFT  */
-    XPUBLIC = 278,                 /* XPUBLIC  */
-    XSET = 279,                    /* XSET  */
-    XIS = 280,                     /* XIS  */
-    SCOPE = 281,                   /* SCOPE  */
-    SCOPE_FUNC_CALL = 282,         /* SCOPE_FUNC_CALL  */
-    REF = 283,                     /* REF  */
-    XCONTINUE = 284,               /* XCONTINUE  */
-    IF = 285,                      /* IF  */
-    ELSE = 286,                    /* ELSE  */
-    WHILE = 287,                   /* WHILE  */
-    FOR = 288,                     /* FOR  */
-    DELETE = 289,                  /* DELETE  */
-    BREAK = 290,                   /* BREAK  */
-    RETURN = 291,                  /* RETURN  */
-    SWITCH = 292,                  /* SWITCH  */
-    CASE = 293,                    /* CASE  */
-    DEFAULT = 294,                 /* DEFAULT  */
-    CASE_LIST = 295,               /* CASE_LIST  */
-    CLAXX_BODY = 296,              /* CLAXX_BODY  */
-    NEW = 297,                     /* NEW  */
-    CLAXX_MEMBER = 298,            /* CLAXX_MEMBER  */
-    CLAXX_FUNC_CALL = 299,         /* CLAXX_FUNC_CALL  */
-    XNULL = 300,                   /* XNULL  */
-    REQUIRE = 301,                 /* REQUIRE  */
-    REQUIRE_ONCE = 302,            /* REQUIRE_ONCE  */
-    XINCLUDE = 303,                /* XINCLUDE  */
-    AUTO = 304,                    /* AUTO  */
-    XCONST = 305,                  /* XCONST  */
-    XLOCAL = 306,                  /* XLOCAL  */
+    ARRAY_ELE = 270,               /* ARRAY_ELE  */
+    KEY_TRY = 271,                 /* KEY_TRY  */
+    KEY_PUBLIC = 272,              /* KEY_PUBLIC  */
+    KEY_SET = 273,                 /* KEY_SET  */
+    KEY_IS = 274,                  /* KEY_IS  */
+    KEY_REF = 275,                 /* KEY_REF  */
+    KEY_CONTINUE = 276,            /* KEY_CONTINUE  */
+    KEY_NEW = 277,                 /* KEY_NEW  */
+    KEY_CATCH = 278,               /* KEY_CATCH  */
+    KEY_THIS = 279,                /* KEY_THIS  */
+    KEY_EXTENDS = 280,             /* KEY_EXTENDS  */
+    KEY_RESTRICT = 281,            /* KEY_RESTRICT  */
+    KEY_IF = 282,                  /* KEY_IF  */
+    KEY_ELSE = 283,                /* KEY_ELSE  */
+    KEY_WHILE = 284,               /* KEY_WHILE  */
+    KEY_FOR = 285,                 /* KEY_FOR  */
+    KEY_DELETE = 286,              /* KEY_DELETE  */
+    KEY_BREAK = 287,               /* KEY_BREAK  */
+    KEY_RETURN = 288,              /* KEY_RETURN  */
+    KEY_SWITCH = 289,              /* KEY_SWITCH  */
+    KEY_CASE = 290,                /* KEY_CASE  */
+    KEY_DEFAULT = 291,             /* KEY_DEFAULT  */
+    KEY_NULL = 292,                /* KEY_NULL  */
+    CASE_LIST = 293,               /* CASE_LIST  */
+    CLAXX_BODY = 294,              /* CLAXX_BODY  */
+    CLAXX_MEMBER = 295,            /* CLAXX_MEMBER  */
+    CLAXX_FUNC_CALL = 296,         /* CLAXX_FUNC_CALL  */
+    SCOPE_FUNC_CALL = 297,         /* SCOPE_FUNC_CALL  */
+    SCOPE = 298,                   /* SCOPE  */
+    LEFT_SHIFT = 299,              /* LEFT_SHIFT  */
+    RIGHT_SHIFT = 300,             /* RIGHT_SHIFT  */
+    KEY_REQUIRE = 301,             /* KEY_REQUIRE  */
+    KEY_REQUIRE_ONCE = 302,        /* KEY_REQUIRE_ONCE  */
+    KEY_INCLUDE = 303,             /* KEY_INCLUDE  */
+    KEY_AUTO = 304,                /* KEY_AUTO  */
+    KEY_CONST = 305,               /* KEY_CONST  */
+    KEY_LOCAL = 306,               /* KEY_LOCAL  */
     ADD_EQ = 307,                  /* ADD_EQ  */
     SUB_EQ = 308,                  /* SUB_EQ  */
     MUL_EQ = 309,                  /* MUL_EQ  */
@@ -115,12 +115,13 @@ extern int yydebug;
     INC_OP = 316,                  /* INC_OP  */
     DEC_OP = 317,                  /* DEC_OP  */
     IFX = 318,                     /* IFX  */
-    PIPELINE_OP = 319,             /* PIPELINE_OP  */
-    INC_OP_BACK = 320,             /* INC_OP_BACK  */
-    PRIORITY3 = 321,               /* PRIORITY3  */
-    PRIORITY2 = 322,               /* PRIORITY2  */
-    PRIORITY1 = 323,               /* PRIORITY1  */
-    UMINUS = 324                   /* UMINUS  */
+    ELSE = 319,                    /* ELSE  */
+    PIPELINE_OP = 320,             /* PIPELINE_OP  */
+    INC_OP_BACK = 321,             /* INC_OP_BACK  */
+    PRIORITY3 = 322,               /* PRIORITY3  */
+    PRIORITY2 = 323,               /* PRIORITY2  */
+    PRIORITY1 = 324,               /* PRIORITY1  */
+    UMINUS = 325                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -128,7 +129,7 @@ extern int yydebug;
 #define YYEOF 0
 #define YYerror 256
 #define YYUNDEF 257
-#define XINTEGER 258
+#define TINTEGER 258
 #define TBOOL 259
 #define TDOUBLE 260
 #define IDENTIFIER 261
@@ -140,43 +141,43 @@ extern int yydebug;
 #define FUNC_OP 267
 #define FUNC_CALL 268
 #define VAR_DECLAR 269
-#define RESTRICT 270
-#define THIS 271
-#define EXTENDS 272
-#define ARRAY_ELE 273
-#define XTRY 274
-#define XCATCH 275
-#define LEFT_SHIFT 276
-#define RIGHT_SHIFT 277
-#define XPUBLIC 278
-#define XSET 279
-#define XIS 280
-#define SCOPE 281
-#define SCOPE_FUNC_CALL 282
-#define REF 283
-#define XCONTINUE 284
-#define IF 285
-#define ELSE 286
-#define WHILE 287
-#define FOR 288
-#define DELETE 289
-#define BREAK 290
-#define RETURN 291
-#define SWITCH 292
-#define CASE 293
-#define DEFAULT 294
-#define CASE_LIST 295
-#define CLAXX_BODY 296
-#define NEW 297
-#define CLAXX_MEMBER 298
-#define CLAXX_FUNC_CALL 299
-#define XNULL 300
-#define REQUIRE 301
-#define REQUIRE_ONCE 302
-#define XINCLUDE 303
-#define AUTO 304
-#define XCONST 305
-#define XLOCAL 306
+#define ARRAY_ELE 270
+#define KEY_TRY 271
+#define KEY_PUBLIC 272
+#define KEY_SET 273
+#define KEY_IS 274
+#define KEY_REF 275
+#define KEY_CONTINUE 276
+#define KEY_NEW 277
+#define KEY_CATCH 278
+#define KEY_THIS 279
+#define KEY_EXTENDS 280
+#define KEY_RESTRICT 281
+#define KEY_IF 282
+#define KEY_ELSE 283
+#define KEY_WHILE 284
+#define KEY_FOR 285
+#define KEY_DELETE 286
+#define KEY_BREAK 287
+#define KEY_RETURN 288
+#define KEY_SWITCH 289
+#define KEY_CASE 290
+#define KEY_DEFAULT 291
+#define KEY_NULL 292
+#define CASE_LIST 293
+#define CLAXX_BODY 294
+#define CLAXX_MEMBER 295
+#define CLAXX_FUNC_CALL 296
+#define SCOPE_FUNC_CALL 297
+#define SCOPE 298
+#define LEFT_SHIFT 299
+#define RIGHT_SHIFT 300
+#define KEY_REQUIRE 301
+#define KEY_REQUIRE_ONCE 302
+#define KEY_INCLUDE 303
+#define KEY_AUTO 304
+#define KEY_CONST 305
+#define KEY_LOCAL 306
 #define ADD_EQ 307
 #define SUB_EQ 308
 #define MUL_EQ 309
@@ -189,12 +190,13 @@ extern int yydebug;
 #define INC_OP 316
 #define DEC_OP 317
 #define IFX 318
-#define PIPELINE_OP 319
-#define INC_OP_BACK 320
-#define PRIORITY3 321
-#define PRIORITY2 322
-#define PRIORITY1 323
-#define UMINUS 324
+#define ELSE 319
+#define PIPELINE_OP 320
+#define INC_OP_BACK 321
+#define PRIORITY3 322
+#define PRIORITY2 323
+#define PRIORITY1 324
+#define UMINUS 325
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -209,7 +211,7 @@ union YYSTYPE
  XParamsList* params; /* params value */
  XArgsList *args;    /* args value */
 
-#line 213 "y.tab.h"
+#line 215 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

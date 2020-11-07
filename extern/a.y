@@ -14,13 +14,14 @@
  XArgsList *args;    /* args value */
 };
 
-%token <iValue> XINTEGER TBOOL
+%token <iValue> TINTEGER TBOOL
 %token <dValue> TDOUBLE
 %token <sValue> IDENTIFIER TSTRING OPERATOR_X__
-%token OP_CALC AND_OP OR_OP FUNC_OP FUNC_CALL VAR_DECLAR RESTRICT THIS EXTENDS ARRAY_ELE XTRY XCATCH
-%token LEFT_SHIFT RIGHT_SHIFT  XPUBLIC XSET XIS SCOPE SCOPE_FUNC_CALL  REF XCONTINUE
-%token IF ELSE WHILE FOR DELETE BREAK RETURN SWITCH CASE DEFAULT CASE_LIST CLAXX_BODY NEW CLAXX_MEMBER CLAXX_FUNC_CALL XNULL
-%token <iValue> REQUIRE REQUIRE_ONCE XINCLUDE AUTO XCONST XLOCAL
+%token OP_CALC AND_OP OR_OP FUNC_OP FUNC_CALL VAR_DECLAR ARRAY_ELE KEY_TRY
+%token KEY_PUBLIC KEY_SET KEY_IS KEY_REF KEY_CONTINUE KEY_NEW KEY_CATCH KEY_THIS KEY_EXTENDS KEY_RESTRICT
+%token KEY_IF KEY_ELSE KEY_WHILE KEY_FOR KEY_DELETE KEY_BREAK KEY_RETURN KEY_SWITCH KEY_CASE KEY_DEFAULT KEY_NULL
+%token CASE_LIST CLAXX_BODY CLAXX_MEMBER CLAXX_FUNC_CALL SCOPE_FUNC_CALL SCOPE LEFT_SHIFT RIGHT_SHIFT
+%token <iValue> KEY_REQUIRE KEY_REQUIRE_ONCE KEY_INCLUDE KEY_AUTO KEY_CONST KEY_LOCAL
 %token <iValue> ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<' INC_OP DEC_OP
 
 %type <node> statement _extra_nothing con_ctl_stmt simple_stmt simple_stmt_types require_stmt interrupt_stmt new_expr null_expr delete_expr
@@ -108,30 +109,30 @@ require_stmt
 	;
 
 require_operators
-    : REQUIRE             { $$ = $1; }
-    | REQUIRE_ONCE        { $$ = $1; }
-    | XINCLUDE            { $$ = $1; }
+    : KEY_REQUIRE             { $$ = $1; }
+    | KEY_REQUIRE_ONCE        { $$ = $1; }
+    | KEY_INCLUDE            { $$ = $1; }
     ;
 
 // try 语句
 try_stmt
-	: XTRY code_block   { $$ = opr(XTRY, 2,$2,NULL); }
-	| XTRY code_block catch_block_stmt  { $$ = opr(XTRY, 2,$2,$3); }
+	: KEY_TRY code_block   { $$ = opr(KEY_TRY, 2,$2,NULL); }
+	| KEY_TRY code_block catch_block_stmt  { $$ = opr(KEY_TRY, 2,$2,$3); }
 	;
 
 catch_block_stmt
-	: XCATCH '(' id_expr ')' code_block  { $$ = opr(XCATCH, 2, $3,$5); }
+	: KEY_CATCH '(' id_expr ')' code_block  { $$ = opr(KEY_CATCH, 2, $3,$5); }
 	;
 
 
 // 命名空间的声明语句
 namespace_declar_stmt
-	: XSET XPUBLIC '=' namespace_name_stmt { $$ = NULL; }
+	: KEY_SET KEY_PUBLIC '=' namespace_name_stmt { $$ = NULL; }
 	;
 
 // 引用命名空间
 namespace_ref_stmt
-    : REF namespace_name_stmt       { $$ = opr(REF, 1, $2); }
+    : KEY_REF namespace_name_stmt       { $$ = opr(KEY_REF, 1, $2); }
     ;
 
 namespace_name_stmt
@@ -151,13 +152,13 @@ class_declar_stmt
 
 class_name_prefix
     :        { $$ = -1; }
-    | AUTO   { $$ = $1; }
+    | KEY_AUTO   { $$ = $1; }
     ;
 
 //  类继承语句
 class_name_suffix
 	:                     { $$ = NULL; }
-	| EXTENDS multiple_id_expr  { $$ = NULL; }
+	| KEY_EXTENDS multiple_id_expr  { $$ = NULL; }
 	;
 
 class_body
@@ -179,7 +180,7 @@ class_body_item
 
 //  this 语句， 暂只支持1级调用
 this_stmt
-	: THIS    { $$ = opr(THIS , 0 ); }
+	: KEY_THIS    { $$ = opr(KEY_THIS , 0 ); }
 	;
 
 
@@ -233,8 +234,8 @@ var_declar_stmt
 	;
 
 var_prefix
-  : XCONST    { $$ = $1; }
-  | XLOCAL    { $$ = $1; }
+  : KEY_CONST    { $$ = $1; }
+  | KEY_LOCAL    { $$ = $1; }
   ;
 
 _elements_var_declar_stmt
@@ -256,7 +257,7 @@ con_ctl_stmt
 //  选择语句
 selection_stmt
 	: if_stmt        { $$ = $1; }
-	| SWITCH '(' common_number_expr ')' '{' case_stmt_list '}'  { $$ = opr(SWITCH, 2 , $3,$6); pretreatSwitch( $$ ) ; }
+	| KEY_SWITCH '(' common_number_expr ')' '{' case_stmt_list '}'  { $$ = opr(KEY_SWITCH, 2 , $3,$6); pretreatSwitch( $$ ) ; }
 	;
 
 if_stmt
@@ -265,7 +266,7 @@ if_stmt
   ;
 
 single_if_stmt
-  : IF '(' logic_stmt ')' code_block { $$ = opr(IF ,2,$3,$5) ; }
+  : KEY_IF '(' logic_stmt ')' code_block { $$ = opr(KEY_IF ,2,$3,$5) ; }
   ;
 
 else_stmt
@@ -279,11 +280,11 @@ else_if_stmts
   ;
 
 else_if_stmt
-  : ELSE single_if_stmt   { $$ = $2; }
+  : KEY_ELSE single_if_stmt   { $$ = NULL; }
   ;
 
 single_else_stmt
-  : ELSE code_block     { $$ = NULL; }
+  : KEY_ELSE code_block     { $$ = NULL; }
   ;
 
 case_stmt_list
@@ -292,13 +293,13 @@ case_stmt_list
 	;
 
 case_stmt
-	: CASE int_expr ':' code_block        { $$ = opr(CASE, 2 , $2, $4); }
-	| DEFAULT ':' code_block                 { $$ = opr(DEFAULT , 1, $3); }
+	: KEY_CASE int_expr ':' code_block        { $$ = opr(KEY_CASE, 2 , $2, $4); }
+	| KEY_DEFAULT ':' code_block                 { $$ = opr(KEY_DEFAULT , 1, $3); }
 	;
 
 loop_stmt
-	: WHILE '(' logic_stmt ')' code_block { $$ = opr(WHILE , 2, $3, $5 ); }
-	| FOR '(' for_1_stmt_list ';' for_logic_stmt ';' for_3_stmt_list ')' code_block { $$ = opr(FOR,4,$3,$5,$7,$9); }
+	: KEY_WHILE '(' logic_stmt ')' code_block { $$ = opr(KEY_WHILE , 2, $3, $5 ); }
+	| KEY_FOR '(' for_1_stmt_list ';' for_logic_stmt ';' for_3_stmt_list ')' code_block { $$ = opr(KEY_FOR,4,$3,$5,$7,$9); }
 	;
 
 for_logic_stmt
@@ -350,15 +351,15 @@ simple_stmt_types
 
 //  限定语句， 限定环境
 restrict_stmt
-	: RESTRICT       { $$ = opr(RESTRICT,0);}
-	| RESTRICT bool_expr  { $$ = opr(RESTRICT,1,$2); }
+	: KEY_RESTRICT       { $$ = opr(KEY_RESTRICT,0);}
+	| KEY_RESTRICT bool_expr  { $$ = opr(KEY_RESTRICT,1,$2); }
 	;
 
 interrupt_stmt
-	: BREAK { $$ = opr(BREAK, 0); }
-	| RETURN { $$ = opr(RETURN , 0); }
-	| RETURN common_expr { $$ = opr(RETURN , 1 ,$2);}
-  | XCONTINUE { $$ = opr(XCONTINUE,0); }
+	: KEY_BREAK { $$ = opr(KEY_BREAK, 0); }
+	| KEY_RETURN { $$ = opr(KEY_RETURN , 0); }
+	| KEY_RETURN common_expr { $$ = opr(KEY_RETURN , 1 ,$2);}
+  | KEY_CONTINUE { $$ = opr(KEY_CONTINUE,0); }
 	;
 
 //  函数调用
@@ -384,7 +385,7 @@ arithmetic_stmt
 
 //   new 表达式
 new_expr
-	: NEW id_expr args_list_with_parentheses { $$ = NULL; }
+	: KEY_NEW id_expr args_list_with_parentheses { $$ = NULL; }
 	;
 
 args_list_with_parentheses
@@ -398,7 +399,7 @@ args_list
   ;
 
 delete_expr
-  : DELETE multiple_id_expr   { $$ = NULL; }
+  : KEY_DELETE multiple_id_expr   { $$ = NULL; }
   ;
 
 
@@ -424,7 +425,7 @@ bool_param_expr
 
 // 类型判断语句
 type_judge_stmt
-	: common_object_expr XIS id_expr  { $$ = opr(XIS ,2 , $1,$3); }
+	: common_object_expr KEY_IS id_expr  { $$ = opr(KEY_IS ,2 , $1,$3); }
 	;
 
 not_bool_param_expr
@@ -575,7 +576,7 @@ positive_number_expr
   ;
 
 int_expr
-  : XINTEGER { $$ = number($1); }
+  : TINTEGER { $$ = number($1); }
   ;
 
 double_expr
@@ -598,7 +599,7 @@ string_expr
 	;
 
 null_expr
-	: XNULL   { $$ = xnull(); }
+	: KEY_NULL   { $$ = xnull(); }
 	;
 
 

@@ -784,7 +784,7 @@ void pretreatCaseList(XNode *node, SwitchInfo *switchInfo) {
 			pretreatCaseList(node->opr_obj->op[i], switchInfo);
 		}
 	}
-	else if (opr == CASE) {
+	else if (opr == KEY_CASE) {
 		// case 节点
 		int index = switchInfo->nowIndex++;
 		NodeLink nodeLink;
@@ -846,7 +846,7 @@ void pretreatCaseList(XNode *node, SwitchInfo *switchInfo) {
 		Allocator::free(obj);
 		checkValueNode->value = nullptr;
 	}
-	else if (opr == DEFAULT) {
+	else if (opr == KEY_DEFAULT) {
 		switchInfo->defaultNode = node;
 	}
 }
@@ -856,7 +856,7 @@ void pretreatSwitch(XNode *node) {
 		return;
 	}
 
-	if (node->opr_obj->opr != SWITCH) {
+	if (node->opr_obj->opr != KEY_SWITCH) {
 		return;
 	}
 
@@ -979,7 +979,7 @@ void freeNode(XNode * n) {
 	}
 	else if (n->type == NODE_OPERATOR)
 	{
-		if (n->opr_obj->opr == THIS)
+		if (n->opr_obj->opr == KEY_THIS)
 		{
 			if (n->var_obj != NULL)
 			{
@@ -987,7 +987,7 @@ void freeNode(XNode * n) {
 				n->var_obj = NULL;
 			}
 		}
-		else if (n->opr_obj->opr == SWITCH)
+		else if (n->opr_obj->opr == KEY_SWITCH)
 		{
 			SwitchInfo *switchInfo = (SwitchInfo *)n->ptr_u;
 			if (switchInfo != NULL)
