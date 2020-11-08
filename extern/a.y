@@ -1,5 +1,6 @@
 %{
 
+#include <string.h>
 #include "../include/NodeCreator.h"
 #include "../include/Program.h"
 
@@ -17,15 +18,16 @@
 %token <iValue> TINTEGER TBOOL
 %token <dValue> TDOUBLE
 %token <sValue> IDENTIFIER TSTRING OPERATOR_X__
-%token OP_CALC AND_OP OR_OP FUNC_OP FUNC_CALL VAR_DECLAR ARRAY_ELE KEY_TRY
+%token OP_CALC FUNC_OP FUNC_CALL VAR_DECLAR ARRAY_ELE KEY_TRY
 %token KEY_PUBLIC KEY_SET KEY_IS KEY_REF KEY_CONTINUE KEY_NEW KEY_CATCH KEY_THIS KEY_EXTENDS KEY_RESTRICT
 %token KEY_IF KEY_ELSE KEY_WHILE KEY_FOR KEY_DELETE KEY_BREAK KEY_RETURN KEY_SWITCH KEY_CASE KEY_DEFAULT KEY_NULL
 %token CASE_LIST CLAXX_BODY CLAXX_MEMBER CLAXX_FUNC_CALL SCOPE_FUNC_CALL SCOPE LEFT_SHIFT RIGHT_SHIFT
+%token OPR_NODE_LIST OPR_CHANGE_NAME_SPACE OPR_CAT_NS_NAME OPR_CLASS_DECLARE OPR_INC_DEC OPR_IF_ELSE OPR_MULTIPLE_ID
 %token <iValue> KEY_REQUIRE KEY_REQUIRE_ONCE KEY_INCLUDE KEY_AUTO KEY_CONST KEY_LOCAL
-%token <iValue> ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<' INC_OP DEC_OP
+%token <iValue> ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<' INC_OP DEC_OP  AND_OP OR_OP
 
 %type <node> statement _extra_nothing con_ctl_stmt simple_stmt simple_stmt_types require_stmt interrupt_stmt new_expr null_expr delete_expr
-%type <node> func_declar_stmt out_declar_stmt var_declar_stmt element_var_declar_stmt _elements_var_declar_stmt class_declar_stmt namespace_declar_stmt
+%type <node> func_declare_stmt out_declare_stmt var_declare_stmt element_var_declare_stmt _elements_var_declare_stmt class_declare_stmt namespace_declare_stmt
 %type <node> call_statement assign_stmt_value_eq single_assign_stmt bool_param_expr try_stmt catch_block_stmt
 %type <node> id_expr bool_expr double_expr uminus_expr uminus_expr_values string_expr number_expr positive_number_expr int_expr
 %type <node> this_stmt array_ele_stmt static_member_stmt class_member_stmt
@@ -33,12 +35,11 @@
 %type <node> case_stmt_list case_stmt logic_stmt
 %type <node> common_types_expr common_others_values_expr common_values_expr common_result_of_call_expr common_assignable_expr common_number_expr
 %type <node> common_object_expr common_string_expr common_expr number_parentheses_stmt string_plus_stmt lambda_stmt
-%type <node> func_param_list func_name_types multiple_id_expr args_list_with_parentheses
+%type <node> func_param_list func_name_types multiple_id_expr args_list args_list_with_parentheses lambda_args_stmt
 
-%type <params> lambda_args_stmt
-%type <args> args_list
 /* %type <sValue>       */
-%type <iValue> require_operators class_name_prefix var_prefix _symbol_compare symbol_change_assign self_inc_dec_operators _symbol_equals_not
+%type <iValue> require_operators class_name_prefix var_prefix _symbol_compare symbol_change_assign self_inc_dec_operators _symbol_equals_not _symbol_logic_connection
+
 
 %type <node> class_name_suffix class_body class_body_items class_body_item namespace_name_stmt
 %type <node> namespace_ref_stmt single_assign_stmt_value string_plus_stmt_value
@@ -86,7 +87,7 @@ statement_list
 	;
 statement
 	: _extra_nothing     { $$ = $1; }
-	| out_declar_stmt    { $$ = $1; }
+	| out_declare_stmt    { $$ = $1; }
 	| con_ctl_stmt   { $$ = $1; }
 	| simple_stmt    { $$ = $1; }
 	| try_stmt       { $$ = $1; }
@@ -96,10 +97,10 @@ _extra_nothing
   : ';'         { $$ = NULL; }
   ;
 
-out_declar_stmt
-  : func_declar_stmt          { $$ = $1; }
-  | class_declar_stmt         { $$ = $1; }
-  | namespace_declar_stmt     { $$ = $1; }
+out_declare_stmt
+  : func_declare_stmt          { $$ = $1; }
+  | class_declare_stmt         { $$ = $1; }
+  | namespace_declare_stmt     { $$ = $1; }
   | namespace_ref_stmt        { $$ = $1; }
   ;
 
@@ -126,8 +127,8 @@ catch_block_stmt
 
 
 // 命名空间的声明语句
-namespace_declar_stmt
-	: KEY_SET KEY_PUBLIC '=' namespace_name_stmt { $$ = NULL; }
+namespace_declare_stmt
+	: KEY_SET KEY_PUBLIC '=' namespace_name_stmt { $$ = opr(OPR_CHANGE_NAME_SPACE, 1, $4); }
 	;
 
 // 引用命名空间
@@ -136,8 +137,8 @@ namespace_ref_stmt
     ;
 
 namespace_name_stmt
-	: id_expr  { $$ = $1; }
-	| namespace_name_stmt '.' id_expr { $$ = NULL; }
+	: id_expr  { $$ = opr(OPR_CAT_NS_NAME, 1, $1); }
+	| namespace_name_stmt '.' id_expr { $$ = opr(OPR_CAT_NS_NAME, 2, $1, $3); }
 	;
 
 
@@ -146,8 +147,8 @@ namespace_name_stmt
 ////////////////////////////////////////////////////////////////////////
 
 //  类声明语句
-class_declar_stmt
-	: class_name_prefix id_expr class_name_suffix class_body     {  $$ = NULL; }
+class_declare_stmt
+	: class_name_prefix id_expr class_name_suffix class_body     {  $$ = opr(OPR_CLASS_DECLARE, 4, intNode($1), $2, $3, $4); }
 	;
 
 class_name_prefix
@@ -158,23 +159,23 @@ class_name_prefix
 //  类继承语句
 class_name_suffix
 	:                     { $$ = NULL; }
-	| KEY_EXTENDS multiple_id_expr  { $$ = NULL; }
+	| KEY_EXTENDS multiple_id_expr  { $$ = opr(KEY_EXTENDS, 1, $2); }
 	;
 
 class_body
     : '{' '}'           { $$ = NULL; }
-    | '{' class_body_items '}'  { $$ = $2; }
+    | '{' class_body_items '}'  { $$ = opr(CLAXX_BODY, 1, $2); }
     ;
 
 class_body_items
     : class_body_item           { $$ = $1; }
-    | class_body_items class_body_item  { $$ = NULL; }
+    | class_body_items class_body_item  { $$ = opr(OPR_NODE_LIST, 2, $1 ,$2); }
     ;
 
 class_body_item
-    : var_declar_stmt ';'       { $$ = $1; }
+    : var_declare_stmt ';'       { $$ = $1; }
     | single_assign_stmt ';'    { $$ = $1; }
-    | func_declar_stmt          { $$ = $1; }
+    | func_declare_stmt          { $$ = $1; }
     | _extra_nothing            { $$ = $1; }
     ;
 
@@ -186,7 +187,7 @@ this_stmt
 
 //  类成员。  比如 a.x  a.y  这样 a.y.x
 class_member_stmt
-	: common_object_expr '.' id_expr       { $$ = NULL; }
+	: common_object_expr '.' id_expr       { $$ = opr(CLAXX_MEMBER, 2, $1, $3); }
 	;
 
 //  静态成员
@@ -200,15 +201,15 @@ static_member_stmt
   ////////////////////////////////////////////////////////////////////////
 
 // 函数声明语句
-func_declar_stmt
-	: func_name_types FUNC_OP code_block            { $$ = NULL; }
-    | func_name_types FUNC_OP func_param_list code_block            { $$ = NULL; }
+func_declare_stmt
+	: func_name_types FUNC_OP code_block            { $$ = opr(FUNC_OP,3, $1, NULL, $3); }     // 和下面的节点保持对齐
+  | func_name_types FUNC_OP func_param_list code_block            { $$ = opr(FUNC_OP, 3, $1, $3, $4); }
 	;
 
 func_name_types
     : id_expr  { $$ = $1; }
-    | '~' id_expr   { $$ = NULL; }
-    | OPERATOR_X__  { $$ = NULL; }
+    | '~' id_expr   { char buf[1024] = "~"; strcat(buf, $2->var_obj->name);  $$ = varWithNameNeedFree(strdup(buf)); }
+    | OPERATOR_X__  { $$ = var($1); }
     ;
 
 func_param_list
@@ -218,19 +219,19 @@ func_param_list
 
 // lambda 表达式
 lambda_stmt
-	: lambda_args_stmt FUNC_OP code_block   { $$ = lambda($1,$3) ; }
+	: lambda_args_stmt FUNC_OP code_block   { $$ = opr(FUNC_OP, 3, NULL, $1, $3); }
 	;
 
 lambda_args_stmt
   : '(' ')'          { $$ = NULL; }
-  | '(' multiple_id_expr ')'  { $$ = NULL; }
-  | multiple_id_expr          { $$ = NULL; }
+  | '(' multiple_id_expr ')'  { $$ = $2; }
+  | multiple_id_expr          { $$ = $1; }
 	;
 
 // 变量声明语句
-var_declar_stmt
-	: _elements_var_declar_stmt  { $$ = opr(VAR_DECLAR , 1, $1 ); }
-	| var_prefix _elements_var_declar_stmt { $$ = NULL; }
+var_declare_stmt
+	: _elements_var_declare_stmt  { $$ = opr(VAR_DECLAR , 2, NULL, $1 ); }
+	| var_prefix _elements_var_declare_stmt { $$ = opr(VAR_DECLAR, 2, intNode($1), $2 ); }
 	;
 
 var_prefix
@@ -238,14 +239,14 @@ var_prefix
   | KEY_LOCAL    { $$ = $1; }
   ;
 
-_elements_var_declar_stmt
-  : element_var_declar_stmt       { $$ = $1; }
-  | _elements_var_declar_stmt ',' element_var_declar_stmt  { $$ = NULL; }
+_elements_var_declare_stmt
+  : element_var_declare_stmt       { $$ = $1; }
+  | _elements_var_declare_stmt ',' element_var_declare_stmt  { $$ = opr(OPR_NODE_LIST, 2, $1, $3); }
   ;
 
-element_var_declar_stmt
+element_var_declare_stmt
 	: id_expr							{ $$ = $1; }
-	| id_expr '[' common_number_expr ']'		{ $$ = NULL; }
+	| id_expr '[' common_number_expr ']'		{ $$ = arrayNode($1->var_obj->name, -1, $3); }
 	;
 
 //  条件控制语句
@@ -262,7 +263,7 @@ selection_stmt
 
 if_stmt
   : single_if_stmt        { $$ = $1; }
-  | single_if_stmt else_stmt { $$ = NULL; }
+  | single_if_stmt else_stmt { $$ = opr(OPR_IF_ELSE, 2, $1, $2); }   // IF-ELSE
   ;
 
 single_if_stmt
@@ -270,21 +271,21 @@ single_if_stmt
   ;
 
 else_stmt
-  : else_if_stmts single_else_stmt    { $$ =  NULL; }
+  : else_if_stmts single_else_stmt    { $$ =  opr(OPR_NODE_LIST, 2, $1, $2); }
   | single_else_stmt        { $$ = $1; }
   ;
 
 else_if_stmts
-  : else_if_stmt        { $$ = $1; }
-  | else_if_stmts else_if_stmt    { $$ =  NULL; }
+  : else_if_stmt        { $$ = opr(OPR_NODE_LIST, 1, $1); }
+  | else_if_stmts else_if_stmt    { $$ =  opr(OPR_NODE_LIST, 2, $1, $2); }
   ;
 
 else_if_stmt
-  : KEY_ELSE single_if_stmt   { $$ = NULL; }
+  : KEY_ELSE single_if_stmt   { $$ = opr(KEY_ELSE, 2, $2, NULL); }   // 使用2个长度的子节点表示 else if  和下面的单个else 区分
   ;
 
 single_else_stmt
-  : KEY_ELSE code_block     { $$ = NULL; }
+  : KEY_ELSE code_block     { $$ = opr( KEY_ELSE, 1, $2); }
   ;
 
 case_stmt_list
@@ -303,27 +304,27 @@ loop_stmt
 	;
 
 for_logic_stmt
-  :       { $$ = NULL;  }    // true
+  :       { $$ = intNode(1);  }    // true
   | logic_stmt    { $$ = $1; }
   ;
 
 for_1_stmt_list
   :      { $$ = NULL ; }
   | for_1_stmt    { $$ = $1; }
-  | for_1_stmt_list ',' for_1_stmt    { $$ = NULL; }
+  | for_1_stmt_list ',' for_1_stmt    { $$ = opr(OPR_NODE_LIST, 2, $1, $3); }
   ;
 
 //  for 括号内的东西
 for_1_stmt
 	: assign_stmt  { $$ = $1; }
-//	| var_declar_stmt { $$ = $1; }
+//	| var_declare_stmt { $$ = $1; }
 //	| self_inc_dec_stmt { $$ = $1; }
 	;
 
 for_3_stmt_list
   :      { $$ = NULL ; }
   | for_3_stmt    { $$ = $1; }
-  | for_3_stmt_list ',' for_3_stmt    { $$ = NULL; }
+  | for_3_stmt_list ',' for_3_stmt    { $$ = opr(OPR_NODE_LIST, 2, $1, $3); }
   ;
 
 //  for 括号里面的第三段
@@ -346,7 +347,7 @@ simple_stmt_types
 	| new_expr       { $$ = $1; }
 	| restrict_stmt  { $$ = $1; }
   | require_stmt      { $$ = $1; }
-  | var_declar_stmt   { $$ = $1; }
+  | var_declare_stmt   { $$ = $1; }
 	;
 
 //  限定语句， 限定环境
@@ -364,8 +365,8 @@ interrupt_stmt
 
 //  函数调用
 call_statement
-	: common_values_expr args_list_with_parentheses %prec PRIORITY3 { $$ = NULL; }
-  | call_statement '.' id_expr args_list_with_parentheses  %prec PRIORITY2 { $$ = NULL; }
+	: common_values_expr args_list_with_parentheses %prec PRIORITY3 { $$ = opr(FUNC_CALL, 2, $1, $2); }
+  | call_statement '.' id_expr args_list_with_parentheses  %prec PRIORITY2 { $$ = opr(CLAXX_FUNC_CALL, 3, $1, $3, $4); }
 	;
 
 //  运算语句
@@ -385,21 +386,21 @@ arithmetic_stmt
 
 //   new 表达式
 new_expr
-	: KEY_NEW id_expr args_list_with_parentheses { $$ = NULL; }
+	: KEY_NEW id_expr args_list_with_parentheses { $$ = opr(KEY_NEW, 2 , $2, $3); }
 	;
 
 args_list_with_parentheses
   : '(' ')'       { $$ = NULL; }
-  | '(' args_list ')'   { $$ = NULL; }
+  | '(' args_list ')'   { $$ = $2; }
   ;
 
 args_list
-  : common_expr     { $$ = NULL; }
-  | args_list ',' common_expr  { $$ = NULL; }
+  : common_expr     { $$ = opr(OPR_NODE_LIST, 1, $1); }         // 和下面部分的语法节点 保持统一
+  | args_list ',' common_expr  { $$ = opr(OPR_NODE_LIST, 2 , $1, $3); }
   ;
 
 delete_expr
-  : KEY_DELETE multiple_id_expr   { $$ = NULL; }
+  : KEY_DELETE multiple_id_expr   { $$ = opr(KEY_DELETE, 1, $2); }
   ;
 
 
@@ -409,12 +410,12 @@ logic_stmt
   | not_bool_param_expr     { $$ = $1; }
 	| type_judge_stmt         { $$ = $1; }
   | compare_expr            { $$ = $1; }
-  | logic_stmt _symbol_logic_connection logic_stmt      { $$ = NULL; }
+  | logic_stmt _symbol_logic_connection logic_stmt      { $$ = opr($2, 2, $1, $3); }
 	;
 
 _symbol_logic_connection
-  : AND_OP
-  | OR_OP
+  : AND_OP    { $$ = $1; }
+  | OR_OP     { $$ = $1; }
   ;
 
 //  bool 比较的值
@@ -429,7 +430,7 @@ type_judge_stmt
 	;
 
 not_bool_param_expr
-  : '!' bool_param_expr   { $$ = NULL; }
+  : '!' bool_param_expr   { $$ = opr('!', 1, $2); }
   ;
 
 // 比较表达式
@@ -439,11 +440,11 @@ compare_expr
   ;
 
 number_compare_expr
-  : common_number_expr _symbol_compare common_number_expr { $$ = NULL; }
+  : common_number_expr _symbol_compare common_number_expr { $$ = opr($2, 2, $1, $3); }
   ;
 
 object_compare_expr
-  : common_object_expr _symbol_equals_not common_types_expr  { $$ = NULL; }
+  : common_object_expr _symbol_equals_not common_types_expr  { $$ = opr($2, 2, $1, $3); }
   ;
 
 _symbol_compare
@@ -462,8 +463,8 @@ _symbol_equals_not
 
 //  自增 OR 自减
 self_inc_dec_stmt
-	: self_inc_dec_operators common_values_expr { $$ = opr($1,1, $2 ); }
-	| common_values_expr self_inc_dec_operators  %prec INC_OP_BACK { $$ = NULL; }
+	: self_inc_dec_operators common_values_expr { $$ = opr(OPR_INC_DEC,2, intNode($1), $2 ); }
+	| common_values_expr self_inc_dec_operators  %prec INC_OP_BACK { $$ = opr(OPR_INC_DEC, 2, $1, intNode($2)); }
 	;
 
 self_inc_dec_operators
@@ -484,7 +485,7 @@ assign_stmt_value_eq
 // ARRAY_ELE 意思是获得数组元素
 // 数组元素获取语句
 array_ele_stmt
-	: common_object_expr '[' common_number_expr ']'  { $$ = NULL; }
+	: common_object_expr '[' common_number_expr ']'  { $$ = objectArrayElementNode($1, -1, $3); }
 	;
 
 //  赋值语句
@@ -503,7 +504,7 @@ single_assign_stmt_value
   ;
 
 number_change_assign_stmt
-  : common_assignable_expr symbol_change_assign common_number_expr  { $$ = NULL; }
+  : common_assignable_expr symbol_change_assign common_number_expr  { $$ = opr($2, 2, $1, $3); }
   ;
 
 symbol_change_assign
@@ -521,8 +522,8 @@ code_block
     ;
 
 block_item_list
-    : block_item                    { $$ = $1; }
-    | block_item_list block_item    { $$ = $1; }
+    : block_item                    { $$ = opr(OPR_NODE_LIST, 1, $1); }
+    | block_item_list block_item    { $$ = opr(OPR_NODE_LIST, 2 , $1, $2); }
     ;
 
 block_item
@@ -534,8 +535,8 @@ block_item
 
 // string plus string  and some others
 string_plus_stmt
-  : string_expr '+' string_plus_stmt_value    { $$ = NULL; }
-  | string_plus_stmt_value '+' string_expr    { $$ = NULL; }
+  : string_expr '+' string_plus_stmt_value    { $$ = opr('+', 2, $1, $3); }
+  | string_plus_stmt_value '+' string_expr    { $$ = opr('+', 2, $1, $3); }
   ;
 
 string_plus_stmt_value
@@ -547,7 +548,7 @@ string_plus_stmt_value
   ;
 
 number_parentheses_stmt
-  : '(' common_number_expr ')'     { $$ = NULL; }
+  : '(' common_number_expr ')'     { $$ = $2; }
   ;
 
 
@@ -558,11 +559,11 @@ id_expr
 
 multiple_id_expr
     : id_expr       { $$ = $1;}
-    | multiple_id_expr ',' id_expr { $$ = NULL; }
+    | multiple_id_expr ',' id_expr { $$ = opr(OPR_MULTIPLE_ID , 2 , $1, $3); }
     ;
 
 bool_expr
-	: TBOOL   { $$ = number($1); }
+	: TBOOL   { $$ = intNode($1); }
 	;
 
 number_expr
@@ -576,7 +577,7 @@ positive_number_expr
   ;
 
 int_expr
-  : TINTEGER { $$ = number($1); }
+  : TINTEGER { $$ = intNode($1); }
   ;
 
 double_expr

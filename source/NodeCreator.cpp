@@ -247,9 +247,14 @@ XNode * var(char *name)
 	return node;
 }
 
+XNode * varWithNameNeedFree(char *name){
+    // todo  add impl
+    return var(name);
+}
+
 // 数组元素节点
 // 如果使用的变量， 则值放在 第三个参数lengthNode 上
-XNode *arr(char *name, int index, XNode *indexNode) {
+XNode *arrayElementNode(char *name, int index, XNode * indexNode) {
 	XNode * node = newNode();
 	node->arr_obj = (langX::ArrayInfo*) calloc(1, sizeof(langX::ArrayInfo) * 1);
 	node->type = NODE_ARRAY_ELE;
@@ -262,7 +267,7 @@ XNode *arr(char *name, int index, XNode *indexNode) {
 	return node;
 }
 
-XNode * arr2(XNode *objNode, int index, XNode *indexNode)
+XNode * objectArrayElementNode(XNode *objNode, int index, XNode *indexNode)
 {
 	XNode * node = newNode();
 	node->arr_obj = (langX::ArrayInfo*) calloc(1, sizeof(langX::ArrayInfo) * 1);
@@ -276,7 +281,7 @@ XNode * arr2(XNode *objNode, int index, XNode *indexNode)
 	return node;
 }
 
-XNode * xint(int i)
+XNode * intNode(int i)
 {
 	XNode * node = newNode();
 	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
@@ -415,7 +420,7 @@ XNode * xnull()
 	return node;
 }
 
-XNode * claxx(char *name, char *parent, XNode * node, bool flag) {
+XNode * classNode(char *name, char *parent, XNode * node, bool flag) {
 	ClassInfo *pclass = NULL;
 	if (parent != NULL)
 	{
@@ -705,9 +710,6 @@ XObject * callFunc(XFunction* function, XArgsList* args, const char* remark, Nod
 
 
 XNode * argsNode(XArgsList * args) {
-	// 节点的文件信息里面存在了一个 std::string
-	// 如果再用下面的方式进行申请内存，则会在centos 下有问题
-	// XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
 	XNode * node = new XNode();
 	node->type = NODE_ARGS;
 	node->value = NULL;
@@ -1065,3 +1067,4 @@ void execAndFreeNode(XNode *n) {
 
 	freeNode(n);
 }
+

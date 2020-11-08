@@ -14,6 +14,13 @@ Terminals unused in grammar
     CLAXX_MEMBER
     CLAXX_FUNC_CALL
     SCOPE_FUNC_CALL
+    OPR_NODE_LIST
+    OPR_CHANGE_NAME_SPACE
+    OPR_CAT_NS_NAME
+    OPR_CLASS_DECLARE
+    OPR_INC_DEC
+    OPR_IF_ELSE
+    OPR_MULTIPLE_ID
     IFX
     ELSE
     PIPELINE_OP
@@ -57,17 +64,17 @@ Grammar
     3               | %empty
 
     4 statement: _extra_nothing
-    5          | out_declar_stmt
+    5          | out_declare_stmt
     6          | con_ctl_stmt
     7          | simple_stmt
     8          | try_stmt
 
     9 _extra_nothing: ';'
 
-   10 out_declar_stmt: func_declar_stmt
-   11                | class_declar_stmt
-   12                | namespace_declar_stmt
-   13                | namespace_ref_stmt
+   10 out_declare_stmt: func_declare_stmt
+   11                 | class_declare_stmt
+   12                 | namespace_declare_stmt
+   13                 | namespace_ref_stmt
 
    14 require_stmt: require_operators string_expr
 
@@ -80,14 +87,14 @@ Grammar
 
    20 catch_block_stmt: KEY_CATCH '(' id_expr ')' code_block
 
-   21 namespace_declar_stmt: KEY_SET KEY_PUBLIC '=' namespace_name_stmt
+   21 namespace_declare_stmt: KEY_SET KEY_PUBLIC '=' namespace_name_stmt
 
    22 namespace_ref_stmt: KEY_REF namespace_name_stmt
 
    23 namespace_name_stmt: id_expr
    24                    | namespace_name_stmt '.' id_expr
 
-   25 class_declar_stmt: class_name_prefix id_expr class_name_suffix class_body
+   25 class_declare_stmt: class_name_prefix id_expr class_name_suffix class_body
 
    26 class_name_prefix: %empty
    27                  | KEY_AUTO
@@ -101,9 +108,9 @@ Grammar
    32 class_body_items: class_body_item
    33                 | class_body_items class_body_item
 
-   34 class_body_item: var_declar_stmt ';'
+   34 class_body_item: var_declare_stmt ';'
    35                | single_assign_stmt ';'
-   36                | func_declar_stmt
+   36                | func_declare_stmt
    37                | _extra_nothing
 
    38 this_stmt: KEY_THIS
@@ -112,8 +119,8 @@ Grammar
 
    40 static_member_stmt: id_expr SCOPE id_expr
 
-   41 func_declar_stmt: func_name_types FUNC_OP code_block
-   42                 | func_name_types FUNC_OP func_param_list code_block
+   41 func_declare_stmt: func_name_types FUNC_OP code_block
+   42                  | func_name_types FUNC_OP func_param_list code_block
 
    43 func_name_types: id_expr
    44                | '~' id_expr
@@ -128,17 +135,17 @@ Grammar
    50                 | '(' multiple_id_expr ')'
    51                 | multiple_id_expr
 
-   52 var_declar_stmt: _elements_var_declar_stmt
-   53                | var_prefix _elements_var_declar_stmt
+   52 var_declare_stmt: _elements_var_declare_stmt
+   53                 | var_prefix _elements_var_declare_stmt
 
    54 var_prefix: KEY_CONST
    55           | KEY_LOCAL
 
-   56 _elements_var_declar_stmt: element_var_declar_stmt
-   57                          | _elements_var_declar_stmt ',' element_var_declar_stmt
+   56 _elements_var_declare_stmt: element_var_declare_stmt
+   57                           | _elements_var_declare_stmt ',' element_var_declare_stmt
 
-   58 element_var_declar_stmt: id_expr
-   59                        | id_expr '[' common_number_expr ']'
+   58 element_var_declare_stmt: id_expr
+   59                         | id_expr '[' common_number_expr ']'
 
    60 con_ctl_stmt: selection_stmt
    61             | loop_stmt
@@ -196,7 +203,7 @@ Grammar
    96                  | new_expr
    97                  | restrict_stmt
    98                  | require_stmt
-   99                  | var_declar_stmt
+   99                  | var_declare_stmt
 
   100 restrict_stmt: KEY_RESTRICT
   101              | KEY_RESTRICT bool_expr
@@ -411,371 +418,378 @@ Terminals, with rules where they appear
     TSTRING <sValue> (262) 198
     OPERATOR_X__ <sValue> (263) 45
     OP_CALC (264)
-    AND_OP (265) 130
-    OR_OP (266) 131
-    FUNC_OP (267) 41 42 48
-    FUNC_CALL (268)
-    VAR_DECLAR (269)
-    ARRAY_ELE (270)
-    KEY_TRY (271) 18 19
-    KEY_PUBLIC (272) 21
-    KEY_SET (273) 21
-    KEY_IS (274) 134
-    KEY_REF (275) 22
-    KEY_CONTINUE (276) 105
-    KEY_NEW (277) 119
-    KEY_CATCH (278) 20
-    KEY_THIS (279) 38
-    KEY_EXTENDS (280) 29
-    KEY_RESTRICT (281) 100 101
-    KEY_IF (282) 66
-    KEY_ELSE (283) 71 72
-    KEY_WHILE (284) 77
-    KEY_FOR (285) 78
-    KEY_DELETE (286) 124
-    KEY_BREAK (287) 102
-    KEY_RETURN (288) 103 104
-    KEY_SWITCH (289) 63
-    KEY_CASE (290) 75
-    KEY_DEFAULT (291) 76
-    KEY_NULL (292) 199
-    CASE_LIST (293)
-    CLAXX_BODY (294)
-    CLAXX_MEMBER (295)
-    CLAXX_FUNC_CALL (296)
-    SCOPE_FUNC_CALL (297)
-    SCOPE (298) 40
-    LEFT_SHIFT (299) 116
-    RIGHT_SHIFT (300) 117
-    KEY_REQUIRE <iValue> (301) 15
-    KEY_REQUIRE_ONCE <iValue> (302) 16
-    KEY_INCLUDE <iValue> (303) 17
-    KEY_AUTO <iValue> (304) 27
-    KEY_CONST <iValue> (305) 54
-    KEY_LOCAL <iValue> (306) 55
-    ADD_EQ <iValue> (307) 162
-    SUB_EQ <iValue> (308) 163
-    MUL_EQ <iValue> (309) 164
-    DIV_EQ <iValue> (310) 165
-    MOD_EQ <iValue> (311) 166
-    LE_OP <iValue> (312) 143
-    GE_OP <iValue> (313) 142
-    EQ_OP <iValue> (314) 145 147
-    NE_OP <iValue> (315) 144 146
-    INC_OP <iValue> (316) 150
-    DEC_OP <iValue> (317) 151
-    IFX (318)
-    ELSE (319)
-    PIPELINE_OP (320)
-    INC_OP_BACK (321)
-    PRIORITY3 (322)
-    PRIORITY2 (323)
-    PRIORITY1 (324)
-    UMINUS (325)
+    FUNC_OP (265) 41 42 48
+    FUNC_CALL (266)
+    VAR_DECLAR (267)
+    ARRAY_ELE (268)
+    KEY_TRY (269) 18 19
+    KEY_PUBLIC (270) 21
+    KEY_SET (271) 21
+    KEY_IS (272) 134
+    KEY_REF (273) 22
+    KEY_CONTINUE (274) 105
+    KEY_NEW (275) 119
+    KEY_CATCH (276) 20
+    KEY_THIS (277) 38
+    KEY_EXTENDS (278) 29
+    KEY_RESTRICT (279) 100 101
+    KEY_IF (280) 66
+    KEY_ELSE (281) 71 72
+    KEY_WHILE (282) 77
+    KEY_FOR (283) 78
+    KEY_DELETE (284) 124
+    KEY_BREAK (285) 102
+    KEY_RETURN (286) 103 104
+    KEY_SWITCH (287) 63
+    KEY_CASE (288) 75
+    KEY_DEFAULT (289) 76
+    KEY_NULL (290) 199
+    CASE_LIST (291)
+    CLAXX_BODY (292)
+    CLAXX_MEMBER (293)
+    CLAXX_FUNC_CALL (294)
+    SCOPE_FUNC_CALL (295)
+    SCOPE (296) 40
+    LEFT_SHIFT (297) 116
+    RIGHT_SHIFT (298) 117
+    OPR_NODE_LIST (299)
+    OPR_CHANGE_NAME_SPACE (300)
+    OPR_CAT_NS_NAME (301)
+    OPR_CLASS_DECLARE (302)
+    OPR_INC_DEC (303)
+    OPR_IF_ELSE (304)
+    OPR_MULTIPLE_ID (305)
+    KEY_REQUIRE <iValue> (306) 15
+    KEY_REQUIRE_ONCE <iValue> (307) 16
+    KEY_INCLUDE <iValue> (308) 17
+    KEY_AUTO <iValue> (309) 27
+    KEY_CONST <iValue> (310) 54
+    KEY_LOCAL <iValue> (311) 55
+    ADD_EQ <iValue> (312) 162
+    SUB_EQ <iValue> (313) 163
+    MUL_EQ <iValue> (314) 164
+    DIV_EQ <iValue> (315) 165
+    MOD_EQ <iValue> (316) 166
+    LE_OP <iValue> (317) 143
+    GE_OP <iValue> (318) 142
+    EQ_OP <iValue> (319) 145 147
+    NE_OP <iValue> (320) 144 146
+    INC_OP <iValue> (321) 150
+    DEC_OP <iValue> (322) 151
+    AND_OP <iValue> (323) 130
+    OR_OP <iValue> (324) 131
+    IFX (325)
+    ELSE (326)
+    PIPELINE_OP (327)
+    INC_OP_BACK (328)
+    PRIORITY3 (329)
+    PRIORITY2 (330)
+    PRIORITY1 (331)
+    UMINUS (332)
 
 
 Nonterminals, with rules where they appear
 
-    $accept (94)
+    $accept (101)
         on left: 0
-    program (95)
+    program (102)
         on left: 1
         on right: 0
-    statement_list (96)
+    statement_list (103)
         on left: 2 3
         on right: 1 2
-    statement <node> (97)
+    statement <node> (104)
         on left: 4 5 6 7 8
         on right: 2
-    _extra_nothing <node> (98)
+    _extra_nothing <node> (105)
         on left: 9
         on right: 4 37 174
-    out_declar_stmt <node> (99)
+    out_declare_stmt <node> (106)
         on left: 10 11 12 13
         on right: 5
-    require_stmt <node> (100)
+    require_stmt <node> (107)
         on left: 14
         on right: 98
-    require_operators <iValue> (101)
+    require_operators <iValue> (108)
         on left: 15 16 17
         on right: 14
-    try_stmt <node> (102)
+    try_stmt <node> (109)
         on left: 18 19
         on right: 8 171
-    catch_block_stmt <node> (103)
+    catch_block_stmt <node> (110)
         on left: 20
         on right: 19
-    namespace_declar_stmt <node> (104)
+    namespace_declare_stmt <node> (111)
         on left: 21
         on right: 12
-    namespace_ref_stmt <node> (105)
+    namespace_ref_stmt <node> (112)
         on left: 22
         on right: 13
-    namespace_name_stmt <node> (106)
+    namespace_name_stmt <node> (113)
         on left: 23 24
         on right: 21 22 24
-    class_declar_stmt <node> (107)
+    class_declare_stmt <node> (114)
         on left: 25
         on right: 11
-    class_name_prefix <iValue> (108)
+    class_name_prefix <iValue> (115)
         on left: 26 27
         on right: 25
-    class_name_suffix <node> (109)
+    class_name_suffix <node> (116)
         on left: 28 29
         on right: 25
-    class_body <node> (110)
+    class_body <node> (117)
         on left: 30 31
         on right: 25
-    class_body_items <node> (111)
+    class_body_items <node> (118)
         on left: 32 33
         on right: 31 33
-    class_body_item <node> (112)
+    class_body_item <node> (119)
         on left: 34 35 36 37
         on right: 32 33
-    this_stmt <node> (113)
+    this_stmt <node> (120)
         on left: 38
         on right: 210
-    class_member_stmt <node> (114)
+    class_member_stmt <node> (121)
         on left: 39
         on right: 207
-    static_member_stmt <node> (115)
+    static_member_stmt <node> (122)
         on left: 40
         on right: 208
-    func_declar_stmt <node> (116)
+    func_declare_stmt <node> (123)
         on left: 41 42
         on right: 10 36
-    func_name_types <node> (117)
+    func_name_types <node> (124)
         on left: 43 44 45
         on right: 41 42
-    func_param_list <node> (118)
+    func_param_list <node> (125)
         on left: 46 47
         on right: 42
-    lambda_stmt <node> (119)
+    lambda_stmt <node> (126)
         on left: 48
         on right: 203
-    lambda_args_stmt <params> (120)
+    lambda_args_stmt <node> (127)
         on left: 49 50 51
         on right: 48
-    var_declar_stmt <node> (121)
+    var_declare_stmt <node> (128)
         on left: 52 53
         on right: 34 99
-    var_prefix <iValue> (122)
+    var_prefix <iValue> (129)
         on left: 54 55
         on right: 53
-    _elements_var_declar_stmt <node> (123)
+    _elements_var_declare_stmt <node> (130)
         on left: 56 57
         on right: 52 53 57
-    element_var_declar_stmt <node> (124)
+    element_var_declare_stmt <node> (131)
         on left: 58 59
         on right: 56 57
-    con_ctl_stmt <node> (125)
+    con_ctl_stmt <node> (132)
         on left: 60 61
         on right: 6 173
-    selection_stmt <node> (126)
+    selection_stmt <node> (133)
         on left: 62 63
         on right: 60
-    if_stmt <node> (127)
+    if_stmt <node> (134)
         on left: 64 65
         on right: 62
-    single_if_stmt <node> (128)
+    single_if_stmt <node> (135)
         on left: 66
         on right: 64 65 71
-    else_stmt <node> (129)
+    else_stmt <node> (136)
         on left: 67 68
         on right: 65
-    else_if_stmts <node> (130)
+    else_if_stmts <node> (137)
         on left: 69 70
         on right: 67 70
-    else_if_stmt <node> (131)
+    else_if_stmt <node> (138)
         on left: 71
         on right: 69 70
-    single_else_stmt <node> (132)
+    single_else_stmt <node> (139)
         on left: 72
         on right: 67 68
-    case_stmt_list <node> (133)
+    case_stmt_list <node> (140)
         on left: 73 74
         on right: 63 74
-    case_stmt <node> (134)
+    case_stmt <node> (141)
         on left: 75 76
         on right: 73 74
-    loop_stmt <node> (135)
+    loop_stmt <node> (142)
         on left: 77 78
         on right: 61
-    for_logic_stmt <node> (136)
+    for_logic_stmt <node> (143)
         on left: 79 80
         on right: 78
-    for_1_stmt_list <node> (137)
+    for_1_stmt_list <node> (144)
         on left: 81 82 83
         on right: 78 83
-    for_1_stmt <node> (138)
+    for_1_stmt <node> (145)
         on left: 84
         on right: 82 83
-    for_3_stmt_list <node> (139)
+    for_3_stmt_list <node> (146)
         on left: 85 86 87
         on right: 78 87
-    for_3_stmt <node> (140)
+    for_3_stmt <node> (147)
         on left: 88 89
         on right: 86 87
-    simple_stmt <node> (141)
+    simple_stmt <node> (148)
         on left: 90
         on right: 7 172
-    simple_stmt_types <node> (142)
+    simple_stmt_types <node> (149)
         on left: 91 92 93 94 95 96 97 98 99
         on right: 90
-    restrict_stmt <node> (143)
+    restrict_stmt <node> (150)
         on left: 100 101
         on right: 97
-    interrupt_stmt <node> (144)
+    interrupt_stmt <node> (151)
         on left: 102 103 104 105
         on right: 95
-    call_statement <node> (145)
+    call_statement <node> (152)
         on left: 106 107
         on right: 93 107 196 213 221
-    arithmetic_stmt <node> (146)
+    arithmetic_stmt <node> (153)
         on left: 108 109 110 111 112 113 114 115 116 117 118
         on right: 214
-    new_expr <node> (147)
+    new_expr <node> (154)
         on left: 119
         on right: 96 211
-    args_list_with_parentheses <node> (148)
+    args_list_with_parentheses <node> (155)
         on left: 120 121
         on right: 106 107 119
-    args_list <args> (149)
+    args_list <node> (156)
         on left: 122 123
         on right: 121 123
-    delete_expr <node> (150)
+    delete_expr <node> (157)
         on left: 124
         on right: 94
-    logic_stmt <node> (151)
+    logic_stmt <node> (158)
         on left: 125 126 127 128 129
         on right: 66 77 80 129
-    _symbol_logic_connection (152)
+    _symbol_logic_connection <iValue> (159)
         on left: 130 131
         on right: 129
-    bool_param_expr <node> (153)
+    bool_param_expr <node> (160)
         on left: 132 133
         on right: 125 135
-    type_judge_stmt <node> (154)
+    type_judge_stmt <node> (161)
         on left: 134
         on right: 127
-    not_bool_param_expr <node> (155)
+    not_bool_param_expr <node> (162)
         on left: 135
         on right: 126
-    compare_expr <node> (156)
+    compare_expr <node> (163)
         on left: 136 137
         on right: 128
-    number_compare_expr <node> (157)
+    number_compare_expr <node> (164)
         on left: 138
         on right: 136
-    object_compare_expr <node> (158)
+    object_compare_expr <node> (165)
         on left: 139
         on right: 137
-    _symbol_compare <iValue> (159)
+    _symbol_compare <iValue> (166)
         on left: 140 141 142 143 144 145
         on right: 138
-    _symbol_equals_not <iValue> (160)
+    _symbol_equals_not <iValue> (167)
         on left: 146 147
         on right: 139
-    self_inc_dec_stmt <node> (161)
+    self_inc_dec_stmt <node> (168)
         on left: 148 149
         on right: 89 91 180 212
-    self_inc_dec_operators <iValue> (162)
+    self_inc_dec_operators <iValue> (169)
         on left: 150 151
         on right: 148 149
-    assign_stmt_value_eq <node> (163)
+    assign_stmt_value_eq <node> (170)
         on left: 152 153 154
         on right: 132
-    array_ele_stmt <node> (164)
+    array_ele_stmt <node> (171)
         on left: 155
         on right: 206
-    assign_stmt <node> (165)
+    assign_stmt <node> (172)
         on left: 156 157
         on right: 84 88 92
-    single_assign_stmt <node> (166)
+    single_assign_stmt <node> (173)
         on left: 158
         on right: 35 156 160
-    single_assign_stmt_value <node> (167)
+    single_assign_stmt_value <node> (174)
         on left: 159 160
         on right: 158
-    number_change_assign_stmt <node> (168)
+    number_change_assign_stmt <node> (175)
         on left: 161
         on right: 157
-    symbol_change_assign <iValue> (169)
+    symbol_change_assign <iValue> (176)
         on left: 162 163 164 165 166
         on right: 161
-    code_block <node> (170)
+    code_block <node> (177)
         on left: 167 168
         on right: 18 19 20 41 42 48 66 72 75 76 77 78
-    block_item_list <node> (171)
+    block_item_list <node> (178)
         on left: 169 170
         on right: 168 170
-    block_item <node> (172)
+    block_item <node> (179)
         on left: 171 172 173 174
         on right: 169 170
-    string_plus_stmt <node> (173)
+    string_plus_stmt <node> (180)
         on left: 175 176
         on right: 179 225
-    string_plus_stmt_value <node> (174)
+    string_plus_stmt_value <node> (181)
         on left: 177 178 179 180 181
         on right: 175 176
-    number_parentheses_stmt <node> (175)
+    number_parentheses_stmt <node> (182)
         on left: 182
         on right: 181 197 215
-    id_expr <node> (176)
+    id_expr <node> (183)
         on left: 183
         on right: 20 23 24 25 39 40 43 44 58 59 107 119 134 184 185 205
-    multiple_id_expr <node> (177)
+    multiple_id_expr <node> (184)
         on left: 184 185
         on right: 29 47 50 51 124 185
-    bool_expr <node> (178)
+    bool_expr <node> (185)
         on left: 186
         on right: 101 133 204
-    number_expr <node> (179)
+    number_expr <node> (186)
         on left: 187 188
         on right: 152 200 217
-    positive_number_expr <node> (180)
+    positive_number_expr <node> (187)
         on left: 189 190
         on right: 187 194
-    int_expr <node> (181)
+    int_expr <node> (188)
         on left: 191
         on right: 75 190
-    double_expr <node> (182)
+    double_expr <node> (189)
         on left: 192
         on right: 189
-    uminus_expr <node> (183)
+    uminus_expr <node> (190)
         on left: 193
         on right: 188
-    uminus_expr_values <node> (184)
+    uminus_expr_values <node> (191)
         on left: 194 195 196 197
         on right: 193
-    string_expr <node> (185)
+    string_expr <node> (192)
         on left: 198
         on right: 14 175 176 201
-    null_expr <node> (186)
+    null_expr <node> (193)
         on left: 199
         on right: 202
-    common_types_expr <node> (187)
+    common_types_expr <node> (194)
         on left: 200 201 202 203 204
         on right: 139 178 222
-    common_others_values_expr <node> (188)
+    common_others_values_expr <node> (195)
         on left: 205 206 207 208
         on right: 195 209 216
-    common_values_expr <node> (189)
+    common_values_expr <node> (196)
         on left: 209 210 211
         on right: 106 148 149 153 218 220 223
-    common_result_of_call_expr <node> (190)
+    common_result_of_call_expr <node> (197)
         on left: 212 213 214 215
         on right: 154 219 224
-    common_assignable_expr <node> (191)
+    common_assignable_expr <node> (198)
         on left: 216
         on right: 158 161
-    common_number_expr <node> (192)
+    common_number_expr <node> (199)
         on left: 217 218 219
         on right: 59 63 108 109 110 111 112 113 114 115 116 117 118 138 155 161 182
-    common_object_expr <node> (193)
+    common_object_expr <node> (200)
         on left: 220 221
         on right: 39 134 139 155 177
-    common_expr <node> (194)
+    common_expr <node> (201)
         on left: 222 223 224 225
         on right: 104 122 123 159
 
@@ -832,48 +846,48 @@ State 2
     IDENTIFIER  [reduce using rule 26 (class_name_prefix)]
     $default    reduce using rule 1 (program)
 
-    statement                  go to state 30
-    _extra_nothing             go to state 31
-    out_declar_stmt            go to state 32
-    require_stmt               go to state 33
-    require_operators          go to state 34
-    try_stmt                   go to state 35
-    namespace_declar_stmt      go to state 36
-    namespace_ref_stmt         go to state 37
-    class_declar_stmt          go to state 38
-    class_name_prefix          go to state 39
-    this_stmt                  go to state 40
-    class_member_stmt          go to state 41
-    static_member_stmt         go to state 42
-    func_declar_stmt           go to state 43
-    func_name_types            go to state 44
-    var_declar_stmt            go to state 45
-    var_prefix                 go to state 46
-    _elements_var_declar_stmt  go to state 47
-    element_var_declar_stmt    go to state 48
-    con_ctl_stmt               go to state 49
-    selection_stmt             go to state 50
-    if_stmt                    go to state 51
-    single_if_stmt             go to state 52
-    loop_stmt                  go to state 53
-    simple_stmt                go to state 54
-    simple_stmt_types          go to state 55
-    restrict_stmt              go to state 56
-    interrupt_stmt             go to state 57
-    call_statement             go to state 58
-    new_expr                   go to state 59
-    delete_expr                go to state 60
-    self_inc_dec_stmt          go to state 61
-    self_inc_dec_operators     go to state 62
-    array_ele_stmt             go to state 63
-    assign_stmt                go to state 64
-    single_assign_stmt         go to state 65
-    number_change_assign_stmt  go to state 66
-    id_expr                    go to state 67
-    common_others_values_expr  go to state 68
-    common_values_expr         go to state 69
-    common_assignable_expr     go to state 70
-    common_object_expr         go to state 71
+    statement                   go to state 30
+    _extra_nothing              go to state 31
+    out_declare_stmt            go to state 32
+    require_stmt                go to state 33
+    require_operators           go to state 34
+    try_stmt                    go to state 35
+    namespace_declare_stmt      go to state 36
+    namespace_ref_stmt          go to state 37
+    class_declare_stmt          go to state 38
+    class_name_prefix           go to state 39
+    this_stmt                   go to state 40
+    class_member_stmt           go to state 41
+    static_member_stmt          go to state 42
+    func_declare_stmt           go to state 43
+    func_name_types             go to state 44
+    var_declare_stmt            go to state 45
+    var_prefix                  go to state 46
+    _elements_var_declare_stmt  go to state 47
+    element_var_declare_stmt    go to state 48
+    con_ctl_stmt                go to state 49
+    selection_stmt              go to state 50
+    if_stmt                     go to state 51
+    single_if_stmt              go to state 52
+    loop_stmt                   go to state 53
+    simple_stmt                 go to state 54
+    simple_stmt_types           go to state 55
+    restrict_stmt               go to state 56
+    interrupt_stmt              go to state 57
+    call_statement              go to state 58
+    new_expr                    go to state 59
+    delete_expr                 go to state 60
+    self_inc_dec_stmt           go to state 61
+    self_inc_dec_operators      go to state 62
+    array_ele_stmt              go to state 63
+    assign_stmt                 go to state 64
+    single_assign_stmt          go to state 65
+    number_change_assign_stmt   go to state 66
+    id_expr                     go to state 67
+    common_others_values_expr   go to state 68
+    common_values_expr          go to state 69
+    common_assignable_expr      go to state 70
+    common_object_expr          go to state 71
 
 
 State 3
@@ -909,7 +923,7 @@ State 6
 
 State 7
 
-   21 namespace_declar_stmt: KEY_SET • KEY_PUBLIC '=' namespace_name_stmt
+   21 namespace_declare_stmt: KEY_SET • KEY_PUBLIC '=' namespace_name_stmt
 
     KEY_PUBLIC  shift, and go to state 74
 
@@ -1146,7 +1160,7 @@ State 31
 
 State 32
 
-    5 statement: out_declar_stmt •
+    5 statement: out_declare_stmt •
 
     $default  reduce using rule 5 (statement)
 
@@ -1176,28 +1190,28 @@ State 35
 
 State 36
 
-   12 out_declar_stmt: namespace_declar_stmt •
+   12 out_declare_stmt: namespace_declare_stmt •
 
-    $default  reduce using rule 12 (out_declar_stmt)
+    $default  reduce using rule 12 (out_declare_stmt)
 
 
 State 37
 
-   13 out_declar_stmt: namespace_ref_stmt •
+   13 out_declare_stmt: namespace_ref_stmt •
 
-    $default  reduce using rule 13 (out_declar_stmt)
+    $default  reduce using rule 13 (out_declare_stmt)
 
 
 State 38
 
-   11 out_declar_stmt: class_declar_stmt •
+   11 out_declare_stmt: class_declare_stmt •
 
-    $default  reduce using rule 11 (out_declar_stmt)
+    $default  reduce using rule 11 (out_declare_stmt)
 
 
 State 39
 
-   25 class_declar_stmt: class_name_prefix • id_expr class_name_suffix class_body
+   25 class_declare_stmt: class_name_prefix • id_expr class_name_suffix class_body
 
     IDENTIFIER  shift, and go to state 4
 
@@ -1227,52 +1241,52 @@ State 42
 
 State 43
 
-   10 out_declar_stmt: func_declar_stmt •
+   10 out_declare_stmt: func_declare_stmt •
 
-    $default  reduce using rule 10 (out_declar_stmt)
+    $default  reduce using rule 10 (out_declare_stmt)
 
 
 State 44
 
-   41 func_declar_stmt: func_name_types • FUNC_OP code_block
-   42                 | func_name_types • FUNC_OP func_param_list code_block
+   41 func_declare_stmt: func_name_types • FUNC_OP code_block
+   42                  | func_name_types • FUNC_OP func_param_list code_block
 
     FUNC_OP  shift, and go to state 122
 
 
 State 45
 
-   99 simple_stmt_types: var_declar_stmt •
+   99 simple_stmt_types: var_declare_stmt •
 
     $default  reduce using rule 99 (simple_stmt_types)
 
 
 State 46
 
-   53 var_declar_stmt: var_prefix • _elements_var_declar_stmt
+   53 var_declare_stmt: var_prefix • _elements_var_declare_stmt
 
     IDENTIFIER  shift, and go to state 4
 
-    _elements_var_declar_stmt  go to state 123
-    element_var_declar_stmt    go to state 48
-    id_expr                    go to state 124
+    _elements_var_declare_stmt  go to state 123
+    element_var_declare_stmt    go to state 48
+    id_expr                     go to state 124
 
 
 State 47
 
-   52 var_declar_stmt: _elements_var_declar_stmt •
-   57 _elements_var_declar_stmt: _elements_var_declar_stmt • ',' element_var_declar_stmt
+   52 var_declare_stmt: _elements_var_declare_stmt •
+   57 _elements_var_declare_stmt: _elements_var_declare_stmt • ',' element_var_declare_stmt
 
     ','  shift, and go to state 125
 
-    $default  reduce using rule 52 (var_declar_stmt)
+    $default  reduce using rule 52 (var_declare_stmt)
 
 
 State 48
 
-   56 _elements_var_declar_stmt: element_var_declar_stmt •
+   56 _elements_var_declare_stmt: element_var_declare_stmt •
 
-    $default  reduce using rule 56 (_elements_var_declar_stmt)
+    $default  reduce using rule 56 (_elements_var_declare_stmt)
 
 
 State 49
@@ -1434,17 +1448,17 @@ State 67
 
    40 static_member_stmt: id_expr • SCOPE id_expr
    43 func_name_types: id_expr •
-   58 element_var_declar_stmt: id_expr •
-   59                        | id_expr • '[' common_number_expr ']'
+   58 element_var_declare_stmt: id_expr •
+   59                         | id_expr • '[' common_number_expr ']'
   205 common_others_values_expr: id_expr •
 
     SCOPE  shift, and go to state 136
     '['    shift, and go to state 137
 
     FUNC_OP   reduce using rule 43 (func_name_types)
-    ','       reduce using rule 58 (element_var_declar_stmt)
+    ','       reduce using rule 58 (element_var_declare_stmt)
     '['       [reduce using rule 205 (common_others_values_expr)]
-    ';'       reduce using rule 58 (element_var_declar_stmt)
+    ';'       reduce using rule 58 (element_var_declare_stmt)
     $default  reduce using rule 205 (common_others_values_expr)
 
 
@@ -1530,42 +1544,42 @@ State 72
     ';'               shift, and go to state 29
     '}'               shift, and go to state 150
 
-    _extra_nothing             go to state 151
-    require_stmt               go to state 33
-    require_operators          go to state 34
-    try_stmt                   go to state 152
-    this_stmt                  go to state 40
-    class_member_stmt          go to state 41
-    static_member_stmt         go to state 42
-    var_declar_stmt            go to state 45
-    var_prefix                 go to state 46
-    _elements_var_declar_stmt  go to state 47
-    element_var_declar_stmt    go to state 48
-    con_ctl_stmt               go to state 153
-    selection_stmt             go to state 50
-    if_stmt                    go to state 51
-    single_if_stmt             go to state 52
-    loop_stmt                  go to state 53
-    simple_stmt                go to state 154
-    simple_stmt_types          go to state 55
-    restrict_stmt              go to state 56
-    interrupt_stmt             go to state 57
-    call_statement             go to state 58
-    new_expr                   go to state 59
-    delete_expr                go to state 60
-    self_inc_dec_stmt          go to state 61
-    self_inc_dec_operators     go to state 62
-    array_ele_stmt             go to state 63
-    assign_stmt                go to state 64
-    single_assign_stmt         go to state 65
-    number_change_assign_stmt  go to state 66
-    block_item_list            go to state 155
-    block_item                 go to state 156
-    id_expr                    go to state 157
-    common_others_values_expr  go to state 68
-    common_values_expr         go to state 69
-    common_assignable_expr     go to state 70
-    common_object_expr         go to state 71
+    _extra_nothing              go to state 151
+    require_stmt                go to state 33
+    require_operators           go to state 34
+    try_stmt                    go to state 152
+    this_stmt                   go to state 40
+    class_member_stmt           go to state 41
+    static_member_stmt          go to state 42
+    var_declare_stmt            go to state 45
+    var_prefix                  go to state 46
+    _elements_var_declare_stmt  go to state 47
+    element_var_declare_stmt    go to state 48
+    con_ctl_stmt                go to state 153
+    selection_stmt              go to state 50
+    if_stmt                     go to state 51
+    single_if_stmt              go to state 52
+    loop_stmt                   go to state 53
+    simple_stmt                 go to state 154
+    simple_stmt_types           go to state 55
+    restrict_stmt               go to state 56
+    interrupt_stmt              go to state 57
+    call_statement              go to state 58
+    new_expr                    go to state 59
+    delete_expr                 go to state 60
+    self_inc_dec_stmt           go to state 61
+    self_inc_dec_operators      go to state 62
+    array_ele_stmt              go to state 63
+    assign_stmt                 go to state 64
+    single_assign_stmt          go to state 65
+    number_change_assign_stmt   go to state 66
+    block_item_list             go to state 155
+    block_item                  go to state 156
+    id_expr                     go to state 157
+    common_others_values_expr   go to state 68
+    common_values_expr          go to state 69
+    common_assignable_expr      go to state 70
+    common_object_expr          go to state 71
 
 
 State 73
@@ -1582,7 +1596,7 @@ State 73
 
 State 74
 
-   21 namespace_declar_stmt: KEY_SET KEY_PUBLIC • '=' namespace_name_stmt
+   21 namespace_declare_stmt: KEY_SET KEY_PUBLIC • '=' namespace_name_stmt
 
     '='  shift, and go to state 160
 
@@ -2232,7 +2246,7 @@ State 120
 
 State 121
 
-   25 class_declar_stmt: class_name_prefix id_expr • class_name_suffix class_body
+   25 class_declare_stmt: class_name_prefix id_expr • class_name_suffix class_body
 
     KEY_EXTENDS  shift, and go to state 213
 
@@ -2243,8 +2257,8 @@ State 121
 
 State 122
 
-   41 func_declar_stmt: func_name_types FUNC_OP • code_block
-   42                 | func_name_types FUNC_OP • func_param_list code_block
+   41 func_declare_stmt: func_name_types FUNC_OP • code_block
+   42                  | func_name_types FUNC_OP • func_param_list code_block
 
     '('  shift, and go to state 215
     '{'  shift, and go to state 72
@@ -2255,32 +2269,32 @@ State 122
 
 State 123
 
-   53 var_declar_stmt: var_prefix _elements_var_declar_stmt •
-   57 _elements_var_declar_stmt: _elements_var_declar_stmt • ',' element_var_declar_stmt
+   53 var_declare_stmt: var_prefix _elements_var_declare_stmt •
+   57 _elements_var_declare_stmt: _elements_var_declare_stmt • ',' element_var_declare_stmt
 
     ','  shift, and go to state 125
 
-    $default  reduce using rule 53 (var_declar_stmt)
+    $default  reduce using rule 53 (var_declare_stmt)
 
 
 State 124
 
-   58 element_var_declar_stmt: id_expr •
-   59                        | id_expr • '[' common_number_expr ']'
+   58 element_var_declare_stmt: id_expr •
+   59                         | id_expr • '[' common_number_expr ']'
 
     '['  shift, and go to state 137
 
-    $default  reduce using rule 58 (element_var_declar_stmt)
+    $default  reduce using rule 58 (element_var_declare_stmt)
 
 
 State 125
 
-   57 _elements_var_declar_stmt: _elements_var_declar_stmt ',' • element_var_declar_stmt
+   57 _elements_var_declare_stmt: _elements_var_declare_stmt ',' • element_var_declare_stmt
 
     IDENTIFIER  shift, and go to state 4
 
-    element_var_declar_stmt  go to state 218
-    id_expr                  go to state 124
+    element_var_declare_stmt  go to state 218
+    id_expr                   go to state 124
 
 
 State 126
@@ -2390,7 +2404,7 @@ State 136
 
 State 137
 
-   59 element_var_declar_stmt: id_expr '[' • common_number_expr ']'
+   59 element_var_declare_stmt: id_expr '[' • common_number_expr ']'
 
     TINTEGER    shift, and go to state 85
     TDOUBLE     shift, and go to state 86
@@ -2731,41 +2745,41 @@ State 155
     ';'               shift, and go to state 29
     '}'               shift, and go to state 236
 
-    _extra_nothing             go to state 151
-    require_stmt               go to state 33
-    require_operators          go to state 34
-    try_stmt                   go to state 152
-    this_stmt                  go to state 40
-    class_member_stmt          go to state 41
-    static_member_stmt         go to state 42
-    var_declar_stmt            go to state 45
-    var_prefix                 go to state 46
-    _elements_var_declar_stmt  go to state 47
-    element_var_declar_stmt    go to state 48
-    con_ctl_stmt               go to state 153
-    selection_stmt             go to state 50
-    if_stmt                    go to state 51
-    single_if_stmt             go to state 52
-    loop_stmt                  go to state 53
-    simple_stmt                go to state 154
-    simple_stmt_types          go to state 55
-    restrict_stmt              go to state 56
-    interrupt_stmt             go to state 57
-    call_statement             go to state 58
-    new_expr                   go to state 59
-    delete_expr                go to state 60
-    self_inc_dec_stmt          go to state 61
-    self_inc_dec_operators     go to state 62
-    array_ele_stmt             go to state 63
-    assign_stmt                go to state 64
-    single_assign_stmt         go to state 65
-    number_change_assign_stmt  go to state 66
-    block_item                 go to state 237
-    id_expr                    go to state 157
-    common_others_values_expr  go to state 68
-    common_values_expr         go to state 69
-    common_assignable_expr     go to state 70
-    common_object_expr         go to state 71
+    _extra_nothing              go to state 151
+    require_stmt                go to state 33
+    require_operators           go to state 34
+    try_stmt                    go to state 152
+    this_stmt                   go to state 40
+    class_member_stmt           go to state 41
+    static_member_stmt          go to state 42
+    var_declare_stmt            go to state 45
+    var_prefix                  go to state 46
+    _elements_var_declare_stmt  go to state 47
+    element_var_declare_stmt    go to state 48
+    con_ctl_stmt                go to state 153
+    selection_stmt              go to state 50
+    if_stmt                     go to state 51
+    single_if_stmt              go to state 52
+    loop_stmt                   go to state 53
+    simple_stmt                 go to state 154
+    simple_stmt_types           go to state 55
+    restrict_stmt               go to state 56
+    interrupt_stmt              go to state 57
+    call_statement              go to state 58
+    new_expr                    go to state 59
+    delete_expr                 go to state 60
+    self_inc_dec_stmt           go to state 61
+    self_inc_dec_operators      go to state 62
+    array_ele_stmt              go to state 63
+    assign_stmt                 go to state 64
+    single_assign_stmt          go to state 65
+    number_change_assign_stmt   go to state 66
+    block_item                  go to state 237
+    id_expr                     go to state 157
+    common_others_values_expr   go to state 68
+    common_values_expr          go to state 69
+    common_assignable_expr      go to state 70
+    common_object_expr          go to state 71
 
 
 State 156
@@ -2778,16 +2792,16 @@ State 156
 State 157
 
    40 static_member_stmt: id_expr • SCOPE id_expr
-   58 element_var_declar_stmt: id_expr •
-   59                        | id_expr • '[' common_number_expr ']'
+   58 element_var_declare_stmt: id_expr •
+   59                         | id_expr • '[' common_number_expr ']'
   205 common_others_values_expr: id_expr •
 
     SCOPE  shift, and go to state 136
     '['    shift, and go to state 137
 
-    ','       reduce using rule 58 (element_var_declar_stmt)
+    ','       reduce using rule 58 (element_var_declare_stmt)
     '['       [reduce using rule 205 (common_others_values_expr)]
-    ';'       reduce using rule 58 (element_var_declar_stmt)
+    ';'       reduce using rule 58 (element_var_declare_stmt)
     $default  reduce using rule 205 (common_others_values_expr)
 
 
@@ -2807,7 +2821,7 @@ State 159
 
 State 160
 
-   21 namespace_declar_stmt: KEY_SET KEY_PUBLIC '=' • namespace_name_stmt
+   21 namespace_declare_stmt: KEY_SET KEY_PUBLIC '=' • namespace_name_stmt
 
     IDENTIFIER  shift, and go to state 4
 
@@ -3017,13 +3031,13 @@ State 177
     DEC_OP  shift, and go to state 27
     '('     shift, and go to state 138
 
-    AND_OP    reduce using rule 153 (assign_stmt_value_eq)
-    OR_OP     reduce using rule 153 (assign_stmt_value_eq)
     KEY_IS    reduce using rule 220 (common_object_expr)
     EQ_OP     reduce using rule 218 (common_number_expr)
     EQ_OP     [reduce using rule 220 (common_object_expr)]
     NE_OP     reduce using rule 218 (common_number_expr)
     NE_OP     [reduce using rule 220 (common_object_expr)]
+    AND_OP    reduce using rule 153 (assign_stmt_value_eq)
+    OR_OP     reduce using rule 153 (assign_stmt_value_eq)
     ')'       reduce using rule 153 (assign_stmt_value_eq)
     '['       reduce using rule 220 (common_object_expr)
     '.'       reduce using rule 220 (common_object_expr)
@@ -3773,7 +3787,7 @@ State 213
 
 State 214
 
-   25 class_declar_stmt: class_name_prefix id_expr class_name_suffix • class_body
+   25 class_declare_stmt: class_name_prefix id_expr class_name_suffix • class_body
 
     '{'  shift, and go to state 283
 
@@ -3794,7 +3808,7 @@ State 215
 
 State 216
 
-   42 func_declar_stmt: func_name_types FUNC_OP func_param_list • code_block
+   42 func_declare_stmt: func_name_types FUNC_OP func_param_list • code_block
 
     '{'  shift, and go to state 72
 
@@ -3803,16 +3817,16 @@ State 216
 
 State 217
 
-   41 func_declar_stmt: func_name_types FUNC_OP code_block •
+   41 func_declare_stmt: func_name_types FUNC_OP code_block •
 
-    $default  reduce using rule 41 (func_declar_stmt)
+    $default  reduce using rule 41 (func_declare_stmt)
 
 
 State 218
 
-   57 _elements_var_declar_stmt: _elements_var_declar_stmt ',' element_var_declar_stmt •
+   57 _elements_var_declare_stmt: _elements_var_declare_stmt ',' element_var_declare_stmt •
 
-    $default  reduce using rule 57 (_elements_var_declar_stmt)
+    $default  reduce using rule 57 (_elements_var_declare_stmt)
 
 
 State 219
@@ -3861,7 +3875,7 @@ State 224
 
 State 225
 
-   59 element_var_declar_stmt: id_expr '[' common_number_expr • ']'
+   59 element_var_declare_stmt: id_expr '[' common_number_expr • ']'
   108 arithmetic_stmt: common_number_expr • '+' common_number_expr
   109                | common_number_expr • '-' common_number_expr
   110                | common_number_expr • '*' common_number_expr
@@ -4024,12 +4038,12 @@ State 238
 
 State 239
 
-   21 namespace_declar_stmt: KEY_SET KEY_PUBLIC '=' namespace_name_stmt •
+   21 namespace_declare_stmt: KEY_SET KEY_PUBLIC '=' namespace_name_stmt •
    24 namespace_name_stmt: namespace_name_stmt • '.' id_expr
 
     '.'  shift, and go to state 161
 
-    $default  reduce using rule 21 (namespace_declar_stmt)
+    $default  reduce using rule 21 (namespace_declare_stmt)
 
 
 State 240
@@ -4662,34 +4676,34 @@ State 283
     ';'           shift, and go to state 29
     '}'           shift, and go to state 306
 
-    _extra_nothing             go to state 307
-    class_body_items           go to state 308
-    class_body_item            go to state 309
-    this_stmt                  go to state 40
-    class_member_stmt          go to state 41
-    static_member_stmt         go to state 42
-    func_declar_stmt           go to state 310
-    func_name_types            go to state 44
-    var_declar_stmt            go to state 311
-    var_prefix                 go to state 46
-    _elements_var_declar_stmt  go to state 47
-    element_var_declar_stmt    go to state 48
-    call_statement             go to state 133
-    new_expr                   go to state 96
-    array_ele_stmt             go to state 63
-    single_assign_stmt         go to state 312
-    id_expr                    go to state 67
-    common_others_values_expr  go to state 68
-    common_values_expr         go to state 185
-    common_assignable_expr     go to state 231
-    common_object_expr         go to state 71
+    _extra_nothing              go to state 307
+    class_body_items            go to state 308
+    class_body_item             go to state 309
+    this_stmt                   go to state 40
+    class_member_stmt           go to state 41
+    static_member_stmt          go to state 42
+    func_declare_stmt           go to state 310
+    func_name_types             go to state 44
+    var_declare_stmt            go to state 311
+    var_prefix                  go to state 46
+    _elements_var_declare_stmt  go to state 47
+    element_var_declare_stmt    go to state 48
+    call_statement              go to state 133
+    new_expr                    go to state 96
+    array_ele_stmt              go to state 63
+    single_assign_stmt          go to state 312
+    id_expr                     go to state 67
+    common_others_values_expr   go to state 68
+    common_values_expr          go to state 185
+    common_assignable_expr      go to state 231
+    common_object_expr          go to state 71
 
 
 State 284
 
-   25 class_declar_stmt: class_name_prefix id_expr class_name_suffix class_body •
+   25 class_declare_stmt: class_name_prefix id_expr class_name_suffix class_body •
 
-    $default  reduce using rule 25 (class_declar_stmt)
+    $default  reduce using rule 25 (class_declare_stmt)
 
 
 State 285
@@ -4710,9 +4724,9 @@ State 286
 
 State 287
 
-   42 func_declar_stmt: func_name_types FUNC_OP func_param_list code_block •
+   42 func_declare_stmt: func_name_types FUNC_OP func_param_list code_block •
 
-    $default  reduce using rule 42 (func_declar_stmt)
+    $default  reduce using rule 42 (func_declare_stmt)
 
 
 State 288
@@ -4724,9 +4738,9 @@ State 288
 
 State 289
 
-   59 element_var_declar_stmt: id_expr '[' common_number_expr ']' •
+   59 element_var_declare_stmt: id_expr '[' common_number_expr ']' •
 
-    $default  reduce using rule 59 (element_var_declar_stmt)
+    $default  reduce using rule 59 (element_var_declare_stmt)
 
 
 State 290
@@ -4958,26 +4972,26 @@ State 308
     ';'           shift, and go to state 29
     '}'           shift, and go to state 321
 
-    _extra_nothing             go to state 307
-    class_body_item            go to state 322
-    this_stmt                  go to state 40
-    class_member_stmt          go to state 41
-    static_member_stmt         go to state 42
-    func_declar_stmt           go to state 310
-    func_name_types            go to state 44
-    var_declar_stmt            go to state 311
-    var_prefix                 go to state 46
-    _elements_var_declar_stmt  go to state 47
-    element_var_declar_stmt    go to state 48
-    call_statement             go to state 133
-    new_expr                   go to state 96
-    array_ele_stmt             go to state 63
-    single_assign_stmt         go to state 312
-    id_expr                    go to state 67
-    common_others_values_expr  go to state 68
-    common_values_expr         go to state 185
-    common_assignable_expr     go to state 231
-    common_object_expr         go to state 71
+    _extra_nothing              go to state 307
+    class_body_item             go to state 322
+    this_stmt                   go to state 40
+    class_member_stmt           go to state 41
+    static_member_stmt          go to state 42
+    func_declare_stmt           go to state 310
+    func_name_types             go to state 44
+    var_declare_stmt            go to state 311
+    var_prefix                  go to state 46
+    _elements_var_declare_stmt  go to state 47
+    element_var_declare_stmt    go to state 48
+    call_statement              go to state 133
+    new_expr                    go to state 96
+    array_ele_stmt              go to state 63
+    single_assign_stmt          go to state 312
+    id_expr                     go to state 67
+    common_others_values_expr   go to state 68
+    common_values_expr          go to state 185
+    common_assignable_expr      go to state 231
+    common_object_expr          go to state 71
 
 
 State 309
@@ -4989,14 +5003,14 @@ State 309
 
 State 310
 
-   36 class_body_item: func_declar_stmt •
+   36 class_body_item: func_declare_stmt •
 
     $default  reduce using rule 36 (class_body_item)
 
 
 State 311
 
-   34 class_body_item: var_declar_stmt • ';'
+   34 class_body_item: var_declare_stmt • ';'
 
     ';'  shift, and go to state 323
 
@@ -5114,7 +5128,7 @@ State 322
 
 State 323
 
-   34 class_body_item: var_declar_stmt ';' •
+   34 class_body_item: var_declare_stmt ';' •
 
     $default  reduce using rule 34 (class_body_item)
 

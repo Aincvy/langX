@@ -61,67 +61,74 @@ extern int yydebug;
     TSTRING = 262,                 /* TSTRING  */
     OPERATOR_X__ = 263,            /* OPERATOR_X__  */
     OP_CALC = 264,                 /* OP_CALC  */
-    AND_OP = 265,                  /* AND_OP  */
-    OR_OP = 266,                   /* OR_OP  */
-    FUNC_OP = 267,                 /* FUNC_OP  */
-    FUNC_CALL = 268,               /* FUNC_CALL  */
-    VAR_DECLAR = 269,              /* VAR_DECLAR  */
-    ARRAY_ELE = 270,               /* ARRAY_ELE  */
-    KEY_TRY = 271,                 /* KEY_TRY  */
-    KEY_PUBLIC = 272,              /* KEY_PUBLIC  */
-    KEY_SET = 273,                 /* KEY_SET  */
-    KEY_IS = 274,                  /* KEY_IS  */
-    KEY_REF = 275,                 /* KEY_REF  */
-    KEY_CONTINUE = 276,            /* KEY_CONTINUE  */
-    KEY_NEW = 277,                 /* KEY_NEW  */
-    KEY_CATCH = 278,               /* KEY_CATCH  */
-    KEY_THIS = 279,                /* KEY_THIS  */
-    KEY_EXTENDS = 280,             /* KEY_EXTENDS  */
-    KEY_RESTRICT = 281,            /* KEY_RESTRICT  */
-    KEY_IF = 282,                  /* KEY_IF  */
-    KEY_ELSE = 283,                /* KEY_ELSE  */
-    KEY_WHILE = 284,               /* KEY_WHILE  */
-    KEY_FOR = 285,                 /* KEY_FOR  */
-    KEY_DELETE = 286,              /* KEY_DELETE  */
-    KEY_BREAK = 287,               /* KEY_BREAK  */
-    KEY_RETURN = 288,              /* KEY_RETURN  */
-    KEY_SWITCH = 289,              /* KEY_SWITCH  */
-    KEY_CASE = 290,                /* KEY_CASE  */
-    KEY_DEFAULT = 291,             /* KEY_DEFAULT  */
-    KEY_NULL = 292,                /* KEY_NULL  */
-    CASE_LIST = 293,               /* CASE_LIST  */
-    CLAXX_BODY = 294,              /* CLAXX_BODY  */
-    CLAXX_MEMBER = 295,            /* CLAXX_MEMBER  */
-    CLAXX_FUNC_CALL = 296,         /* CLAXX_FUNC_CALL  */
-    SCOPE_FUNC_CALL = 297,         /* SCOPE_FUNC_CALL  */
-    SCOPE = 298,                   /* SCOPE  */
-    LEFT_SHIFT = 299,              /* LEFT_SHIFT  */
-    RIGHT_SHIFT = 300,             /* RIGHT_SHIFT  */
-    KEY_REQUIRE = 301,             /* KEY_REQUIRE  */
-    KEY_REQUIRE_ONCE = 302,        /* KEY_REQUIRE_ONCE  */
-    KEY_INCLUDE = 303,             /* KEY_INCLUDE  */
-    KEY_AUTO = 304,                /* KEY_AUTO  */
-    KEY_CONST = 305,               /* KEY_CONST  */
-    KEY_LOCAL = 306,               /* KEY_LOCAL  */
-    ADD_EQ = 307,                  /* ADD_EQ  */
-    SUB_EQ = 308,                  /* SUB_EQ  */
-    MUL_EQ = 309,                  /* MUL_EQ  */
-    DIV_EQ = 310,                  /* DIV_EQ  */
-    MOD_EQ = 311,                  /* MOD_EQ  */
-    LE_OP = 312,                   /* LE_OP  */
-    GE_OP = 313,                   /* GE_OP  */
-    EQ_OP = 314,                   /* EQ_OP  */
-    NE_OP = 315,                   /* NE_OP  */
-    INC_OP = 316,                  /* INC_OP  */
-    DEC_OP = 317,                  /* DEC_OP  */
-    IFX = 318,                     /* IFX  */
-    ELSE = 319,                    /* ELSE  */
-    PIPELINE_OP = 320,             /* PIPELINE_OP  */
-    INC_OP_BACK = 321,             /* INC_OP_BACK  */
-    PRIORITY3 = 322,               /* PRIORITY3  */
-    PRIORITY2 = 323,               /* PRIORITY2  */
-    PRIORITY1 = 324,               /* PRIORITY1  */
-    UMINUS = 325                   /* UMINUS  */
+    FUNC_OP = 265,                 /* FUNC_OP  */
+    FUNC_CALL = 266,               /* FUNC_CALL  */
+    VAR_DECLAR = 267,              /* VAR_DECLAR  */
+    ARRAY_ELE = 268,               /* ARRAY_ELE  */
+    KEY_TRY = 269,                 /* KEY_TRY  */
+    KEY_PUBLIC = 270,              /* KEY_PUBLIC  */
+    KEY_SET = 271,                 /* KEY_SET  */
+    KEY_IS = 272,                  /* KEY_IS  */
+    KEY_REF = 273,                 /* KEY_REF  */
+    KEY_CONTINUE = 274,            /* KEY_CONTINUE  */
+    KEY_NEW = 275,                 /* KEY_NEW  */
+    KEY_CATCH = 276,               /* KEY_CATCH  */
+    KEY_THIS = 277,                /* KEY_THIS  */
+    KEY_EXTENDS = 278,             /* KEY_EXTENDS  */
+    KEY_RESTRICT = 279,            /* KEY_RESTRICT  */
+    KEY_IF = 280,                  /* KEY_IF  */
+    KEY_ELSE = 281,                /* KEY_ELSE  */
+    KEY_WHILE = 282,               /* KEY_WHILE  */
+    KEY_FOR = 283,                 /* KEY_FOR  */
+    KEY_DELETE = 284,              /* KEY_DELETE  */
+    KEY_BREAK = 285,               /* KEY_BREAK  */
+    KEY_RETURN = 286,              /* KEY_RETURN  */
+    KEY_SWITCH = 287,              /* KEY_SWITCH  */
+    KEY_CASE = 288,                /* KEY_CASE  */
+    KEY_DEFAULT = 289,             /* KEY_DEFAULT  */
+    KEY_NULL = 290,                /* KEY_NULL  */
+    CASE_LIST = 291,               /* CASE_LIST  */
+    CLAXX_BODY = 292,              /* CLAXX_BODY  */
+    CLAXX_MEMBER = 293,            /* CLAXX_MEMBER  */
+    CLAXX_FUNC_CALL = 294,         /* CLAXX_FUNC_CALL  */
+    SCOPE_FUNC_CALL = 295,         /* SCOPE_FUNC_CALL  */
+    SCOPE = 296,                   /* SCOPE  */
+    LEFT_SHIFT = 297,              /* LEFT_SHIFT  */
+    RIGHT_SHIFT = 298,             /* RIGHT_SHIFT  */
+    OPR_NODE_LIST = 299,           /* OPR_NODE_LIST  */
+    OPR_CHANGE_NAME_SPACE = 300,   /* OPR_CHANGE_NAME_SPACE  */
+    OPR_CAT_NS_NAME = 301,         /* OPR_CAT_NS_NAME  */
+    OPR_CLASS_DECLARE = 302,       /* OPR_CLASS_DECLARE  */
+    OPR_INC_DEC = 303,             /* OPR_INC_DEC  */
+    OPR_IF_ELSE = 304,             /* OPR_IF_ELSE  */
+    OPR_MULTIPLE_ID = 305,         /* OPR_MULTIPLE_ID  */
+    KEY_REQUIRE = 306,             /* KEY_REQUIRE  */
+    KEY_REQUIRE_ONCE = 307,        /* KEY_REQUIRE_ONCE  */
+    KEY_INCLUDE = 308,             /* KEY_INCLUDE  */
+    KEY_AUTO = 309,                /* KEY_AUTO  */
+    KEY_CONST = 310,               /* KEY_CONST  */
+    KEY_LOCAL = 311,               /* KEY_LOCAL  */
+    ADD_EQ = 312,                  /* ADD_EQ  */
+    SUB_EQ = 313,                  /* SUB_EQ  */
+    MUL_EQ = 314,                  /* MUL_EQ  */
+    DIV_EQ = 315,                  /* DIV_EQ  */
+    MOD_EQ = 316,                  /* MOD_EQ  */
+    LE_OP = 317,                   /* LE_OP  */
+    GE_OP = 318,                   /* GE_OP  */
+    EQ_OP = 319,                   /* EQ_OP  */
+    NE_OP = 320,                   /* NE_OP  */
+    INC_OP = 321,                  /* INC_OP  */
+    DEC_OP = 322,                  /* DEC_OP  */
+    AND_OP = 323,                  /* AND_OP  */
+    OR_OP = 324,                   /* OR_OP  */
+    IFX = 325,                     /* IFX  */
+    ELSE = 326,                    /* ELSE  */
+    PIPELINE_OP = 327,             /* PIPELINE_OP  */
+    INC_OP_BACK = 328,             /* INC_OP_BACK  */
+    PRIORITY3 = 329,               /* PRIORITY3  */
+    PRIORITY2 = 330,               /* PRIORITY2  */
+    PRIORITY1 = 331,               /* PRIORITY1  */
+    UMINUS = 332                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -136,73 +143,80 @@ extern int yydebug;
 #define TSTRING 262
 #define OPERATOR_X__ 263
 #define OP_CALC 264
-#define AND_OP 265
-#define OR_OP 266
-#define FUNC_OP 267
-#define FUNC_CALL 268
-#define VAR_DECLAR 269
-#define ARRAY_ELE 270
-#define KEY_TRY 271
-#define KEY_PUBLIC 272
-#define KEY_SET 273
-#define KEY_IS 274
-#define KEY_REF 275
-#define KEY_CONTINUE 276
-#define KEY_NEW 277
-#define KEY_CATCH 278
-#define KEY_THIS 279
-#define KEY_EXTENDS 280
-#define KEY_RESTRICT 281
-#define KEY_IF 282
-#define KEY_ELSE 283
-#define KEY_WHILE 284
-#define KEY_FOR 285
-#define KEY_DELETE 286
-#define KEY_BREAK 287
-#define KEY_RETURN 288
-#define KEY_SWITCH 289
-#define KEY_CASE 290
-#define KEY_DEFAULT 291
-#define KEY_NULL 292
-#define CASE_LIST 293
-#define CLAXX_BODY 294
-#define CLAXX_MEMBER 295
-#define CLAXX_FUNC_CALL 296
-#define SCOPE_FUNC_CALL 297
-#define SCOPE 298
-#define LEFT_SHIFT 299
-#define RIGHT_SHIFT 300
-#define KEY_REQUIRE 301
-#define KEY_REQUIRE_ONCE 302
-#define KEY_INCLUDE 303
-#define KEY_AUTO 304
-#define KEY_CONST 305
-#define KEY_LOCAL 306
-#define ADD_EQ 307
-#define SUB_EQ 308
-#define MUL_EQ 309
-#define DIV_EQ 310
-#define MOD_EQ 311
-#define LE_OP 312
-#define GE_OP 313
-#define EQ_OP 314
-#define NE_OP 315
-#define INC_OP 316
-#define DEC_OP 317
-#define IFX 318
-#define ELSE 319
-#define PIPELINE_OP 320
-#define INC_OP_BACK 321
-#define PRIORITY3 322
-#define PRIORITY2 323
-#define PRIORITY1 324
-#define UMINUS 325
+#define FUNC_OP 265
+#define FUNC_CALL 266
+#define VAR_DECLAR 267
+#define ARRAY_ELE 268
+#define KEY_TRY 269
+#define KEY_PUBLIC 270
+#define KEY_SET 271
+#define KEY_IS 272
+#define KEY_REF 273
+#define KEY_CONTINUE 274
+#define KEY_NEW 275
+#define KEY_CATCH 276
+#define KEY_THIS 277
+#define KEY_EXTENDS 278
+#define KEY_RESTRICT 279
+#define KEY_IF 280
+#define KEY_ELSE 281
+#define KEY_WHILE 282
+#define KEY_FOR 283
+#define KEY_DELETE 284
+#define KEY_BREAK 285
+#define KEY_RETURN 286
+#define KEY_SWITCH 287
+#define KEY_CASE 288
+#define KEY_DEFAULT 289
+#define KEY_NULL 290
+#define CASE_LIST 291
+#define CLAXX_BODY 292
+#define CLAXX_MEMBER 293
+#define CLAXX_FUNC_CALL 294
+#define SCOPE_FUNC_CALL 295
+#define SCOPE 296
+#define LEFT_SHIFT 297
+#define RIGHT_SHIFT 298
+#define OPR_NODE_LIST 299
+#define OPR_CHANGE_NAME_SPACE 300
+#define OPR_CAT_NS_NAME 301
+#define OPR_CLASS_DECLARE 302
+#define OPR_INC_DEC 303
+#define OPR_IF_ELSE 304
+#define OPR_MULTIPLE_ID 305
+#define KEY_REQUIRE 306
+#define KEY_REQUIRE_ONCE 307
+#define KEY_INCLUDE 308
+#define KEY_AUTO 309
+#define KEY_CONST 310
+#define KEY_LOCAL 311
+#define ADD_EQ 312
+#define SUB_EQ 313
+#define MUL_EQ 314
+#define DIV_EQ 315
+#define MOD_EQ 316
+#define LE_OP 317
+#define GE_OP 318
+#define EQ_OP 319
+#define NE_OP 320
+#define INC_OP 321
+#define DEC_OP 322
+#define AND_OP 323
+#define OR_OP 324
+#define IFX 325
+#define ELSE 326
+#define PIPELINE_OP 327
+#define INC_OP_BACK 328
+#define PRIORITY3 329
+#define PRIORITY2 330
+#define PRIORITY1 331
+#define UMINUS 332
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 8 "a.y"
+#line 9 "a.y"
 
  int iValue;
  double dValue; /* double value */
@@ -211,7 +225,7 @@ union YYSTYPE
  XParamsList* params; /* params value */
  XArgsList *args;    /* args value */
 
-#line 215 "y.tab.h"
+#line 229 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

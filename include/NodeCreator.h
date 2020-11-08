@@ -37,12 +37,14 @@ extern "C" {
 	XNode * number(double );
 	// 创建一个变量节点， 注意， 变量节点的名字 请使用 malloc等函数分配内存
 	XNode * var(char *);
+	// 创建一个变量节点， 变量名在不需要的时候 需要手动释放内存， 否则会造成泄露
+    XNode * varWithNameNeedFree(char *name);
 	// 创建一个 操作符节点 
 	XNode * opr(int opr, int npos, ...);
 	// 创建一个后缀节点
 	XNode * sopr(int opr, int npos, ...);
 	// 创建一个类节点
-	XNode * claxx(char *name, char *parent, XNode * node , bool);
+	XNode * classNode(char *name, char *parent, XNode * node , bool);
 	// 创建一个函数节点
 	XNode * func(char *, XParamsList *,XNode *);
 	// 创建一个析构函数节点
@@ -59,11 +61,11 @@ extern "C" {
 	// 创建一个节点， 节点内容为实参列表
 	XNode * argsNode(XArgsList *);
 	// 创建一个数组元素节点
-	XNode *arr(char *, int ,XNode *);
+	XNode *arrayElementNode(char *, int , XNode *);
 	// 创建一个数组元素节点
-	XNode *arr2(XNode *, int, XNode *);
+	XNode *objectArrayElementNode(XNode *, int, XNode *);
 	// 创建一个int类型的常量节点
-	XNode *xint(int);
+	XNode *intNode(int);
 	// 切换命名空间
 	XNode *changeNameSpace(char *);
 	// 生成一个lamdba 表达式的节点
