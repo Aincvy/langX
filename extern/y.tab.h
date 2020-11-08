@@ -97,7 +97,7 @@ extern int yydebug;
     RIGHT_SHIFT = 298,             /* RIGHT_SHIFT  */
     OPR_NODE_LIST = 299,           /* OPR_NODE_LIST  */
     OPR_CHANGE_NAME_SPACE = 300,   /* OPR_CHANGE_NAME_SPACE  */
-    OPR_CAT_NS_NAME = 301,         /* OPR_CAT_NS_NAME  */
+    OPR_GET_NAME_SPACE = 301,      /* OPR_GET_NAME_SPACE  */
     OPR_CLASS_DECLARE = 302,       /* OPR_CLASS_DECLARE  */
     OPR_INC_DEC = 303,             /* OPR_INC_DEC  */
     OPR_IF_ELSE = 304,             /* OPR_IF_ELSE  */
@@ -179,7 +179,7 @@ extern int yydebug;
 #define RIGHT_SHIFT 298
 #define OPR_NODE_LIST 299
 #define OPR_CHANGE_NAME_SPACE 300
-#define OPR_CAT_NS_NAME 301
+#define OPR_GET_NAME_SPACE 301
 #define OPR_CLASS_DECLARE 302
 #define OPR_INC_DEC 303
 #define OPR_IF_ELSE 304

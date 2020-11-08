@@ -136,6 +136,13 @@ namespace langX {
 
     void __execNEW(NodeLink *nodeLink, langXThread *thread);
 
+    /**
+     * 执行 删除节点
+     * @param nodeLink
+     * @param thread
+     */
+    void __execDELETE(NodeLink *nodeLink, langXThread *thread);
+
     void __execCLAXX_BODY(NodeLink *nodeLink);
 
 // 变量声明
@@ -151,6 +158,20 @@ namespace langX {
     void __execSCOPE(NodeLink *nodeLink, langXThread *thread);
 
     void __execSCOPE_FUNC_CALL(NodeLink *nodeLink, langXThread *thread);
+
+    /**
+     * 获取一个 命名空间
+     * @param nodeLink
+     * @param thread
+     */
+    void __execGET_NAME_SPACE(NodeLink *nodeLink, langXThread *thread);
+
+    /**
+     * 修改命名空间
+     * @param nodeLink
+     * @param thread
+     */
+    void __execCHANGE_NAME_SPACE(NodeLink *nodeLink, langXThread *thread);
 
 
     void __execRESTRICT(NodeLink *nodeLink, langXThread *thread);
@@ -216,6 +237,16 @@ namespace langX {
     void stateExtends(Node *n);
 
     void doSuffixOperationArgs(XArgsList *args);
+
+
+    // 尝试把 multiple_id 转换成一个 char*[]
+    // param n:  MultipleId的最顶层的那个节点
+    // param len:  返回的长度, -1表示 参数n 由问题
+    char**  convertMultipleId(Node *n, int* len);
+
+    // 释放 有 multipleId 节点转换出来的 char* 类型数组
+    void freeMultipleIdResultArray(char **array, int len);
+
 
 }
 

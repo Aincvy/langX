@@ -115,4 +115,16 @@ namespace langX {
 		}
 	}
 
+    void freeDoubleCharArray(char **array, int len) {
+        if (len <= 0 || array == nullptr) {
+            return;
+        }
+
+        for (int i = 0; i < len; ++i) {
+            free(array[i]);
+        }
+
+        free(array);
+    }
+
 }

@@ -18,4 +18,10 @@ namespace langX {
 	// 判定一个字符串是否是另外一个的结尾
 	bool endsWith(std::string const &fullString, std::string const &ending);
 
+	/**
+	 * 释放一个 char ** 类型的占用内存
+	 * @param len  外层数组的长度
+	 */
+	void freeDoubleCharArray(char **, int len);
+
 }

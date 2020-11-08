@@ -16,7 +16,7 @@ Terminals unused in grammar
     SCOPE_FUNC_CALL
     OPR_NODE_LIST
     OPR_CHANGE_NAME_SPACE
-    OPR_CAT_NS_NAME
+    OPR_GET_NAME_SPACE
     OPR_CLASS_DECLARE
     OPR_INC_DEC
     OPR_IF_ELSE
@@ -454,7 +454,7 @@ Terminals, with rules where they appear
     RIGHT_SHIFT (298) 117
     OPR_NODE_LIST (299)
     OPR_CHANGE_NAME_SPACE (300)
-    OPR_CAT_NS_NAME (301)
+    OPR_GET_NAME_SPACE (301)
     OPR_CLASS_DECLARE (302)
     OPR_INC_DEC (303)
     OPR_IF_ELSE (304)

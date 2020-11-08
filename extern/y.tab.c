@@ -162,7 +162,7 @@ extern int yydebug;
     RIGHT_SHIFT = 298,             /* RIGHT_SHIFT  */
     OPR_NODE_LIST = 299,           /* OPR_NODE_LIST  */
     OPR_CHANGE_NAME_SPACE = 300,   /* OPR_CHANGE_NAME_SPACE  */
-    OPR_CAT_NS_NAME = 301,         /* OPR_CAT_NS_NAME  */
+    OPR_GET_NAME_SPACE = 301,      /* OPR_GET_NAME_SPACE  */
     OPR_CLASS_DECLARE = 302,       /* OPR_CLASS_DECLARE  */
     OPR_INC_DEC = 303,             /* OPR_INC_DEC  */
     OPR_IF_ELSE = 304,             /* OPR_IF_ELSE  */
@@ -244,7 +244,7 @@ extern int yydebug;
 #define RIGHT_SHIFT 298
 #define OPR_NODE_LIST 299
 #define OPR_CHANGE_NAME_SPACE 300
-#define OPR_CAT_NS_NAME 301
+#define OPR_GET_NAME_SPACE 301
 #define OPR_CLASS_DECLARE 302
 #define OPR_INC_DEC 303
 #define OPR_IF_ELSE 304
@@ -354,7 +354,7 @@ enum yysymbol_kind_t
   YYSYMBOL_RIGHT_SHIFT = 43,               /* RIGHT_SHIFT  */
   YYSYMBOL_OPR_NODE_LIST = 44,             /* OPR_NODE_LIST  */
   YYSYMBOL_OPR_CHANGE_NAME_SPACE = 45,     /* OPR_CHANGE_NAME_SPACE  */
-  YYSYMBOL_OPR_CAT_NS_NAME = 46,           /* OPR_CAT_NS_NAME  */
+  YYSYMBOL_OPR_GET_NAME_SPACE = 46,        /* OPR_GET_NAME_SPACE  */
   YYSYMBOL_OPR_CLASS_DECLARE = 47,         /* OPR_CLASS_DECLARE  */
   YYSYMBOL_OPR_INC_DEC = 48,               /* OPR_INC_DEC  */
   YYSYMBOL_OPR_IF_ELSE = 49,               /* OPR_IF_ELSE  */
@@ -932,7 +932,7 @@ static const char *const yytname[] =
   "KEY_SWITCH", "KEY_CASE", "KEY_DEFAULT", "KEY_NULL", "CASE_LIST",
   "CLAXX_BODY", "CLAXX_MEMBER", "CLAXX_FUNC_CALL", "SCOPE_FUNC_CALL",
   "SCOPE", "LEFT_SHIFT", "RIGHT_SHIFT", "OPR_NODE_LIST",
-  "OPR_CHANGE_NAME_SPACE", "OPR_CAT_NS_NAME", "OPR_CLASS_DECLARE",
+  "OPR_CHANGE_NAME_SPACE", "OPR_GET_NAME_SPACE", "OPR_CLASS_DECLARE",
   "OPR_INC_DEC", "OPR_IF_ELSE", "OPR_MULTIPLE_ID", "KEY_REQUIRE",
   "KEY_REQUIRE_ONCE", "KEY_INCLUDE", "KEY_AUTO", "KEY_CONST", "KEY_LOCAL",
   "ADD_EQ", "SUB_EQ", "MUL_EQ", "DIV_EQ", "MOD_EQ", "LE_OP", "GE_OP",
@@ -1981,13 +1981,13 @@ yyreduce:
 
   case 24: /* namespace_name_stmt: id_expr  */
 #line 140 "a.y"
-                   { (yyval.node) = opr(OPR_CAT_NS_NAME, 1, (yyvsp[0].node)); }
+                   { (yyval.node) = opr(OPR_GET_NAME_SPACE, 1, (yyvsp[0].node)); }
 #line 1986 "y.tab.c"
     break;
 
   case 25: /* namespace_name_stmt: namespace_name_stmt '.' id_expr  */
 #line 141 "a.y"
-                                          { (yyval.node) = opr(OPR_CAT_NS_NAME, 2, (yyvsp[-2].node), (yyvsp[0].node)); }
+                                          { (yyval.node) = opr(OPR_GET_NAME_SPACE, 2, (yyvsp[-2].node), (yyvsp[0].node)); }
 #line 1992 "y.tab.c"
     break;
 
@@ -2947,7 +2947,7 @@ yyreduce:
 
   case 185: /* multiple_id_expr: id_expr  */
 #line 561 "a.y"
-                    { (yyval.node) = (yyvsp[0].node);}
+                    { (yyval.node) = opr(OPR_MULTIPLE_ID , 1 , (yyvsp[0].node) );}
 #line 2952 "y.tab.c"
     break;
 

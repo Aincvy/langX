@@ -39,7 +39,7 @@ extern "C" {
 	XNode * var(char *);
 	// 创建一个变量节点， 变量名在不需要的时候 需要手动释放内存， 否则会造成泄露
     XNode * varWithNameNeedFree(char *name);
-	// 创建一个 操作符节点 
+	// 创建一个 操作符节点
 	XNode * opr(int opr, int npos, ...);
 	// 创建一个后缀节点
 	XNode * sopr(int opr, int npos, ...);
@@ -66,8 +66,6 @@ extern "C" {
 	XNode *objectArrayElementNode(XNode *, int, XNode *);
 	// 创建一个int类型的常量节点
 	XNode *intNode(int);
-	// 切换命名空间
-	XNode *changeNameSpace(char *);
 	// 生成一个lamdba 表达式的节点
 	XNode *lambda(XParamsList *,XNode *);
 	// 创建一个形参列表， 或者 追加一个参数到 列表中

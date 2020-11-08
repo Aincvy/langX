@@ -24,8 +24,12 @@ namespace langX {
 	langXObject *newIOException(const char *message);
 	langXObject *newNoClassMemberException(const char *message);
 	langXObject *newNoClassFunctionException(const char *message);
+
 	langXObject *newClassNotFoundException(const char *message);
+	langXObject *newNamespaceNotFoundException(const char *message);
+
 	langXObject *newUnsupportedOperationException(const char *message);
+
 	langXObject *newTypeErrorException(const char *message);
 	langXObject *newFunctionNotFoundException(const char *message);
 	langXObject *newIndexOutOfBoundsException(const char *message);

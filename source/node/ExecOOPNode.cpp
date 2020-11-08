@@ -510,5 +510,68 @@ namespace langX{
     }
 
 
+    void __execDELETE(NodeLink *nodeLink, langXThread *thread){
+
+        // todo delete opr
+        logger->info("delete opr is not impl now.");
+
+    }
+
+    void __execGET_NAME_SPACE(NodeLink *nodeLink, langXThread *thread){
+        if (nodeLink->index == 0) {
+            nodeLink->index = 1;
+            doSubNodes(nodeLink->node);
+            return;
+        }
+
+        auto node = nodeLink->node;
+        auto opr_obj = node->opr_obj;
+
+        // 由 a.y语法文件得知， 第二个元素是一个 子命名空间的名字
+        auto name = opr_obj->op[1]->var_obj->name;
+        auto oldSpaceNode = opr_obj->op[0];
+        XNameSpace * nameSpace = nullptr;
+
+        if (oldSpaceNode == nullptr) {
+            // 直接从 全局空间中获取
+            nameSpace = getState()->singleGetNameSpace(name);
+        } else {
+            // 从前一个命名空间中获取新的值
+            auto firstSon = opr_obj->op[0];
+
+            // 从先前的空间中再尝试获取子空间
+            auto prevNamespace = (XNameSpace*) firstSon->ptr_u;
+            nameSpace = prevNamespace->getNameSpace(name);
+
+            firstSon->ptr_u = nullptr;    // reset field.
+        }
+
+        // 检测指定的命名空间是否存在
+        if (nameSpace == nullptr) {
+            char buf[1024];
+            sprintf(buf, "namespace %s not found", name);
+            thread->throwException(newNamespaceNotFoundException(buf)->addRef());
+            return;
+        }
+
+        node->ptr_u = nameSpace;
+    }
+
+
+    void __execCHANGE_NAME_SPACE(NodeLink *nodeLink, langXThread *thread){
+        if (nodeLink->index == 0) {
+            nodeLink->index = 1;
+            doSubNodes(nodeLink->node);
+            return;
+        }
+
+        auto nsNode = nodeLink->node->opr_obj->op[0];
+        auto ns = (XNameSpace*) nsNode->ptr_u;
+
+        // change ?
+        getState()->changeNameSpace(ns);
+    }
+
+
 
 }

@@ -292,15 +292,6 @@ XNode * intNode(int i)
 	return node;
 }
 
-XNode * changeNameSpace(char * name)
-{
-	XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
-	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
-	node->type = NODE_CHANGE_NAMESPACE;
-	node->con_obj->sValue = name;
-	return node;
-}
-
 XNode * opr(int opr, int npos, ...)
 {
 	va_list ap;
@@ -960,7 +951,7 @@ void freeNode(XNode * n) {
 	}
 
 	//printf("free node\n");
-	if (n->type == NODE_CONSTANT_NUMBER || n->type == NODE_CONSTANT_INTEGER || n->type == NODE_CHANGE_NAMESPACE)
+	if (n->type == NODE_CONSTANT_NUMBER || n->type == NODE_CONSTANT_INTEGER )
 	{
 		if (n->con_obj->sValue != NULL)
 		{
