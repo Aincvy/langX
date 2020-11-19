@@ -8,7 +8,7 @@
 
 // 单个 sheet
 WorkSheet {
-	
+
 	// 
 	_py_worksheet ;
 
@@ -20,7 +20,7 @@ WorkSheet {
 			//local o;
 			//o = _py_worksheet.o();
 			//o.title = newTitle;
-		} 
+		}
 
 		pyTitle = _py_worksheet.get("title");
 		return pyTitle.toStr();
@@ -52,7 +52,7 @@ WorkSheet {
 			pArgs.setItem(0, x);
 			pArgs.setItem(1, y);
 		}
-		
+
 		local cell;
 		cell = pyFunc.callMethod(pArgs);
 		tmp = cell.get("value");
@@ -81,10 +81,10 @@ WorkSheet {
 
 // 工作簿
 Workbook {
-	
+
 	// python 库的 workbook 对象
 	_py_workbook;
-	
+
 	_filepath;
 
 
@@ -96,7 +96,7 @@ Workbook {
 		sheet = _py_workbook.get("active");
 
 		if(sheet.isNull()){
-			// println("sheet is nulll.....");			
+			// println("sheet is nulll.....");
 			return null ;
 		}
 		ws = new WorkSheet();
@@ -106,7 +106,7 @@ Workbook {
 
 	// 创建一个新的子表
 	createSheet => (name) {
-		
+
 		local sheet;
 		pyFunc = _py_workbook.get("create_sheet");
 		//pArgs = _py_hook.newTuple(1);
@@ -114,7 +114,7 @@ Workbook {
 		//sheet = pyFunc.callMethod(pArgs);
 		sheet = pyFunc.callMethod(name);
 
-		if(sheet.isNull()){			
+		if(sheet.isNull()){
 			return null ;
 		}
 		ws = new WorkSheet();
@@ -134,7 +134,7 @@ Workbook {
 		local sheet;
 		sheet = pyFunc.callMethod(pArgs);
 
-		if(sheet.isNull()){			
+		if(sheet.isNull()){
 			return null ;
 		}
 		ws = new WorkSheet();

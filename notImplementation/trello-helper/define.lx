@@ -1,9 +1,15 @@
+set public = langX.ext.trello;
+
+ref langX.python;
+ref langX.core.util;
 
 // Card
 TrelloCard {
 
   // 卡的 id, 名字(显示出来的那一行)， 描述（ 在里面的描述信息）
   id, name, description;
+  // 卡片的所在列表
+  list;
 
   /*
   * 移动一个卡片到别的列表 或者别的 看板的列表
@@ -31,10 +37,20 @@ TrelloCard {
 TrelloList {
 
   id, name;
+  // 卡片列表
+  cardList;
+  // 所在看板
+  board;
 
   // 根据一个 id 获取一张卡
   // return:  a card.
   getCardById => ( id ){
+    return null;
+  }
+
+  // 根据一个 name 获取一张卡
+  // return:  a card.
+  getCardByName => ( name ){
     return null;
   }
 
@@ -55,7 +71,9 @@ TrelloList {
 
 // Board
 TrelloBoard{
-  id, name;
+  id, name, description;
+  // 列表的列表
+  listList;
 
   // 根据一个列表的名字 来获取列表
   // return a list
@@ -77,7 +95,8 @@ TrelloClient {
 
   // 用于请求数据的 三个 属性
   apiKey, apiSecret, token ;
-
+  // 看板列表
+  boardList;
 
   // 构造方法
   TrelloClient => (apiKey, apiSecret, token){
@@ -86,6 +105,14 @@ TrelloClient {
     this.token = token;
   }
 
+  // 初始化 client
+  // 返回 100 说明未知错误
+  // 返回 102 说明 没有找到 trello 库
+  // 返回 103 说明 传入的 参数可能有问题
+  // 返回 0 表示初始化成功
+  init => (){
+    return 100;
+  }
 
   // 根据名字 获取一个 看板
   getBoardByName => ( name ){

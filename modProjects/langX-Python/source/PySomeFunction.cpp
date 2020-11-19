@@ -16,7 +16,7 @@ namespace langX {
 
 
 	Object * langX_PyFunctions_Import(X3rdFunction *func, const X3rdArgs &args) {
-		
+
 		Object *a = args.args[0];
 		if (a == nullptr)
 		{
@@ -55,8 +55,8 @@ namespace langX {
 
 
 	int regPySomeFunction(langXState *state, XNameSpace* space) {
-		// ×¢²áÒ»Ð©º¯Êý½øÈ¥
-		
+		// æ³¨å†Œä¸€äº›å‡½æ•°è¿›åŽ»
+
 		space->putFunction("import", create3rdFunc("import", langX_PyFunctions_Import));
 		space->putFunction("toPyObject", create3rdFunc("toPyObject", langX_PyFunctions_ToPyObject));
 

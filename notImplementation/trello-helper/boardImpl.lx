@@ -1,6 +1,57 @@
 
 // 对 看板类进行 实现
 auto TrelloBoard {
-  
+
+    // python 库 trello 的board 引用
+    _py_board;
+
+
+    // 使用 trello 库更新当前看板的信息
+    updateSelf => (){
+        name = _py_board.get("name").toStr();
+        id = _py_board.get("id").toStr();
+        description = _py_board.get("description").toStr();
+
+        // 更新列表
+        local pyFuncList;
+        pyFuncList = _py_board.get("list_lists");
+        allList = pyFuncList.callMethod();
+
+        listList = new List();
+        for ( i = 0; i < allList.size(); i++){
+            l = new TrelloList();
+            l._py_list = allList.get(i);
+            l.updateSelf();
+            l.board = this;
+
+            listList.add(l);
+        }
+
+    }
+
+    //
+    getListByName => ( name ) {
+      return filterList( list => { return list.name == name; });
+    }
+
+    //
+    getListById => ( id ) {
+      return filterList( list => { return list.id == id; });
+    }
+
+    // 过滤列表
+    filterList => ( filter ) {
+        local tmp ;
+
+        for( i = 0; i < listList.size(); i++){
+            tmp = listList.get(i);
+
+            if( filter(tmp) ) {
+                return tmp;
+            }
+        }
+
+        return null;
+    }
 
 }

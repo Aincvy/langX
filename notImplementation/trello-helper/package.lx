@@ -1,0 +1,7 @@
+// trello-helper 的包内容声明
+
+name = "trello-helper";
+description = "WIP ";
+author = "aincvy";
+version = "0.0.1";
+repository="";     // git 或者之前的仓库地址

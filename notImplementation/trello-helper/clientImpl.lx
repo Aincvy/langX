@@ -1,5 +1,90 @@
+
 // 对 client 类进行实现
 auto TrelloClient {
 
-  
+    _py_hook;
+    // python trello 库的引用
+    _py_trello;
+    // python 类 TrelloClient 的引用
+    _py_client;
+
+    // 实现 define.lx 文件的内容
+    init => (){
+        PythonLib::load();
+        _py_hook = new PythonHook();
+
+        _py_trello = _py_hook.importModule("trello");
+
+        if ( _py_openpyxl.isNull() ) {
+        	return 102 ;
+        }
+
+        // 构造调用函数所需要的参数
+        local args;
+        args = _py_hook.newDict();
+        args.setItem("api_key", apiKey);
+        args.setItem("api_secret", apiSecret);
+        args.setItem("token", token);
+
+        // 获取函数， 并调用
+        local pyFuncTrelloClient;
+        pyFuncTrelloClient = _py_trello.get("TrelloClient");
+        _py_client = pyFuncTrelloClient.callMethod(args);
+
+        if( _py_client == null || _py_client.isNull() ){
+            return 103;
+        }
+
+        updateBoardList();
+
+        // 成功加载了
+        return 0 ;
+    }
+
+    // 更新 看板列表
+    updateBoardList => (){
+        local pyFuncList;
+        pyFuncList = _py_client.get("list_boards");
+        all_boards = pyFuncList.callMethod();
+
+        boardList = new List();
+        for( i = 0; i < all_boards.size() i++){
+            // 填充列表
+            board = new TrelloBoard();
+            board._py_board = all_boards.get(i);
+            board.updateSelf();
+
+            boardList.add(board);
+        }
+
+    }
+
+    // 实现函数
+    getBoardByName => ( name ){
+        return filterBoard( tmp => { return tmp.name == name; } );
+    }
+
+    // 实现函数
+    getBoardById => ( id ) {
+        return filterBoard( tmp => { return tmp.id == id; } );
+    }
+
+    // 过滤看板
+    // filter:   函数， true 表示是， false: 不是
+    filterBoard => (filter ) {
+        local tmp;
+        // 遍历列表， 检测id
+        for ( i = 0; i < boardList.size(); i++ ){
+            tmp = boardList.get(i);
+
+            if( filter(tmp) ){
+                return tmp;
+            }
+        }
+
+        return null;
+    }
+
+
+
 }

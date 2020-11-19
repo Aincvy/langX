@@ -12,7 +12,7 @@
 #include "../../../include/String.h"
 #include "../../../include/XArray.h"
 
-#ifdef WIN32 
+#ifdef WIN32
 #include "../../../lib/Python-3.5.2/Include/Python.h"
 #else
 #include <python/Python.h>
@@ -50,7 +50,7 @@ namespace langX {
 		}
 	}
 
-	// 
+	//
 	PyObject * langXToPyObject(Object *obj) {
 
 		Object *value = obj;
@@ -73,7 +73,7 @@ namespace langX {
 		}
 		else if (value->getType() == ObjectType::XARRAY)
 		{
-			// 数组
+			// 鏁扮粍
 			XArray *array = ((XArrayRef*)value)->getArray();
 			int length = array->getLength();
 			pyValue = PyTuple_New(length);
@@ -188,7 +188,7 @@ namespace langX {
 				arg = argPyObj->pyObj;
 			}
 			else {
-				// 自动转换类型, 不支持的类型会返回nullptr
+				// 鑷姩杞崲绫诲瀷, 涓嶆敮鎸佺殑绫诲瀷浼氳繑鍥瀗ullptr
 				XArray array(args.index);
 				x3rdArgsToArray(args, &array);
 				XArrayRef ref(&array);
@@ -753,5 +753,3 @@ namespace langX {
 		return 0;
 	}
 }
-
-
