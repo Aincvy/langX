@@ -31,12 +31,12 @@ namespace langX {
         if (nodeLink->index == 0) {
             nodeLink->index = 1;
             bool flag = false;
-            if (arrayInfo->objNode != NULL) {
+            if (arrayInfo->objNode != nullptr) {
                 thread->beginExecute(arrayInfo->objNode, true);
                 flag = true;
             }
             //  计算数组的 索引节点
-            if (arrayInfo->indexNode != NULL) {
+            if (arrayInfo->indexNode != nullptr) {
                 Node *t = arrayInfo->indexNode;
                 thread->beginExecute(t, true);
                 flag = true;
@@ -129,7 +129,7 @@ namespace langX {
     // 将节点的值更新到环境中
     void setValueToEnv2(const char *name, Object *val, Environment *env) {
         if (val == NULL || name == NULL || env == NULL) {
-            printf("setValueToEnv Node Args Error. \n");
+            logger->error("setValueToEnv Node Args Error. \n");
             return;
         }
 
@@ -138,7 +138,7 @@ namespace langX {
             env->putObject(name, val);
         } else {
             if (obj->getType() != val->getType()) {
-                printf("setValueToEnv left type not equal right.\n");
+                logger->error("setValueToEnv left type not equal right.\n");
                 return;
             }
             obj->update(val);
@@ -904,10 +904,10 @@ namespace langX {
 
                     XArrayNode *an = (XArrayNode *) t->ptr_u;
                     int len = an->length;
-                    if (an->lengthNode != NULL) {
+                    if (an->lengthNode != nullptr) {
                         Node *t = an->lengthNode;
 
-                        if (t->value == NULL || t->value->getType() != NUMBER) {
+                        if (t->value == nullptr || t->value->getType() != NUMBER) {
                             //printf("error array length !\n");
                             thread->throwException(newException("error array length !")->addRef());
                             return;
@@ -937,18 +937,17 @@ namespace langX {
     void __execVAR_DECLAR_CheckValue(Node *n, langXThread *thread) {
         for (int i = 0; i < n->opr_obj->op_count; i++) {
             Node *t = n->opr_obj->op[i];
-            if (t == NULL || t->type != NODE_VARIABLE) {
+            if (t == nullptr || t->type != NODE_VARIABLE) {
                 if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR) {
                     __execVAR_DECLAR_CheckValue(t, thread);
                 } else if (t->type == NODE_ARRAY) {
-                    if (t->ptr_u == NULL) {
-                        //printf("delar array erorr!\n");
+                    if (t->ptr_u == nullptr) {
                         thread->throwException(newException("Inner Error! delar array erorr!")->addRef());
                         return;
                     }
 
                     XArrayNode *an = (XArrayNode *) t->ptr_u;
-                    if (an->lengthNode != NULL) {
+                    if (an->lengthNode != nullptr) {
                         Node *t = an->lengthNode;
                         thread->beginExecute(t, true);
                     }
@@ -960,28 +959,30 @@ namespace langX {
 
     // 变量声明
     void __execVAR_DECLAR(NodeLink *nodeLink, langXThread *thread) {
-        Node *n = nodeLink->node;
-        nodeLink->backAfterExec = false;
-        if (nodeLink->index == 0) {
-            // 检测数组节点，都给赋值了
-            __execVAR_DECLAR_CheckValue(n, thread);
-            nodeLink->index = 1;
-        } else {
-            // 真正的声明变量
-            __realExecVAR_DECLAR(n, thread);
-            nodeLink->backAfterExec = true;
-        }
+//        Node *n = nodeLink->node;
+//        nodeLink->backAfterExec = false;
+//        if (nodeLink->index == 0) {
+//            // 检测数组节点，都给赋值了
+//            __execVAR_DECLAR_CheckValue(n, thread);
+//            nodeLink->index = 1;
+//        } else {
+//            // 真正的声明变量
+//            __realExecVAR_DECLAR(n, thread);
+//            nodeLink->backAfterExec = true;
+//        }
 
         // 新版本的逻辑
         // 0: 前缀修饰，  1: 变量名列表或者数组列表
         auto node = nodeLink->node;
         auto opr_obj = node->opr_obj;
         auto prefixNode = opr_obj->op[0];
-        auto prefix = prefixNode->con_obj->iValue;
+        auto prefix = prefixNode == nullptr ? 0 : prefixNode->con_obj->iValue;
         auto varListNode = opr_obj->op[1];
 
-        // todo  add var ...
+        getState()->curThread()->setVarDeclarePrefix(prefix);
 
+        // exec var node
+        doSubNodes(varListNode);
     }
 
 
@@ -1360,6 +1361,125 @@ namespace langX {
     }
 
 
+    /**
+     * 更新变量的前缀  | 换句话说就是应用变量的前缀
+     * @param object 变量值的引用
+     * @param prefix 前缀
+     */
+    void updateVariablePrefix(Object *object, int prefix){
+        // check prefix
+        if (prefix == KEY_CONST) {
+            object->setConst(true);
+        } else if (prefix == KEY_LOCAL) {
+            object->setLocal(true);
+        }
+
+    }
+
+    /**
+     * 变量节点的处理
+     * @param node
+     * @param thread
+     */
+    void __execNodeVariableWork(Node *node, langXThread *thread){
+        // 变量名字
+        auto varName = node->var_obj->name;
+        auto varDeclarePrefix = thread->getVarDeclarePrefix();
+        if (varDeclarePrefix >= 0) {
+            // 这里应该声明变量
+            NullObject nullObject;
+            auto p = &nullObject;
+            updateVariablePrefix(p, varDeclarePrefix);
+
+            setValueToEnv(varName, p);
+        } else {
+            // 这里应该是获取变量的值
+            // 协调程序， 使变量的 obj 处于赋值状态
+            if (node->value == nullptr) {
+                Object *obj = getValue(node->var_obj->name);
+
+                if (obj == nullptr) {
+
+                    // find function.
+                    Function *func = getState()->curThread()->getFunction(node->var_obj->name);
+                    if (func != nullptr) {
+                        node->value = Allocator::allocateFunctionRef(func);
+                    } else {
+                        node->value = new NullObject();
+                    }
+                } else {
+                    // 变量类型为 一个 copy
+                    node->value = obj->clone();
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 执行一个 获取数组元素 / 数组声明的节点
+     * @param node
+     * @param thread  执行的线程
+     */
+    void __execNodeArrayElementWork(Node *node, NodeLink *nodeLink, langXThread *thread){
+        ArrayInfo *arrayInfo = node->arr_obj;
+
+        auto varDeclarePrefix = thread->getVarDeclarePrefix();
+        if (varDeclarePrefix >= 0) {
+            // 数组声明的节点
+            if (nodeLink->index == 0) {
+                nodeLink->index++;
+                // 计算数组的长度
+                if (arrayInfo->indexNode != nullptr) {
+                    Node *t = arrayInfo->indexNode;
+                    thread->beginExecute(t, true);
+                    return;
+                }
+            }
+
+            // 声明
+            auto arrayName = arrayInfo->name;
+            auto len = arrayInfo->index;
+            if (arrayInfo->indexNode != nullptr) {
+                // 存在了值
+                Node *t = arrayInfo->indexNode;
+
+                if (t->value == nullptr || t->value->getType() != NUMBER) {
+                    thread->throwException(newException("error array length !")->addRef());
+                    return;
+                }
+
+                len = ((Number *) t->value)->getIntValue();
+                Allocator::free(t->value);
+                t->value = nullptr;
+            }
+
+            XArray* array = Allocator::allocateArray(len);
+            auto ref = array->addRef();
+            ref->setEmergeEnv(thread->getCurrentEnv());
+            updateVariablePrefix(ref, varDeclarePrefix);
+
+            setValueToEnv(arrayName, ref);
+
+            freeArrayInfo(arrayInfo);
+        } else {
+            // 获取数组的节点
+
+            if (nodeLink->index == 0) {
+                // 获取一些参数值
+                Object *tmpValue = getValueFromArrayInfo(arrayInfo, nodeLink, thread);
+                if (tmpValue != nullptr) {
+                    // 可能上面的执行中没需要参数，一次就成功了，直接将值处理了就好
+                    node->value = tmpValue;
+                    freeArrayInfo(arrayInfo);
+                }
+            } else {
+                node->value = getValueFromArrayInfo(arrayInfo, nodeLink, thread);
+                freeArrayInfo(arrayInfo);
+            }
+        }
+    }
+
 /*
 	 * 执行节点，  节点的结果 将 放在  Node.value 上
 	 * 这是一个 Object 类型的指针    07-24
@@ -1377,35 +1497,13 @@ namespace langX {
         Node *node = nodeLink->node;
 
         if (node->type == NODE_VARIABLE) {
-            //printf("__execNode NODE_VARIABLE\n");
-            // 协调程序， 使变量的 obj 处于赋值状态
-            if (node->value == NULL) {
-                //printf("__execNode 01\n");
-                Object *obj = getValue(node->var_obj->name);
-
-                if (obj == NULL) {
-                    //printf("var %s=null \n", node->var_obj->name);
-
-                    // find function.
-                    Function *func = getState()->curThread()->getFunction(node->var_obj->name);
-                    if (func != nullptr) {
-                        node->value = Allocator::allocateFunctionRef(func);
-                    } else {
-                        node->value = new NullObject();
-                    }
-                } else {
-                    // 变量类型为 一个 copy
-                    node->value = obj->clone();
-                }
-            }
-
+            __execNodeVariableWork(node, thread);
             return;
         } else if (node->type == NODE_CONSTANT_NUMBER) {
             logger->debug("__execNode NODE_CONSTANT_NUMBER: %.4f", node->con_obj->dValue);
             node->value = Allocator::allocateNumber(node->con_obj->dValue);
             return;
         } else if (node->type == NODE_CONSTANT_STRING) {
-            //printf("__execNode NODE_CONSTANT_STRING\n");
             //  因为匹配出的字符串是带有 双引号的， 现在要去掉这个双引号
             char *tmp = strndup(node->con_obj->sValue + 1, strlen(node->con_obj->sValue) - 2);
             node->value = Allocator::allocateString(tmp);
@@ -1483,19 +1581,7 @@ namespace langX {
             node->value = Allocator::allocate(NULLOBJECT);
             return;
         } else if (node->type == NODE_ARRAY_ELE) {
-            ArrayInfo *arrayInfo = node->arr_obj;
-            if (nodeLink->index == 0) {
-                // 获取一些参数值
-                Object *tmpValue = getValueFromArrayInfo(arrayInfo, nodeLink, thread);
-                if (tmpValue != nullptr) {
-                    // 可能上面的执行中没需要参数，一次就成功了，直接将值处理了就好
-                    node->value = tmpValue;
-                    freeArrayInfo(arrayInfo);
-                }
-            } else {
-                node->value = getValueFromArrayInfo(arrayInfo, nodeLink, thread);
-                freeArrayInfo(arrayInfo);
-            }
+            __execNodeArrayElementWork(node, nodeLink, thread);
             return;
         }
 

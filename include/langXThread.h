@@ -44,6 +44,8 @@ namespace langX {
 		short inContinue = 0;
 		// 在case 的时候是否需要计算case 的条件
 		short inCaseNeedCon = 0;
+        // 变量声明的前缀，  -1 表示非变量声明， 0 表示无前缀， CONST 和LOCAL 的常量则表示相应的含义
+		short varDeclarePrefix = -1;
 
 		// 是否内部执行中回退了节点， 这样会导致最外层的curLink 变量失效
 		bool backInExec = false;   
@@ -90,6 +92,10 @@ namespace langX {
 		bool isBackInExec();
 		void setFuncRootNode(Node*);
 		Node* getFuncRootNode();
+		// 设置变量声明的前缀
+		void setVarDeclarePrefix(int prefix);
+		// 获取当前变量设置的前缀
+		int getVarDeclarePrefix();
 
 		void putObject(const char*, Object*);
 		void putObject(const std::string &, Object*);

@@ -578,7 +578,15 @@ namespace langX {
 		this->m_current_env = env;
 	}
 
-	langXThreadMgr::langXThreadMgr()
+    void langXThread::setVarDeclarePrefix(int prefix) {
+        m_exec_status.varDeclarePrefix = (short)prefix;
+    }
+
+    int langXThread::getVarDeclarePrefix() {
+        return m_exec_status.varDeclarePrefix;
+    }
+
+    langXThreadMgr::langXThreadMgr()
 	{
 		this->m_id_gen = 0;
 	}
