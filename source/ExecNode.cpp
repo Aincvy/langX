@@ -1362,6 +1362,132 @@ namespace langX {
 
 
     /**
+     * 声明一个函数
+     * @param nodeLink
+     * @param thread
+     */
+    void __execFUNC_OP(NodeLink *nodeLink, langXThread *thread){
+        auto rootNode = nodeLink->node;
+        auto oprObj = rootNode->opr_obj;
+        // 函数的名字
+        auto nameNode = oprObj->op[0];
+        // 函数的参数
+        auto paramNode = oprObj->op[1];
+        // 函数的执行内容
+        auto blockNode = oprObj->op[2];
+
+        //
+        auto funcName = nameNode == nullptr ? nullptr : nameNode->var_obj->name;
+
+        // 获取参数列表
+        ParamsList *paramsList = (ParamsList*) calloc(1, sizeof(ParamsList));
+        if (paramNode != nullptr) {
+            // 存在参数列表
+            int len;
+            auto list = convertMultipleId(paramNode, &len);
+            if (len > 0) {
+                // 存在参数列表
+                for (int i = 0; i < len; ++i) {
+                    paramsList->args[i] = list[i];
+                }
+            }
+            paramsList->index = len;
+        }
+
+        // 获取函数的参数
+        auto func = funcName == nullptr ? new Function(blockNode) : new Function(funcName, blockNode);
+        func->setParamsList(paramsList);
+
+        // 把函数放入环境中
+        if (!func->hasName()) {
+            // 匿名函数
+            //  2017年12月3日   当运算一个匿名函数的时候， 就把改该节点的值 做成一个函数指针指向这个匿名函数
+            rootNode->value = Allocator::allocateFunctionRef(func);
+            return;
+        }
+        if (thread->getCurrentEnv()->getFunctionSelf(func->getName()) != nullptr) {
+            char tmp[100] = {0};
+            sprintf(tmp, "function %s already declared.", func->getName());
+            thread->throwException(newRedeclarationException(tmp)->addRef());
+            delete func;
+            rootNode->value = NULL;
+            return;
+        }
+
+        //函数的产生环境可能在类内部
+        //func->setEmergeEnv(getState()->curThread()->getCurrentEnv());
+        Environment *env = getState()->getScriptOrNSEnv();
+        if (env != nullptr && env->getType() == EnvironmentType::TScriptEnvironment) {
+            func->setScriptEnv((ScriptEnvironment *) env);
+        }
+        thread->getCurrentEnv()->putFunction(func->getName(), func);
+
+    }
+
+    /**
+     * 执行 类声明
+     * @param nodeLink
+     * @param thread
+     */
+    void __execCLASS_DECLARE(NodeLink *nodeLink, langXThread *thread){
+        auto oprObj = nodeLink->node->opr_obj;
+        auto prefixNode = oprObj->op[0];
+        auto nameNode = oprObj->op[1];
+        auto suffixNode = oprObj->op[2];
+        auto bodyNode = oprObj->op[3];
+
+        // 获取实质的前缀值
+        auto prefix = prefixNode->con_obj->iValue;
+        // 获取类名
+        auto name = nameNode->var_obj->name;
+        // 获取继承的类型
+        char** extends = nullptr;
+        // 继承的类有多少个
+        int extendsLen = 0;
+        if (suffixNode != nullptr) {
+            // 由于语法文件可知 suffixNode 是一个继承节点
+            auto listNode = suffixNode->opr_obj->op[0];
+            extends = convertMultipleId(listNode, &extendsLen);
+        }
+
+        //
+        auto state = getState();
+        auto clzInfo = new ClassInfo(name);
+        if (extendsLen > 0) {
+            auto parentName = extends[0];
+            auto parentClz = state->getClass(parentName);
+            if (parentClz == nullptr) {
+                // todo throw exception..
+                return;
+            }
+
+            clzInfo->setParent(parentClz);
+        }
+
+        // 执行 classBody 节点， 以满足变量和函数的声明
+        auto classAuto = prefix == KEY_AUTO;
+        if (!classAuto) {
+            if (getState()->curThread()->getCurrentEnv()->getClassSelf(clzInfo->getName()) != nullptr) {
+                char tmp[100] = {0};
+                sprintf(tmp, "class %s already declared.", clzInfo->getName());
+                getState()->curThread()->throwException(newRedeclarationException(tmp)->addRef());
+                delete clzInfo;
+                return;
+            }
+        } else {
+            //  自动填充
+            ClassInfo *c1 = getState()->curThread()->getCurrentEnv()->getClass(clzInfo->getName());
+            if (c1 != nullptr) {
+                c1->expand(clzInfo);
+                delete clzInfo;
+                return;
+            }
+        }
+
+        getState()->regClass(clzInfo);
+    }
+
+    /**
      * 更新变量的前缀  | 换句话说就是应用变量的前缀
      * @param object 变量值的引用
      * @param prefix 前缀
@@ -1780,6 +1906,12 @@ namespace langX {
                 break;
             case OPR_CHANGE_NAME_SPACE:
                 __execCHANGE_NAME_SPACE(nodeLink, thread);
+                break;
+            case FUNC_OP:
+                __execFUNC_OP(nodeLink, thread);
+                break;
+            case OPR_CLASS_DECLARE:
+                __execCLASS_DECLARE(nodeLink, thread);
                 break;
             default:
                 break;

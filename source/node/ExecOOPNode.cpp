@@ -198,86 +198,19 @@ namespace langX{
 
 
 
-    // 执行 this.xxx
+    // 执行 this  关键字， 获取当前对象
     void __execTHIS(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
-        Node *n1 = n->opr_obj->op[0];
-        nodeLink->backAfterExec = false;
 
-        if (nodeLink->index == 0) {
-            Environment * env = thread->getNearestObjectEnv();
-            if (!env)
-            {
-                thread->throwException(newUnsupportedOperationException("invalid this stmt! cannot find the object on use this!")->addRef());
-                return;
-            }
-
-            ObjectBridgeEnv *objEnv = (ObjectBridgeEnv*)env;
-            if (n->opr_obj->op_count <= 0)
-            {
-                // no args.  获得自己就好了
-                n->value = objEnv->getEnvObject()->addRef();
-                nodeLink->backAfterExec = true;
-                return;
-            }
-
-            thread->newEnvByBridge(env);
-
-            langXObject *thisObj = objEnv->getEnvObject();
-
-            // 如果重复调用这个节点，则释放之前产生的内存 ， 以防内存泄漏
-            if (n->var_obj != NULL)
-            {
-                if (n->var_obj->name != NULL)
-                {
-                    free(n->var_obj->name);
-                    n->var_obj->name = NULL;
-                }
-
-                free(n->var_obj);
-                n->var_obj = NULL;
-            }
-
-            //  产生变量的名字
-            n->var_obj = (Variable*)calloc(1, sizeof(Variable));
-            if (n1->type == NODE_VARIABLE)
-            {
-                n->var_obj->name = strdup(n1->var_obj->name);
-                if (!thisObj->hasMember(n->var_obj->name))
-                {
-                    // 没有那个成员
-                    char tmp[100] = { 0 };
-                    sprintf(tmp, "no class member %s in class %s!", n->var_obj->name, thisObj->getClassName());
-                    thread->throwException(newNoClassMemberException(tmp)->addRef());
-                    free(n->var_obj->name);
-                    free(n->var_obj);
-                    n->var_obj = NULL;
-                    return;
-                }
-            }
-            else if (n1->type == NODE_OPERATOR)
-            {
-                // 语法解释器并没有实现这部分， 所以暂时先不管。
-                n->var_obj->name = strdup(n1->opr_obj->op[1]->var_obj->name);
-            }
-
-            thread->beginExecute(n1, true);
-            nodeLink->index = 1;
+        Environment * env = thread->getNearestObjectEnv();
+        if (!env)
+        {
+            thread->throwException(newUnsupportedOperationException("invalid this stmt! cannot find the object on use this!")->addRef());
             return;
         }
 
-        if (n1->value == NULL)
-        {
-            //printf("error in __execTHIS, n1->value == NULL");
-            thread->throwException(newException("error in __execTHIS, n1->value == NULL")->addRef());
-        }
-        else {
-            n->value = n1->value->clone();
-        }
-
-        thread->backEnv();
-        freeSubNodes(n);
-        nodeLink->backAfterExec = true;
+        ObjectBridgeEnv *objEnv = (ObjectBridgeEnv*)env;
+        n->value = objEnv->getEnvObject()->addRef();
     }
 
 

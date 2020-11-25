@@ -93,6 +93,9 @@ namespace langX {
 			freeNode(this->m_node_root);
 			this->m_node_root = NULL;
 		}
+
+		// todo  参数列表
+
 	}
 
 	const char * Function::getName() const
