@@ -74,6 +74,8 @@
 %nonassoc PRIORITY1
 %nonassoc UMINUS
 
+%glr-parser
+
 %start program
 %%
 

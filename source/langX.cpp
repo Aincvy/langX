@@ -130,7 +130,7 @@ namespace langX {
 
 	void langXState::regClassToGlobal(ClassInfo *c)
 	{
-		if (c == NULL)
+		if (c == nullptr)
 		{
 			return;
 		}
@@ -652,8 +652,8 @@ namespace langX {
 			}
 		}
 
-		logger->debug("load rtlib.");
-		loadRTLib(this);
+		logger->debug("load rt-lib.  [jump ...]");
+		// loadRTLib(this);
 
 		logger->debug("load config file over.");
 		return 0;

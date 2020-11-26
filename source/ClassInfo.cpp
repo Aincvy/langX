@@ -17,6 +17,9 @@ namespace langX {
 
 	langX::ClassInfo::~ClassInfo()
 	{
+        //
+        // printf("[ClassInfo] delete: %s\n", this->m_name.c_str());
+
 		// 释放 member ， 函数回头再进行释放
 		for (auto i = this->m_members.begin(); i != this->m_members.end(); i++)
 		{
@@ -32,7 +35,7 @@ namespace langX {
 
 	void ClassInfo::addMember(const char *name, Object *obj)
 	{
-		if (obj == NULL)
+		if (obj == nullptr)
 		{
 			return;
 		}
