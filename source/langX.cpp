@@ -108,7 +108,7 @@ namespace langX {
 		X3rdFunction *func = new X3rdFunction();
 		func->setName(name);
 		func->setWorker(worker);
-		func->setParamsList(NULL);
+		func->setParamsList(nullptr);
 		func->setLangX(this);
 		this->m_global_env->putFunction(name, func);
 	}

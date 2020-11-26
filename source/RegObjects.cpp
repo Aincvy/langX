@@ -14,7 +14,6 @@ namespace langX {
 		ClassInfo *loggerClass = regLoggerClass(state);
 
 		langXObject *obj= loggerClass->newObject(false);
-
 		state->getGlobalEnv()->putObject("logger", obj->addRef());
 		logger->debug("reg logger object to global.");
 	}
@@ -23,6 +22,7 @@ namespace langX {
 	{
 		regLogger(state);
 
+        regStringClass(state);
 	}
 
 	langXObjectExtend * emptyObject()

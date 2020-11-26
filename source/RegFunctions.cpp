@@ -25,6 +25,7 @@
 static struct termios old, newone;
 
 namespace langX {
+
 	/* Initialize new terminal i/o settings */
 	void initTermios(int echo)
 #ifdef WIN32
@@ -73,8 +74,8 @@ namespace langX {
 	Object * langX_println(X3rdFunction *func, const X3rdArgs & args) {
 		if (args.index <= 0)
 		{
-			printf("function %s need at least 1 param!\n", func->getName());
-			return NULL;
+			printf("\n");
+			return nullptr;
 		}
 
 		for (size_t i = 0; i < args.index; i++)
@@ -104,6 +105,7 @@ namespace langX {
 				printf(atmp);
 			}
 		}
+
 		printf("\n");
 
 		return NULL;

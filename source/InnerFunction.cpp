@@ -10,6 +10,8 @@
 #include "../extern/y.tab.h"
 #include "../include/langXObjectRef.h"
 #include "../include/langXThread.h"
+#include "XNameSpace.h"
+#include "ClassInfo.h"
 
 #include <string.h>
 #include <string>
@@ -25,9 +27,9 @@ namespace langX {
 
 		langXObjectRef *ref1 = (langXObjectRef*)obj;
 
-		FunctionRef aref(func);
-		aref.setObj(ref1->getRefObject());
-		Object *retObj = aref.call(args->args, args->index, "");
+		FunctionRef ref(func);
+		ref.setObj(ref1->getRefObject());
+		Object *retObj = ref.call(args->args, args->index, "");
 
 		return retObj;
 	}
@@ -90,134 +92,21 @@ namespace langX {
 
 		if (obj->getType() == STRING)
 		{
-			String * str = (String*)obj;
+		    auto stringClass = getState()->getNameSpace("langX.extend")->getClass("String");
+			auto func = stringClass->getFunction(name);
+            if (func != nullptr) {
+                // 存在该函数， 把字符串当成参数丢进去
+                FunctionRef ref(func);
+                ref.setObj(nullptr);
 
-			if (strcmp(name, "length") == 0)
-			{
-				ret = Allocator::allocateNumber(str->size());
-			}
-			else if (strcmp(name, "subString") == 0)
-			{
-				int index = -1, len = -1;
-				Object *a = args->args[0];
-				if (a && a->getType() == NUMBER)
-				{
-					index = ((Number*)a)->getIntValue();
-				}
+                Object* realArgs[1 + args->index];
+                realArgs[0] = obj;
+                for (int i = 0; i < args->index; ++i) {
+                    realArgs[i + 1] = args->args[i];
+                }
+                ret = ref.call(realArgs, 1, "call from inner func");
+            }
 
-				a = args->args[1];
-				if (a && a->getType() == NUMBER)
-				{
-					len = ((Number*)a)->getIntValue();
-				}
-
-				if (index == -1)
-				{
-					return Allocator::allocate(NULLOBJECT);
-				}
-
-				if (len == -1)
-				{
-					return Allocator::allocateString(str->subStr(index).c_str());
-				}
-
-				return Allocator::allocateString(str->subStr(index, len).c_str());
-			}
-			else if (strcmp(name, "contains") == 0)
-			{
-				Object *a = args->args[0];
-				if (a && a->getType() == STRING)
-				{
-					if (str->contains(((String*)a)->getValue()))
-					{
-						return Allocator::allocateNumber(1);
-					}
-				}
-
-				return Allocator::allocateNumber(0);
-			}
-			else if (strcmp(name, "indexOf") == 0)
-			{
-				Object *a = args->args[0];
-				if (a && a->getType() == STRING)
-				{
-					int i = str->indexOf(((String*)a)->getValue());
-
-					return Allocator::allocateNumber(i);
-				}
-
-				return Allocator::allocateNumber(-1);
-			}
-			else if (strcmp(name, "isEmpty") == 0)
-			{
-				if (str->isEmpty())
-				{
-					return Allocator::allocateNumber(1);
-				}
-
-				return Allocator::allocateNumber(0);
-			}
-			else if (strcmp(name, "replace") == 0)
-			{
-				Object *a = args->args[0];
-				Object *b = args->args[1];
-
-				if (a && b && a->getType() == STRING && b->getType() == STRING)
-				{
-					String *str1 = (String*)a;
-					String *str2 = (String*)b;
-					std::string t1 = str->replace(str1->getValue(), str2->getValue());
-					return Allocator::allocateString(t1.c_str());
-				}
-				return Allocator::allocate(NULLOBJECT);
-			}
-			else if (strcmp(name, "replaceFirst") == 0)
-			{
-				Object *a = args->args[0];
-				Object *b = args->args[1];
-
-				if (a && b && a->getType() == STRING && b->getType() == STRING)
-				{
-					String *str1 = (String*)a;
-					String *str2 = (String*)b;
-					std::string t1 = str->replaceFirst(str1->getValue(), str2->getValue());
-					return Allocator::allocateString(t1.c_str());
-				}
-				return Allocator::allocate(NULLOBJECT);
-			}
-			else if (strcmp(name, "split") == 0)
-			{
-				Object *a = args->args[0];
-				if (a && a->getType() == STRING)
-				{
-					std::vector<std::string> vector1 = str->split(((String*)a)->getValue());
-
-					XArray *array1 = Allocator::allocateArray(vector1.size());
-					int index = 0;
-					for (auto i = vector1.begin(); i != vector1.end(); i++)
-					{
-						array1->set(index++, Allocator::allocateString(((*i).c_str())));
-					}
-
-					return array1->addRef();
-				}
-				return Allocator::allocate(NULLOBJECT);
-			}
-			else if (strcmp(name, "lowerCase") == 0)
-			{
-				std::string t1 = str->lowerCase();
-				return Allocator::allocateString(t1.c_str());
-			}
-			else if (strcmp(name, "upperCase") == 0)
-			{
-				std::string t1 = str->upperCase();
-				return Allocator::allocateString(t1.c_str());
-			}
-			// no effect ...
-			//else if (strcmp(name, "trim") == 0)
-			//{
-			//	str->trim();
-			//}
 		}
 
 		if (ret == nullptr)
