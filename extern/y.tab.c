@@ -1954,7 +1954,7 @@ yyreduce:
     {
         case 3:
 #line 85 "a.y"
-    { execAndFreeNode((yyvsp[(2) - (2)].node));}
+    {   /* execAndFreeNode($2); */ }
     break;
 
   case 5:

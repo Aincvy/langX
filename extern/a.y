@@ -82,7 +82,7 @@ program
 	;
 
 statement_list
-	: statement_list statement { execAndFreeNode($2);}
+: statement_list statement {   /* execAndFreeNode($2); */ }
 	|
 	;
 statement
@@ -346,8 +346,8 @@ simple_stmt_types
 	| interrupt_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
 	| restrict_stmt  { $$ = $1; }
-  | require_stmt      { $$ = $1; }
-  | var_declare_stmt   { $$ = $1; }
+    | require_stmt      { $$ = $1; }
+    | var_declare_stmt   { $$ = $1; }
 	;
 
 //  限定语句， 限定环境
@@ -360,13 +360,13 @@ interrupt_stmt
 	: KEY_BREAK { $$ = opr(KEY_BREAK, 0); }
 	| KEY_RETURN { $$ = opr(KEY_RETURN , 0); }
 	| KEY_RETURN common_expr { $$ = opr(KEY_RETURN , 1 ,$2);}
-  | KEY_CONTINUE { $$ = opr(KEY_CONTINUE,0); }
+    | KEY_CONTINUE { $$ = opr(KEY_CONTINUE,0); }
 	;
 
 //  函数调用
 call_statement
 	: common_values_expr args_list_with_parentheses %prec PRIORITY3 { $$ = opr(FUNC_CALL, 2, $1, $2); }
-  | call_statement '.' id_expr args_list_with_parentheses  %prec PRIORITY2 { $$ = opr(CLAXX_FUNC_CALL, 3, $1, $3, $4); }
+    | call_statement '.' id_expr args_list_with_parentheses  %prec PRIORITY2 { $$ = opr(CLAXX_FUNC_CALL, 3, $1, $3, $4); }
 	;
 
 //  运算语句
@@ -381,7 +381,7 @@ arithmetic_stmt
 	| common_number_expr '^' common_number_expr  { $$ = opr('^',2,$1,$3); }
 	| common_number_expr LEFT_SHIFT common_number_expr  { $$ = opr(LEFT_SHIFT,2,$1,$3); }
 	| common_number_expr RIGHT_SHIFT common_number_expr  { $$ = opr(RIGHT_SHIFT,2,$1,$3); }
-  | '~' common_number_expr  { $$ = opr('~',1,$2); }
+    | '~' common_number_expr  { $$ = opr('~',1,$2); }
 	;
 
 //   new 表达式
