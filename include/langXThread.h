@@ -12,6 +12,7 @@ namespace langX {
 	class Environment;
 	class Object;
 	class langXObjectRef;
+	class langXObject;
 	class Function;
 	struct Node;
 	struct NodeFileInfo;
@@ -47,6 +48,11 @@ namespace langX {
         // 变量声明的前缀，  -1 表示非变量声明， 0 表示无前缀， CONST 和LOCAL 的常量则表示相应的含义
 		short varDeclarePrefix = -1;
 
+		// 奇数说明需要判断， 偶数说明执行成功了， 0表示没有进入if
+		// 在 START_IF 节点中会把此值设置成奇数， 成功执行了一个if分支之后会把奇数变成偶数
+		// 如果 IF节点发现此值是一个偶数， 则跳过判断
+		short stepIf = 0;
+
 		// 是否内部执行中回退了节点， 这样会导致最外层的curLink 变量失效
 		bool backInExec = false;   
 		// 正在执行的函数的根节点
@@ -64,6 +70,8 @@ namespace langX {
 
 		// 获得当前的调用栈
 		StackTrace & getStackTrace();
+		// 获取一些执行的状态
+		StackTraceTopStatus & getStackTraceTopStatus();
 
 		// 获得这个线程的名字
 		const char * getName() const;
@@ -105,7 +113,7 @@ namespace langX {
 
 		// 丢出一个 异常。  参数的内存在执行结束之后会被释放
 		void throwException(langXObjectRef *);
-
+        void throwException(langXObject *);
 
 		// 获得 当前环境
 		Environment *getCurrentEnv() const;

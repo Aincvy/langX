@@ -577,6 +577,12 @@ namespace langX {
 
 
     void __execIF(NodeLink *nodeLink, langXThread *thread) {
+        if (thread->getStackTraceTopStatus().stepIf % 2 == 0) {
+            // 已经执行过一个 if 分支了， 剩下的都不需要执行
+            nodeLink->backAfterExec = true;
+            return;
+        }
+
         Node *n = nodeLink->node;
         Node *n1 = n->opr_obj->op[0];
         if (nodeLink->index == 0) {
@@ -590,16 +596,12 @@ namespace langX {
 
             if (f) {
                 Node *a = n->opr_obj->op[1];
-                if (a != NULL) {
+                if (a != nullptr) {
                     thread->beginExecute(a, true);
                 }
-            } else {
-                if (n->opr_obj->op_count >= 3) {
-                    Node *a = n->opr_obj->op[2];
-                    if (a != NULL) {
-                        thread->beginExecute(a, true);
-                    }
-                }
+
+                // 条件为真， 执行
+                thread->getStackTraceTopStatus().stepIf++;
             }
             nodeLink->index = 2;
             return;
@@ -609,6 +611,73 @@ namespace langX {
         // 清理掉 所有复制  值 占用的内存
         freeSubNodes(n);
         nodeLink->backAfterExec = true;
+    }
+
+    // 开始一个新的 if 系列语句
+    void __execSTART_IF(NodeLink *nodeLink, langXThread *thread){
+        // 开始新的执行
+        auto & status = thread->getStackTraceTopStatus();
+
+        if (nodeLink->index == 0) {
+            nodeLink->index = 1;
+
+            // 奇数 + 2， 偶数 + 1 ,确保执行后是个奇数
+            status.stepIf += status.stepIf % 2 == 0 ? 1 : 2;
+
+            // 执行节点
+            nodeLink->backAfterExec = false;
+            auto oprObj = nodeLink->node->opr_obj;
+            thread->beginExecute(oprObj->op[0]);
+            return;
+        }
+
+        // 还原 step
+        status.stepIf -= min(status.stepIf, status.stepIf % 2 == 0 ? (short)3: (short)2);
+
+        nodeLink->backAfterExec = true;
+    }
+
+    // IF - LESE 语句
+    void __execIF_ELSE(NodeLink *nodeLink, langXThread *thread){
+        if (thread->getStackTraceTopStatus().stepIf % 2 == 1) {
+            // 一个 if 分支都没有执行， 进行判断
+            auto oprObj = nodeLink->node->opr_obj;
+
+            if (nodeLink->index == 0) {
+                nodeLink->index = 1;
+                // 执行 if 节点
+                auto ifNode = oprObj->op[0];
+                thread->beginExecute(ifNode, true);
+                return;
+            }
+
+            auto elseNode = oprObj->op[1];
+            if (elseNode != nullptr) {
+                thread->beginExecute(elseNode);
+                return;
+            }
+        }
+
+        auto n = nodeLink->node;
+        doSuffixOperation(n);
+        // 清理掉 所有复制  值 占用的内存
+        freeSubNodes(n);
+        nodeLink->backAfterExec = true;
+    }
+
+    // else 节点的执行情况
+    void __execELSE(NodeLink *nodeLink, langXThread *thread){
+        if (nodeLink->index == 0) {
+            // 首次执行
+            nodeLink->index = 1;
+            thread->getStackTraceTopStatus().stepIf++;   // 直接 + 1
+            nodeLink->backAfterExec = true;      // 直接 back
+
+            // 执行新的节点
+            thread->beginExecute(nodeLink->node->opr_obj->op[0], true);
+        }
+
+        // 当第二次执行这个节点的时候， 什么都不做。
     }
 
     void __execWHILE(NodeLink *nodeLink, langXThread *thread) {
@@ -1450,14 +1519,18 @@ namespace langX {
             extends = convertMultipleId(listNode, &extendsLen);
         }
 
-        //
+        // todo add more extends ...
         auto state = getState();
         auto clzInfo = new ClassInfo(name);
         if (extendsLen > 0) {
             auto parentName = extends[0];
             auto parentClz = state->getClass(parentName);
             if (parentClz == nullptr) {
-                // todo throw exception..
+                // throw exception..
+                char tmp[100] = {0};
+                sprintf(tmp, "Class %s not found." , parentName);
+                thread->throwException(newClassNotFoundException(tmp)->addRef());
+                delete clzInfo;
                 return;
             }
 
@@ -1465,9 +1538,18 @@ namespace langX {
         }
 
         // 执行 classBody 节点， 以满足变量和函数的声明
+        if (bodyNode != nullptr) {
+            auto *env = clzInfo->getClassEnv();
+            thread->newEnv(env);
+            __execNode(bodyNode, bodyNode);     // 立即处理掉这个节点，但是也仅仅只是处理 到 这个节点
+            thread->backEnv(false);
+        }
+
+        // 关于类前缀的判断和应用
         auto classAuto = prefix == KEY_AUTO;
+        auto oldClassInfo = getState()->curThread()->getCurrentEnv()->getClassSelf(clzInfo->getName());
         if (!classAuto) {
-            if (getState()->curThread()->getCurrentEnv()->getClassSelf(clzInfo->getName()) != nullptr) {
+            if (oldClassInfo != nullptr) {
                 char tmp[100] = {0};
                 sprintf(tmp, "class %s already declared.", clzInfo->getName());
                 getState()->curThread()->throwException(newRedeclarationException(tmp)->addRef());
@@ -1476,9 +1558,8 @@ namespace langX {
             }
         } else {
             //  自动填充
-            ClassInfo *c1 = getState()->curThread()->getCurrentEnv()->getClass(clzInfo->getName());
-            if (c1 != nullptr) {
-                c1->expand(clzInfo);
+            if (oldClassInfo != nullptr) {
+                oldClassInfo->expand(clzInfo);
                 delete clzInfo;
                 return;
             }
@@ -1913,6 +1994,15 @@ namespace langX {
             case OPR_CLASS_DECLARE:
                 __execCLASS_DECLARE(nodeLink, thread);
                 break;
+            case OPR_IF_ELSE:
+                __execIF_ELSE(nodeLink, thread);
+                break;
+            case KEY_ELSE:
+                __execELSE(nodeLink, thread);
+                break;
+            case OPR_START_IF:
+                __execSTART_IF(nodeLink, thread);
+                break;
             default:
                 break;
         }
@@ -1924,14 +2014,14 @@ namespace langX {
 
     void __execNode(Node *node, Node *limitNode) {
         langXThread *thread = getState()->curThread();
-        if (node != NULL) {
+        if (node != nullptr) {
             // 如果没给参数， 就暂时进入一个循环做一些事情
             thread->initRootNode(node);
         }
 
-        Node *lastExecNode = NULL;
-        NodeLink *curLink = NULL;
-        while ((curLink = thread->getCurrentExecute()) != NULL) {
+        Node *lastExecNode = nullptr;
+        NodeLink *curLink = nullptr;
+        while ((curLink = thread->getCurrentExecute()) != nullptr) {
             //  程序没还有结束
             lastExecNode = curLink->node;
 
@@ -1939,7 +2029,7 @@ namespace langX {
             if (curLink->node->type == NodeType::NODE_OPERATOR) {
                 cmd = curLink->node->opr_obj->opr;
             }
-            // printf("curLink: %d\n", cmd);
+
             __realExecNode(curLink, thread);     // 将原来的内容丢到一个新的方法里面
             if (thread->isBackInExec()) {
                 // 上面方法可能会将  curLink 指向的位置内存被删除， 判定下两个值是否一致， 不一致则重新执行

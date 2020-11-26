@@ -319,6 +319,10 @@ namespace langX {
 		return bEnv;
 	}
 
+	void langXThread::throwException(langXObject *object) {
+		throwException(object->addRef());
+	}
+
 	void langXThread::throwException(langXObjectRef *obj)
 	{
 		// 丢出一个异常
@@ -586,7 +590,11 @@ namespace langX {
         return m_exec_status.varDeclarePrefix;
     }
 
-    langXThreadMgr::langXThreadMgr()
+	StackTraceTopStatus &langXThread::getStackTraceTopStatus() {
+		return this->m_exec_status;
+	}
+
+	langXThreadMgr::langXThreadMgr()
 	{
 		this->m_id_gen = 0;
 	}

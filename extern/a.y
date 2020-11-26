@@ -22,7 +22,7 @@
 %token KEY_PUBLIC KEY_SET KEY_IS KEY_REF KEY_CONTINUE KEY_NEW KEY_CATCH KEY_THIS KEY_EXTENDS KEY_RESTRICT
 %token KEY_IF KEY_ELSE KEY_WHILE KEY_FOR KEY_DELETE KEY_BREAK KEY_RETURN KEY_SWITCH KEY_CASE KEY_DEFAULT KEY_NULL
 %token CASE_LIST CLAXX_BODY CLAXX_MEMBER CLAXX_FUNC_CALL SCOPE_FUNC_CALL SCOPE LEFT_SHIFT RIGHT_SHIFT
-%token OPR_NODE_LIST OPR_CHANGE_NAME_SPACE OPR_GET_NAME_SPACE OPR_CLASS_DECLARE OPR_INC_DEC OPR_IF_ELSE OPR_MULTIPLE_ID
+%token OPR_NODE_LIST OPR_CHANGE_NAME_SPACE OPR_GET_NAME_SPACE OPR_CLASS_DECLARE OPR_INC_DEC OPR_IF_ELSE OPR_MULTIPLE_ID OPR_START_IF
 %token <iValue> KEY_REQUIRE KEY_REQUIRE_ONCE KEY_INCLUDE KEY_AUTO KEY_CONST KEY_LOCAL
 %token <iValue> ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<' INC_OP DEC_OP  AND_OP OR_OP
 
@@ -179,7 +179,7 @@ class_body_item
     | _extra_nothing            { $$ = $1; }
     ;
 
-//  this 语句， 暂只支持1级调用
+//  this 语句， 用于获取当前对象
 this_stmt
 	: KEY_THIS    { $$ = opr(KEY_THIS , 0 ); }
 	;
@@ -257,7 +257,7 @@ con_ctl_stmt
 
 //  选择语句
 selection_stmt
-	: if_stmt        { $$ = $1; }
+	: if_stmt        { $$ = opr(OPR_START_IF, 1, $1); }
 	| KEY_SWITCH '(' common_number_expr ')' '{' case_stmt_list '}'  { $$ = opr(KEY_SWITCH, 2 , $3,$6); pretreatSwitch( $$ ) ; }
 	;
 
@@ -271,17 +271,17 @@ single_if_stmt
   ;
 
 else_stmt
-  : else_if_stmts single_else_stmt    { $$ =  opr(OPR_NODE_LIST, 2, $1, $2); }
+  : else_if_stmts single_else_stmt    { $$ =  opr(OPR_IF_ELSE, 2, $1, $2); }
   | single_else_stmt        { $$ = $1; }
   ;
 
 else_if_stmts
-  : else_if_stmt        { $$ = opr(OPR_NODE_LIST, 1, $1); }
-  | else_if_stmts else_if_stmt    { $$ =  opr(OPR_NODE_LIST, 2, $1, $2); }
+  : else_if_stmt        { $$ = opr(OPR_IF_ELSE, 2, $1, NULL); }
+  | else_if_stmts else_if_stmt    { $$ =  opr(OPR_IF_ELSE, 2, $1, $2); }
   ;
 
 else_if_stmt
-  : KEY_ELSE single_if_stmt   { $$ = opr(KEY_ELSE, 2, $2, NULL); }   // 使用2个长度的子节点表示 else if  和下面的单个else 区分
+  : KEY_ELSE single_if_stmt   { $$ = $2; }   // 使用2个长度的子节点表示 else if  和下面的单个else 区分
   ;
 
 single_else_stmt

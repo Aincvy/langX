@@ -90,7 +90,6 @@ namespace langX{
 
         if (n1->value == NULL)
         {
-            //printf("left value %s is not class object or array  !\n", n1->var_obj->name);
             char tmp[100] = { 0 };
             sprintf(tmp, "left value %s is not class object or array  !\n", n1->var_obj->name);
             thread->throwException(newTypeErrorException(tmp)->addRef());
@@ -148,10 +147,10 @@ namespace langX{
         langXObjectRef* objectRef = (langXObjectRef*)n1->value;
 
         // set ptr_u first,  等号的处理部分会用这个属性
-        if (n->ptr_u != NULL)
+        if (n->ptr_u != nullptr)
         {
             delete ((langXObjectRef*)n->ptr_u);
-            n->ptr_u = NULL;
+            n->ptr_u = nullptr;
         }
         n->ptr_u = objectRef->clone();
 
@@ -160,8 +159,8 @@ namespace langX{
         {
             X3rdArgs _3rdArgs;
             memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-            String astr(memberName);
-            _3rdArgs.args[0] = &astr;
+            String tmpStr(memberName);
+            _3rdArgs.args[0] = &tmpStr;
             _3rdArgs.index = 1;
             n->value = callFunction(objectRef, func1, &_3rdArgs);
 
@@ -170,7 +169,8 @@ namespace langX{
         }
 
         Object *t = objectRef->getMember(memberName);
-        if (t == NULL || (t != NULL && t->isLocal()))
+        FunctionRef *fr = nullptr;
+        if (t == nullptr || t->isLocal())
         {
             // 变量未找到， 或者变量是一个local
 
@@ -178,7 +178,7 @@ namespace langX{
             Function *func = objectRef->getFunction(memberName);
             if (func != nullptr)
             {
-                FunctionRef *fr = Allocator::allocateFunctionRef(func);
+                fr = Allocator::allocateFunctionRef(func);
                 fr->setObj(objectRef->getRefObject());
                 fr->setEmergeEnv(getState()->curThread()->getCurrentEnv());
                 t = fr;
@@ -192,6 +192,13 @@ namespace langX{
             }
         }
         n->value = t->clone();
+
+        // 清理函数指针
+        if (fr != nullptr) {
+            Allocator::freeFunctionRef(fr);
+            fr = nullptr;
+            t = nullptr;
+        }
 
         freeSubNodes(n);
     }
@@ -209,7 +216,7 @@ namespace langX{
             return;
         }
 
-        ObjectBridgeEnv *objEnv = (ObjectBridgeEnv*)env;
+        auto objEnv = (ObjectBridgeEnv*)env;
         n->value = objEnv->getEnvObject()->addRef();
     }
 
@@ -242,7 +249,7 @@ namespace langX{
             }
 
             Function *t = claxxInfo->getFunction(memberName);
-            if (t == NULL)
+            if (t == nullptr)
             {
                 char tmp[100] = { 0 };
                 sprintf(tmp, "no function %s in class %s.", memberName, className);
@@ -270,7 +277,7 @@ namespace langX{
         n->value = callFunc(t, args, remark, putNodeLink);
 
         doSuffixOperationArgs(args);
-        n1->value = NULL;
+        n1->value = nullptr;
 
         getState()->curThread()->backEnv();
         nodeLink->backAfterExec = true;
@@ -283,7 +290,7 @@ namespace langX{
 
         char *className = n->opr_obj->op[0]->var_obj->name;
         ClassInfo *claxxInfo = getState()->getClass(className);
-        if (claxxInfo == NULL)
+        if (claxxInfo == nullptr)
         {
             thread->throwException(newClassNotFoundException(className)->addRef());
             return;
@@ -291,10 +298,10 @@ namespace langX{
 
         char *memberName = n->opr_obj->op[1]->var_obj->name;
         Object *t = claxxInfo->getMember(memberName);
-        if (t == NULL || (t != NULL && t->isLocal()))
+        if (t == nullptr || t->isLocal())
         {
             Function * tf = claxxInfo->getFunction(memberName);
-            if (tf == NULL)
+            if (tf == nullptr)
             {
                 char tmp[100] = { 0 };
                 sprintf(tmp, "no member %s in class %s.", memberName, className);
@@ -337,7 +344,7 @@ namespace langX{
         char *namespaceName = n->opr_obj->op[0]->con_obj->sValue;
 
         std::string str = std::string(namespaceName);
-        XNameSpace *space = NULL;
+        XNameSpace *space = nullptr;
         bool flag = true;
 
         auto dotIndex = str.find_first_of(".");

@@ -127,4 +127,19 @@ namespace langX {
         free(array);
     }
 
+    template<typename T, typename>
+    T langX::max(T a, T b) {
+        return a >= b ? a : b;
+    }
+
+    template<typename T, typename>
+    T langX::min(T a, T b) {
+        return a <= b ? a : b;
+    }
+
+
+    // 模板函数 实例化
+    template short max<short >(short a, short b);
+    template short min<short >(short a, short b);
+
 }
