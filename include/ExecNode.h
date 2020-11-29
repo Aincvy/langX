@@ -17,5 +17,12 @@ namespace langX {
 	//
 	void __realExecNode(NodeLink *nodeLink, langXThread *thread);
 
+    /**
+     * 尝试把语法描述文件里面的 参数相关的节点都提取出来  | 按照传入顺序
+     * @param node
+     * @return
+     */
+    ArgsList* convertArgsList(Node *node);
+
 
 }

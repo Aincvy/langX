@@ -1183,17 +1183,24 @@ namespace langX {
 //        }
 
         // 新版本的逻辑
-        // 0: 前缀修饰，  1: 变量名列表或者数组列表
-        auto node = nodeLink->node;
-        auto opr_obj = node->opr_obj;
-        auto prefixNode = opr_obj->op[0];
-        auto prefix = prefixNode == nullptr ? 0 : prefixNode->con_obj->iValue;
-        auto varListNode = opr_obj->op[1];
+        if (nodeLink->index == 0) {
+            nodeLink->index = 1;
 
-        getState()->curThread()->setVarDeclarePrefix(prefix);
+            // 0: 前缀修饰，  1: 变量名列表或者数组列表
+            auto node = nodeLink->node;
+            auto opr_obj = node->opr_obj;
+            auto prefixNode = opr_obj->op[0];
+            auto prefix = prefixNode == nullptr ? 0 : prefixNode->con_obj->iValue;
+            auto varListNode = opr_obj->op[1];
 
-        // exec var node
-        doSubNodes(varListNode);
+            getState()->curThread()->setVarDeclarePrefix(prefix);
+
+            // exec var node
+            doSubNodes(varListNode);
+        } else {
+            nodeLink->backAfterExec = true;
+        }
+
     }
 
 
@@ -1651,6 +1658,10 @@ namespace langX {
      * @param thread
      */
     void __execCLASS_DECLARE(NodeLink *nodeLink, langXThread *thread){
+        // 本节点只执行1次
+        nodeLink->backAfterExec = true;
+
+        //
         auto oprObj = nodeLink->node->opr_obj;
         auto prefixNode = oprObj->op[0];
         auto nameNode = oprObj->op[1];
@@ -1691,10 +1702,14 @@ namespace langX {
 
         // 执行 classBody 节点， 以满足变量和函数的声明
         if (bodyNode != nullptr) {
+            logger->debug("will do class %s body node", name);
             auto *env = clzInfo->getClassEnv();
             thread->newEnv(env);
-            __execNode(bodyNode, bodyNode);     // 立即处理掉这个节点，但是也仅仅只是处理 到 这个节点
+            thread->beginExecute(bodyNode, true);
+            __execNode(nullptr, bodyNode);     // 立即处理掉这个节点，但是也仅仅只是处理 到 这个节点
             thread->backEnv(false);
+
+            logger->debug("class %s body node done.", name);
         }
 
         // 关于类前缀的判断和应用
@@ -1952,6 +1967,8 @@ namespace langX {
         }
 
         nodeLink->backAfterExec = nodeLinkBackAfterExec;
+
+        logger->debug("will execute opr: %d", node->opr_obj->opr);
 
         switch (node->opr_obj->opr) {
             case '+':

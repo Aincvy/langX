@@ -32,43 +32,36 @@ namespace langX{
             nodeLink->index = 1;
 
             char *className = n->opr_obj->op[0]->var_obj->name;
-            ClassInfo *claxxInfo = getState()->getClass(className);
-            if (claxxInfo == NULL)
+            ClassInfo *classInfo = getState()->getClass(className);
+            if (classInfo == nullptr)
             {
                 thread->throwException(newClassNotFoundException(className)->addRef());
                 return;
             }
-            langXObject *object = claxxInfo->newObject();
-            if (object == NULL)
+            langXObject *object = classInfo->newObject();
+            if (object == nullptr)
             {
                 thread->throwException(newClassNotFoundException(className)->addRef());
                 return;
             }
+
             langXObjectRef * objectRef = object->addRef();
             objectRef->setEmergeEnv(thread->getCurrentEnv());
             n->value = objectRef;
 
-            if (argNode != NULL)
-            {
-                XArgsList *args = (XArgsList *)argNode->ptr_u;
-                object->callConstructor(args, fileInfoString(n->fileinfo).c_str(), nodeLink, thread);
-            }
-            else {
-                object->callConstructor(nullptr, fileInfoString(n->fileinfo).c_str(), nodeLink, thread);
-            }
-
+            doSubNodes(argNode);
             return;        // 先出去运算参数
         }
         else {
             langXObjectRef * objectRef = (langXObjectRef *)n->value;
             langXObject *object = objectRef->getRefObject();
-            if (argNode != NULL)
+            if (argNode != nullptr)
             {
-                XArgsList *args = (XArgsList *)argNode->ptr_u;
-                object->callConstructor(args, fileInfoString(n->fileinfo).c_str(), nodeLink, thread);
+                auto args = convertArgsList(argNode);
+                object->callConstructor(args, fileInfoString(n->fileinfo).c_str(), thread);
             }
             else {
-                object->callConstructor(nullptr, fileInfoString(n->fileinfo).c_str(), nodeLink, thread);
+                object->callConstructor(nullptr, fileInfoString(n->fileinfo).c_str(), thread);
             }
         }
 
@@ -86,9 +79,9 @@ namespace langX{
             thread->beginExecute(n1, true);
             nodeLink->index = 1;
             return;
-        }
+        }0
 
-        if (n1->value == NULL)
+        if (n1->value == nullptr)
         {
             char tmp[100] = { 0 };
             sprintf(tmp, "left value %s is not class object or array  !\n", n1->var_obj->name);

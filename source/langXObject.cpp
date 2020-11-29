@@ -245,7 +245,7 @@ namespace langX {
 		return getFunction(this->m_class_info->getName());
 	}
 
-	void langXObject::callConstructor(ArgsList *args, const char *remark, NodeLink *nodeLink, langXThread *thread)
+	void langXObject::callConstructor(ArgsList *args, const char *remark, langXThread *thread)
 	{
 		Function *func = getConstructor();
 		if (func)
@@ -258,7 +258,6 @@ namespace langX {
 			thread->getStackTrace().popFrame();
 			thread->backEnv();
 
-			nodeLink->ptr_u = nullptr;
 		}
 	}
 
