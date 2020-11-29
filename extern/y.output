@@ -449,32 +449,32 @@ Terminals, with rules where they appear
     SCOPE (296) 40
     LEFT_SHIFT (297) 116
     RIGHT_SHIFT (298) 117
-    OPR_NODE_LIST (299)
-    OPR_CHANGE_NAME_SPACE (300)
-    OPR_GET_NAME_SPACE (301)
-    OPR_CLASS_DECLARE (302)
-    OPR_INC_DEC (303)
-    OPR_IF_ELSE (304)
-    OPR_MULTIPLE_ID (305)
-    OPR_START_IF (306)
-    OPR_ARGS_LIST (307)
-    KEY_REQUIRE <iValue> (308) 15
-    KEY_REQUIRE_ONCE <iValue> (309) 16
-    KEY_INCLUDE <iValue> (310) 17
-    KEY_AUTO <iValue> (311) 27
-    KEY_CONST <iValue> (312) 54
-    KEY_LOCAL <iValue> (313) 55
-    ADD_EQ <iValue> (314) 162
-    SUB_EQ <iValue> (315) 163
-    MUL_EQ <iValue> (316) 164
-    DIV_EQ <iValue> (317) 165
-    MOD_EQ <iValue> (318) 166
-    LE_OP <iValue> (319) 143
-    GE_OP <iValue> (320) 142
-    EQ_OP <iValue> (321) 145 147
-    NE_OP <iValue> (322) 144 146
-    INC_OP <iValue> (323) 150
-    DEC_OP <iValue> (324) 151
+    INC_OP (299) 150
+    DEC_OP (300) 151
+    OPR_NODE_LIST (301)
+    OPR_CHANGE_NAME_SPACE (302)
+    OPR_GET_NAME_SPACE (303)
+    OPR_CLASS_DECLARE (304)
+    OPR_INC_DEC (305)
+    OPR_IF_ELSE (306)
+    OPR_MULTIPLE_ID (307)
+    OPR_START_IF (308)
+    OPR_ARGS_LIST (309)
+    KEY_REQUIRE <iValue> (310) 15
+    KEY_REQUIRE_ONCE <iValue> (311) 16
+    KEY_INCLUDE <iValue> (312) 17
+    KEY_AUTO <iValue> (313) 27
+    KEY_CONST <iValue> (314) 54
+    KEY_LOCAL <iValue> (315) 55
+    ADD_EQ <iValue> (316) 162
+    SUB_EQ <iValue> (317) 163
+    MUL_EQ <iValue> (318) 164
+    DIV_EQ <iValue> (319) 165
+    MOD_EQ <iValue> (320) 166
+    LE_OP <iValue> (321) 143
+    GE_OP <iValue> (322) 142
+    EQ_OP <iValue> (323) 145 147
+    NE_OP <iValue> (324) 144 146
     AND_OP <iValue> (325) 130
     OR_OP <iValue> (326) 131
     IFX (327)
@@ -831,14 +831,14 @@ State 2
     KEY_BREAK         shift, and go to state 17
     KEY_RETURN        shift, and go to state 18
     KEY_SWITCH        shift, and go to state 19
-    KEY_REQUIRE       shift, and go to state 20
-    KEY_REQUIRE_ONCE  shift, and go to state 21
-    KEY_INCLUDE       shift, and go to state 22
-    KEY_AUTO          shift, and go to state 23
-    KEY_CONST         shift, and go to state 24
-    KEY_LOCAL         shift, and go to state 25
-    INC_OP            shift, and go to state 26
-    DEC_OP            shift, and go to state 27
+    INC_OP            shift, and go to state 20
+    DEC_OP            shift, and go to state 21
+    KEY_REQUIRE       shift, and go to state 22
+    KEY_REQUIRE_ONCE  shift, and go to state 23
+    KEY_INCLUDE       shift, and go to state 24
+    KEY_AUTO          shift, and go to state 25
+    KEY_CONST         shift, and go to state 26
+    KEY_LOCAL         shift, and go to state 27
     '~'               shift, and go to state 28
     ';'               shift, and go to state 29
 
@@ -1023,8 +1023,8 @@ State 18
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
     KEY_NULL    shift, and go to state 88
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 91
@@ -1073,58 +1073,58 @@ State 19
 
 State 20
 
+  150 self_inc_dec_operators: INC_OP •
+
+    $default  reduce using rule 150 (self_inc_dec_operators)
+
+
+State 21
+
+  151 self_inc_dec_operators: DEC_OP •
+
+    $default  reduce using rule 151 (self_inc_dec_operators)
+
+
+State 22
+
    15 require_operators: KEY_REQUIRE •
 
     $default  reduce using rule 15 (require_operators)
 
 
-State 21
+State 23
 
    16 require_operators: KEY_REQUIRE_ONCE •
 
     $default  reduce using rule 16 (require_operators)
 
 
-State 22
+State 24
 
    17 require_operators: KEY_INCLUDE •
 
     $default  reduce using rule 17 (require_operators)
 
 
-State 23
+State 25
 
    27 class_name_prefix: KEY_AUTO •
 
     $default  reduce using rule 27 (class_name_prefix)
 
 
-State 24
+State 26
 
    54 var_prefix: KEY_CONST •
 
     $default  reduce using rule 54 (var_prefix)
 
 
-State 25
+State 27
 
    55 var_prefix: KEY_LOCAL •
 
     $default  reduce using rule 55 (var_prefix)
-
-
-State 26
-
-  150 self_inc_dec_operators: INC_OP •
-
-    $default  reduce using rule 150 (self_inc_dec_operators)
-
-
-State 27
-
-  151 self_inc_dec_operators: DEC_OP •
-
-    $default  reduce using rule 151 (self_inc_dec_operators)
 
 
 State 28
@@ -1481,8 +1481,8 @@ State 69
   149 self_inc_dec_stmt: common_values_expr • self_inc_dec_operators
   220 common_object_expr: common_values_expr •
 
-    INC_OP  shift, and go to state 26
-    DEC_OP  shift, and go to state 27
+    INC_OP  shift, and go to state 20
+    DEC_OP  shift, and go to state 21
     '('     shift, and go to state 138
 
     $default  reduce using rule 220 (common_object_expr)
@@ -1533,13 +1533,13 @@ State 72
     KEY_BREAK         shift, and go to state 17
     KEY_RETURN        shift, and go to state 18
     KEY_SWITCH        shift, and go to state 19
-    KEY_REQUIRE       shift, and go to state 20
-    KEY_REQUIRE_ONCE  shift, and go to state 21
-    KEY_INCLUDE       shift, and go to state 22
-    KEY_CONST         shift, and go to state 24
-    KEY_LOCAL         shift, and go to state 25
-    INC_OP            shift, and go to state 26
-    DEC_OP            shift, and go to state 27
+    INC_OP            shift, and go to state 20
+    DEC_OP            shift, and go to state 21
+    KEY_REQUIRE       shift, and go to state 22
+    KEY_REQUIRE_ONCE  shift, and go to state 23
+    KEY_INCLUDE       shift, and go to state 24
+    KEY_CONST         shift, and go to state 26
+    KEY_LOCAL         shift, and go to state 27
     ';'               shift, and go to state 29
     '}'               shift, and go to state 150
 
@@ -1650,8 +1650,8 @@ State 80
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '!'         shift, and go to state 163
     '~'         shift, and go to state 90
@@ -1699,8 +1699,8 @@ State 81
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '!'         shift, and go to state 163
     '~'         shift, and go to state 90
@@ -1848,8 +1848,8 @@ State 90
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -1888,8 +1888,8 @@ State 91
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -2119,8 +2119,8 @@ State 113
   220 common_object_expr: common_values_expr •
   223 common_expr: common_values_expr •
 
-    INC_OP  shift, and go to state 26
-    DEC_OP  shift, and go to state 27
+    INC_OP  shift, and go to state 20
+    DEC_OP  shift, and go to state 21
     '('     shift, and go to state 138
 
     ','       reduce using rule 223 (common_expr)
@@ -2200,8 +2200,8 @@ State 118
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -2410,8 +2410,8 @@ State 137
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -2452,8 +2452,8 @@ State 138
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
     KEY_NULL    shift, and go to state 88
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 91
@@ -2554,8 +2554,8 @@ State 146
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
     KEY_NULL    shift, and go to state 88
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 91
@@ -2605,8 +2605,8 @@ State 147
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -2643,8 +2643,8 @@ State 148
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -2734,13 +2734,13 @@ State 155
     KEY_BREAK         shift, and go to state 17
     KEY_RETURN        shift, and go to state 18
     KEY_SWITCH        shift, and go to state 19
-    KEY_REQUIRE       shift, and go to state 20
-    KEY_REQUIRE_ONCE  shift, and go to state 21
-    KEY_INCLUDE       shift, and go to state 22
-    KEY_CONST         shift, and go to state 24
-    KEY_LOCAL         shift, and go to state 25
-    INC_OP            shift, and go to state 26
-    DEC_OP            shift, and go to state 27
+    INC_OP            shift, and go to state 20
+    DEC_OP            shift, and go to state 21
+    KEY_REQUIRE       shift, and go to state 22
+    KEY_REQUIRE_ONCE  shift, and go to state 23
+    KEY_INCLUDE       shift, and go to state 24
+    KEY_CONST         shift, and go to state 26
+    KEY_LOCAL         shift, and go to state 27
     ';'               shift, and go to state 29
     '}'               shift, and go to state 236
 
@@ -2854,8 +2854,8 @@ State 163
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -2895,8 +2895,8 @@ State 164
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -3026,8 +3026,8 @@ State 177
   218 common_number_expr: common_values_expr •
   220 common_object_expr: common_values_expr •
 
-    INC_OP  shift, and go to state 26
-    DEC_OP  shift, and go to state 27
+    INC_OP  shift, and go to state 20
+    DEC_OP  shift, and go to state 21
     '('     shift, and go to state 138
 
     KEY_IS    reduce using rule 220 (common_object_expr)
@@ -3224,8 +3224,8 @@ State 193
   218 common_number_expr: common_values_expr •
   220 common_object_expr: common_values_expr •
 
-    INC_OP  shift, and go to state 26
-    DEC_OP  shift, and go to state 27
+    INC_OP  shift, and go to state 20
+    DEC_OP  shift, and go to state 21
     '('     shift, and go to state 138
 
     '['       reduce using rule 220 (common_object_expr)
@@ -3333,8 +3333,8 @@ State 201
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
     KEY_NULL    shift, and go to state 88
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '('         shift, and go to state 91
 
@@ -3376,8 +3376,8 @@ State 202
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -3414,8 +3414,8 @@ State 203
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -3452,8 +3452,8 @@ State 204
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -3490,8 +3490,8 @@ State 205
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -3528,8 +3528,8 @@ State 206
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -3566,8 +3566,8 @@ State 207
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -3604,8 +3604,8 @@ State 208
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -3642,8 +3642,8 @@ State 209
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -3680,8 +3680,8 @@ State 210
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -3718,8 +3718,8 @@ State 211
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -4092,8 +4092,8 @@ State 245
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '!'         shift, and go to state 163
     '~'         shift, and go to state 90
@@ -4182,8 +4182,8 @@ State 252
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 164
@@ -4306,8 +4306,8 @@ State 259
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '!'         shift, and go to state 163
     '~'         shift, and go to state 90
@@ -4669,8 +4669,8 @@ State 283
     OPERATOR_X__  shift, and go to state 5
     KEY_NEW       shift, and go to state 10
     KEY_THIS      shift, and go to state 11
-    KEY_CONST     shift, and go to state 24
-    KEY_LOCAL     shift, and go to state 25
+    KEY_CONST     shift, and go to state 26
+    KEY_LOCAL     shift, and go to state 27
     '~'           shift, and go to state 28
     ';'           shift, and go to state 29
     '}'           shift, and go to state 306
@@ -4754,8 +4754,8 @@ State 290
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
     KEY_NULL    shift, and go to state 88
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
     '-'         shift, and go to state 89
     '~'         shift, and go to state 90
     '('         shift, and go to state 91
@@ -4965,8 +4965,8 @@ State 308
     OPERATOR_X__  shift, and go to state 5
     KEY_NEW       shift, and go to state 10
     KEY_THIS      shift, and go to state 11
-    KEY_CONST     shift, and go to state 24
-    KEY_LOCAL     shift, and go to state 25
+    KEY_CONST     shift, and go to state 26
+    KEY_LOCAL     shift, and go to state 27
     '~'           shift, and go to state 28
     ';'           shift, and go to state 29
     '}'           shift, and go to state 321
@@ -5051,8 +5051,8 @@ State 316
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
 
     $default  reduce using rule 85 (for_3_stmt_list)
 
@@ -5213,8 +5213,8 @@ State 334
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
-    INC_OP      shift, and go to state 26
-    DEC_OP      shift, and go to state 27
+    INC_OP      shift, and go to state 20
+    DEC_OP      shift, and go to state 21
 
     this_stmt                  go to state 40
     class_member_stmt          go to state 41

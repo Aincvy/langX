@@ -707,6 +707,7 @@ namespace langX {
         if (number == nullptr) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '++'/'--'!")->addRef());
             freeSubNodes(node);
+            nodeLink->backAfterExec = true;
             return;
         }
 
@@ -730,14 +731,16 @@ namespace langX {
             }
 
             freeSubNodes(node);
+            nodeLink->backAfterExec = true;
             return;
         }
 
         auto tmpValue = ((Number*)number)->getDoubleValue();
         if (oprNumber == INC_OP) {
-            oprNumber += 1;
+
+            tmpValue += 1;
         } else if (oprNumber == DEC_OP) {
-            oprNumber -= 1;
+            tmpValue -= 1;
         }
 
         if (prefix) {
@@ -751,6 +754,7 @@ namespace langX {
         }
 
         freeSubNodes(node);
+        nodeLink->backAfterExec = true;
     }
 
     // 开始一个新的 if 系列语句

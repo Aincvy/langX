@@ -53,7 +53,7 @@ void setStateToCanFree(langX::Node *n) {
 		for (int i = 0; i < n->opr_obj->op_count; i++)
 		{
 			langX::Node *t = n->opr_obj->op[i];
-			if (t == NULL)
+			if (t == nullptr)
 			{
 				continue;
 			}

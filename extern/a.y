@@ -22,10 +22,11 @@
 %token KEY_PUBLIC KEY_SET KEY_IS KEY_REF KEY_CONTINUE KEY_NEW KEY_CATCH KEY_THIS KEY_EXTENDS KEY_RESTRICT
 %token KEY_IF KEY_ELSE KEY_WHILE KEY_FOR KEY_DELETE KEY_BREAK KEY_RETURN KEY_SWITCH KEY_CASE KEY_DEFAULT KEY_NULL
 %token CASE_LIST CLAXX_BODY CLAXX_MEMBER CLAXX_FUNC_CALL SCOPE_FUNC_CALL SCOPE LEFT_SHIFT RIGHT_SHIFT
+%token INC_OP DEC_OP
 %token OPR_NODE_LIST OPR_CHANGE_NAME_SPACE OPR_GET_NAME_SPACE OPR_CLASS_DECLARE OPR_INC_DEC OPR_IF_ELSE OPR_MULTIPLE_ID OPR_START_IF
 %token OPR_ARGS_LIST
 %token <iValue> KEY_REQUIRE KEY_REQUIRE_ONCE KEY_INCLUDE KEY_AUTO KEY_CONST KEY_LOCAL
-%token <iValue> ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<' INC_OP DEC_OP  AND_OP OR_OP
+%token <iValue> ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<'  AND_OP OR_OP
 
 %type <node> statement _extra_nothing con_ctl_stmt simple_stmt simple_stmt_types require_stmt interrupt_stmt new_expr null_expr delete_expr
 %type <node> func_declare_stmt out_declare_stmt var_declare_stmt element_var_declare_stmt _elements_var_declare_stmt class_declare_stmt namespace_declare_stmt
@@ -471,8 +472,8 @@ self_inc_dec_stmt
 	;
 
 self_inc_dec_operators
-  : INC_OP        { $$ = $1; }
-  | DEC_OP        { $$ = $1; }
+  : INC_OP        { $$ = yytokentype::INC_OP; }
+  | DEC_OP        { $$ = yytokentype::DEC_OP; }
   ;
 
 
