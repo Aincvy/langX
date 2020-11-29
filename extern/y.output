@@ -22,6 +22,7 @@ Terminals unused in grammar
     OPR_IF_ELSE
     OPR_MULTIPLE_ID
     OPR_START_IF
+    OPR_ARGS_LIST
     IFX
     ELSE
     PIPELINE_OP
@@ -456,337 +457,338 @@ Terminals, with rules where they appear
     OPR_IF_ELSE (304)
     OPR_MULTIPLE_ID (305)
     OPR_START_IF (306)
-    KEY_REQUIRE <iValue> (307) 15
-    KEY_REQUIRE_ONCE <iValue> (308) 16
-    KEY_INCLUDE <iValue> (309) 17
-    KEY_AUTO <iValue> (310) 27
-    KEY_CONST <iValue> (311) 54
-    KEY_LOCAL <iValue> (312) 55
-    ADD_EQ <iValue> (313) 162
-    SUB_EQ <iValue> (314) 163
-    MUL_EQ <iValue> (315) 164
-    DIV_EQ <iValue> (316) 165
-    MOD_EQ <iValue> (317) 166
-    LE_OP <iValue> (318) 143
-    GE_OP <iValue> (319) 142
-    EQ_OP <iValue> (320) 145 147
-    NE_OP <iValue> (321) 144 146
-    INC_OP <iValue> (322) 150
-    DEC_OP <iValue> (323) 151
-    AND_OP <iValue> (324) 130
-    OR_OP <iValue> (325) 131
-    IFX (326)
-    ELSE (327)
-    PIPELINE_OP (328)
-    INC_OP_BACK (329)
-    PRIORITY3 (330)
-    PRIORITY2 (331)
-    PRIORITY1 (332)
-    UMINUS (333)
+    OPR_ARGS_LIST (307)
+    KEY_REQUIRE <iValue> (308) 15
+    KEY_REQUIRE_ONCE <iValue> (309) 16
+    KEY_INCLUDE <iValue> (310) 17
+    KEY_AUTO <iValue> (311) 27
+    KEY_CONST <iValue> (312) 54
+    KEY_LOCAL <iValue> (313) 55
+    ADD_EQ <iValue> (314) 162
+    SUB_EQ <iValue> (315) 163
+    MUL_EQ <iValue> (316) 164
+    DIV_EQ <iValue> (317) 165
+    MOD_EQ <iValue> (318) 166
+    LE_OP <iValue> (319) 143
+    GE_OP <iValue> (320) 142
+    EQ_OP <iValue> (321) 145 147
+    NE_OP <iValue> (322) 144 146
+    INC_OP <iValue> (323) 150
+    DEC_OP <iValue> (324) 151
+    AND_OP <iValue> (325) 130
+    OR_OP <iValue> (326) 131
+    IFX (327)
+    ELSE (328)
+    PIPELINE_OP (329)
+    INC_OP_BACK (330)
+    PRIORITY3 (331)
+    PRIORITY2 (332)
+    PRIORITY1 (333)
+    UMINUS (334)
 
 
 Nonterminals, with rules where they appear
 
-    $accept (102)
+    $accept (103)
         on left: 0
-    program (103)
+    program (104)
         on left: 1
         on right: 0
-    statement_list (104)
+    statement_list (105)
         on left: 2 3
         on right: 1 2
-    statement <node> (105)
+    statement <node> (106)
         on left: 4 5 6 7 8
         on right: 2
-    _extra_nothing <node> (106)
+    _extra_nothing <node> (107)
         on left: 9
         on right: 4 37 174
-    out_declare_stmt <node> (107)
+    out_declare_stmt <node> (108)
         on left: 10 11 12 13
         on right: 5
-    require_stmt <node> (108)
+    require_stmt <node> (109)
         on left: 14
         on right: 98
-    require_operators <iValue> (109)
+    require_operators <iValue> (110)
         on left: 15 16 17
         on right: 14
-    try_stmt <node> (110)
+    try_stmt <node> (111)
         on left: 18 19
         on right: 8 171
-    catch_block_stmt <node> (111)
+    catch_block_stmt <node> (112)
         on left: 20
         on right: 19
-    namespace_declare_stmt <node> (112)
+    namespace_declare_stmt <node> (113)
         on left: 21
         on right: 12
-    namespace_ref_stmt <node> (113)
+    namespace_ref_stmt <node> (114)
         on left: 22
         on right: 13
-    namespace_name_stmt <node> (114)
+    namespace_name_stmt <node> (115)
         on left: 23 24
         on right: 21 22 24
-    class_declare_stmt <node> (115)
+    class_declare_stmt <node> (116)
         on left: 25
         on right: 11
-    class_name_prefix <iValue> (116)
+    class_name_prefix <iValue> (117)
         on left: 26 27
         on right: 25
-    class_name_suffix <node> (117)
+    class_name_suffix <node> (118)
         on left: 28 29
         on right: 25
-    class_body <node> (118)
+    class_body <node> (119)
         on left: 30 31
         on right: 25
-    class_body_items <node> (119)
+    class_body_items <node> (120)
         on left: 32 33
         on right: 31 33
-    class_body_item <node> (120)
+    class_body_item <node> (121)
         on left: 34 35 36 37
         on right: 32 33
-    this_stmt <node> (121)
+    this_stmt <node> (122)
         on left: 38
         on right: 210
-    class_member_stmt <node> (122)
+    class_member_stmt <node> (123)
         on left: 39
         on right: 207
-    static_member_stmt <node> (123)
+    static_member_stmt <node> (124)
         on left: 40
         on right: 208
-    func_declare_stmt <node> (124)
+    func_declare_stmt <node> (125)
         on left: 41 42
         on right: 10 36
-    func_name_types <node> (125)
+    func_name_types <node> (126)
         on left: 43 44 45
         on right: 41 42
-    func_param_list <node> (126)
+    func_param_list <node> (127)
         on left: 46 47
         on right: 42
-    lambda_stmt <node> (127)
+    lambda_stmt <node> (128)
         on left: 48
         on right: 203
-    lambda_args_stmt <node> (128)
+    lambda_args_stmt <node> (129)
         on left: 49 50 51
         on right: 48
-    var_declare_stmt <node> (129)
+    var_declare_stmt <node> (130)
         on left: 52 53
         on right: 34 99
-    var_prefix <iValue> (130)
+    var_prefix <iValue> (131)
         on left: 54 55
         on right: 53
-    _elements_var_declare_stmt <node> (131)
+    _elements_var_declare_stmt <node> (132)
         on left: 56 57
         on right: 52 53 57
-    element_var_declare_stmt <node> (132)
+    element_var_declare_stmt <node> (133)
         on left: 58 59
         on right: 56 57
-    con_ctl_stmt <node> (133)
+    con_ctl_stmt <node> (134)
         on left: 60 61
         on right: 6 173
-    selection_stmt <node> (134)
+    selection_stmt <node> (135)
         on left: 62 63
         on right: 60
-    if_stmt <node> (135)
+    if_stmt <node> (136)
         on left: 64 65
         on right: 62
-    single_if_stmt <node> (136)
+    single_if_stmt <node> (137)
         on left: 66
         on right: 64 65 71
-    else_stmt <node> (137)
+    else_stmt <node> (138)
         on left: 67 68
         on right: 65
-    else_if_stmts <node> (138)
+    else_if_stmts <node> (139)
         on left: 69 70
         on right: 67 70
-    else_if_stmt <node> (139)
+    else_if_stmt <node> (140)
         on left: 71
         on right: 69 70
-    single_else_stmt <node> (140)
+    single_else_stmt <node> (141)
         on left: 72
         on right: 67 68
-    case_stmt_list <node> (141)
+    case_stmt_list <node> (142)
         on left: 73 74
         on right: 63 74
-    case_stmt <node> (142)
+    case_stmt <node> (143)
         on left: 75 76
         on right: 73 74
-    loop_stmt <node> (143)
+    loop_stmt <node> (144)
         on left: 77 78
         on right: 61
-    for_logic_stmt <node> (144)
+    for_logic_stmt <node> (145)
         on left: 79 80
         on right: 78
-    for_1_stmt_list <node> (145)
+    for_1_stmt_list <node> (146)
         on left: 81 82 83
         on right: 78 83
-    for_1_stmt <node> (146)
+    for_1_stmt <node> (147)
         on left: 84
         on right: 82 83
-    for_3_stmt_list <node> (147)
+    for_3_stmt_list <node> (148)
         on left: 85 86 87
         on right: 78 87
-    for_3_stmt <node> (148)
+    for_3_stmt <node> (149)
         on left: 88 89
         on right: 86 87
-    simple_stmt <node> (149)
+    simple_stmt <node> (150)
         on left: 90
         on right: 7 172
-    simple_stmt_types <node> (150)
+    simple_stmt_types <node> (151)
         on left: 91 92 93 94 95 96 97 98 99
         on right: 90
-    restrict_stmt <node> (151)
+    restrict_stmt <node> (152)
         on left: 100 101
         on right: 97
-    interrupt_stmt <node> (152)
+    interrupt_stmt <node> (153)
         on left: 102 103 104 105
         on right: 95
-    call_statement <node> (153)
+    call_statement <node> (154)
         on left: 106 107
         on right: 93 107 196 213 221
-    arithmetic_stmt <node> (154)
+    arithmetic_stmt <node> (155)
         on left: 108 109 110 111 112 113 114 115 116 117 118
         on right: 214
-    new_expr <node> (155)
+    new_expr <node> (156)
         on left: 119
         on right: 96 211
-    args_list_with_parentheses <node> (156)
+    args_list_with_parentheses <node> (157)
         on left: 120 121
         on right: 106 107 119
-    args_list <node> (157)
+    args_list <node> (158)
         on left: 122 123
         on right: 121 123
-    delete_expr <node> (158)
+    delete_expr <node> (159)
         on left: 124
         on right: 94
-    logic_stmt <node> (159)
+    logic_stmt <node> (160)
         on left: 125 126 127 128 129
         on right: 66 77 80 129
-    _symbol_logic_connection <iValue> (160)
+    _symbol_logic_connection <iValue> (161)
         on left: 130 131
         on right: 129
-    bool_param_expr <node> (161)
+    bool_param_expr <node> (162)
         on left: 132 133
         on right: 125 135
-    type_judge_stmt <node> (162)
+    type_judge_stmt <node> (163)
         on left: 134
         on right: 127
-    not_bool_param_expr <node> (163)
+    not_bool_param_expr <node> (164)
         on left: 135
         on right: 126
-    compare_expr <node> (164)
+    compare_expr <node> (165)
         on left: 136 137
         on right: 128
-    number_compare_expr <node> (165)
+    number_compare_expr <node> (166)
         on left: 138
         on right: 136
-    object_compare_expr <node> (166)
+    object_compare_expr <node> (167)
         on left: 139
         on right: 137
-    _symbol_compare <iValue> (167)
+    _symbol_compare <iValue> (168)
         on left: 140 141 142 143 144 145
         on right: 138
-    _symbol_equals_not <iValue> (168)
+    _symbol_equals_not <iValue> (169)
         on left: 146 147
         on right: 139
-    self_inc_dec_stmt <node> (169)
+    self_inc_dec_stmt <node> (170)
         on left: 148 149
         on right: 89 91 180 212
-    self_inc_dec_operators <iValue> (170)
+    self_inc_dec_operators <iValue> (171)
         on left: 150 151
         on right: 148 149
-    assign_stmt_value_eq <node> (171)
+    assign_stmt_value_eq <node> (172)
         on left: 152 153 154
         on right: 132
-    array_ele_stmt <node> (172)
+    array_ele_stmt <node> (173)
         on left: 155
         on right: 206
-    assign_stmt <node> (173)
+    assign_stmt <node> (174)
         on left: 156 157
         on right: 84 88 92
-    single_assign_stmt <node> (174)
+    single_assign_stmt <node> (175)
         on left: 158
         on right: 35 156 160
-    single_assign_stmt_value <node> (175)
+    single_assign_stmt_value <node> (176)
         on left: 159 160
         on right: 158
-    number_change_assign_stmt <node> (176)
+    number_change_assign_stmt <node> (177)
         on left: 161
         on right: 157
-    symbol_change_assign <iValue> (177)
+    symbol_change_assign <iValue> (178)
         on left: 162 163 164 165 166
         on right: 161
-    code_block <node> (178)
+    code_block <node> (179)
         on left: 167 168
         on right: 18 19 20 41 42 48 66 72 75 76 77 78
-    block_item_list <node> (179)
+    block_item_list <node> (180)
         on left: 169 170
         on right: 168 170
-    block_item <node> (180)
+    block_item <node> (181)
         on left: 171 172 173 174
         on right: 169 170
-    string_plus_stmt <node> (181)
+    string_plus_stmt <node> (182)
         on left: 175 176
         on right: 179 225
-    string_plus_stmt_value <node> (182)
+    string_plus_stmt_value <node> (183)
         on left: 177 178 179 180 181
         on right: 175 176
-    number_parentheses_stmt <node> (183)
+    number_parentheses_stmt <node> (184)
         on left: 182
         on right: 181 197 215
-    id_expr <node> (184)
+    id_expr <node> (185)
         on left: 183
         on right: 20 23 24 25 39 40 43 44 58 59 107 119 134 184 185 205
-    multiple_id_expr <node> (185)
+    multiple_id_expr <node> (186)
         on left: 184 185
         on right: 29 47 50 51 124 185
-    bool_expr <node> (186)
+    bool_expr <node> (187)
         on left: 186
         on right: 101 133 204
-    number_expr <node> (187)
+    number_expr <node> (188)
         on left: 187 188
         on right: 152 200 217
-    positive_number_expr <node> (188)
+    positive_number_expr <node> (189)
         on left: 189 190
         on right: 187 194
-    int_expr <node> (189)
+    int_expr <node> (190)
         on left: 191
         on right: 75 190
-    double_expr <node> (190)
+    double_expr <node> (191)
         on left: 192
         on right: 189
-    uminus_expr <node> (191)
+    uminus_expr <node> (192)
         on left: 193
         on right: 188
-    uminus_expr_values <node> (192)
+    uminus_expr_values <node> (193)
         on left: 194 195 196 197
         on right: 193
-    string_expr <node> (193)
+    string_expr <node> (194)
         on left: 198
         on right: 14 175 176 201
-    null_expr <node> (194)
+    null_expr <node> (195)
         on left: 199
         on right: 202
-    common_types_expr <node> (195)
+    common_types_expr <node> (196)
         on left: 200 201 202 203 204
         on right: 139 178 222
-    common_others_values_expr <node> (196)
+    common_others_values_expr <node> (197)
         on left: 205 206 207 208
         on right: 195 209 216
-    common_values_expr <node> (197)
+    common_values_expr <node> (198)
         on left: 209 210 211
         on right: 106 148 149 153 218 220 223
-    common_result_of_call_expr <node> (198)
+    common_result_of_call_expr <node> (199)
         on left: 212 213 214 215
         on right: 154 219 224
-    common_assignable_expr <node> (199)
+    common_assignable_expr <node> (200)
         on left: 216
         on right: 158 161
-    common_number_expr <node> (200)
+    common_number_expr <node> (201)
         on left: 217 218 219
         on right: 59 63 108 109 110 111 112 113 114 115 116 117 118 138 155 161 182
-    common_object_expr <node> (201)
+    common_object_expr <node> (202)
         on left: 220 221
         on right: 39 134 139 155 177
-    common_expr <node> (202)
+    common_expr <node> (203)
         on left: 222 223 224 225
         on right: 104 122 123 159
 

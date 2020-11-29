@@ -23,6 +23,7 @@
 #include "langXThread.h"
 #include "LogManager.h"
 #include "Utils.h"
+#include "langXCommon.h"
 
 namespace langX {
 
@@ -164,7 +165,7 @@ namespace langX {
 
         for (int i = 0; i < n->opr_obj->op_count; i++) {
             Node *run = n->opr_obj->op[i];
-            if (run == NULL) {
+            if (run == nullptr) {
                 continue;
             }
 
@@ -264,13 +265,13 @@ namespace langX {
         }
 
         for (int i = 0; i < n->opr_obj->op_count; i++) {
-            if (n->opr_obj->op[i] == NULL) {
+            if (n->opr_obj->op[i] == nullptr) {
                 continue;
             }
 
             //printf("freeSubNodes: %d\n" , i);
             Allocator::free(n->opr_obj->op[i]->value);
-            n->opr_obj->op[i]->value = NULL;
+            n->opr_obj->op[i]->value = nullptr;
         }
     }
 
@@ -430,6 +431,60 @@ namespace langX {
 
         return result;
     }
+
+    /**
+     * 前缀循环赋值
+     * @param argsList
+     * @param node
+     */
+    void preLoopAssign(XArgsList *argsList, Node *node){
+
+        if (!node) {
+            // 也许是无参数的调用
+            return;
+        }
+
+        do {
+            if (node->type != NodeType::NODE_OPERATOR) {
+                // 非操作符
+                break;
+            }
+
+            auto oprObj = node->opr_obj;
+            if (oprObj->opr != OPR_ARGS_LIST) {
+                // 非 node list 操作符
+                break;
+            }
+
+            for (int i = 0; i < oprObj->op_count; ++i) {
+                preLoopAssign(argsList, oprObj->op[i]);
+            }
+
+            // 当前的节点是一个 OPR_NODE_LIST， 不需要放入到 XArgsList 中， 所以这里直接 return
+            return;
+        } while (false);
+
+        argsList->args[argsList->index++] = node;
+    }
+
+    /**
+     * 尝试把语法描述文件里面的 参数相关的节点都提取出来  | 按照传入顺序
+     * @param node
+     * @return
+     */
+    XArgsList *convertArgsList(Node *node){
+        // 申请内存
+        auto argsList= (XArgsList*) calloc(1, sizeof(XArgsList));
+        argsList->index = 0;
+
+        // 前缀遍历， 赋值
+        // 寻找到第一个 OPR_NODE_LIST 操作符
+        preLoopAssign(argsList, node);
+
+        return argsList;
+    }
+
+
 
     // 释放 有 multipleId 节点转换出来的 char* 类型数组
     void freeMultipleIdResultArray(char **array, int len) {
@@ -611,6 +666,91 @@ namespace langX {
         // 清理掉 所有复制  值 占用的内存
         freeSubNodes(n);
         nodeLink->backAfterExec = true;
+    }
+
+    // 执行自增和自减语句
+    void __execINC_DEC(NodeLink *nodeLink, langXThread *thread){
+        //
+        auto node = nodeLink->node;
+
+        // 先执行全部的子节点
+        if (nodeLink->index == 0) {
+            doSubNodes(node);
+            nodeLink->index = 1;
+            return;
+        }
+
+        auto oprObj = node->opr_obj;
+
+        auto n1= oprObj->op[0];
+        auto n2= oprObj->op[1];
+        // 操作符的 int 值
+        int oprNumber;
+        // 要变化的值的对象
+        Object* number;
+        // 是否是前缀运算符
+        bool prefix = false;
+
+        if (n1->type == NodeType::NODE_CONSTANT_INTEGER) {
+            // 前缀运算符
+            oprNumber = n1->con_obj->iValue;
+            number = n2->value;
+            prefix = true;
+
+        } else {
+            // 这里是后缀运算符
+            number = n1->value;
+            oprNumber = n2->con_obj->iValue;
+            prefix = false;
+        }
+
+        if (number == nullptr) {
+            getState()->curThread()->throwException(newArithmeticException("value is null on opr '++'/'--'!")->addRef());
+            freeSubNodes(node);
+            return;
+        }
+
+        if (number->getType() == OBJECT) {
+            // 这里是一个对象， 尝试调用方法
+            // todo 这里可能有一个调用顺序的bug， 前缀运算符可能这样直接调用， 但是后缀可能要具体时候再进行调用
+            auto funcName = oprNumber == INC_OP ? "operator++" : "operator--";
+            auto ref = (langXObjectRef*) number;
+            auto func = ref->getFunction(funcName);
+            if (func) {
+                X3rdArgs _3rdArgs;
+                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
+                _3rdArgs.index = 0;
+
+                node->value = callFunction(number, func, &_3rdArgs);
+            } else {
+                // 不存在该方法
+                char tmp[DEFAULT_CHAR_BUFFER_SIZE];
+                sprintf(tmp, "value is object, buf do not override function %s", funcName);
+                getState()->curThread()->throwException(newArithmeticException(tmp)->addRef());
+            }
+
+            freeSubNodes(node);
+            return;
+        }
+
+        auto tmpValue = ((Number*)number)->getDoubleValue();
+        if (oprNumber == INC_OP) {
+            oprNumber += 1;
+        } else if (oprNumber == DEC_OP) {
+            oprNumber -= 1;
+        }
+
+        if (prefix) {
+            // 前缀
+            node->value = Allocator::allocateNumber(tmpValue);
+            n2->postposition = node->value->clone();
+        } else {
+            // 后缀
+            node->value = number->clone();
+            n1->postposition = Allocator::allocateNumber(tmpValue);
+        }
+
+        freeSubNodes(node);
     }
 
     // 开始一个新的 if 系列语句
@@ -854,40 +994,49 @@ namespace langX {
         }
     }
 
+    // 计算参数列表
+    void __execARGS_LIST(NodeLink *nodeLink, langXThread *thread){
+        logger->debug("exec args list node");
+        if (nodeLink->index == 0) {
+            nodeLink->index = 1;
+            doSubNodes(nodeLink->node);
+            return;
+        }
+
+        doSuffixOperation(nodeLink->node);
+        nodeLink->backAfterExec = true;
+    }
+
     // 执行一个函数
     void __execFUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
+        logger->debug("start run args.");
 
-        Node *n1 = n->opr_obj->op[0];
         if (nodeLink->index == 0) {
-            thread->beginExecute(n1, true);
+            // 对参数的值进行运算
+//            thread->beginExecute(n1, true);
+            doSubNodes(n);
             nodeLink->index = 1;
             return;
         }
 
-        nodeLink->backAfterExec = false;     // 强制更新状态为执行结束后不释放节点， 因为函数执行需要2次
+        logger->debug("start run real function.");
+
+        auto oprObj = n->opr_obj;
+        Node *n1 = n->opr_obj->op[0];
+
+        // nodeLink->backAfterExec = false;     // 强制更新状态为执行结束后不释放节点， 因为函数执行需要2次
 
         std::string remark = fileInfoString(n->fileinfo);
-        XArgsList *args = (XArgsList *) n->opr_obj->op[1]->ptr_u;
-        bool flag = true;
-        if (n1->value != NULL) {
+        XArgsList *args = convertArgsList(oprObj->op[1]);
+
+
+        if (n1->value != nullptr) {
             if (n1->value->getType() == FUNCTION) {
                 FunctionRef *f = (FunctionRef *) n1->value;
-                NodeLink *putNodeLink = nullptr;
-                if (nodeLink->ptr_u == NULL) {
-                    // 第一次执行， 需要让函数确认所有的参数
-                    putNodeLink = newNodeLink(nullptr, n);
-                    nodeLink->ptr_u = putNodeLink;
-                    f->call(args, remark.c_str(), putNodeLink);
-                    return;
-                } else {
-                    putNodeLink = (NodeLink *) nodeLink->ptr_u;
-                    nodeLink->ptr_u = nullptr;
-                }
 
-                n->value = f->call(args, remark.c_str(), putNodeLink);
-                freeNodeLink(putNodeLink);
-                flag = false;
+                n->value = f->call(args, remark.c_str());
+
             } else if (n1->value->getType() == STRING) {
                 std::string str = "call function ";
                 String *n1Str = (String *) n1->value;
@@ -901,42 +1050,31 @@ namespace langX {
                 str += " ";
                 str += remark;
 
-                NodeLink *putNodeLink = nullptr;
-                if (nodeLink->ptr_u == NULL) {
-                    // 第一次执行， 需要让函数确认所有的参数
-                    putNodeLink = newNodeLink(nullptr, n);
-                    nodeLink->ptr_u = putNodeLink;
-                    call(n1Str->getValue(), args, str.c_str(), putNodeLink);
-                    return;
-                } else {
-                    putNodeLink = (NodeLink *) nodeLink->ptr_u;
-                    nodeLink->ptr_u = nullptr;
-                }
-                n->value = call(n1Str->getValue(), args, str.c_str(), putNodeLink);
-                flag = false;
+                n->value = call(n1Str->getValue(), args, str.c_str());
+
             }
         }
 
-        if (flag) {
-            char *name = n1->var_obj->name;
-            NodeLink *putNodeLink = nullptr;
-            if (nodeLink->ptr_u == NULL) {
-                // 第一次执行， 需要让函数确认所有的参数
-                putNodeLink = newNodeLink(nullptr, n);
-                nodeLink->ptr_u = putNodeLink;
-                call(name, args, remark.c_str(), putNodeLink);
-                return;
-            } else {
-                putNodeLink = (NodeLink *) nodeLink->ptr_u;
-                nodeLink->ptr_u = nullptr;
-            }
-            n->value = call(name, args, remark.c_str(), putNodeLink);
-            //printf("func %s exec end\n" , name);
-        }
+//        if (flag) {
+//            char *name = n1->var_obj->name;
+//            NodeLink *putNodeLink = nullptr;
+//            if (nodeLink->ptr_u == nullptr) {
+//                // 第一次执行， 需要让函数确认所有的参数
+//                putNodeLink = newNodeLink(nullptr, n);
+//                nodeLink->ptr_u = putNodeLink;
+//                call(name, args, remark.c_str(), putNodeLink);
+//                return;
+//            } else {
+//                putNodeLink = (NodeLink *) nodeLink->ptr_u;
+//                nodeLink->ptr_u = nullptr;
+//            }
+//            n->value = call(name, args, remark.c_str(), putNodeLink);
+//            //printf("func %s exec end\n" , name);
+//        }
 
         doSuffixOperationArgs(args);
         Allocator::free(n1->value);
-        n1->value = NULL;
+        n1->value = nullptr;
         nodeLink->backAfterExec = true;
     }
 
@@ -1426,6 +1564,9 @@ namespace langX {
 
     // node list  挨个执行子节点即可
     void __execNODE_LIST(NodeLink *nodeLink, langXThread *thread) {
+
+        logger->debug("OPR_NODE_LIST node");
+
         __exec59(nodeLink, thread);
     }
 
@@ -1436,6 +1577,9 @@ namespace langX {
      * @param thread
      */
     void __execFUNC_OP(NodeLink *nodeLink, langXThread *thread){
+        // 当前节点只执行一遍就可以了 。。
+        nodeLink->backAfterExec = true;
+
         auto rootNode = nodeLink->node;
         auto oprObj = rootNode->opr_obj;
         // 函数的名字
@@ -1463,8 +1607,10 @@ namespace langX {
             paramsList->index = len;
         }
 
-        // 获取函数的参数
+        // 建立函数对象
+        blockNode->freeOnExecuted = false;
         auto func = funcName == nullptr ? new Function(blockNode) : new Function(funcName, blockNode);
+        // 设置函数的参数
         func->setParamsList(paramsList);
 
         // 把函数放入环境中
@@ -1474,12 +1620,14 @@ namespace langX {
             rootNode->value = Allocator::allocateFunctionRef(func);
             return;
         }
-        if (thread->getCurrentEnv()->getFunctionSelf(func->getName()) != nullptr) {
+
+        auto oldFunc = thread->getCurrentEnv()->getFunctionSelf(func->getName());
+        if (oldFunc != nullptr) {
             char tmp[100] = {0};
             sprintf(tmp, "function %s already declared.", func->getName());
             thread->throwException(newRedeclarationException(tmp)->addRef());
             delete func;
-            rootNode->value = NULL;
+            rootNode->value = nullptr;
             return;
         }
 
@@ -1718,7 +1866,7 @@ namespace langX {
 
             return;
         } else if (node->type == NODE_CONSTANT_INTEGER) {
-            logger->debug("__execNode NODE_CONSTANT_INTEGER: %.4f", node->con_obj->iValue);
+            logger->debug("__execNode NODE_CONSTANT_INTEGER: %d", node->con_obj->iValue);
             node->value = Allocator::allocateNumber(node->con_obj->iValue);
             return;
         } else if (node->type == NODE_CLASS) {
@@ -2002,6 +2150,12 @@ namespace langX {
                 break;
             case OPR_START_IF:
                 __execSTART_IF(nodeLink, thread);
+                break;
+            case OPR_INC_DEC:
+                __execINC_DEC(nodeLink, thread);
+                break;
+            case OPR_ARGS_LIST:
+                __execARGS_LIST(nodeLink, thread);
                 break;
             default:
                 break;

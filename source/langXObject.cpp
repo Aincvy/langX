@@ -250,26 +250,15 @@ namespace langX {
 		Function *func = getConstructor();
 		if (func)
 		{
-			NodeLink *putNodeLink = nullptr;
-			if (!nodeLink->flag) {
-				nodeLink->flag = true;
-				putNodeLink = newNodeLink(nullptr, nodeLink->node);
-				nodeLink->ptr_u = putNodeLink;
-				thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
-				callFunc(func, args, remark, putNodeLink);
-				return;
-			}
-			else {
-				putNodeLink = (NodeLink *)nodeLink->ptr_u;
-			}
 
+            thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
 			Environment *env = getObjectEnvironment();
             thread->newEnvByBridge(env);
-			callFunc(func, args, remark, putNodeLink);
+			callFunc(func, args, remark );
 			thread->getStackTrace().popFrame();
 			thread->backEnv();
-			freeNodeLink(putNodeLink);
-			nodeLink->ptr_u = NULL;
+
+			nodeLink->ptr_u = nullptr;
 		}
 	}
 
@@ -280,30 +269,15 @@ namespace langX {
 		if (func)
 		{
 			langXThread *thread = getState()->curThread();
-			NodeLink *curNodeLink = thread->getCurrentExecute();
-			NodeLink tmpNodeLink;
-			memset(&tmpNodeLink, 0, sizeof(NodeLink));
-			NodeLink *nodeLink = &tmpNodeLink;
-
-			// 运算参数
-			NodeLink *putNodeLink = newNodeLink(nullptr, nodeLink->node);
-			nodeLink->ptr_u = putNodeLink;
-			thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
-			callFunc(func, args, remark, putNodeLink);
-			if (curNodeLink->next != nullptr)
-			{
-				Node *t = curNodeLink->next->node;
-				execNodeButLimit(t, t);
-			}
 
 			// 运算函数
+            thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
 			Environment *env = getObjectEnvironment();
             thread->newEnvByBridge(env);
-			callFunc(func, args, remark, putNodeLink);
+			callFunc(func, args, remark);
 			thread->getStackTrace().popFrame();
 			thread->backEnv();
-			freeNodeLink(putNodeLink);
-			nodeLink->ptr_u = NULL;
+
 		}
 	}
 

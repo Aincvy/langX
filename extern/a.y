@@ -23,6 +23,7 @@
 %token KEY_IF KEY_ELSE KEY_WHILE KEY_FOR KEY_DELETE KEY_BREAK KEY_RETURN KEY_SWITCH KEY_CASE KEY_DEFAULT KEY_NULL
 %token CASE_LIST CLAXX_BODY CLAXX_MEMBER CLAXX_FUNC_CALL SCOPE_FUNC_CALL SCOPE LEFT_SHIFT RIGHT_SHIFT
 %token OPR_NODE_LIST OPR_CHANGE_NAME_SPACE OPR_GET_NAME_SPACE OPR_CLASS_DECLARE OPR_INC_DEC OPR_IF_ELSE OPR_MULTIPLE_ID OPR_START_IF
+%token OPR_ARGS_LIST
 %token <iValue> KEY_REQUIRE KEY_REQUIRE_ONCE KEY_INCLUDE KEY_AUTO KEY_CONST KEY_LOCAL
 %token <iValue> ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<' INC_OP DEC_OP  AND_OP OR_OP
 
@@ -84,7 +85,7 @@ program
 	;
 
 statement_list
-: statement_list statement {   /* execAndFreeNode($2); */ }
+  : statement_list statement      { execAndFreeNode($2); }
 	|
 	;
 statement
@@ -397,8 +398,8 @@ args_list_with_parentheses
   ;
 
 args_list
-  : common_expr     { $$ = opr(OPR_NODE_LIST, 1, $1); }         // 和下面部分的语法节点 保持统一
-  | args_list ',' common_expr  { $$ = opr(OPR_NODE_LIST, 2 , $1, $3); }
+  : common_expr     { $$ = opr(OPR_ARGS_LIST, 1, $1); }         // 和下面部分的语法节点 保持统一
+  | args_list ',' common_expr  { $$ = opr(OPR_ARGS_LIST, 2 , $1, $3); }
   ;
 
 delete_expr

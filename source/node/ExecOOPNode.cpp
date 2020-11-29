@@ -261,8 +261,7 @@ namespace langX{
             getState()->curThread()->newEnv(env);
 
             // 根据语法解析文件得知， 第二个节点为参数节点
-            XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
-            callFunc(t, args, remark, putNodeLink);        // 首次执行 确定参数
+            // todo add args
             return;
         }
         else {
@@ -274,7 +273,7 @@ namespace langX{
 
         // 根据语法解析文件得知， 第二个节点为参数节点
         XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
-        n->value = callFunc(t, args, remark, putNodeLink);
+        n->value = callFunc(t, args, remark);
 
         doSuffixOperationArgs(args);
         n1->value = nullptr;

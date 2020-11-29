@@ -98,33 +98,34 @@ extern int yydebug;
     OPR_IF_ELSE = 304,             /* OPR_IF_ELSE  */
     OPR_MULTIPLE_ID = 305,         /* OPR_MULTIPLE_ID  */
     OPR_START_IF = 306,            /* OPR_START_IF  */
-    KEY_REQUIRE = 307,             /* KEY_REQUIRE  */
-    KEY_REQUIRE_ONCE = 308,        /* KEY_REQUIRE_ONCE  */
-    KEY_INCLUDE = 309,             /* KEY_INCLUDE  */
-    KEY_AUTO = 310,                /* KEY_AUTO  */
-    KEY_CONST = 311,               /* KEY_CONST  */
-    KEY_LOCAL = 312,               /* KEY_LOCAL  */
-    ADD_EQ = 313,                  /* ADD_EQ  */
-    SUB_EQ = 314,                  /* SUB_EQ  */
-    MUL_EQ = 315,                  /* MUL_EQ  */
-    DIV_EQ = 316,                  /* DIV_EQ  */
-    MOD_EQ = 317,                  /* MOD_EQ  */
-    LE_OP = 318,                   /* LE_OP  */
-    GE_OP = 319,                   /* GE_OP  */
-    EQ_OP = 320,                   /* EQ_OP  */
-    NE_OP = 321,                   /* NE_OP  */
-    INC_OP = 322,                  /* INC_OP  */
-    DEC_OP = 323,                  /* DEC_OP  */
-    AND_OP = 324,                  /* AND_OP  */
-    OR_OP = 325,                   /* OR_OP  */
-    IFX = 326,                     /* IFX  */
-    ELSE = 327,                    /* ELSE  */
-    PIPELINE_OP = 328,             /* PIPELINE_OP  */
-    INC_OP_BACK = 329,             /* INC_OP_BACK  */
-    PRIORITY3 = 330,               /* PRIORITY3  */
-    PRIORITY2 = 331,               /* PRIORITY2  */
-    PRIORITY1 = 332,               /* PRIORITY1  */
-    UMINUS = 333                   /* UMINUS  */
+    OPR_ARGS_LIST = 307,           /* OPR_ARGS_LIST  */
+    KEY_REQUIRE = 308,             /* KEY_REQUIRE  */
+    KEY_REQUIRE_ONCE = 309,        /* KEY_REQUIRE_ONCE  */
+    KEY_INCLUDE = 310,             /* KEY_INCLUDE  */
+    KEY_AUTO = 311,                /* KEY_AUTO  */
+    KEY_CONST = 312,               /* KEY_CONST  */
+    KEY_LOCAL = 313,               /* KEY_LOCAL  */
+    ADD_EQ = 314,                  /* ADD_EQ  */
+    SUB_EQ = 315,                  /* SUB_EQ  */
+    MUL_EQ = 316,                  /* MUL_EQ  */
+    DIV_EQ = 317,                  /* DIV_EQ  */
+    MOD_EQ = 318,                  /* MOD_EQ  */
+    LE_OP = 319,                   /* LE_OP  */
+    GE_OP = 320,                   /* GE_OP  */
+    EQ_OP = 321,                   /* EQ_OP  */
+    NE_OP = 322,                   /* NE_OP  */
+    INC_OP = 323,                  /* INC_OP  */
+    DEC_OP = 324,                  /* DEC_OP  */
+    AND_OP = 325,                  /* AND_OP  */
+    OR_OP = 326,                   /* OR_OP  */
+    IFX = 327,                     /* IFX  */
+    ELSE = 328,                    /* ELSE  */
+    PIPELINE_OP = 329,             /* PIPELINE_OP  */
+    INC_OP_BACK = 330,             /* INC_OP_BACK  */
+    PRIORITY3 = 331,               /* PRIORITY3  */
+    PRIORITY2 = 332,               /* PRIORITY2  */
+    PRIORITY1 = 333,               /* PRIORITY1  */
+    UMINUS = 334                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -142,7 +143,7 @@ union YYSTYPE
  XParamsList* params; /* params value */
  XArgsList *args;    /* args value */
 
-#line 146 "y.tab.h"
+#line 147 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

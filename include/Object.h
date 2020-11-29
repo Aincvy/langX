@@ -229,7 +229,7 @@ namespace langX {
 	{
 		NodeType type;
 		// 在执行结束之后是否进行 free 操作
-		bool freeOnExeced;
+		bool freeOnExecuted;
 		// 当前节点的值 .  如果当前结点是一个常量数字， 则free 的时候会施放这个值得内存
 		Object *value;
 		// 万能指针 ， 主要用于放置参数什么的

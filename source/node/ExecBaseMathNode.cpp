@@ -14,6 +14,7 @@
 #include "langXObject.h"
 #include "langXObjectRef.h"
 #include "InnerFunction.h"
+#include "LogManager.h"
 
 namespace langX{
 
@@ -22,7 +23,7 @@ namespace langX{
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
+        if (n1->value == nullptr || n2->value == nullptr)
         {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '+'!")->addRef());
             freeSubNodes(n);
@@ -122,6 +123,7 @@ namespace langX{
                 return;
             }
 
+            logger->debug("after 43(string cat), result: %s", ss.str().c_str());
             n->value = Allocator::allocateString(ss.str().c_str());
         }
         else {
@@ -134,12 +136,15 @@ namespace langX{
     // +
     // 操作结果， 会将结果存储在当前节点中
     void __exec43(NodeLink *nodeLink) {
+
         Node *  n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
             nodeLink->index = 1;
         }
         else {
+            logger->debug("node 43");
+
             __realExec43(n);
             nodeLink->backAfterExec = true;
         }

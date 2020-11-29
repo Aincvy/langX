@@ -46,7 +46,7 @@ void resetNodeState(langX::Node *n) {
 void setStateToCanFree(langX::Node *n) {
 	//deal_state(&n->state);
 	//deal_switch_info(&n->switch_info);
-	n->freeOnExeced = true;
+	n->freeOnExecuted = true;
 
 	if (n->type == langX::NODE_OPERATOR)
 	{
@@ -88,7 +88,7 @@ namespace langX {
 		}
 		if (this->m_node_root != NULL)
 		{
-			//this->m_node_root->freeOnExeced = true;
+			//this->m_node_root->freeOnExecuted = true;
 			setStateToCanFree(this->m_node_root);
 			freeNode(this->m_node_root);
 			this->m_node_root = NULL;
@@ -144,7 +144,6 @@ namespace langX {
 		{
 			return nullptr;
 		}
-
 
 		resetNodeState(this->m_node_root);
 
@@ -338,22 +337,17 @@ namespace langX {
 		return nullptr;
 	}
 
-	Object * FunctionRef::call(ArgsList * argsList, const char * remark, NodeLink *nodeLink)
+	Object * FunctionRef::call(ArgsList * argsList, const char * remark )
 	{
-		// 获取参数
-		if (nodeLink->index == 0) {
-			callFunc(getRefFunction(), argsList, remark, nodeLink);
-			return nullptr;
-		}
 
 		// 实际调用
 		Environment *env = getFunctionEnv();
-		if (env != NULL)
+		if (env != nullptr)
 		{
 			getState()->curThread()->newEnv(env);
 		}
-		Object *ret = callFunc(getRefFunction(), argsList, remark, nodeLink);
-		if (env != NULL)
+		Object *ret = callFunc(getRefFunction(), argsList, remark );
+		if (env != nullptr)
 		{
 			getState()->curThread()->backEnv();
 		}

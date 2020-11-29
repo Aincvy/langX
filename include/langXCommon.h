@@ -24,4 +24,5 @@
 // 线程环境深度的初始值
 #define THREAD_ENV_DEEP_INITIAL 1
 
-
+// 默认情况下的字符串缓冲区大小
+#define DEFAULT_CHAR_BUFFER_SIZE 1024

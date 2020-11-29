@@ -1294,8 +1294,7 @@ namespace langX {
 		if (this->m_functions_map.find(name) == this->m_functions_map.end())
 		{
 			// not found.
-
-			return NULL;
+			return nullptr;
 		}
 		return this->m_functions_map.at(name);
 	}

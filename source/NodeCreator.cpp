@@ -118,7 +118,7 @@ XNode *newNode() {
 	node->arr_obj = NULL;
 	node->opr_obj = NULL;
 
-	node->freeOnExeced = true;
+	node->freeOnExecuted = true;
     deal_fileInfo(&node->fileinfo);
 	deal_state(&node->state);
 	node->value = NULL;
@@ -187,13 +187,10 @@ void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 	}
 	else {
 		//
-		FunctionRef aref(func1);
-		aref.setObj(ref1->getRefObject());
-		NodeLink tmpNodeLink;
-		memset(&tmpNodeLink, 0, sizeof(NodeLink));
-		//  因为本参数无参，所以只修改 index为1， 这样的话，一次就可以获取到结果
-		tmpNodeLink.index = 1;
-		Object *retObj = aref.call(nullptr, "<call toString()>", &tmpNodeLink);
+		FunctionRef funcRef(func1);
+		funcRef.setObj(ref1->getRefObject());
+
+		Object *retObj = funcRef.call(nullptr, "<call toString()>" );
 		if (retObj->getType() == STRING)
 		{
 			ss << ((String*)retObj)->getValue();
@@ -349,7 +346,7 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 
 	if (node != NULL)
 	{
-		node->freeOnExeced = false;
+		node->freeOnExecuted = false;
 	}
 
 	Function *func = new Function(name, node);
@@ -365,7 +362,7 @@ XNode * dtrt(char *name, XParamsList *params, XNode *node)
 {
 	if (node != NULL)
 	{
-		node->freeOnExeced = false;
+		node->freeOnExecuted = false;
 	}
 
 	std::string str("~");
@@ -444,7 +441,7 @@ XNode * classNode(char *name, char *parent, XNode * node, bool flag) {
 }
 
 // 根据名字调用一个函数
-XObject * call(const char *name, XArgsList* args, const char *remark, NodeLink *nodeLink)
+XObject * call(const char *name, XArgsList* args, const char *remark )
 {
     auto thread = getState()->curThread();
 	Function *function = thread->getFunction(name);
@@ -457,59 +454,40 @@ XObject * call(const char *name, XArgsList* args, const char *remark, NodeLink *
 	}
 
 	// auto env = thread->getCurrentEnv();
-	auto object = callFunc(function, args, remark, nodeLink);
+	auto object = callFunc(function, args, remark );
     // env->putObject(FE_KEY_PREV_RESULT, object);
     return object;
 }
 
 // 调用第三方函数
-XObject *call3rdFunc(X3rdFunction *x3rdFunc, langXThread * thread, XArgsList *args, NodeLink* nodeLink) {
+XObject *call3rdFunc(X3rdFunction *x3rdFunc, langXThread * thread, XArgsList *args ) {
 	X3rdArgs _3rdArgs;
 	memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-	if (args != NULL)
+	if (args != nullptr)
 	{
-		// 计算出参数节点的值。 然后克隆一份给 传参的那个数据结构。 然后再释放掉参数节点的值。
-		if (nodeLink->index == 0) {
-			for (int i = 0; i < args->index; i++)
-			{
-				if (args->args[i] != NULL) {
-					thread->beginExecute(args->args[i]);
-				}
-			}
-			nodeLink->index = 1;
-			return nullptr;
-		}
-		else {
-			for (int i = 0; i < args->index; i++)
-			{
-				if (args->args[i] == NULL)
-				{
-					_3rdArgs.args[i] = NULL;
-					continue;
-				}
+        for (int i = 0; i < args->index; i++)
+        {
+            if (args->args[i] == nullptr)
+            {
+                _3rdArgs.args[i] = nullptr;
+                continue;
+            }
 
-				Object * tmp1 = args->args[i]->value;
-				if (tmp1)
-				{
-					_3rdArgs.args[i] = tmp1->clone();
-				}
-				else {
-					_3rdArgs.args[i] = Allocator::allocate(NULLOBJECT);
-				}
+            Object * tmp1 = args->args[i]->value;
+            if (tmp1)
+            {
+                _3rdArgs.args[i] = tmp1->clone();
+            }
+            else {
+                _3rdArgs.args[i] = Allocator::allocate(NULLOBJECT);
+            }
 
-				// 释放这个参数节点的值
-				Allocator::free(args->args[i]->value);
-				args->args[i]->value = NULL;
-			}
-		}
+            // 释放这个参数节点的值
+            Allocator::free(args->args[i]->value);
+            args->args[i]->value = nullptr;
+        }
 
 		_3rdArgs.index = args->index;
-	}
-
-	// 确保 这个函数执行第二遍的时候才会获取到结果
-	if (nodeLink->index == 0) {
-		nodeLink->index = 1;
-		return nullptr;
 	}
 
 	Environment *currEnv1 = thread->getCurrentEnv();
@@ -582,33 +560,24 @@ void addFunctionExtendsVar(Environment* env, XArgsList* args){
 
 }
 
-XObject * callFunc(XFunction* function, XArgsList* args, const char* remark, NodeLink* nodeLink) {
+XObject * callFunc(XFunction* function, XArgsList* args, const char* remark) {
 #ifdef SHOW_DETAILS
 	// logger->debug("callFunc %s %s\n" , function->getName(), remark );
 #endif
 
 	langXThread * thread = getState()->curThread();
-	if (function == NULL)
+	if (function == nullptr)
 	{
 		thread->throwException(newException("function is null when call function.")->addRef());
-		return NULL;
+		return nullptr;
 	}
-
 
 	if (function->is3rd())
 	{
-		if (nodeLink->index == 0) {
-			thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
-		}
 		// 第三方函数
+        thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 		X3rdFunction *x3rdFunc = (X3rdFunction*)function;
-		return call3rdFunc(x3rdFunc, thread, args, nodeLink);
-	}
-
-	if (nodeLink->index == 0)
-	{
-        callFuncNodeLink0(function, args, remark, nodeLink, thread);
-        return nullptr;
+		return call3rdFunc(x3rdFunc, thread, args );
 	}
 
 	// 如果当前环境是一个对象环境， 则暂存他
@@ -667,20 +636,19 @@ XObject * callFunc(XFunction* function, XArgsList* args, const char* remark, Nod
     // put function extends var ...
     addFunctionExtendsVar(env, args);
 
-
-	if (oldEnv != NULL)
+	if (oldEnv != nullptr)
 	{
 		thread->newEnv(oldEnv);
-        oldEnv = NULL;
+        oldEnv = nullptr;
 	}
 
 	// 如果这个函数属于某个脚本， 先用该函数的脚本环境覆盖
-	ScriptEnvironment *fsenv = function->getScriptEnv();
+	ScriptEnvironment *fsEnv = function->getScriptEnv();
 	bool flagfsenv = false;
-	if (fsenv != nullptr)
+	if (fsEnv != nullptr)
 	{
 		flagfsenv = true;
-        thread->newEnvByBridge(fsenv);
+        thread->newEnvByBridge(fsEnv);
 	}
 
 	thread->newEnv(env);
@@ -914,19 +882,20 @@ void freeAllArgList(Node *n) {
 }
 
 void freeNode(XNode * n) {
-	if (n == NULL)
+	if (n == nullptr)
 	{
 		return;
 	}
-	if (!n->freeOnExeced)
+	if (!n->freeOnExecuted)
 	{
 		return;
 	}
 
-	if (n->value != NULL)
+	// 释放值的内存
+	if (n->value != nullptr)
 	{
 		Allocator::free(n->value);
-		n->value = NULL;
+		n->value = nullptr;
 	}
 
 	// 如果是一个函数节点， 还需要释放它的参数列表
@@ -989,7 +958,7 @@ void freeNode(XNode * n) {
 				n->ptr_u = NULL;
 			}
 		}
-		//printf("00001\n");
+
 		for (size_t i = 0; i < n->opr_obj->op_count; i++)
 		{
 			freeNode(n->opr_obj->op[i]);
@@ -1047,6 +1016,8 @@ void execAndFreeNode(XNode *n) {
 		// 当前在异常中， 不执行节点了
 		return;
 	}
+
+	logger->debug("try exec node at %s:%d", getParsingFilename(), getParseLineNo());
 
 	execNode(n);
 
