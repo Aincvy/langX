@@ -129,19 +129,20 @@ namespace langX {
 
     // 将节点的值更新到环境中
     void setValueToEnv2(const char *name, Object *val, Environment *env) {
-        if (val == NULL || name == NULL || env == NULL) {
+        if (val == nullptr || name == nullptr || env == nullptr) {
             logger->error("setValueToEnv Node Args Error. \n");
             return;
         }
 
         Object *obj = env->getObject(name);
-        if (obj == NULL) {
+        if (obj == nullptr) {
             env->putObject(name, val);
         } else {
             if (obj->getType() != val->getType()) {
-                logger->error("setValueToEnv left type not equal right.\n");
+                logger->error("[Fatal] setValueToEnv %s left type not equal right." , name);
                 return;
             }
+
             obj->update(val);
         }
     }
@@ -1198,6 +1199,9 @@ namespace langX {
             // exec var node
             doSubNodes(varListNode);
         } else {
+            // 还原状态
+            getState()->curThread()->setVarDeclarePrefix(-1);
+
             nodeLink->backAfterExec = true;
         }
 

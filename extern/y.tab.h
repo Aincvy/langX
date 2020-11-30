@@ -1,13 +1,13 @@
-/* A Bison parser, made by GNU Bison 3.7.2.  */
+/* A Bison parser, made by GNU Bison 2.3.  */
 
 /* Skeleton interface for Bison GLR parsers in C
 
-   Copyright (C) 2002-2015, 2018-2020 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
-   This program is free software: you can redistribute it and/or modify
+   This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +15,9 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -30,130 +32,134 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
-/* Debug traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
-#if YYDEBUG
-extern int yydebug;
-#endif
-
-/* Token kinds.  */
+/* Tokens.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-  enum yytokentype
-  {
-    YYEMPTY = -2,
-    YYEOF = 0,                     /* "end of file"  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
-    TINTEGER = 258,                /* TINTEGER  */
-    TBOOL = 259,                   /* TBOOL  */
-    TDOUBLE = 260,                 /* TDOUBLE  */
-    IDENTIFIER = 261,              /* IDENTIFIER  */
-    TSTRING = 262,                 /* TSTRING  */
-    OPERATOR_X__ = 263,            /* OPERATOR_X__  */
-    OP_CALC = 264,                 /* OP_CALC  */
-    FUNC_OP = 265,                 /* FUNC_OP  */
-    FUNC_CALL = 266,               /* FUNC_CALL  */
-    VAR_DECLAR = 267,              /* VAR_DECLAR  */
-    ARRAY_ELE = 268,               /* ARRAY_ELE  */
-    KEY_TRY = 269,                 /* KEY_TRY  */
-    KEY_PUBLIC = 270,              /* KEY_PUBLIC  */
-    KEY_SET = 271,                 /* KEY_SET  */
-    KEY_IS = 272,                  /* KEY_IS  */
-    KEY_REF = 273,                 /* KEY_REF  */
-    KEY_CONTINUE = 274,            /* KEY_CONTINUE  */
-    KEY_NEW = 275,                 /* KEY_NEW  */
-    KEY_CATCH = 276,               /* KEY_CATCH  */
-    KEY_THIS = 277,                /* KEY_THIS  */
-    KEY_EXTENDS = 278,             /* KEY_EXTENDS  */
-    KEY_RESTRICT = 279,            /* KEY_RESTRICT  */
-    KEY_AUTO = 280,                /* KEY_AUTO  */
-    KEY_IF = 281,                  /* KEY_IF  */
-    KEY_ELSE = 282,                /* KEY_ELSE  */
-    KEY_WHILE = 283,               /* KEY_WHILE  */
-    KEY_FOR = 284,                 /* KEY_FOR  */
-    KEY_DELETE = 285,              /* KEY_DELETE  */
-    KEY_BREAK = 286,               /* KEY_BREAK  */
-    KEY_RETURN = 287,              /* KEY_RETURN  */
-    KEY_SWITCH = 288,              /* KEY_SWITCH  */
-    KEY_CASE = 289,                /* KEY_CASE  */
-    KEY_DEFAULT = 290,             /* KEY_DEFAULT  */
-    KEY_NULL = 291,                /* KEY_NULL  */
-    CASE_LIST = 292,               /* CASE_LIST  */
-    CLAXX_BODY = 293,              /* CLAXX_BODY  */
-    CLAXX_MEMBER = 294,            /* CLAXX_MEMBER  */
-    CLAXX_FUNC_CALL = 295,         /* CLAXX_FUNC_CALL  */
-    SCOPE_FUNC_CALL = 296,         /* SCOPE_FUNC_CALL  */
-    SCOPE = 297,                   /* SCOPE  */
-    LEFT_SHIFT = 298,              /* LEFT_SHIFT  */
-    RIGHT_SHIFT = 299,             /* RIGHT_SHIFT  */
-    INC_OP = 300,                  /* INC_OP  */
-    DEC_OP = 301,                  /* DEC_OP  */
-    OPR_NODE_LIST = 302,           /* OPR_NODE_LIST  */
-    OPR_CHANGE_NAME_SPACE = 303,   /* OPR_CHANGE_NAME_SPACE  */
-    OPR_GET_NAME_SPACE = 304,      /* OPR_GET_NAME_SPACE  */
-    OPR_CLASS_DECLARE = 305,       /* OPR_CLASS_DECLARE  */
-    OPR_INC_DEC = 306,             /* OPR_INC_DEC  */
-    OPR_IF_ELSE = 307,             /* OPR_IF_ELSE  */
-    OPR_MULTIPLE_ID = 308,         /* OPR_MULTIPLE_ID  */
-    OPR_START_IF = 309,            /* OPR_START_IF  */
-    OPR_ARGS_LIST = 310,           /* OPR_ARGS_LIST  */
-    KEY_REQUIRE = 311,             /* KEY_REQUIRE  */
-    KEY_REQUIRE_ONCE = 312,        /* KEY_REQUIRE_ONCE  */
-    KEY_INCLUDE = 313,             /* KEY_INCLUDE  */
-    KEY_CONST = 314,               /* KEY_CONST  */
-    KEY_LOCAL = 315,               /* KEY_LOCAL  */
-    ADD_EQ = 316,                  /* ADD_EQ  */
-    SUB_EQ = 317,                  /* SUB_EQ  */
-    MUL_EQ = 318,                  /* MUL_EQ  */
-    DIV_EQ = 319,                  /* DIV_EQ  */
-    MOD_EQ = 320,                  /* MOD_EQ  */
-    LE_OP = 321,                   /* LE_OP  */
-    GE_OP = 322,                   /* GE_OP  */
-    EQ_OP = 323,                   /* EQ_OP  */
-    NE_OP = 324,                   /* NE_OP  */
-    AND_OP = 325,                  /* AND_OP  */
-    OR_OP = 326,                   /* OR_OP  */
-    IFX = 327,                     /* IFX  */
-    ELSE = 328,                    /* ELSE  */
-    PIPELINE_OP = 329,             /* PIPELINE_OP  */
-    INC_OP_BACK = 330,             /* INC_OP_BACK  */
-    PRIORITY3 = 331,               /* PRIORITY3  */
-    PRIORITY2 = 332,               /* PRIORITY2  */
-    PRIORITY1 = 333,               /* PRIORITY1  */
-    UMINUS = 334                   /* UMINUS  */
-  };
-  typedef enum yytokentype yytoken_kind_t;
+   /* Put the tokens into the symbol table, so that GDB and other debuggers
+      know about them.  */
+   enum yytokentype {
+     TINTEGER = 258,
+     TBOOL = 259,
+     TDOUBLE = 260,
+     IDENTIFIER = 261,
+     TSTRING = 262,
+     OPERATOR_X__ = 263,
+     OP_CALC = 264,
+     FUNC_OP = 265,
+     FUNC_CALL = 266,
+     VAR_DECLAR = 267,
+     ARRAY_ELE = 268,
+     KEY_TRY = 269,
+     KEY_PUBLIC = 270,
+     KEY_SET = 271,
+     KEY_IS = 272,
+     KEY_REF = 273,
+     KEY_CONTINUE = 274,
+     KEY_NEW = 275,
+     KEY_CATCH = 276,
+     KEY_THIS = 277,
+     KEY_EXTENDS = 278,
+     KEY_RESTRICT = 279,
+     KEY_AUTO = 280,
+     KEY_CONST = 281,
+     KEY_LOCAL = 282,
+     KEY_IF = 283,
+     KEY_ELSE = 284,
+     KEY_WHILE = 285,
+     KEY_FOR = 286,
+     KEY_DELETE = 287,
+     KEY_BREAK = 288,
+     KEY_RETURN = 289,
+     KEY_SWITCH = 290,
+     KEY_CASE = 291,
+     KEY_DEFAULT = 292,
+     KEY_NULL = 293,
+     CASE_LIST = 294,
+     CLAXX_BODY = 295,
+     CLAXX_MEMBER = 296,
+     CLAXX_FUNC_CALL = 297,
+     SCOPE_FUNC_CALL = 298,
+     SCOPE = 299,
+     LEFT_SHIFT = 300,
+     RIGHT_SHIFT = 301,
+     INC_OP = 302,
+     DEC_OP = 303,
+     OPR_NODE_LIST = 304,
+     OPR_CHANGE_NAME_SPACE = 305,
+     OPR_GET_NAME_SPACE = 306,
+     OPR_CLASS_DECLARE = 307,
+     OPR_INC_DEC = 308,
+     OPR_IF_ELSE = 309,
+     OPR_MULTIPLE_ID = 310,
+     OPR_START_IF = 311,
+     OPR_ARGS_LIST = 312,
+     KEY_REQUIRE = 313,
+     KEY_REQUIRE_ONCE = 314,
+     KEY_INCLUDE = 315,
+     ADD_EQ = 316,
+     SUB_EQ = 317,
+     MUL_EQ = 318,
+     DIV_EQ = 319,
+     MOD_EQ = 320,
+     LE_OP = 321,
+     GE_OP = 322,
+     EQ_OP = 323,
+     NE_OP = 324,
+     AND_OP = 325,
+     OR_OP = 326,
+     IFX = 327,
+     ELSE = 328,
+     PIPELINE_OP = 329,
+     INC_OP_BACK = 330,
+     PRIORITY3 = 331,
+     PRIORITY2 = 332,
+     PRIORITY1 = 333,
+     UMINUS = 334
+   };
 #endif
 
-/* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-#line 9 "a.y"
 
+/* Copy the first part of user declarations.  */
+#line 1 "a.y"
+
+
+#include <string.h>
+#include "../include/NodeCreator.h"
+#include "../include/Program.h"
+
+
+
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef union YYSTYPE 
+#line 9 "a.y"
+{
  int iValue;
  double dValue; /* double value */
  char* sValue; /* string value */
  XNode* node;  /* var value */
  XParamsList* params; /* params value */
  XArgsList *args;    /* args value */
-
-#line 147 "y.tab.h"
-
-};
-typedef union YYSTYPE YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
+}
+/* Line 2616 of glr.c.  */
+#line 145 "y.tab.h"
+	YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
+# define YYSTYPE_IS_TRIVIAL 1
+#endif
+
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE
+{
+
+  char yydummy;
+
+} YYLTYPE;
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
 #endif
 
 
 extern YYSTYPE yylval;
 
-int yyparse (void);
 
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+

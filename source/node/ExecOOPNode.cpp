@@ -79,7 +79,7 @@ namespace langX{
             thread->beginExecute(n1, true);
             nodeLink->index = 1;
             return;
-        }0
+        }
 
         if (n1->value == nullptr)
         {
