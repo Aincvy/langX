@@ -174,7 +174,7 @@ namespace langX {
 
 	bool Function::hasName() const
 	{
-		if (strcmp(this->m_name, "") == 0)
+		if (m_name == nullptr || strcmp(this->m_name, "") == 0)
 		{
 			return false;
 		}
