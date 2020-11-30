@@ -35,4 +35,4 @@ if( c1 == null ){
   println("c1 == null! ");
 }
 
-printInfo(Student::age);
+println(Student::age);

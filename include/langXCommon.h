@@ -26,3 +26,5 @@
 
 // 默认情况下的字符串缓冲区大小
 #define DEFAULT_CHAR_BUFFER_SIZE 1024
+// 默认情况下， 较小的字符串缓冲区的 大小
+#define DEFAULT_MIN_CHAR_BUFF_SIZE 100

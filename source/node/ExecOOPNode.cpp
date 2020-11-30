@@ -20,6 +20,7 @@
 #include "Environment.h"
 #include "XArray.h"
 #include "XNameSpace.h"
+#include "langXCommon.h"
 
 namespace langX{
 
@@ -104,8 +105,8 @@ namespace langX{
                 n->value = Allocator::allocateNumber(arrayRef->getLength());
             }
             else {
-                char tmp[100] = { 0 };
-                sprintf(tmp, "no member %s in array.", memberName);
+                char tmp[DEFAULT_MIN_CHAR_BUFF_SIZE] = { 0 };
+                sprintf(tmp, "no member %s in array type.", memberName);
                 thread->throwException(newNoClassMemberException(tmp)->addRef());
             }
 
@@ -120,7 +121,7 @@ namespace langX{
                 n->value = Allocator::allocateNumber(str->size());
             }
             else {
-                char tmp[100] = { 0 };
+                char tmp[DEFAULT_MIN_CHAR_BUFF_SIZE] = { 0 };
                 sprintf(tmp, "no member %s in string.", memberName);
                 thread->throwException(newNoClassMemberException(tmp)->addRef());
             }
@@ -281,34 +282,42 @@ namespace langX{
         Node *n = nodeLink->node;
 
         char *className = n->opr_obj->op[0]->var_obj->name;
-        ClassInfo *claxxInfo = getState()->getClass(className);
-        if (claxxInfo == nullptr)
+        ClassInfo *classInfo = getState()->getClass(className);
+        if (classInfo == nullptr)
         {
             thread->throwException(newClassNotFoundException(className)->addRef());
             return;
         }
 
         char *memberName = n->opr_obj->op[1]->var_obj->name;
-        Object *t = claxxInfo->getMember(memberName);
-        if (t == nullptr || t->isLocal())
+        Object *tmp = classInfo->getMember(memberName);
+        FunctionRef *ref = nullptr;
+        if (tmp == nullptr || tmp->isLocal())
         {
-            Function * tf = claxxInfo->getFunction(memberName);
-            if (tf == nullptr)
+            Function * func = classInfo->getFunction(memberName);
+            if (func == nullptr)
             {
-                char tmp[100] = { 0 };
-                sprintf(tmp, "no member %s in class %s.", memberName, className);
-                thread->throwException(newNoClassMemberException(tmp)->addRef());
+                char tmpMsg[DEFAULT_MIN_CHAR_BUFF_SIZE] = {0 };
+                sprintf(tmpMsg, "no member %s in class %s.", memberName, className);
+                thread->throwException(newNoClassMemberException(tmpMsg)->addRef());
                 return;
             }
 
-            FunctionRef *fr = Allocator::allocateFunctionRef(tf);
-            fr->setClaxx(claxxInfo);
-            fr->setEmergeEnv(getState()->curThread()->getCurrentEnv());
-            t = fr;
+            ref = Allocator::allocateFunctionRef(func);
+            ref->setClaxx(classInfo);
+            ref->setEmergeEnv(getState()->curThread()->getCurrentEnv());
+            tmp = ref;
         }
 
-        n->value = t->clone();
+        n->value = tmp->clone();
         nodeLink->backAfterExec = true;
+
+        // 释放内存
+        if (ref != nullptr) {
+            Allocator::freeFunctionRef(ref);
+            ref = nullptr;
+        }
+
     }
 
 
