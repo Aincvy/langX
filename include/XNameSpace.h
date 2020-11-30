@@ -37,7 +37,7 @@ namespace langX {
 		XNameSpace * getNameSpace(const char *);
 
 		// 获得命名空间， 如果命名空间不存在， 则创建一个放入自身中
-		XNameSpace * getNameSpace2(const char *);
+		XNameSpace * getNameSpaceWithCreate(const char *name);
 
 		void addRefNamespace(XNameSpace*);
 

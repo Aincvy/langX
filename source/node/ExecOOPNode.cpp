@@ -482,7 +482,9 @@ namespace langX{
 
             // 从先前的空间中再尝试获取子空间
             auto prevNamespace = (XNameSpace*) firstSon->ptr_u;
-            nameSpace = prevNamespace->getNameSpace(name);
+            nameSpace = thread->getStackTraceTopStatus().createNameSpace ?
+                    prevNamespace->getNameSpaceWithCreate(name) :
+                    prevNamespace->getNameSpace(name);
 
             firstSon->ptr_u = nullptr;    // reset field.
         }
@@ -502,15 +504,27 @@ namespace langX{
     void __execCHANGE_NAME_SPACE(NodeLink *nodeLink, langXThread *thread){
         if (nodeLink->index == 0) {
             nodeLink->index = 1;
+
+            // 标记当前需要创建命名空间
+            thread->getStackTraceTopStatus().createNameSpace = true;
+
             doSubNodes(nodeLink->node);
             return;
         }
 
+        // 取消需要创建命名空间的标记
+        thread->getStackTraceTopStatus().createNameSpace = false;
+
         auto nsNode = nodeLink->node->opr_obj->op[0];
         auto ns = (XNameSpace*) nsNode->ptr_u;
+        if (ns == nullptr) {
+            // something wrong ...
+
+        }
 
         // change ?
         getState()->changeNameSpace(ns);
+        nodeLink->backAfterExec = true;
     }
 
 

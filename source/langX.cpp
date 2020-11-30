@@ -266,7 +266,7 @@ namespace langX {
 				space = singleGetNameSpaceOrCreate(f.c_str());
 			}
 			else {
-				space = space->getNameSpace2(f.c_str());
+				space = space->getNameSpaceWithCreate(f.c_str());
 			}
 
 			if (space == NULL)
@@ -280,7 +280,7 @@ namespace langX {
 			space = singleGetNameSpaceOrCreate(str.c_str());
 		}
 		else {
-			space = space->getNameSpace2(str.c_str());
+			space = space->getNameSpaceWithCreate(str.c_str());
 		}
 
 		return space;

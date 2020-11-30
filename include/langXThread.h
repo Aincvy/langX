@@ -57,6 +57,9 @@ namespace langX {
 		bool backInExec = false;   
 		// 正在执行的函数的根节点
 		Node * funcRootNode = nullptr;
+
+		// 当前在获取命名空间的时候 ，如果命名空间不存在，是否需要创建 ？
+		bool createNameSpace = false;
 	};
 	
 

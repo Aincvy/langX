@@ -1,11 +1,11 @@
 Student{
   name,age;
-  
+
   setName => (name){ this.name = name; }
   getName =>       { return this.name; }
   setAge  => (age) { this.age = age;   }
   getAge  =>       { return age;       }
-  
+
   getThis =>       { return this ;    }
 }
 
@@ -13,8 +13,8 @@ s1 = new Student();
 s1.setAge( 18 );
 s1.setName("宙斯");
 
-/*print("s1.name: " + s1.getName() +"\n");
-//print("s1.name: " + s1.getName() +"\n");  */
+
+
 print("s1.  name: " + s1.getName() + ",age: " + s1.getAge() + "\n");
 
 // set s2 to s1

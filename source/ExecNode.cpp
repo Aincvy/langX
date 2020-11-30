@@ -1765,7 +1765,11 @@ namespace langX {
         auto varDeclarePrefix = thread->getVarDeclarePrefix();
         if (varDeclarePrefix >= 0) {
             // 这里应该声明变量
+
+            // 默认情况下， 都初始化成null对象， 然后设置产生环境为当前的环境
             NullObject nullObject;
+            nullObject.setEmergeEnv(thread->getCurrentEnv());
+
             auto p = &nullObject;
             updateVariablePrefix(p, varDeclarePrefix);
 
