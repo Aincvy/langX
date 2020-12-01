@@ -18,7 +18,7 @@
 %token <iValue> TINTEGER TBOOL
 %token <dValue> TDOUBLE
 %token <sValue> IDENTIFIER TSTRING OPERATOR_X__
-%token OP_CALC FUNC_OP FUNC_CALL VAR_DECLAR ARRAY_ELE KEY_TRY
+%token FUNC_OP FUNC_CALL VAR_DECLARE ARRAY_ELE KEY_TRY
 %token KEY_PUBLIC KEY_SET KEY_IS KEY_REF KEY_CONTINUE KEY_NEW KEY_CATCH KEY_THIS KEY_EXTENDS KEY_RESTRICT KEY_AUTO KEY_CONST KEY_LOCAL
 %token KEY_IF KEY_ELSE KEY_WHILE KEY_FOR KEY_DELETE KEY_BREAK KEY_RETURN KEY_SWITCH KEY_CASE KEY_DEFAULT KEY_NULL
 %token CASE_LIST CLAXX_BODY CLAXX_MEMBER CLAXX_FUNC_CALL SCOPE_FUNC_CALL SCOPE LEFT_SHIFT RIGHT_SHIFT
@@ -234,8 +234,8 @@ lambda_args_stmt
 
 // 变量声明语句
 var_declare_stmt
-	: _elements_var_declare_stmt  { $$ = opr(VAR_DECLAR , 2, NULL, $1 ); }
-	| var_prefix _elements_var_declare_stmt { $$ = opr(VAR_DECLAR, 2, intNode($1), $2 ); }
+	: _elements_var_declare_stmt  { $$ = opr(VAR_DECLARE , 2, NULL, $1 ); }
+	| var_prefix _elements_var_declare_stmt { $$ = opr(VAR_DECLARE, 2, intNode($1), $2 ); }
 	;
 
 var_prefix
@@ -411,15 +411,15 @@ delete_expr
 //  逻辑语句
 logic_stmt
 	: bool_param_expr { $$ = $1; }
-  | not_bool_param_expr     { $$ = $1; }
+    | not_bool_param_expr     { $$ = $1; }
 	| type_judge_stmt         { $$ = $1; }
-  | compare_expr            { $$ = $1; }
-  | logic_stmt _symbol_logic_connection logic_stmt      { $$ = opr($2, 2, $1, $3); }
+    | compare_expr            { $$ = $1; }
+    | logic_stmt _symbol_logic_connection logic_stmt      { $$ = opr($2, 2, $1, $3); }
 	;
 
 _symbol_logic_connection
-  : AND_OP    { $$ = $1; }
-  | OR_OP     { $$ = $1; }
+  : AND_OP    { $$ = yytokentype::AND_OP; }
+  | OR_OP     { $$ = yytokentype::OR_OP; }
   ;
 
 //  bool 比较的值
@@ -439,12 +439,12 @@ not_bool_param_expr
 
 // 比较表达式
 compare_expr
-  : number_compare_expr     { $$ = $1; }
-  | object_compare_expr     { $$ = $1; }
+  : number_compare_expr   %dprec 2  { $$ = $1; }
+  | object_compare_expr   %dprec 1 { $$ = $1; }
   ;
 
 number_compare_expr
-  : common_number_expr _symbol_compare common_number_expr { $$ = opr($2, 2, $1, $3); }
+  : common_number_expr _symbol_compare common_number_expr  { $$ = opr($2, 2, $1, $3); }
   ;
 
 object_compare_expr
@@ -452,17 +452,17 @@ object_compare_expr
   ;
 
 _symbol_compare
-  : '>'       { $$ = $1; }
-  | '<'       { $$ = $1; }
-  | GE_OP     { $$ = $1; }
-  | LE_OP     { $$ = $1; }
-  | NE_OP     { $$ = $1; }
-  | EQ_OP     { $$ = $1; }
+  : '>'       { $$ = '>'; }
+  | '<'       { $$ = '<'; }
+  | GE_OP     { $$ = yytokentype::GE_OP; }
+  | LE_OP     { $$ = yytokentype::LE_OP; }
+  | NE_OP     { $$ = yytokentype::NE_OP; }
+  | EQ_OP     { $$ = yytokentype::EQ_OP; }
   ;
 
 _symbol_equals_not
-  : NE_OP     { $$ = $1; }
-  | EQ_OP     { $$ = $1; }
+  : NE_OP     { $$ = yytokentype::NE_OP; }
+  | EQ_OP     { $$ = yytokentype::EQ_OP; }
   ;
 
 //  自增 OR 自减
@@ -512,11 +512,11 @@ number_change_assign_stmt
   ;
 
 symbol_change_assign
-  : ADD_EQ      { $$ = $1; }
-  | SUB_EQ      { $$ = $1; }
-  | MUL_EQ      { $$ = $1; }
-  | DIV_EQ      { $$ = $1; }
-  | MOD_EQ      { $$ = $1; }
+  : ADD_EQ      { $$ = yytokentype::ADD_EQ; }
+  | SUB_EQ      { $$ = yytokentype::SUB_EQ; }
+  | MUL_EQ      { $$ = yytokentype::MUL_EQ; }
+  | DIV_EQ      { $$ = yytokentype::DIV_EQ; }
+  | MOD_EQ      { $$ = yytokentype::MOD_EQ; }
   ;
 
 // code block

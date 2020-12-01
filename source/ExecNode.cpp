@@ -794,12 +794,19 @@ namespace langX {
                 auto ifNode = oprObj->op[0];
                 thread->beginExecute(ifNode, true);
                 return;
-            }
+            } else if (nodeLink->index == 1) {
+                nodeLink->index = 2;
 
-            auto elseNode = oprObj->op[1];
-            if (elseNode != nullptr) {
-                thread->beginExecute(elseNode);
-                return;
+                auto elseNode = oprObj->op[1];
+                // 在语法文件里面， 此处的else 节点可能是没有的 | 整个语句是存在else 语句的，但是当前节点可能是没有的，但是会有一个节点存在
+                if (elseNode != nullptr) {
+                    thread->beginExecute(elseNode);
+                    return;
+                }
+            } else {
+                // else node 已经执行过一次了， 这里跳出即可
+                // 因为语法描述文件的逻辑， 上述的elseNode 可能是一个 if 语句（ 在 else if(xx = 1) 的情况下。 ）
+
             }
         }
 
@@ -808,6 +815,7 @@ namespace langX {
         // 清理掉 所有复制  值 占用的内存
         freeSubNodes(n);
         nodeLink->backAfterExec = true;
+
     }
 
     // else 节点的执行情况
@@ -823,6 +831,7 @@ namespace langX {
         }
 
         // 当第二次执行这个节点的时候， 什么都不做。
+
     }
 
     void __execWHILE(NodeLink *nodeLink, langXThread *thread) {
@@ -1096,92 +1105,8 @@ namespace langX {
         nodeLink->backAfterExec = true;
     }
 
-    void __realExecVAR_DECLAR(Node *n, langXThread *thread) {
-        // 都初始为 null
-        // 数组要赋值
-        Object *obj = Allocator::allocate(NULLOBJECT);
-        obj->setEmergeEnv(thread->getCurrentEnv());
-        for (int i = 0; i < n->opr_obj->op_count; i++) {
-            Node *t = n->opr_obj->op[i];
-            if (t == NULL || t->type != NODE_VARIABLE) {
-                if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR) {
-                    __realExecVAR_DECLAR(t, thread);
-                } else if (t->type == NODE_ARRAY) {
-                    if (t->ptr_u == NULL) {
-                        //printf("delar array erorr!\n");
-                        thread->throwException(newException("Inner Error! delar array erorr!")->addRef());
-                        Allocator::free(obj);
-                        return;
-                    }
-
-                    XArrayNode *an = (XArrayNode *) t->ptr_u;
-                    int len = an->length;
-                    if (an->lengthNode != nullptr) {
-                        Node *t = an->lengthNode;
-
-                        if (t->value == nullptr || t->value->getType() != NUMBER) {
-                            //printf("error array length !\n");
-                            thread->throwException(newException("error array length !")->addRef());
-                            return;
-                        }
-
-                        len = ((Number *) t->value)->getIntValue();
-                        Allocator::free(t->value);
-                        t->value = nullptr;
-                    }
-                    XArray *array1 = Allocator::allocateArray(len);
-                    char *name = an->name;
-                    Object *arrayRef = array1->addRef();
-                    arrayRef->setEmergeEnv(thread->getCurrentEnv());
-                    setValueToEnv(name, arrayRef);
-                }
-                continue;
-            }
-
-            char *name = t->var_obj->name;
-            setValueToEnv(name, obj);
-        }
-
-        Allocator::free(obj);
-    }
-
-    // 确保变量声明里的数组 节点的值都运算出来
-    void __execVAR_DECLAR_CheckValue(Node *n, langXThread *thread) {
-        for (int i = 0; i < n->opr_obj->op_count; i++) {
-            Node *t = n->opr_obj->op[i];
-            if (t == nullptr || t->type != NODE_VARIABLE) {
-                if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR) {
-                    __execVAR_DECLAR_CheckValue(t, thread);
-                } else if (t->type == NODE_ARRAY) {
-                    if (t->ptr_u == nullptr) {
-                        thread->throwException(newException("Inner Error! delar array erorr!")->addRef());
-                        return;
-                    }
-
-                    XArrayNode *an = (XArrayNode *) t->ptr_u;
-                    if (an->lengthNode != nullptr) {
-                        Node *t = an->lengthNode;
-                        thread->beginExecute(t, true);
-                    }
-                }
-                continue;
-            }
-        }
-    }
-
     // 变量声明
-    void __execVAR_DECLAR(NodeLink *nodeLink, langXThread *thread) {
-//        Node *n = nodeLink->node;
-//        nodeLink->backAfterExec = false;
-//        if (nodeLink->index == 0) {
-//            // 检测数组节点，都给赋值了
-//            __execVAR_DECLAR_CheckValue(n, thread);
-//            nodeLink->index = 1;
-//        } else {
-//            // 真正的声明变量
-//            __realExecVAR_DECLAR(n, thread);
-//            nodeLink->backAfterExec = true;
-//        }
+    void __execVAR_DECLARE(NodeLink *nodeLink, langXThread *thread) {
 
         // 新版本的逻辑
         if (nodeLink->index == 0) {
@@ -1455,7 +1380,7 @@ namespace langX {
                 continue;
             }
             if (t->type != NODE_VARIABLE) {
-                if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR) {
+                if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLARE) {
                     __realExecCONST(t, thread);
                 } else {
                     // 抛出异常
@@ -1499,7 +1424,7 @@ namespace langX {
                 continue;
             }
             if (t->type != NODE_VARIABLE && t->type != NodeType::NODE_CLASS) {
-                if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLAR) {
+                if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLARE) {
                     __realExecLOCAL(t, thread);
                 } else {
                     // 抛出异常
@@ -2108,8 +2033,8 @@ namespace langX {
             case CLAXX_FUNC_CALL:
                 __execCLAXX_FUNC_CALL(nodeLink, thread);
                 break;
-            case VAR_DECLAR:
-                __execVAR_DECLAR(nodeLink, thread);
+            case VAR_DECLARE:
+                __execVAR_DECLARE(nodeLink, thread);
                 break;
             case KEY_RESTRICT:
                 __execRESTRICT(nodeLink, thread);
