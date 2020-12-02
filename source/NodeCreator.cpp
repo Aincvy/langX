@@ -256,7 +256,7 @@ XNode *arrayElementNode(char *name, int index, XNode * indexNode) {
 	node->arr_obj = (langX::ArrayInfo*) calloc(1, sizeof(langX::ArrayInfo) * 1);
 	node->type = NODE_ARRAY_ELE;
 
-	node->arr_obj->objNode = NULL;
+	node->arr_obj->objNode = nullptr;
 	node->arr_obj->name = name;
 	node->arr_obj->index = index;
 	node->arr_obj->indexNode = indexNode;
@@ -271,7 +271,7 @@ XNode * objectArrayElementNode(XNode *objNode, int index, XNode *indexNode)
 	node->type = NODE_ARRAY_ELE;
 
 	node->arr_obj->objNode = objNode;
-	node->arr_obj->name = NULL;
+	node->arr_obj->name = nullptr;
 	node->arr_obj->index = index;
 	node->arr_obj->indexNode = indexNode;
 

@@ -1293,7 +1293,7 @@ case 77:
 /* rule 77 can match eol */
 YY_RULE_SETUP
 #line 123 "a.l"
-{count(); now_line++ ; }
+{count(); now_line++; column = 0;  }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 #line 125 "a.l"

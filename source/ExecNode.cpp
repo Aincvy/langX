@@ -228,13 +228,13 @@ namespace langX {
 
     //递归释放节点及子节点值的内存  | 会遍历所有节点， 发现值都会进行释放操作
     void recursiveFreeNodeValue(Node *n) {
-        if (n == NULL) {
+        if (n == nullptr) {
             return;
         }
 
-        if (n->value != NULL) {
+        if (n->value != nullptr) {
             Allocator::free(n->value);
-            n->value = NULL;
+            n->value = nullptr;
         }
 
         if (n->type == NODE_OPERATOR) {
@@ -1768,7 +1768,7 @@ namespace langX {
 
             setValueToEnv(arrayName, ref);
 
-            freeArrayInfo(arrayInfo);
+            // freeArrayInfo(arrayInfo);
         } else {
             // 获取数组的节点
 
@@ -1778,13 +1778,18 @@ namespace langX {
                 if (tmpValue != nullptr) {
                     // 可能上面的执行中没需要参数，一次就成功了，直接将值处理了就好
                     node->value = tmpValue;
-                    freeArrayInfo(arrayInfo);
+
+                } else {
+                    return;
                 }
             } else {
                 node->value = getValueFromArrayInfo(arrayInfo, nodeLink, thread);
-                freeArrayInfo(arrayInfo);
+
             }
         }
+
+        freeArrayInfo(arrayInfo);
+        nodeLink->backAfterExec = true;
     }
 
 /*
@@ -1890,6 +1895,10 @@ namespace langX {
         } else if (node->type == NODE_ARRAY_ELE) {
             __execNodeArrayElementWork(node, nodeLink, thread);
             return;
+        } else if (node->type == NODE_ARRAY) {
+            // 数组节点
+            logger->debug("node_array type ...");
+            // return;
         }
 
         if (node->type != NODE_OPERATOR) {

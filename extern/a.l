@@ -120,7 +120,7 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 [+-/*()] {count(); return *yytext;}
 
 [ \t]  {count(); }
-[\n]   {count(); now_line++ ; }
+[\n]   {count(); now_line++; column = 0;  }
 
 <<EOF>> {
 

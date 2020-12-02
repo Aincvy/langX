@@ -250,7 +250,7 @@ _elements_var_declare_stmt
 
 element_var_declare_stmt
 	: id_expr							{ $$ = $1; }
-	| id_expr '[' common_number_expr ']'		{ $$ = arrayNode($1->var_obj->name, -1, $3); }
+	| id_expr '[' common_number_expr ']'		{ $$ = arrayElementNode($1->var_obj->name, -1, $3); }
 	;
 
 //  条件控制语句
@@ -480,8 +480,8 @@ self_inc_dec_operators
 //  += -= *= /=  的值
 assign_stmt_value_eq
 	: number_expr          { $$ = $1; }
-  | common_values_expr    { $$ = $1; }
-  | common_result_of_call_expr      { $$ = $1; }
+    | common_values_expr    { $$ = $1; }
+    | common_result_of_call_expr      { $$ = $1; }
 	;
 
 // 赋值
@@ -539,14 +539,15 @@ block_item
 
 // string plus string  and some others
 string_plus_stmt
-  : string_expr '+' string_plus_stmt_value    { $$ = opr('+', 2, $1, $3); }
-  | string_plus_stmt_value '+' string_expr    { $$ = opr('+', 2, $1, $3); }
+  : string_expr '+' string_plus_stmt_value   %dprec 1  { $$ = opr('+', 2, $1, $3); }
+  | string_plus_stmt_value '+' string_expr   %dprec 2 { $$ = opr('+', 2, $1, $3); }
+  | string_plus_stmt_value '+' string_plus_stmt  %dprec 3   { $$ = opr('+', 2, $1, $3); }
+  | string_plus_stmt '+' string_plus_stmt_value  %dprec 4   { $$ = opr('+', 2, $1, $3); }
   ;
 
 string_plus_stmt_value
   : common_object_expr      { $$ = $1; }
   | common_types_expr       { $$ = $1; }
-  | string_plus_stmt        { $$ = $1; }
   | self_inc_dec_stmt       { $$ = $1; }
   | number_parentheses_stmt     { $$ = $1; }
   ;

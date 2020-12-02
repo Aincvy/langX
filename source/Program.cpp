@@ -18,7 +18,7 @@ extern int column;
 extern char * yytext;
 
 void yyerror(const char *s) {
-    fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , getParseLineNo(),column , yytext );
+    fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , getParseLineNo(), column , yytext );
 
 }
 
