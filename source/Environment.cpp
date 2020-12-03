@@ -276,14 +276,14 @@ namespace langX {
 
 	Function * ClassBridgeEnv::getFunction(const std::string &name)
 	{
-		if (this->m_class == NULL)
+		if (this->m_class == nullptr)
 		{
 			if (this->m_parent != nullptr)
 			{
 				return this->m_parent->getFunction(name);
 			}
 
-			return NULL;
+			return nullptr;
 		}
 		return this->m_class->getFunction(name.c_str());
 	}
@@ -303,7 +303,11 @@ namespace langX {
 		return EnvironmentType::TClassBridgeEnv;
 	}
 
-	ObjectBridgeEnv::ObjectBridgeEnv(langXObject *obj)
+    ClassInfo *ClassBridgeEnv::getEnvClass() const {
+        return this->m_class;
+    }
+
+    ObjectBridgeEnv::ObjectBridgeEnv(langXObject *obj)
 	{
 		this->m_object = obj;
 	}

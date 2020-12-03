@@ -303,6 +303,9 @@ namespace langX {
 
 		bool isClassEnvironment() const;
 
+		// 获得桥接的是哪个类
+		ClassInfo *getEnvClass() const;
+
 		EnvironmentType getType() const;
 
 	private:

@@ -120,7 +120,7 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 [+-/*()] {count(); return *yytext;}
 
 [ \t]  {count(); }
-[\n]   {count(); now_line++; column = 0;  }
+[\n]   {count(); now_line++; }
 
 <<EOF>> {
 
@@ -183,6 +183,7 @@ void pushBuffer(FILE *fp){
 	}
 
 	now_line = 1;
+	column = 0;
 	yyin = fp;
 	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
 	BEGIN(INITIAL);
@@ -197,6 +198,7 @@ void comment(void)
 	{
 		if (c == '\n') {
 			now_line++ ;
+			column = 0;
 		}
 		if (c == '/' && prev == '*')
 			return;
@@ -209,12 +211,15 @@ void count(void)
 {
 	int i;
 
-	for (i = 0; yytext[i] != '\0'; i++)
+	for (i = 0; yytext[i] != '\0'; i++) {
 		if (yytext[i] == '\n'){
 			column = 0;
 		} else if (yytext[i] == '\t')
 			column += 8 - (column % 8);
-		else
+		else {
 			column++;
+		}
+	}
 
+	// printf("after count %s, column: %d\n", yytext, column);
 }

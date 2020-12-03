@@ -113,9 +113,9 @@ namespace langX {
 	{
 		if (!hasFunction(name))
 		{
-			if (this->m_parent == NULL)
+			if (this->m_parent == nullptr)
 			{
-				return NULL;
+				return nullptr;
 			}
 			return this->m_parent->getFunction(name, true);
 		}

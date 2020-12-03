@@ -25,8 +25,8 @@
 %token INC_OP DEC_OP
 %token OPR_NODE_LIST OPR_CHANGE_NAME_SPACE OPR_GET_NAME_SPACE OPR_CLASS_DECLARE OPR_INC_DEC OPR_IF_ELSE OPR_MULTIPLE_ID OPR_START_IF
 %token OPR_ARGS_LIST
-%token <iValue> KEY_REQUIRE KEY_REQUIRE_ONCE KEY_INCLUDE
-%token <iValue> ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<'  AND_OP OR_OP
+%token KEY_REQUIRE KEY_REQUIRE_ONCE KEY_INCLUDE
+%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<'  AND_OP OR_OP
 
 %type <node> statement _extra_nothing con_ctl_stmt simple_stmt simple_stmt_types require_stmt interrupt_stmt new_expr null_expr delete_expr
 %type <node> func_declare_stmt out_declare_stmt var_declare_stmt element_var_declare_stmt _elements_var_declare_stmt class_declare_stmt namespace_declare_stmt
@@ -40,7 +40,7 @@
 %type <node> func_param_list func_name_types multiple_id_expr args_list args_list_with_parentheses lambda_args_stmt
 
 /* %type <sValue>       */
-%type <iValue> require_operators class_name_prefix var_prefix _symbol_compare symbol_change_assign self_inc_dec_operators _symbol_equals_not _symbol_logic_connection
+%type <iValue> require_operators class_name_prefix var_prefix _symbol_compare symbol_change_assign self_inc_dec_operators _symbol_equals_not
 
 
 %type <node> class_name_suffix class_body class_body_items class_body_item namespace_name_stmt
@@ -114,9 +114,9 @@ require_stmt
 	;
 
 require_operators
-    : KEY_REQUIRE             { $$ = $1; }
-    | KEY_REQUIRE_ONCE        { $$ = $1; }
-    | KEY_INCLUDE            { $$ = $1; }
+    : KEY_REQUIRE             { $$ = yytokentype::KEY_REQUIRE; }
+    | KEY_REQUIRE_ONCE        { $$ = yytokentype::KEY_REQUIRE_ONCE; }
+    | KEY_INCLUDE            { $$ = yytokentype::KEY_INCLUDE; }
     ;
 
 // try 语句
@@ -414,13 +414,9 @@ logic_stmt
     | not_bool_param_expr     { $$ = $1; }
 	| type_judge_stmt         { $$ = $1; }
     | compare_expr            { $$ = $1; }
-    | logic_stmt _symbol_logic_connection logic_stmt      { $$ = opr($2, 2, $1, $3); }
+    | logic_stmt AND_OP logic_stmt   { $$ = opr(AND_OP, 2, $1, $3); }
+    | logic_stmt OR_OP logic_stmt   { $$ = opr(OR_OP, 2, $1, $3); }
 	;
-
-_symbol_logic_connection
-  : AND_OP    { $$ = yytokentype::AND_OP; }
-  | OR_OP     { $$ = yytokentype::OR_OP; }
-  ;
 
 //  bool 比较的值
 bool_param_expr
@@ -521,7 +517,7 @@ symbol_change_assign
 
 // code block
 code_block
-    : '{' '}'       { $$ = NULL; }
+    : '{' '}'       { $$ = opr(OPR_NODE_LIST,0 ); }
     | '{' block_item_list '}'    { $$ = $2; }
     ;
 

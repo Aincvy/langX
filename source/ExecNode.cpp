@@ -204,7 +204,7 @@ namespace langX {
 
     // 状态继承， n 的所有子节点都会继承n的状态
     void stateExtends(Node *n) {
-        if (n == NULL) {
+        if (n == nullptr) {
             return;
         }
 
@@ -610,6 +610,12 @@ namespace langX {
 
         nodeLink->backAfterExec = false;      //  这是一个复合性质的节点， 自己管理这个状态就好了
         int oprCount = n->opr_obj->op_count;
+        if (oprCount <= 0) {
+            // 在语法定义中 就没有子节点要执行， 直接返回把
+            nodeLink->backAfterExec = true;
+            return;
+        }
+
         if (nodeLink->index < oprCount) {
             // 遍历节点
             Node *run = n->opr_obj->op[nodeLink->index];
@@ -1504,9 +1510,6 @@ namespace langX {
 
     // node list  挨个执行子节点即可
     void __execNODE_LIST(NodeLink *nodeLink, langXThread *thread) {
-
-        logger->debug("OPR_NODE_LIST node");
-
         __exec59(nodeLink, thread);
     }
 
@@ -1561,8 +1564,17 @@ namespace langX {
             return;
         }
 
-        auto oldFunc = thread->getCurrentEnv()->getFunctionSelf(func->getName());
-        if (oldFunc != nullptr) {
+        auto currentEnv = thread->getCurrentEnv();
+        auto oldFunc = currentEnv->getFunctionSelf(func->getName());
+        // 如果在类环境里面 声明函数，则判断函数是否是父类得
+        bool checkFlag= true;
+        if (currentEnv->getType() == EnvironmentType::TClassBridgeEnv) {
+            auto clz = ((ClassBridgeEnv*) currentEnv)->getEnvClass();
+            checkFlag = clz->hasFunction(funcName);    // 存在该函数就检测， 不存在就不检测
+        }
+
+        // 检测函数是否被重复声明了
+        if (oldFunc != nullptr && checkFlag) {
             char tmp[100] = {0};
             sprintf(tmp, "function %s already declared.", func->getName());
             thread->throwException(newRedeclarationException(tmp)->addRef());
@@ -1577,7 +1589,7 @@ namespace langX {
         if (env != nullptr && env->getType() == EnvironmentType::TScriptEnvironment) {
             func->setScriptEnv((ScriptEnvironment *) env);
         }
-        thread->getCurrentEnv()->putFunction(func->getName(), func);
+        currentEnv->putFunction(func->getName(), func);
 
     }
 
@@ -1689,16 +1701,26 @@ namespace langX {
         auto varName = node->var_obj->name;
         auto varDeclarePrefix = thread->getVarDeclarePrefix();
         if (varDeclarePrefix >= 0) {
-            // 这里应该声明变量
+            // 这里应该声明变量 , 或者是给已经存在得变量添加限定。
+            // 注意： 在给已经存在得变量添加限制得时候， 只能给当前环境得对象添加限制
+            auto env = thread->getCurrentEnv();
+            auto value = env->getObjectSelf(varName);
 
-            // 默认情况下， 都初始化成null对象， 然后设置产生环境为当前的环境
-            NullObject nullObject;
-            nullObject.setEmergeEnv(thread->getCurrentEnv());
+            // 存在旧值， 则使用旧值， 否则使用null
+            if (value != nullptr) {
+                // 存在值， 只更新前缀即可
+                updateVariablePrefix(value, varDeclarePrefix);
+            } else {
+                // 默认情况下， 都初始化成null对象， 然后设置产生环境为当前的环境
+                NullObject nullObject;
+                nullObject.setEmergeEnv(thread->getCurrentEnv());
 
-            auto p = &nullObject;
-            updateVariablePrefix(p, varDeclarePrefix);
+                auto p = &nullObject;
+                updateVariablePrefix(p, varDeclarePrefix);
 
-            setValueToEnv(varName, p);
+                setValueToEnv(varName, p);
+            }
+
         } else {
             // 这里应该是获取变量的值
             // 协调程序， 使变量的 obj 处于赋值状态
@@ -1708,7 +1730,7 @@ namespace langX {
                 if (obj == nullptr) {
 
                     // find function.
-                    Function *func = getState()->curThread()->getFunction(node->var_obj->name);
+                    Function *func = thread->getFunction(node->var_obj->name);
                     if (func != nullptr) {
                         node->value = Allocator::allocateFunctionRef(func);
                     } else {
@@ -1798,7 +1820,7 @@ namespace langX {
 	 * 由 void __execNode(Node *node)    修改为  __realExecNode()       2017年11月26日
 	 */
     void __realExecNode(NodeLink *nodeLink, langXThread *thread) {
-        if (nodeLink == NULL || nodeLink->node == NULL) {
+        if (nodeLink == nullptr || nodeLink->node == nullptr) {
             return;
         }
 
@@ -2121,6 +2143,8 @@ namespace langX {
                 __execARGS_LIST(nodeLink, thread);
                 break;
             default:
+                nodeLink->backAfterExec= true;
+                logger->error("unknown opr: %d, jump." , node->opr_obj->opr);
                 break;
         }
     }
