@@ -1,33 +1,34 @@
 #include <string>
 #include <iostream>
 #include <string.h>
-#include "../include/Object.h"
-#include "../include/ClassInfo.h"
-#include "../include/Function.h"
-#include "../include/NodeCreator.h"
-#include "../include/Allocator.h"
-#include "../include/langXObject.h"
-#include "../include/langXObjectRef.h"
-#include "../include/Environment.h"
-#include "../include/Utils.h"
-#include "../include/langXThread.h"
+#include "Object.h"
+#include "ClassInfo.h"
+#include "Function.h"
+#include "NodeCreator.h"
+#include "Allocator.h"
+#include "langXObject.h"
+#include "langXObjectRef.h"
+#include "Environment.h"
+#include "Utils.h"
+#include "langXThread.h"
+#include "LogManager.h"
 
 namespace langX {
 
-	langXObject::langXObject(ClassInfo *claxxInfo)
+	langXObject::langXObject(ClassInfo *classInfo)
 	{
 		// 先生成父类对象
-		ClassInfo *pclass = claxxInfo->getParent();
+		ClassInfo *pclass = classInfo->getParent();
 		if (pclass != nullptr)
 		{
 			this->m_parent = pclass->newObject(false);
 		}
 
-		this->m_class_info = claxxInfo;
+		this->m_class_info = classInfo;
 		this->m_my_env = new ObjectBridgeEnv(this);
-		this->m_my_env->setParent(NULL);
+		this->m_my_env->setParent(nullptr);
 
-		std::map<std::string, Object*> & map = claxxInfo->getMembers();
+		std::map<std::string, Object*> & map = classInfo->getMembers();
 		for (auto i = map.begin(); i != map.end(); i++)
 		{
 			// printf("%s: %d\n", i->first.c_str(), i->second->getType());
@@ -102,9 +103,9 @@ namespace langX {
 
 		if (this->m_members.find(name) == this->m_members.end())
 		{
-			if (this->m_parent == NULL)
+			if (this->m_parent == nullptr)
 			{
-				printf("cannot find member %s!\n", name);
+				logger->error("cannot find member %s!\n", name);
 				return;
 			}
 
@@ -263,21 +264,7 @@ namespace langX {
 
 	void langXObject::callConstructor(ArgsList *args, const char *remark)
 	{
-		// 强行执行构造函数
-		Function *func = getConstructor();
-		if (func)
-		{
-			langXThread *thread = getState()->curThread();
-
-			// 运算函数
-            thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
-			Environment *env = getObjectEnvironment();
-            thread->newEnvByBridge(env);
-			callFunc(func, args, remark);
-			thread->getStackTrace().popFrame();
-			thread->backEnv();
-
-		}
+        callConstructor(args, remark, getState()->curThread());
 	}
 
 	Object * langXObject::callFunction(const char *name) const

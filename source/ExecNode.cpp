@@ -1241,7 +1241,6 @@ namespace langX {
             } while (false);
         }
 
-        thread->backEnv();
         freeSubNodes(n);
         nodeLink->backAfterExec = true;
     }
@@ -1265,6 +1264,8 @@ namespace langX {
 
         // call func ..
         n->value = callFunc(func, args, remark);
+
+        thread->backEnv();
     }
 
     void __execRESTRICT(NodeLink *nodeLink, langXThread *thread) {

@@ -325,6 +325,12 @@ namespace langX{
     void __execREF(NodeLink *nodeLink) {
         Node *n = nodeLink->node;
 
+        if (nodeLink->index == 0) {
+            nodeLink->index = 1;
+            doSubNodes(n);
+            return;
+        }
+
         //  深度为1 的环境为一个 脚本环境 或者命名空间环境。
         Environment *env = getState()->getScriptOrNSEnv();
         if (env == nullptr)
@@ -342,84 +348,22 @@ namespace langX{
             return;
         }
 
-        char *namespaceName = n->opr_obj->op[0]->con_obj->sValue;
 
-        std::string str = std::string(namespaceName);
-        XNameSpace *space = nullptr;
-        bool flag = true;
+        auto nsNode = n->opr_obj->op[0];
+        auto space = (XNameSpace*) nsNode->ptr_u;
 
-        auto dotIndex = str.find_first_of(".");
+        // reset ...
+        nsNode->ptr_u = nullptr;
 
-        while (dotIndex != std::string::npos)
-        {
-            std::string f = str.substr(0, dotIndex);
-            str = str.substr(dotIndex + 1);
-            dotIndex = str.find_first_of(".");
-
-            // f is namespace name
-            if (flag)
-            {
-                space = getState()->singleGetNameSpace(f.c_str());
-                if (space == NULL)
-                {
-                    break;
-                }
-
-                flag = false;
-            }
-            else {
-                space = space->getNameSpace(f.c_str());
-                if (space == NULL)
-                {
-                    break;
-                }
-            }
-        }
-
-        if (flag)
-        {
-            space = getState()->singleGetNameSpace(str.c_str());
-        }
-
-        if (space == NULL)
+        // some check ...
+        if (space == nullptr)
         {
             //  error.  cannot find the namespace.
-            char tmp[1024] = { 0 };
-            sprintf(tmp, "cannot find namespace %s.", namespaceName);
-            getState()->curThread()->throwException(newException(tmp)->addRef());
-            return;
+            logger->error("something wrong, cannot find namespace ..") ;
+            // return;
         }
 
-        XNameSpace *retSpace = nullptr;
-        ClassInfo *retClass = nullptr;
-
-        if (flag)
-        {
-            //  str 是用掉了已经
-
-            retSpace = space;
-        }
-        else {
-            ClassInfo *c = space->getClass(str.c_str());
-            if (c != NULL)
-            {
-                // 添加类
-                retClass = c;
-            }
-            else {
-                space = space->getNameSpace(str.c_str());
-
-                if (space == NULL)
-                {
-                    //  error.  cannot find the namespace.
-                    char tmp[1024] = { 0 };
-                    sprintf(tmp, "cannot find namespace %s.", namespaceName);
-                    getState()->curThread()->throwException(newException(tmp)->addRef());
-                    return;
-                }
-                retSpace = space;
-            }
-        }
+        XNameSpace *retSpace = space;
 
         if (eType == TScriptEnvironment)
         {
@@ -428,11 +372,6 @@ namespace langX{
             {
                 scriptEnv->addNameSpace(retSpace);
             }
-            if (retClass != nullptr)
-            {
-                scriptEnv->addClassInfo(retClass);
-            }
-
         }
         else if (eType == TXNameSpaceEnvironment)
         {
@@ -440,10 +379,6 @@ namespace langX{
             if (retSpace != nullptr)
             {
                 nsEnv->getNameSpace()->addRefNamespace(retSpace);
-            }
-            if (retClass != nullptr)
-            {
-                nsEnv->putClass(retClass->getName(), retClass);
             }
         }
 
@@ -519,12 +454,15 @@ namespace langX{
         auto ns = (XNameSpace*) nsNode->ptr_u;
         if (ns == nullptr) {
             // something wrong ...
-
+            logger->error("something wrong, cannot get namespace..");
         }
 
         // change ?
         getState()->changeNameSpace(ns);
         nodeLink->backAfterExec = true;
+
+        // reset
+        nsNode->ptr_u = nullptr;
     }
 
 

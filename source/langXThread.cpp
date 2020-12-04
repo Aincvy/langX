@@ -578,7 +578,7 @@ namespace langX {
 
 		if (flag)
 		{
-			//  子类
+			//  释放环境所属内存
 			freeEnv(&this->m_current_env);
 		}
 		this->m_current_deep--;

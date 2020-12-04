@@ -16,15 +16,14 @@
 #include "InnerFunction.h"
 #include "LogManager.h"
 
-namespace langX{
+namespace langX {
 
 
     void __realExec43(Node *n) {
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == nullptr || n2->value == nullptr)
-        {
+        if (n1->value == nullptr || n2->value == nullptr) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '+'!")->addRef());
             freeSubNodes(n);
             return;
@@ -32,18 +31,16 @@ namespace langX{
 
         // 子节点的值是为了计算当前结点的值， 如果当前结点的值 计算 结束， 则释放掉子节点值得内存
         // 子节点的值如果是一个常量， 则该值是一个 new 的内存， 如果是一个变量， 则该值是一个 clone 出现的对象
-        Object * left = n1->value;
-        Object * right = n2->value;
+        Object *left = n1->value;
+        Object *right = n2->value;
 
-        if (left->getType() == NUMBER && right->getType() == NUMBER)
-        {
-            n->value = Allocator::allocateNumber(((Number*)left)->getDoubleValue() + ((Number*)right)->getDoubleValue());
-        }
-        else if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
+        if (left->getType() == NUMBER && right->getType() == NUMBER) {
+            n->value = Allocator::allocateNumber(
+                    ((Number *) left)->getDoubleValue() + ((Number *) right)->getDoubleValue());
+        } else if (left != NULL && left->getType() == OBJECT) {
+            langXObjectRef *ref1 = (langXObjectRef *) left;
             Function *func1 = ref1->getFunction("operator+");
-            if (func1)
-            {
+            if (func1) {
                 X3rdArgs _3rdArgs;
                 memset(&_3rdArgs, 0, sizeof(X3rdArgs));
                 _3rdArgs.args[0] = right;
@@ -53,81 +50,52 @@ namespace langX{
                 freeSubNodes(n);
                 return;
             }
-        }
-        else if ((left != NULL && left->getType() == STRING) || (right != NULL && right->getType() == STRING))
-        {
+        } else if ((left != nullptr && left->getType() == STRING) || (right != NULL && right->getType() == STRING)) {
             // 字符串拼接
             std::stringstream ss;
-            if (left == NULL)
-            {
+            if (left == nullptr) {
                 ss << "null";
-            }
-            else
-            if (left->getType() == STRING)
-            {
-                ss << ((String*)left)->getValue();
-            }
-            else if (left->getType() == NUMBER)
-            {
-                ss << ((Number*)left)->getDoubleValue();
-            }
-            else if (left->getType() == NULLOBJECT)
-            {
+            } else if (left->getType() == STRING) {
+                ss << ((String *) left)->getValue();
+            } else if (left->getType() == NUMBER) {
+                ss << ((Number *) left)->getDoubleValue();
+            } else if (left->getType() == NULLOBJECT) {
                 ss << "null";
-            }
-            else if (left->getType() == FUNCTION)
-            {
+            } else if (left->getType() == FUNCTION) {
                 ss << "function@[" << left->characteristic();
-            }
-            else if (left->getType() == OBJECT)
-            {
+            } else if (left->getType() == OBJECT) {
                 //ss << "object";
-                char tmp[2048] = { 0 };
+                char tmp[2048] = {0};
                 objToString(left, tmp, 0, 2048);
                 ss << tmp;
-            }
-            else {
+            } else {
                 printf("error type in do add opr! \n");
                 return;
             }
 
-            if (right == NULL)
-            {
+            if (right == nullptr) {
                 ss << "null";
-            }
-            else
-            if (right->getType() == STRING)
-            {
-                ss << ((String*)right)->getValue();
-            }
-            else if (right->getType() == NUMBER)
-            {
-                ss << ((Number*)right)->getDoubleValue();
-            }
-            else if (right->getType() == NULLOBJECT)
-            {
+            } else if (right->getType() == STRING) {
+                ss << ((String *) right)->getValue();
+            } else if (right->getType() == NUMBER) {
+                ss << ((Number *) right)->getDoubleValue();
+            } else if (right->getType() == NULLOBJECT) {
                 ss << "null";
-            }
-            else if (right->getType() == FUNCTION)
-            {
+            } else if (right->getType() == FUNCTION) {
                 ss << "function@[" << right->characteristic();
-            }
-            else if (right->getType() == OBJECT)
-            {
-                char tmp[2048] = { 0 };
+            } else if (right->getType() == OBJECT) {
+                char tmp[2048] = {0};
                 objToString(right, tmp, 0, 2048);
                 ss << tmp;
-            }
-            else {
+            } else {
                 printf("error type in do add opr! \n");
                 return;
             }
 
-            logger->debug("after 43(string cat), result: %s", ss.str().c_str());
             n->value = Allocator::allocateString(ss.str().c_str());
-        }
-        else {
-            getState()->curThread()->throwException(newArithmeticException("args type error when do opr '+' .")->addRef());
+        } else {
+            getState()->curThread()->throwException(
+                    newArithmeticException("args type error when do opr '+' .")->addRef());
         }
 
         freeSubNodes(n);
@@ -137,12 +105,11 @@ namespace langX{
     // 操作结果， 会将结果存储在当前节点中
     void __exec43(NodeLink *nodeLink) {
 
-        Node *  n = nodeLink->node;
+        Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
             nodeLink->index = 1;
-        }
-        else {
+        } else {
             logger->debug("node 43");
 
             __realExec43(n);
@@ -162,8 +129,7 @@ namespace langX{
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
-        {
+        if (n1->value == NULL || n2->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
             freeSubNodes(n);
             return;
@@ -171,13 +137,12 @@ namespace langX{
 
         nodeLink->backAfterExec = true;
 
-        Object * left = n1->value;
-        Object * right = n2->value;
+        Object *left = n1->value;
+        Object *right = n2->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
+            langXObjectRef *ref1 = (langXObjectRef *) left;
             Function *func1 = ref1->getFunction("operator-");
-            if (func1)
-            {
+            if (func1) {
                 X3rdArgs _3rdArgs;
                 memset(&_3rdArgs, 0, sizeof(X3rdArgs));
                 _3rdArgs.args[0] = right;
@@ -188,17 +153,16 @@ namespace langX{
                 return;
             }
         }
-        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("type error on opr '-'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() - ((Number*)n2->value)->getDoubleValue());
+        n->value = Allocator::allocateNumber(
+                ((Number *) n1->value)->getDoubleValue() - ((Number *) n2->value)->getDoubleValue());
         freeSubNodes(n);
     }
-
 
 
     // *
@@ -213,8 +177,7 @@ namespace langX{
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
-        {
+        if (n1->value == NULL || n2->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '*'!")->addRef());
             freeSubNodes(n);
             return;
@@ -222,13 +185,12 @@ namespace langX{
 
         nodeLink->backAfterExec = true;
 
-        Object * left = n1->value;
-        Object * right = n2->value;
+        Object *left = n1->value;
+        Object *right = n2->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
+            langXObjectRef *ref1 = (langXObjectRef *) left;
             Function *func1 = ref1->getFunction("operator*");
-            if (func1)
-            {
+            if (func1) {
                 X3rdArgs _3rdArgs;
                 memset(&_3rdArgs, 0, sizeof(X3rdArgs));
                 _3rdArgs.args[0] = right;
@@ -240,14 +202,14 @@ namespace langX{
             }
         }
 
-        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("type error on opr '*'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() * ((Number*)n2->value)->getDoubleValue());
+        n->value = Allocator::allocateNumber(
+                ((Number *) n1->value)->getDoubleValue() * ((Number *) n2->value)->getDoubleValue());
         freeSubNodes(n);
     }
 
@@ -263,8 +225,7 @@ namespace langX{
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
-        {
+        if (n1->value == NULL || n2->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '/'!")->addRef());
             freeSubNodes(n);
             return;
@@ -272,13 +233,12 @@ namespace langX{
 
         nodeLink->backAfterExec = true;
 
-        Object * left = n1->value;
-        Object * right = n2->value;
+        Object *left = n1->value;
+        Object *right = n2->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
+            langXObjectRef *ref1 = (langXObjectRef *) left;
             Function *func1 = ref1->getFunction("operator/");
-            if (func1)
-            {
+            if (func1) {
                 X3rdArgs _3rdArgs;
                 memset(&_3rdArgs, 0, sizeof(X3rdArgs));
                 _3rdArgs.args[0] = right;
@@ -290,26 +250,23 @@ namespace langX{
             }
         }
 
-        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("type error on opr '/'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        double d2 = ((Number*)n2->value)->getDoubleValue();
-        if (d2 == 0)
-        {
+        double d2 = ((Number *) n2->value)->getDoubleValue();
+        if (d2 == 0) {
             getState()->curThread()->throwException(newArithmeticException("/ by zero on opr '/'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() / d2);
+        n->value = Allocator::allocateNumber(((Number *) n1->value)->getDoubleValue() / d2);
         freeSubNodes(n);
         nodeLink->backAfterExec = true;
     }
-
 
 
     // 按位或  |
@@ -324,21 +281,19 @@ namespace langX{
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
-        {
+        if (n1->value == NULL || n2->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '|'!")->addRef());
             freeSubNodes(n);
             return;
         }
-        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("type error on opr '|'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        int i1 = ((Number*)n1->value)->getIntValue();
-        int i2 = ((Number*)n2->value)->getIntValue();
+        int i1 = ((Number *) n1->value)->getIntValue();
+        int i2 = ((Number *) n2->value)->getIntValue();
         int i3 = i1 | i2;
 
         n->value = Allocator::allocateNumber(i3);
@@ -358,21 +313,19 @@ namespace langX{
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
-        {
+        if (n1->value == NULL || n2->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '&'!")->addRef());
             freeSubNodes(n);
             return;
         }
-        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("type error on opr '&'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        int i1 = ((Number*)n1->value)->getIntValue();
-        int i2 = ((Number*)n2->value)->getIntValue();
+        int i1 = ((Number *) n1->value)->getIntValue();
+        int i2 = ((Number *) n2->value)->getIntValue();
         int i3 = i1 & i2;
 
         n->value = Allocator::allocateNumber(i3);
@@ -392,22 +345,20 @@ namespace langX{
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
-        {
+        if (n1->value == NULL || n2->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '^'!")->addRef());
             freeSubNodes(n);
             return;
         }
-        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("type error on opr '^'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        int i1 = ((Number*)n1->value)->getIntValue();
-        int i2 = ((Number*)n2->value)->getIntValue();
-        int i3 = i1 ^ i2;
+        int i1 = ((Number *) n1->value)->getIntValue();
+        int i2 = ((Number *) n2->value)->getIntValue();
+        int i3 = i1 ^i2;
 
         n->value = Allocator::allocateNumber(i3);
         freeSubNodes(n);
@@ -425,20 +376,18 @@ namespace langX{
 
         Node *n1 = n->opr_obj->op[0];
 
-        if (n1->value == NULL)
-        {
+        if (n1->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '~'!")->addRef());
             freeSubNodes(n);
             return;
         }
-        if (n1->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("type error on opr '~'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        int i1 = ((Number*)n1->value)->getIntValue();
+        int i1 = ((Number *) n1->value)->getIntValue();
         int i3 = ~i1;
 
         n->value = Allocator::allocateNumber(i3);
@@ -458,8 +407,7 @@ namespace langX{
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
-        {
+        if (n1->value == NULL || n2->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '<<'!")->addRef());
             freeSubNodes(n);
             return;
@@ -467,13 +415,12 @@ namespace langX{
 
         nodeLink->backAfterExec = true;
 
-        Object * left = n1->value;
-        Object * right = n2->value;
+        Object *left = n1->value;
+        Object *right = n2->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
+            langXObjectRef *ref1 = (langXObjectRef *) left;
             Function *func1 = ref1->getFunction("operator<<");
-            if (func1)
-            {
+            if (func1) {
                 X3rdArgs _3rdArgs;
                 memset(&_3rdArgs, 0, sizeof(X3rdArgs));
                 _3rdArgs.args[0] = right;
@@ -485,15 +432,14 @@ namespace langX{
             }
         }
 
-        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("type error on opr '<<'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        int i1 = ((Number*)n1->value)->getIntValue();
-        int i2 = ((Number*)n2->value)->getIntValue();
+        int i1 = ((Number *) n1->value)->getIntValue();
+        int i2 = ((Number *) n2->value)->getIntValue();
         int i3 = i1 << i2;
 
         n->value = Allocator::allocateNumber(i3);
@@ -512,8 +458,7 @@ namespace langX{
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
-        {
+        if (n1->value == NULL || n2->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '>>'!")->addRef());
             freeSubNodes(n);
             return;
@@ -521,13 +466,12 @@ namespace langX{
 
         nodeLink->backAfterExec = true;
 
-        Object * left = n1->value;
-        Object * right = n2->value;
+        Object *left = n1->value;
+        Object *right = n2->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
+            langXObjectRef *ref1 = (langXObjectRef *) left;
             Function *func1 = ref1->getFunction("operator>>");
-            if (func1)
-            {
+            if (func1) {
                 X3rdArgs _3rdArgs;
                 memset(&_3rdArgs, 0, sizeof(X3rdArgs));
                 _3rdArgs.args[0] = right;
@@ -539,15 +483,14 @@ namespace langX{
             }
         }
 
-        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("type error on opr '>>'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        int i1 = ((Number*)n1->value)->getIntValue();
-        int i2 = ((Number*)n2->value)->getIntValue();
+        int i1 = ((Number *) n1->value)->getIntValue();
+        int i2 = ((Number *) n2->value)->getIntValue();
         int i3 = i1 >> i2;
 
         n->value = Allocator::allocateNumber(i3);
@@ -566,8 +509,7 @@ namespace langX{
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
-        {
+        if (n1->value == NULL || n2->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '%'!")->addRef());
             freeSubNodes(n);
             return;
@@ -575,13 +517,12 @@ namespace langX{
 
         nodeLink->backAfterExec = true;
 
-        Object * left = n1->value;
-        Object * right = n2->value;
+        Object *left = n1->value;
+        Object *right = n2->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
+            langXObjectRef *ref1 = (langXObjectRef *) left;
             Function *func1 = ref1->getFunction("operator%");
-            if (func1)
-            {
+            if (func1) {
                 X3rdArgs _3rdArgs;
                 memset(&_3rdArgs, 0, sizeof(X3rdArgs));
                 _3rdArgs.args[0] = right;
@@ -593,21 +534,19 @@ namespace langX{
             }
         }
 
-        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("type error on opr '%'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        int i1 = ((Number*)n1->value)->getIntValue();
-        int i2 = ((Number*)n2->value)->getIntValue();
+        int i1 = ((Number *) n1->value)->getIntValue();
+        int i2 = ((Number *) n2->value)->getIntValue();
         int i3 = i1 % i2;
 
         n->value = Allocator::allocateNumber(i3);
         freeSubNodes(n);
     }
-
 
 
     // 自增运算符 ++
@@ -621,15 +560,13 @@ namespace langX{
 
         Node *n1 = n->opr_obj->op[0];
 
-        if (n1 == NULL)
-        {
+        if (n1 == NULL) {
             getState()->curThread()->throwException(newArithmeticException("node is null on opr '++'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        if (n1->value == NULL)
-        {
+        if (n1->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
             freeSubNodes(n);
             return;
@@ -637,12 +574,11 @@ namespace langX{
 
         nodeLink->backAfterExec = true;
 
-        Object * left = n1->value;
+        Object *left = n1->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
+            langXObjectRef *ref1 = (langXObjectRef *) left;
             Function *func1 = ref1->getFunction("operator++");
-            if (func1)
-            {
+            if (func1) {
                 X3rdArgs _3rdArgs;
                 memset(&_3rdArgs, 0, sizeof(X3rdArgs));
                 _3rdArgs.index = 0;
@@ -653,23 +589,20 @@ namespace langX{
             }
         }
 
-        if (n1->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        if (!n->state.isSuffix)
-        {
+        if (!n->state.isSuffix) {
             // 前缀自增
-            n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() + 1);
+            n->value = Allocator::allocateNumber(((Number *) n1->value)->getDoubleValue() + 1);
             n1->postposition = n->value->clone();
-        }
-        else {
+        } else {
             //  后缀自增
             n->value = n1->value->clone();
-            n1->postposition = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() + 1);
+            n1->postposition = Allocator::allocateNumber(((Number *) n1->value)->getDoubleValue() + 1);
         }
 
         freeSubNodes(n);
@@ -689,15 +622,13 @@ namespace langX{
          */
 
         Node *n1 = n->opr_obj->op[0];
-        if (n1 == NULL)
-        {
+        if (n1 == NULL) {
             getState()->curThread()->throwException(newArithmeticException("node is null on opr '--'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        if (n1->value == NULL)
-        {
+        if (n1->value == NULL) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '--'!")->addRef());
             freeSubNodes(n);
             return;
@@ -705,12 +636,11 @@ namespace langX{
 
         nodeLink->backAfterExec = true;
 
-        Object * left = n1->value;
+        Object *left = n1->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
+            langXObjectRef *ref1 = (langXObjectRef *) left;
             Function *func1 = ref1->getFunction("operator--");
-            if (func1)
-            {
+            if (func1) {
                 X3rdArgs _3rdArgs;
                 memset(&_3rdArgs, 0, sizeof(X3rdArgs));
                 _3rdArgs.index = 0;
@@ -721,23 +651,20 @@ namespace langX{
             }
         }
 
-        if (n1->value->getType() != NUMBER)
-        {
+        if (n1->value->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '++'!")->addRef());
             freeSubNodes(n);
             return;
         }
 
-        if (!n->state.isSuffix)
-        {
+        if (!n->state.isSuffix) {
             // 前缀自减
-            n->value = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() - 1);
+            n->value = Allocator::allocateNumber(((Number *) n1->value)->getDoubleValue() - 1);
             n1->postposition = n->value->clone();
-        }
-        else {
+        } else {
             //  后缀自减
             n->value = n1->value->clone();
-            n1->postposition = Allocator::allocateNumber(((Number*)n1->value)->getDoubleValue() - 1);
+            n1->postposition = Allocator::allocateNumber(((Number *) n1->value)->getDoubleValue() - 1);
         }
 
         freeSubNodes(n);
@@ -759,20 +686,18 @@ namespace langX{
             freeSubNodes(n);
             return;
         }
-        if (n1->value->getType() != NUMBER)
-        {
-            getState()->curThread()->throwException(newArithmeticException("type error on opr '-'! only can number!")->addRef());
+        if (n1->value->getType() != NUMBER) {
+            getState()->curThread()->throwException(
+                    newArithmeticException("type error on opr '-'! only can number!")->addRef());
             freeSubNodes(n);
             return;
-        }
-        else {
-            n->value = Allocator::allocateNumber(-((Number*)n1->value)->getDoubleValue());
+        } else {
+            n->value = Allocator::allocateNumber(-((Number *) n1->value)->getDoubleValue());
         }
 
         freeSubNodes(n);
         nodeLink->backAfterExec = true;
     }
-
 
 
 }

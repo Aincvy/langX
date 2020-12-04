@@ -126,7 +126,7 @@ namespace langX {
 			previous->next = NULL;
 		}
 		nodeLink->previous = NULL;
-		if (nodeLink->ptr_u != NULL)
+		if (nodeLink->ptr_u != nullptr)
 		{
 			free(nodeLink->ptr_u);
 			nodeLink->ptr_u = NULL;

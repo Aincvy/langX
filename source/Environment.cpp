@@ -739,7 +739,7 @@ namespace langX {
 
 	DefaultEnvironment::~DefaultEnvironment()
 	{
-		this->m_parent = NULL;
+		this->m_parent = nullptr;
 		//printf("~Environment\n");
 		if (!m_objects_map.empty())
 		{

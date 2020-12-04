@@ -580,18 +580,11 @@ XObject * callFunc(XFunction* function, XArgsList* args, const char* remark) {
 		return call3rdFunc(x3rdFunc, thread, args );
 	}
 
-	// 如果当前环境是一个对象环境， 则暂存他
-	Environment *oldEnv = nullptr;
-	Environment *currEnv = thread->getCurrentEnv();
-	if (currEnv->isObjectEnvironment())
-	{
-        oldEnv = currEnv;
-		thread->backEnv(false);
-	}
+	// 函数环境
+	DefaultEnvironment defaultEnvironment;
+	Environment * env = &defaultEnvironment;
 
-	Environment * env = new DefaultEnvironment();
-	Object * ret = nullptr;
-
+	// 赋值参数列表
     XParamsList *params = function->getParamsList();
 	if (args != nullptr && params != nullptr)
 	{
@@ -636,36 +629,15 @@ XObject * callFunc(XFunction* function, XArgsList* args, const char* remark) {
     // put function extends var ...
     addFunctionExtendsVar(env, args);
 
-	if (oldEnv != nullptr)
-	{
-		thread->newEnv(oldEnv);
-        oldEnv = nullptr;
-	}
-
-	// 如果这个函数属于某个脚本， 先用该函数的脚本环境覆盖
-	ScriptEnvironment *fsEnv = function->getScriptEnv();
-	bool flagfsenv = false;
-	if (fsEnv != nullptr)
-	{
-		flagfsenv = true;
-        thread->newEnvByBridge(fsEnv);
-	}
-
-	thread->newEnv(env);
-	ret = function->call();
-	thread->backEnv();
-
-	if (flagfsenv)
-	{
-		thread->backEnv();
-	}
+    // 附加函数所属环境， 然后调用函数， 之后撤销环境
+    thread->newEnv(env);
+	auto ret = function->call();
+	thread->backEnv(false);
 
 	thread->getStackTrace().popFrame();
 
 	return ret;
 }
-
-
 
 
 XNode * argsNode(XArgsList * args) {

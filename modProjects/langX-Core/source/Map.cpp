@@ -2,7 +2,6 @@
 #include <string>
 
 #include "../include/RegCoreModule.h"
-#include "../include/RegCoreModule.h"
 #include "../../../include/ClassInfo.h"
 #include "../../../include/NodeCreator.h"
 #include "../../../include/Object.h"
@@ -119,7 +118,7 @@ namespace langX {
 			return nullptr;
 		}
 
-		std::map<std::string, Object*> * map = (std::map<std::string, Object*> *)args.object->get3rdObj();
+		auto map = (std::map<std::string, Object*> *)args.object->get3rdObj();
 
 		Object *a = args.args[0];
 		if (a)
@@ -160,7 +159,7 @@ namespace langX {
 
 		return  Allocator::allocateNumber(0);
 	}
-	//containsKey
+
 
 	int regMap(langXState *state, XNameSpace* space) {
 
