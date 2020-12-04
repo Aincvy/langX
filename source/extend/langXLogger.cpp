@@ -1,31 +1,23 @@
-#include "../../include/RegObjects.h"
+#include "RegObjects.h"
 
-#include "../../include/ClassInfo.h"
-#include "../../include/YLlangX.h"
-#include "../../include/Object.h"
-#include "../../include/langXObject.h"
-#include "../../include/langXObjectRef.h"
-#include "../../include/Allocator.h"
-#include "../../include/Number.h"
-#include "../../include/XNameSpace.h"
-#include "../../include/LogManager.h"
-#include "../../include/String.h"
+#include "ClassInfo.h"
+#include "NodeCreator.h"
+#include "langXObject.h"
+#include "langXObjectRef.h"
+#include "XNameSpace.h"
+#include "StringType.h"
+#include "LogManager.h"
 
 namespace langX {
 
 	Object * langX_langXLogger_info(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_langXLogger_info error! NO OBJ!\n");
-			return nullptr;
-		}
 
 		Object *a = args.args[0];
 		if (a && a->getType() == ObjectType::STRING)
 		{
 			String *string = (String*)a;
 			const char * v = string->getValue();
-			logger->info(v);
+			logger->info("[from script] %s" ,v);
 		}
 
 		return nullptr;
@@ -33,33 +25,41 @@ namespace langX {
 
 
 	Object * langX_langXLogger_debug(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_langXLogger_debug error! NO OBJ!\n");
-			return nullptr;
-		}
+
+        Object *a = args.args[0];
+        if (a && a->getType() == ObjectType::STRING)
+        {
+            String *string = (String*)a;
+            const char * v = string->getValue();
+            logger->debug("[from script] %s" ,v);
+        }
 
 		return nullptr;
 	}
 
 
 	Object * langX_langXLogger_error(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_langXLogger_error error! NO OBJ!\n");
-			return nullptr;
-		}
+	    Object *a = args.args[0];
+        if (a && a->getType() == ObjectType::STRING)
+        {
+            String *string = (String*)a;
+            const char * v = string->getValue();
+            logger->error("[from script] %s" ,v);
+        }
 
 		return nullptr;
 	}
 
 
 	Object * langX_langXLogger_trace(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_langXLogger_trace error! NO OBJ!\n");
-			return nullptr;
-		}
+
+        Object *a = args.args[0];
+        if (a && a->getType() == ObjectType::STRING)
+        {
+            String *string = (String*)a;
+            const char * v = string->getValue();
+            logger->debug("[Trace from script] %s" ,v);
+        }
 
 		return nullptr;
 	}
@@ -82,6 +82,7 @@ namespace langX {
 	ClassInfo* regLoggerClass(langXState * state)
 	{
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.extend");
+
 
 		return reglangXLogger(state, space);
 	}

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <stdarg.h>
-#include <string.h>
 #include <stdlib.h>
 
 #ifdef WIN32
@@ -11,23 +10,22 @@
 #include <sys/stat.h>
 #endif
 
-#include "../include/RegFunctions.h"
-#include "../include/Function.h"
-#include "../include/Object.h"
-#include "../include/String.h"
-#include "../include/Number.h"
-#include "../include/YLlangX.h"
-#include "../include/langXThread.h"
-#include "../include/ClassInfo.h"
-#include "../include/NullObject.h"
-#include "../include/langXObject.h"
-#include "../include/langXObjectRef.h"
-#include "../include/Allocator.h"
-#include "../include/XArray.h"
+#include "RegFunctions.h"
+#include "StringType.h"
+#include "Number.h"
+#include "NodeCreator.h"
+#include "langXThread.h"
+#include "ClassInfo.h"
+#include "NullObject.h"
+#include "langXObject.h"
+#include "langXObjectRef.h"
+#include "Allocator.h"
+#include "XArray.h"
 
 static struct termios old, newone;
 
 namespace langX {
+
 	/* Initialize new terminal i/o settings */
 	void initTermios(int echo)
 #ifdef WIN32
@@ -76,40 +74,46 @@ namespace langX {
 	Object * langX_println(X3rdFunction *func, const X3rdArgs & args) {
 		if (args.index <= 0)
 		{
-			printf("function %s need at least 1 param!\n", func->getName());
-			return NULL;
+			printf("\n");
+			return nullptr;
 		}
 
 		for (size_t i = 0; i < args.index; i++)
 		{
 			Object *obj = args.args[i];
 
-			if (obj == NULL || obj->getType() == NULLOBJECT)
+			if (obj == nullptr || obj->getType() == NULLOBJECT)
 			{
 				printf("null");
 			}
 			else if (obj->getType() == STRING)
 			{
-				String * str = (String*)obj;
+				auto str = (String*)obj;
 				str->simpleEscape();
 
-				printf(str->getValue());
+				printf("%s", str->getValue());
 			}
 			else if (obj->getType() == NUMBER)
 			{
-				printf("%f", ((Number*)obj)->getDoubleValue());
+			    auto num = (Number*) obj;
+                if (num->isInteger()) {
+                    printf("%d", num->getIntValue());
+                } else {
+                    printf("%f", num->getDoubleValue());
+                }
 			}
 
 			else if (obj->getType() == OBJECT)
 			{
-				char atmp[2048] = { 0 };
-				objToString(obj, atmp, 0, 2048);
-				printf(atmp);
+				char tmp[2048] = {0 };
+				objToString(obj, tmp, 0, 2048);
+				printf(tmp);
 			}
 		}
+
 		printf("\n");
 
-		return NULL;
+		return nullptr;
 	}
 
 	// c printf 函数 的桥接
@@ -242,7 +246,7 @@ namespace langX {
 	Object * langX_print_stack_trace(X3rdFunction *func, const X3rdArgs & args) {
 		func->getLangX()->curThread()->printStackTrace();
 
-		return NULL;
+		return nullptr;
 	}
 
 	Object * langX_exit(X3rdFunction *func, const X3rdArgs & args) {

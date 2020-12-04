@@ -4,7 +4,7 @@
 #include "../include/ExecNode.h"
 #include "../include/Allocator.h"
 #include "../include/langX.h"
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "../include/Object.h"
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
@@ -319,6 +319,10 @@ namespace langX {
 		return bEnv;
 	}
 
+	void langXThread::throwException(langXObject *object) {
+		throwException(object->addRef());
+	}
+
 	void langXThread::throwException(langXObjectRef *obj)
 	{
 		// 丢出一个异常
@@ -576,6 +580,18 @@ namespace langX {
 		}
 		this->m_current_deep--;
 		this->m_current_env = env;
+	}
+
+    void langXThread::setVarDeclarePrefix(int prefix) {
+        m_exec_status.varDeclarePrefix = (short)prefix;
+    }
+
+    int langXThread::getVarDeclarePrefix() {
+        return m_exec_status.varDeclarePrefix;
+    }
+
+	StackTraceTopStatus &langXThread::getStackTraceTopStatus() {
+		return this->m_exec_status;
 	}
 
 	langXThreadMgr::langXThreadMgr()

@@ -6,9 +6,6 @@
 #endif // WIN32
 
 #include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <iostream>
 
 #include "../include/Utils.h"
 
@@ -117,5 +114,32 @@ namespace langX {
 			return false;
 		}
 	}
+
+    void freeDoubleCharArray(char **array, int len) {
+        if (len <= 0 || array == nullptr) {
+            return;
+        }
+
+        for (int i = 0; i < len; ++i) {
+            free(array[i]);
+        }
+
+        free(array);
+    }
+
+    template<typename T, typename>
+    T langX::max(T a, T b) {
+        return a >= b ? a : b;
+    }
+
+    template<typename T, typename>
+    T langX::min(T a, T b) {
+        return a <= b ? a : b;
+    }
+
+
+    // 模板函数 实例化
+    template short max<short >(short a, short b);
+    template short min<short >(short a, short b);
 
 }

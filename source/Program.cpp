@@ -1,5 +1,5 @@
 //
-// Created by Yo Hello on 2020/9/28.
+// Created by Aincvy on 2020/9/28.
 //
 
 #include "../include/Program.h"
@@ -9,17 +9,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include <tclap/CmdLine.h>
-
 
 
 extern int getParseLineNo();
 extern int column;
 extern char * yytext;
 
-void yyerror(char *s) {
-    fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , getParseLineNo(),column , yytext );
+void yyerror(const char *s) {
+    fprintf(stderr, "%s on file %s line %d,column %d. near by '%s' \n", s , getParsingFilename() , getParseLineNo(), column , yytext );
 
 }
 

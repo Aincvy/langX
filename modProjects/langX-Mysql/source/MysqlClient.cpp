@@ -8,13 +8,13 @@
 #include <stdlib.h>
 #include "../include/RegMysqlModule.h"
 #include "../../../include/ClassInfo.h"
-#include "../../../include/YLlangX.h"
+#include "../../../include/NodeCreator.h"
 #include "../../../include/Object.h"
 #include "../../../include/langXObject.h"
 #include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
-#include "../../../include/String.h"
+#include "../../../include/StringType.h"
 
 
 namespace langX {
@@ -48,7 +48,7 @@ namespace langX {
 			printf("langX_MysqlClient_MysqlClient error! NO OBJ!\n");
 			return nullptr;
 		}
-	
+
 		MYSQL *mysql = initMysql();
 		args.object->set3rdObj(mysql);
 
@@ -82,7 +82,7 @@ namespace langX {
 			closeMysql(args.object);
 			number->setValue(0);
 		}
-		
+
 		int port = 3306;
 		Object * serverAddr = args.args[0];
 		Object * user = args.args[1];
@@ -107,13 +107,13 @@ namespace langX {
 
 		mysql = initMysql();
 		if (mysql_real_connect(mysql,((String*)serverAddr)->getValue() , ((String*)user)->getValue(), ((String*)pwd)->getValue(), ((String*)dbname)->getValue(),port,NULL,0)) {
-			// Á¬½Ó³É¹¦
+			// è¿æ¥æˆåŠŸ
 			number->setValue(1);
 			args.object->set3rdObj(mysql);
 			return Allocator::allocateNumber(1);
 		}
 		else {
-			// Ê§°Ü
+			// å¤±è´¥
 			mysql_close(mysql);
 			args.object->set3rdObj(nullptr);
 			return Allocator::allocateNumber(0);
@@ -134,7 +134,7 @@ namespace langX {
 
 
 	Object * langX_MysqlClient_CharacterSet(X3rdFunction *func, const X3rdArgs &args) {
-		// ÉèÖÃ×Ö·û¼¯
+		// è®¾ç½®å­—ç¬¦é›†
 		if (args.object == nullptr)
 		{
 			printf("langX_MysqlClient_CharacterSet error! NO OBJ!\n");
@@ -156,7 +156,7 @@ namespace langX {
 
 		if (mysql_set_character_set(mysql, ((String*)a)->getValue()) == 0)
 		{
-			// ³É¹¦
+			// æˆåŠŸ
 			return Allocator::allocateNumber(1);
 		}
 
@@ -164,7 +164,7 @@ namespace langX {
 	}
 
 	Object * langX_MysqlClient_LastAffectedRows(X3rdFunction *func, const X3rdArgs &args) {
-		// 
+		//
 		if (args.object == nullptr)
 		{
 			printf("langX_MysqlClient_LastAffectedRows error! NO OBJ!\n");
@@ -177,14 +177,14 @@ namespace langX {
 		}
 
 		MYSQL *mysql = (MYSQL*)args.object->get3rdObj();
-		
+
 		double a = mysql_affected_rows(mysql);
 		return Allocator::allocateNumber(a);
 	}
 
 
 	Object * langX_MysqlClient_Option(X3rdFunction *func, const X3rdArgs &args) {
-		// ÉèÖÃ mysql Ñ¡Ïî
+		// è®¾ç½® mysql é€‰é¡¹
 		if (args.object == nullptr)
 		{
 			printf("langX_MysqlClient_Option error! NO OBJ!\n");
@@ -208,7 +208,7 @@ namespace langX {
 		{
 			return nullptr;
 		}
-		
+
 		MYSQL *mysql = (MYSQL*)args.object->get3rdObj();
 		return Allocator::allocateString(mysql_error(mysql));
 
@@ -278,7 +278,7 @@ namespace langX {
 		{
 			if (mysql_query(mysql, ((String*)a)->getValue()) == 0)
 			{
-				// ²éÑ¯³É¹¦
+				// æŸ¥è¯¢æˆåŠŸ
 				MYSQL_RES *res_ptr = mysql_store_result(mysql);
 				if (res_ptr)
 				{

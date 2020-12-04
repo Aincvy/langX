@@ -4,7 +4,7 @@
 #include "../include/Object.h"
 #include "../include/ClassInfo.h"
 #include "../include/Function.h"
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "../include/Allocator.h"
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
@@ -245,31 +245,19 @@ namespace langX {
 		return getFunction(this->m_class_info->getName());
 	}
 
-	void langXObject::callConstructor(ArgsList *args, const char *remark, NodeLink *nodeLink, langXThread *thread)
+	void langXObject::callConstructor(ArgsList *args, const char *remark, langXThread *thread)
 	{
 		Function *func = getConstructor();
 		if (func)
 		{
-			NodeLink *putNodeLink = nullptr;
-			if (!nodeLink->flag) {
-				nodeLink->flag = true;
-				putNodeLink = newNodeLink(nullptr, nodeLink->node);
-				nodeLink->ptr_u = putNodeLink;
-				thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
-				callFunc(func, args, remark, putNodeLink);
-				return;
-			}
-			else {
-				putNodeLink = (NodeLink *)nodeLink->ptr_u;
-			}
 
+            thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
 			Environment *env = getObjectEnvironment();
             thread->newEnvByBridge(env);
-			callFunc(func, args, remark, putNodeLink);
+			callFunc(func, args, remark );
 			thread->getStackTrace().popFrame();
 			thread->backEnv();
-			freeNodeLink(putNodeLink);
-			nodeLink->ptr_u = NULL;
+
 		}
 	}
 
@@ -280,30 +268,15 @@ namespace langX {
 		if (func)
 		{
 			langXThread *thread = getState()->curThread();
-			NodeLink *curNodeLink = thread->getCurrentExecute();
-			NodeLink tmpNodeLink;
-			memset(&tmpNodeLink, 0, sizeof(NodeLink));
-			NodeLink *nodeLink = &tmpNodeLink;
-
-			// 运算参数
-			NodeLink *putNodeLink = newNodeLink(nullptr, nodeLink->node);
-			nodeLink->ptr_u = putNodeLink;
-			thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
-			callFunc(func, args, remark, putNodeLink);
-			if (curNodeLink->next != nullptr)
-			{
-				Node *t = curNodeLink->next->node;
-				execNodeButLimit(t, t);
-			}
 
 			// 运算函数
+            thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
 			Environment *env = getObjectEnvironment();
             thread->newEnvByBridge(env);
-			callFunc(func, args, remark, putNodeLink);
+			callFunc(func, args, remark);
 			thread->getStackTrace().popFrame();
 			thread->backEnv();
-			freeNodeLink(putNodeLink);
-			nodeLink->ptr_u = NULL;
+
 		}
 	}
 
@@ -325,7 +298,7 @@ namespace langX {
 	Object * langXObject::callFunction(const char *name, Object* args[], int len, const char * remark)
 	{
 		Function * func = getFunction(name);
-		if (func == NULL)
+		if (func == nullptr)
 		{
 			return NULL;
 		}

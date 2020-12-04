@@ -24,12 +24,12 @@ namespace langX {
 
 	struct langXRedisInfo* buildLangXRedisInfo(const char*ip, int port, redisContext *redisContext);
 
-	// 把一个 redis reply 转成 一个 langX 对象
+	// 锟斤拷一锟斤拷 redis reply 转锟斤拷 一锟斤拷 langX 锟斤拷锟斤拷
 	Object * replyToObject(redisReply *);
 
 	int regRedisClient(langXState *state, XNameSpace* space);
 
-	int regRedisExcceptions(langXState *state, XNameSpace* space);
+	int regRedisExceptions(langXState *state, XNameSpace* space);
 
 
 

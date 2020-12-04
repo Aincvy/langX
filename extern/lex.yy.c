@@ -383,15 +383,15 @@ static yyconst flex_int16_t yy_accept[202] =
        38,   38,   38,   38,   38,   38,   38,   38,   74,    2,
 
        42,   38,   38,   38,   38,   38,   38,   38,   38,   38,
-       38,    7,   38,   38,   16,   38,   38,   38,   29,   38,
+       38,    7,   38,   38,   16,   38,   38,   38,   26,   38,
        38,   38,   24,   38,   38,   38,   21,   38,    3,   38,
        14,   38,   38,   38,   38,   38,    5,   38,   38,   38,
        38,   17,   38,   38,   38,   38,   38,   38,   19,   10,
-       38,   11,   22,   31,   38,   38,   38,   38,    9,   38,
-       32,   38,   38,   38,   38,   38,   38,    6,   38,   38,
+       38,   11,   22,   28,   38,   38,   38,   38,    9,   38,
+       29,   38,   38,   38,   38,   38,   38,    6,   38,   38,
         8,   38,   38,   38,   23,   38,   38,   12,   13,   38,
-       15,   20,   28,   38,   26,   38,   30,   38,   38,   18,
-       40,   40,   40,    0,    0,    0,   38,   38,   38,   27,
+       15,   20,   32,   38,   30,   38,   27,   38,   38,   18,
+       40,   40,   40,    0,    0,    0,   38,   38,   38,   31,
 
         0
     } ;
@@ -612,7 +612,7 @@ char *yytext;
 #include <stdio.h>
 #include <string.h>
 #include <string>
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "y.tab.h"
 
 extern "C"{
@@ -922,32 +922,32 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 42 "a.l"
-{count(); return AUTO;}
+{count(); return KEY_AUTO;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 43 "a.l"
-{count(); return IF;}
+{count(); return KEY_IF;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 44 "a.l"
-{count(); return ELSE;}
+{count(); return KEY_ELSE;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 45 "a.l"
-{count(); return WHILE;}
+{count(); return KEY_WHILE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 46 "a.l"
-{count(); return FOR;}
+{count(); return KEY_FOR;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 47 "a.l"
-{count(); return DELETE;}
+{count(); return KEY_DELETE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
@@ -962,341 +962,341 @@ YY_RULE_SETUP
 case 11:
 YY_RULE_SETUP
 #line 50 "a.l"
-{count(); return BREAK;}
+{count(); return KEY_BREAK;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 51 "a.l"
-{count(); return RETURN; }
+{count(); return KEY_RETURN; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 52 "a.l"
-{ count(); return SWITCH;}
+{ count(); return KEY_SWITCH;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 53 "a.l"
-{ count(); return CASE;}
+{ count(); return KEY_CASE;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 54 "a.l"
-{ count(); return DEFAULT; }
+{ count(); return KEY_DEFAULT; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 55 "a.l"
-{ count();  return NEW; }
+{ count();  return KEY_NEW; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 56 "a.l"
-{ count(); return XNULL; }
+{ count(); return KEY_NULL; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 57 "a.l"
-{ count(); return RESTRICT;}
+{ count(); return KEY_RESTRICT;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 58 "a.l"
-{count();  return THIS; }
+{count();  return KEY_THIS; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 59 "a.l"
-{ count(); return EXTENDS; }
+{ count(); return KEY_EXTENDS; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 60 "a.l"
-{count();  return XTRY; }
+{count();  return KEY_TRY; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 61 "a.l"
-{count();  return XCATCH; }
+{count();  return KEY_CATCH; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 62 "a.l"
-{count(); return XPUBLIC;}
+{count(); return KEY_PUBLIC;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 63 "a.l"
-{count();  return XSET; }
+{count();  return KEY_SET; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 64 "a.l"
-{count();  return XIS; }
+{count();  return KEY_IS; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 65 "a.l"
-{count(); return REQUIRE;}
+{count();  return KEY_REF ;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 66 "a.l"
-{ count(); return REQUIRE_ONCE; }
+{ count(); return KEY_CONTINUE; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 67 "a.l"
-{ count(); return XINCLUDE; }
+{ count(); return KEY_CONST; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 68 "a.l"
-{count();  return REF ;}
+{ count(); return KEY_LOCAL; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 69 "a.l"
-{ count(); return XCONTINUE; }
+{count(); return KEY_REQUIRE;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 70 "a.l"
-{ count(); return XCONST; }
+{ count(); return KEY_REQUIRE_ONCE; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 71 "a.l"
-{ count(); return XLOCAL; }
+{ count(); return KEY_INCLUDE; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 72 "a.l"
+#line 73 "a.l"
 {count();  return FUNC_OP; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 73 "a.l"
+#line 74 "a.l"
 {count(); return PIPELINE_OP; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 74 "a.l"
+#line 75 "a.l"
 {count();  return INC_OP;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 75 "a.l"
+#line 76 "a.l"
 {count();  return DEC_OP;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 78 "a.l"
+#line 79 "a.l"
 {count();  yylval.sValue = strdup(yytext); return TSTRING;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 79 "a.l"
+#line 80 "a.l"
 {count(); yylval.sValue=strdup(yytext); return IDENTIFIER;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 80 "a.l"
+#line 81 "a.l"
 {count(); yylval.sValue=strdup(yytext); return IDENTIFIER;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 82 "a.l"
+#line 83 "a.l"
 {count();  yylval.sValue=strdup(yytext); return OPERATOR_X__;  }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 84 "a.l"
-{count();  yylval.iValue = atoi(yytext);  return XINTEGER; }
+#line 85 "a.l"
+{count();  yylval.iValue = atoi(yytext);  return TINTEGER; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 85 "a.l"
+#line 86 "a.l"
 { count(); yylval.dValue = atof(yytext); return TDOUBLE;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 87 "a.l"
+#line 88 "a.l"
 {count(); return LE_OP;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 88 "a.l"
+#line 89 "a.l"
 {count(); return GE_OP;}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 89 "a.l"
+#line 90 "a.l"
 {count(); return EQ_OP;}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 90 "a.l"
+#line 91 "a.l"
 {count(); return NE_OP;}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 91 "a.l"
+#line 92 "a.l"
 {count(); return ADD_EQ; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 92 "a.l"
+#line 93 "a.l"
 {count(); return SUB_EQ; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 93 "a.l"
+#line 94 "a.l"
 {count(); return MUL_EQ; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 94 "a.l"
+#line 95 "a.l"
 {count(); return DIV_EQ; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 95 "a.l"
+#line 96 "a.l"
 {count(); return MOD_EQ; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 96 "a.l"
+#line 97 "a.l"
 {count(); return SCOPE;}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 97 "a.l"
+#line 98 "a.l"
 {count(); return '>'; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 98 "a.l"
+#line 99 "a.l"
 {count(); return '<'; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 99 "a.l"
+#line 100 "a.l"
 {count(); return '{'; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 100 "a.l"
+#line 101 "a.l"
 {count(); return '}'; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 101 "a.l"
+#line 102 "a.l"
 {count(); return ':'; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 102 "a.l"
+#line 103 "a.l"
 {count(); return '@'; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 103 "a.l"
+#line 104 "a.l"
 {count(); return ';'; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 104 "a.l"
+#line 105 "a.l"
 {count(); return '='; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 105 "a.l"
+#line 106 "a.l"
 {count(); return ','; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 106 "a.l"
+#line 107 "a.l"
 {count(); return '.'; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 107 "a.l"
+#line 108 "a.l"
 {count(); return '['; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 108 "a.l"
+#line 109 "a.l"
 {count(); return ']'; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 109 "a.l"
+#line 110 "a.l"
 {count(); return '&'; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 110 "a.l"
+#line 111 "a.l"
 {count(); return '|'; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 111 "a.l"
+#line 112 "a.l"
 {count(); return '!'; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 112 "a.l"
+#line 113 "a.l"
 {count(); return '^'; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 113 "a.l"
+#line 114 "a.l"
 {count(); return '~'; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 114 "a.l"
+#line 115 "a.l"
 {count(); return '%'; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 115 "a.l"
+#line 116 "a.l"
 {count(); return LEFT_SHIFT;}
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 116 "a.l"
+#line 117 "a.l"
 {count(); return RIGHT_SHIFT; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 117 "a.l"
+#line 118 "a.l"
 {count(); return AND_OP;}
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 118 "a.l"
+#line 119 "a.l"
 {count(); return OR_OP;}
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 119 "a.l"
+#line 120 "a.l"
 {count(); return *yytext;}
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 121 "a.l"
+#line 122 "a.l"
 {count(); }
 	YY_BREAK
 case 77:
 /* rule 77 can match eol */
 YY_RULE_SETUP
-#line 122 "a.l"
-{count(); now_line++ ; }
+#line 123 "a.l"
+{count(); now_line++; }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 124 "a.l"
+#line 125 "a.l"
 {
 
     //printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
@@ -1324,7 +1324,7 @@ case YY_STATE_EOF(INITIAL):
 	fileEOF();
 
 	if(flag){
-		yyParseStoped();
+		yyParseStopped();
 
 		// yyterminate() 是一个宏。。  不是一个方法。。 会执行return 语句
 		yyterminate();
@@ -1334,7 +1334,7 @@ case YY_STATE_EOF(INITIAL):
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 160 "a.l"
+#line 161 "a.l"
 ECHO;
 	YY_BREAK
 #line 1341 "lex.yy.c"
@@ -2332,7 +2332,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 160 "a.l"
+#line 161 "a.l"
 
 
 
@@ -2359,6 +2359,7 @@ void pushBuffer(FILE *fp){
 	}
 
 	now_line = 1;
+	column = 0;
 	yyin = fp;
 	yy_switch_to_buffer(yy_create_buffer(yyin,YY_BUF_SIZE ) );
 	BEGIN(INITIAL);
@@ -2373,6 +2374,7 @@ void comment(void)
 	{
 		if (c == '\n') {
 			now_line++ ;
+			column = 0;
 		}
 		if (c == '/' && prev == '*')
 			return;
@@ -2385,13 +2387,16 @@ void count(void)
 {
 	int i;
 
-	for (i = 0; yytext[i] != '\0'; i++)
+	for (i = 0; yytext[i] != '\0'; i++) {
 		if (yytext[i] == '\n'){
 			column = 0;
 		} else if (yytext[i] == '\t')
 			column += 8 - (column % 8);
-		else
+		else {
 			column++;
+		}
+	}
 
+	// printf("after count %s, column: %d\n", yytext, column);
 }
 

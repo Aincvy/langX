@@ -37,12 +37,14 @@ extern "C" {
 	XNode * number(double );
 	// 创建一个变量节点， 注意， 变量节点的名字 请使用 malloc等函数分配内存
 	XNode * var(char *);
-	// 创建一个 操作符节点 
+	// 创建一个变量节点， 变量名在不需要的时候 需要手动释放内存， 否则会造成泄露
+    XNode * varWithNameNeedFree(char *name);
+	// 创建一个 操作符节点
 	XNode * opr(int opr, int npos, ...);
 	// 创建一个后缀节点
 	XNode * sopr(int opr, int npos, ...);
 	// 创建一个类节点
-	XNode * claxx(char *name, char *parent, XNode * node , bool);
+	XNode * classNode(char *name, char *parent, XNode * node , bool);
 	// 创建一个函数节点
 	XNode * func(char *, XParamsList *,XNode *);
 	// 创建一个析构函数节点
@@ -52,20 +54,18 @@ extern "C" {
 	// 创建一个 空引用节点
 	XNode * xnull();
 	// 使用一个函数
-	XObject * call(const char *, XArgsList *, const char *, NodeLink *);
+	XObject * call(const char *, XArgsList *, const char *);
 	// 调用一个函数       调用两次这个函数才能获取到函数的返回值！！
 	// NodeLink*  这个参数务必给一个全新的， 没使用的值    index=0 时会进行参数获取,  index=1 时会进行实际的函数调用
-	XObject * callFunc(XFunction*, XArgsList *, const char *, NodeLink*);
+	XObject * callFunc(XFunction*, XArgsList *, const char *);
 	// 创建一个节点， 节点内容为实参列表
 	XNode * argsNode(XArgsList *);
 	// 创建一个数组元素节点
-	XNode *arr(char *, int ,XNode *);
+	XNode *arrayElementNode(char *, int , XNode *);
 	// 创建一个数组元素节点
-	XNode *arr2(XNode *, int, XNode *);
+	XNode *objectArrayElementNode(XNode *, int, XNode *);
 	// 创建一个int类型的常量节点
-	XNode *xint(int);
-	// 切换命名空间
-	XNode *changeNameSpace(char *);
+	XNode *intNode(int);
 	// 生成一个lamdba 表达式的节点
 	XNode *lambda(XParamsList *,XNode *);
 	// 创建一个形参列表， 或者 追加一个参数到 列表中
@@ -102,7 +102,7 @@ extern "C" {
 	void doFile(const char *);
 
 	// yy 解析停止了 
-	void yyParseStoped();
+	void yyParseStopped();
 }
 
 langX::Object* getValue(const char*);

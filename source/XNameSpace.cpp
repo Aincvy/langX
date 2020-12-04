@@ -2,7 +2,7 @@
 #include "../include/Object.h"
 #include "../include/ClassInfo.h"
 #include "../include/langX.h"
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "../include/Allocator.h"
 
 namespace langX {
@@ -140,14 +140,14 @@ namespace langX {
 		return this->m_namespace_map[name];
 	}
 
-	XNameSpace * XNameSpace::getNameSpace2(const char *name)
+	XNameSpace * XNameSpace::getNameSpaceWithCreate(const char *name)
 	{
 		if (this->m_namespace_map.find(name) != this->m_namespace_map.end())
 		{
 			return this->m_namespace_map[name];
 		}
 
-		XNameSpace *space = new XNameSpace(name);
+		auto space = new XNameSpace(name);
 		this->m_namespace_map[name] = space;
 		return space;
 	}

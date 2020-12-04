@@ -15,7 +15,7 @@
 #include "../include/ExecNode.h"
 #include "../include/langXObject.h"
 #include "../include/langXObjectRef.h"
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "../include/Exception.h"
 #include "../include/Function.h"
 #include "../include/XNameSpace.h"
@@ -108,7 +108,7 @@ namespace langX {
 		X3rdFunction *func = new X3rdFunction();
 		func->setName(name);
 		func->setWorker(worker);
-		func->setParamsList(NULL);
+		func->setParamsList(nullptr);
 		func->setLangX(this);
 		this->m_global_env->putFunction(name, func);
 	}
@@ -130,7 +130,7 @@ namespace langX {
 
 	void langXState::regClassToGlobal(ClassInfo *c)
 	{
-		if (c == NULL)
+		if (c == nullptr)
 		{
 			return;
 		}
@@ -266,7 +266,7 @@ namespace langX {
 				space = singleGetNameSpaceOrCreate(f.c_str());
 			}
 			else {
-				space = space->getNameSpace2(f.c_str());
+				space = space->getNameSpaceWithCreate(f.c_str());
 			}
 
 			if (space == NULL)
@@ -280,7 +280,7 @@ namespace langX {
 			space = singleGetNameSpaceOrCreate(str.c_str());
 		}
 		else {
-			space = space->getNameSpace2(str.c_str());
+			space = space->getNameSpaceWithCreate(str.c_str());
 		}
 
 		return space;
@@ -652,8 +652,8 @@ namespace langX {
 			}
 		}
 
-		logger->debug("load rtlib.");
-		loadRTLib(this);
+		logger->debug("load rt-lib.  [jump ...]");
+		// loadRTLib(this);
 
 		logger->debug("load config file over.");
 		return 0;

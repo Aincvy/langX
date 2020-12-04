@@ -4,7 +4,7 @@
 #include "../include/RegCoreModule.h"
 #include "../include/RegCoreModule.h"
 #include "../../../include/ClassInfo.h"
-#include "../../../include/YLlangX.h"
+#include "../../../include/NodeCreator.h"
 #include "../../../include/Object.h"
 #include "../../../include/langXObject.h"
 #include "../../../include/Allocator.h"
@@ -147,7 +147,7 @@ namespace langX {
 		}
 
 		std::map<std::string, Object*> * map = (std::map<std::string, Object*> *)args.object->get3rdObj();
-		
+
 		Object *a = args.args[0];
 		if (a)
 		{

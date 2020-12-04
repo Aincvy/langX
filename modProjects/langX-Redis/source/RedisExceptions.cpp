@@ -9,12 +9,12 @@ namespace langX {
 
 
 
-	int regRedisExcceptions(langXState * state, XNameSpace * space)
+	int regRedisExceptions(langXState * state, XNameSpace * space)
 	{
-		ClassInfo * expection = state->getGlobalEnv()->getClassSelf("Exception");
+		ClassInfo * exception = state->getGlobalEnv()->getClassSelf("Exception");
 		
 		ClassInfo *redisCommonException = new ClassInfo("RedisCommonException");
-		redisCommonException->setParent(expection);
+		redisCommonException->setParent(exception);
 		space->putClass(redisCommonException);
 
 		return 0;

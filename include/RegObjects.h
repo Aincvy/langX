@@ -12,8 +12,10 @@ namespace langX {
 
 
 	// 类注册
+	// 注册 日志类
 	ClassInfo* regLoggerClass(langXState *state);
-
+	// 注册字符串类
+    ClassInfo* regStringClass(langXState *state);
 
 	// 注册
 	void regObjects(langXState *state);

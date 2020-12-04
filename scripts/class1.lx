@@ -19,6 +19,7 @@ b = s2.age;
 c = s2.name;
 print("b: " + b + "\n");
 print("c: " + c + "\n");
+print("s2.age: " + s2.age + "\n");
 
 s1 = s2;
 s1.age = 10 ;
@@ -35,4 +36,4 @@ if( c1 == null ){
   println("c1 == null! ");
 }
 
-printInfo(Student::age);
+println(Student::age);

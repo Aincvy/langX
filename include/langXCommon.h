@@ -3,9 +3,7 @@
 //
 // 主要用于预定义一些内容
 //
-
-#ifndef LANGX_LANGX_COMMON_H
-#define LANGX_LANGX_COMMON_H
+#pragma once
 
 // yacc debug 标识
 #define YYDEBUG 1
@@ -26,4 +24,7 @@
 // 线程环境深度的初始值
 #define THREAD_ENV_DEEP_INITIAL 1
 
-#endif //LANGX_LANGX_COMMON_H
+// 默认情况下的字符串缓冲区大小
+#define DEFAULT_CHAR_BUFFER_SIZE 1024
+// 默认情况下， 较小的字符串缓冲区的 大小
+#define DEFAULT_MIN_CHAR_BUFF_SIZE 100

@@ -7,7 +7,7 @@
 #include "../include/Function.h"
 #include "../include/langXObject.h"
 #include "../include/XNameSpace.h"
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "../include/Exception.h"
 #include "../include/Allocator.h"
 #include "../include/langXThread.h"
@@ -276,14 +276,14 @@ namespace langX {
 
 	Function * ClassBridgeEnv::getFunction(const std::string &name)
 	{
-		if (this->m_class == NULL)
+		if (this->m_class == nullptr)
 		{
 			if (this->m_parent != nullptr)
 			{
 				return this->m_parent->getFunction(name);
 			}
 
-			return NULL;
+			return nullptr;
 		}
 		return this->m_class->getFunction(name.c_str());
 	}
@@ -303,7 +303,11 @@ namespace langX {
 		return EnvironmentType::TClassBridgeEnv;
 	}
 
-	ObjectBridgeEnv::ObjectBridgeEnv(langXObject *obj)
+    ClassInfo *ClassBridgeEnv::getEnvClass() const {
+        return this->m_class;
+    }
+
+    ObjectBridgeEnv::ObjectBridgeEnv(langXObject *obj)
 	{
 		this->m_object = obj;
 	}
@@ -973,6 +977,7 @@ namespace langX {
 		{
 			for (auto a = m_classes_map.begin(); a != m_classes_map.end(); a++) {
 				//a->second->decRefCount();
+				// printf("[Global Env] will delete class %s \n" , a->second->getName());
 				delete a->second;
 			}
 
@@ -1047,7 +1052,9 @@ namespace langX {
 
 	void GlobalEnvironment::putClass(const char *name, ClassInfo *claxx)
 	{
-		if (claxx == NULL)
+	    // printf("[Global Env] putClass: %s\n", name);
+
+		if (claxx == nullptr)
 		{
 			return;
 		}
@@ -1073,6 +1080,7 @@ namespace langX {
 		{
 			return nullptr;
 		}
+
 		return this->m_classes_map.at(name);
 	}
 
@@ -1290,8 +1298,7 @@ namespace langX {
 		if (this->m_functions_map.find(name) == this->m_functions_map.end())
 		{
 			// not found.
-
-			return NULL;
+			return nullptr;
 		}
 		return this->m_functions_map.at(name);
 	}

@@ -142,8 +142,6 @@ namespace langX {
 		NODE_ARRAY_ELE ,
 		// int 类型数据的节点
 		NODE_CONSTANT_INTEGER ,
-		// 切换命名空间
-		NODE_CHANGE_NAMESPACE 
 	};
 
 	// 节点的状态， 比如： 正常，在循环内，在函数内
@@ -225,23 +223,20 @@ namespace langX {
 		// 操作符是什么
 		int opr;
 
-		// 07-23 注释， 结果放在 Node.value 中
-		// 当前操作产生的结果, 这个对象 在FreeNode 函数中并不会释放
-		//Object *obj;
 	};
 
 	struct Node
 	{
 		NodeType type;
 		// 在执行结束之后是否进行 free 操作
-		bool freeOnExeced;
+		bool freeOnExecuted;
 		// 当前节点的值 .  如果当前结点是一个常量数字， 则free 的时候会施放这个值得内存
 		Object *value;
 		// 万能指针 ， 主要用于放置参数什么的
 		void *ptr_u;
 		// 节点状态
 		NodeState state;
-		// 文件信息
+		// 当前节点所在的文件信息
 		NodeFileInfo fileinfo;
 		// 后置值 ， 如果当前节点为一个 变量节点， 当前属性则为有用
 		Object *postposition;
@@ -288,7 +283,7 @@ namespace langX {
 		bool backAfterExec;             // 执行结束之后 退回到父节点
 		Environment *tryEnv;            // try 环境， 在try 节点下有值，其他为null 
 
-		void * ptr_u;              // 万能指针， 可以指向任何单位
+		void * ptr_u;              // 万能指针， 可以指向任何单位  | 正常情况下， 其他逻辑并不会主动操作这个指针
 	};
 
 

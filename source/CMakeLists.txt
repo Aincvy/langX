@@ -12,10 +12,45 @@ MESSAGE(STATUS "OS is ${CMAKE_SYSTEM}")
 MESSAGE(STATUS "FIND LOG4CPP IN ${Log4cpp_LIBRARY}")
 MESSAGE(STATUS "FLEX STATUS ${FLEX_LIBRARIES}")
 
-AUX_SOURCE_DIRECTORY(. SRC_LIST)
+SET( SRC_LIST
+		Allocator.cpp
+		ClassInfo.cpp
+		Config.cpp
+		Environment.cpp
+		Exception.cpp
+		ExecNode.cpp
+		Function.cpp
+		InnerFunction.cpp
+		langX.cpp
+		langXObject.cpp
+		langXObjectRef.cpp
+		langXrtlib.cpp
+		langXThread.cpp
+		LogManager.cpp
+		NullObject.cpp
+		Number.cpp
+		Object.cpp
+		Program.cpp
+		RegFunctions.cpp
+		RegObjects.cpp
+		StackTrace.cpp
+		StringType.cpp
+		Utils.cpp
+		X3rdModule.cpp
+		XArray.cpp
+		XNameSpace.cpp
+		NodeCreator.cpp
+		extend/langXLogger.cpp
+		extend/langXString.cpp
+		node/ExecBaseMathNode.cpp
+		node/ExecAssignNode.cpp
+		node/ExecLogicNode.cpp
+		node/ExecOOPNode.cpp
+        )
+
 FILE(GLOB EXT_FILES "${CMAKE_CURRENT_LIST_DIR}/../extern/*.c")
-FILE(GLOB EXTEND_CLASS "extend/*.cpp")
-ADD_LIBRARY(liblangX.so SHARED ${SRC_LIST} ${EXT_FILES} ${EXTEND_CLASS})
+ADD_LIBRARY(liblangX.so SHARED ${SRC_LIST} ${EXT_FILES})
+
 TARGET_LINK_LIBRARIES(liblangX.so ${Log4cpp_LIBRARY})
 TARGET_LINK_LIBRARIES(liblangX.so "dl")
 TARGET_LINK_LIBRARIES(liblangX.so "pthread")

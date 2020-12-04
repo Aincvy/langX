@@ -6,14 +6,14 @@ Map{
 
 auto Map{
   map[10];
-  
-  put => (k,v) { 
+
+  put => (k,v) {
     if ( k is Number && k >= 0 && k < 10){
 	  map[k] = v ;
 	  print("put one element!\n");
 	}
   }
-  
+
   get => (k) {
     if ( k is Number && k >= 0 && k < 10){
 	  return map[k] ;
@@ -22,7 +22,7 @@ auto Map{
 }
 
 m1 = new Map();
-m1.put(1,"hello");
+m1.put(1,"hello-aa");
 
 str = m1.get(1);
 print("str: " + str + "\n");

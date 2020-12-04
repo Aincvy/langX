@@ -33,11 +33,11 @@ namespace langX {
 		ClassInfo *getClass(const char *);
 
 		void putNameSpace(const char *, XNameSpace *);
-		// 获得这个命名空间的子命名空间
+		// 获得这个命名空间的子命名空间  | 不支持以 . 分割的字符串
 		XNameSpace * getNameSpace(const char *);
 
 		// 获得命名空间， 如果命名空间不存在， 则创建一个放入自身中
-		XNameSpace * getNameSpace2(const char *);
+		XNameSpace * getNameSpaceWithCreate(const char *name);
 
 		void addRefNamespace(XNameSpace*);
 

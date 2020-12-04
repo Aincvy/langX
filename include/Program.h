@@ -9,7 +9,7 @@
 
 extern "C" {
     extern int yylex(void);
-    void yyerror(char *);
+    void yyerror(const char *);
 }
 
 /**

@@ -6,9 +6,10 @@
 #include "../include/ClassInfo.h"
 #include "../include/Allocator.h"
 #include "../include/Environment.h"
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 
 namespace langX {
+    
 	langX::ClassInfo::ClassInfo(const char*name)
 	{
 		this->m_name = std::string(name);
@@ -32,7 +33,7 @@ namespace langX {
 
 	void ClassInfo::addMember(const char *name, Object *obj)
 	{
-		if (obj == NULL)
+		if (obj == nullptr)
 		{
 			return;
 		}
@@ -110,9 +111,9 @@ namespace langX {
 	{
 		if (!hasFunction(name))
 		{
-			if (this->m_parent == NULL)
+			if (this->m_parent == nullptr)
 			{
-				return NULL;
+				return nullptr;
 			}
 			return this->m_parent->getFunction(name, true);
 		}

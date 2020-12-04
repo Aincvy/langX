@@ -6,7 +6,7 @@ funa => {
 	funb();
 
 	// build-in function.
-	println("funa" + a);
+	println("funa: " + a);
 }
 
 funb => {

@@ -1,8 +1,8 @@
 #include "../include/Exception.h"
 #include "../include/Object.h"
-#include "../include/YLlangX.h"
+#include "../include/NodeCreator.h"
 #include "../include/ClassInfo.h"
-#include "../include/String.h"
+#include "../include/StringType.h"
 #include "../include/Function.h"
 #include "../include/langXObject.h"
 #include "../include/langXThread.h"
@@ -111,8 +111,13 @@ namespace langX {
 
 		//   ClassNotFoundException    类没找到异常
 		ClassInfo *classNotFoundException = new ClassInfo("ClassNotFoundException");
-		classNotFoundException->setParent(memberException);
+		classNotFoundException->setParent(exception);
 		l->regClassToGlobal(classNotFoundException);
+
+        //   NamespaceNotFoundException    类没找到异常
+        ClassInfo *namespaceNotFoundException = new ClassInfo("NamespaceNotFoundException");
+        namespaceNotFoundException->setParent(exception);
+        l->regClassToGlobal(namespaceNotFoundException);
 
 		// UnsupportedOperationException   不支持的操作异常
 		ClassInfo *unsupportedOperationException = new ClassInfo("UnsupportedOperationException");
@@ -231,4 +236,9 @@ namespace langX {
 	{
 		return  newException("InnerException", message);
 	}
+
+    langXObject *newNamespaceNotFoundException(const char *message) {
+        return  newException("NamespaceNotFoundException", message);
+    }
+
 }

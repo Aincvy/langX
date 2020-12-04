@@ -119,9 +119,9 @@ namespace langX {
 		// 如果这个函数来自一个 对象， 则会返回一个对象环境， 如果来自类， 则返回类桥接环境
 		Environment *getFunctionEnv();
 
-		// 调用这个函数  更多解释请查看   YLlangX.h 中 callFunction 函数的说明！
+		// 调用这个函数  更多解释请查看   NodeCreator.h 中 callFunction 函数的说明！
 		// 一般是在解释过程中调用这个函数， 在c++ 层面不应该直接使用这个函数
-		Object *call(ArgsList *argsList, const char *remark, NodeLink *);
+		Object *call(ArgsList *argsList, const char *remark );
 
 		//  参数为1 参数数组， 参数2为数组的元素个数 参数3为 备注
 		//  此函数内部实现会对参数进行 克隆然后再使用
