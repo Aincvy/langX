@@ -9,7 +9,8 @@
 #define YYDEBUG 1
 
 // langX 的版本
-#define LANGX_VERSION "0.2.1"
+#define LANGX_VERSION "0.2.2"
+#define LANGX_VERSION_CODE 10
 
 
 // FE:  function extend   函数的扩展内容

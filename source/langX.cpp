@@ -320,14 +320,14 @@ namespace langX {
 
 	int langXState::doFile(const char *filename)
 	{
-		if (filename == NULL)
+		if (filename == nullptr)
 		{
 			return -1;
 		}
 
 		logger->info("do file: %s", filename);
 		FILE *fp = fopen(filename, "r");
-		if (fp == NULL)
+		if (fp == nullptr)
 		{
 			curThread()->throwException(newFileNotFoundException(filename)->addRef());
 			return -1;

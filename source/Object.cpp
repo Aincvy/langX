@@ -105,6 +105,8 @@ namespace langX {
 		nodeLink->backAfterExec = false;
 		nodeLink->flag = false;
 		nodeLink->next = nullptr;
+		nodeLink->ptr_u = nullptr;
+		nodeLink->tryEnv = nullptr;
 		if (previous != nullptr) {
 			previous->next = nodeLink;
 		}
@@ -129,7 +131,7 @@ namespace langX {
 			free(nodeLink->ptr_u);
 			nodeLink->ptr_u = NULL;
 		}
-		nodeLink->tryEnv = NULL;
+		nodeLink->tryEnv = nullptr;
 		free(nodeLink);
 	}
 

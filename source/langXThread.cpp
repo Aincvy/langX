@@ -70,7 +70,7 @@ void freeEnv(langX::Environment **env) {
 namespace langX {
 	void  gTryCatchCB(langXObjectRef *obj) {
 		Function *func = obj->getFunction("printStackTrace");
-		if (func != NULL)
+		if (func != nullptr)
 		{
 			if (func->is3rd())
 			{
@@ -101,6 +101,9 @@ namespace langX {
 		this->m_thread_env->setParent(nullptr);
 		this->m_thread_env->setClose(false);
         this->m_current_env = this->m_thread_env;
+
+        this->currentExecute = this->executeRoot = nullptr;
+
 	}
 
 	langXThread::~langXThread()
@@ -331,7 +334,7 @@ namespace langX {
 		this->m_thrown_obj = obj;
 
 		// 暂存下 正在执行的节点
-		if (this->currentExecute != NULL)
+		if (this->currentExecute != nullptr)
 		{
 			this->m_thrown_exec_node = this->currentExecute->node;
 		}
@@ -340,14 +343,14 @@ namespace langX {
 		NodeLink *nodeLink = nullptr;
 		do {
 			nodeLink = this->currentExecute;
-			if (nodeLink == NULL || nodeLink->tryEnv != NULL) {
+			if (nodeLink == nullptr || nodeLink->tryEnv != nullptr) {
 				break;
 			}
 
 			this->endExecute();
 		} while (true);
 
-		if (nodeLink == NULL) {
+		if (nodeLink == nullptr) {
 			// 没有找到一个try 节点
 			gTryCatchCB(this->m_thrown_obj);
 			exit(1);      // 当前线程没主动进行 try-catch 强制退出
