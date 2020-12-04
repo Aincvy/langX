@@ -27,6 +27,19 @@
 
 namespace langX {
 
+
+    //  部分函数的声明
+
+    // 执行字符串的内部函数
+    Object* __execStringInnerFunc(langXThread *thread, Object *stringObj, const char* funcName, XArgsList *args, const char * remark);
+
+    // 执行 类的函数调用
+    void __realExecCLAXX_FUNC_CALL(langXThread *thread, Node *n, Object* object, const char* funcName, XArgsList *args, const char *remark);
+
+
+
+    // 部分函数的实现
+
     // 根据数组信息获得结果， 返回的结果为一个 nullptr 或者复制好的结果
     Object *getValueFromArrayInfo(ArrayInfo *arrayInfo, NodeLink *nodeLink, langXThread *thread) {
         if (nodeLink->index == 0) {
@@ -1032,21 +1045,62 @@ namespace langX {
         Node *n = nodeLink->node;
         auto oprObj = n->opr_obj;
         auto objNode = oprObj->op[0];
-        
+        auto argsNode = oprObj->op[1];
+
+        // 检测 obj 节点是否是一个 CLAXX_MEMBER 节点
+        // 如果该节点是的话， 则说明是一个类的函数调用， 则使用不一样的处理方法
+        auto isClassFuncCall = objNode->opr_obj != nullptr && objNode->opr_obj->opr == CLAXX_MEMBER;
+
         if (nodeLink->index == 0) {
             // 对参数的值进行运算
-            doSubNodes(n);
+            if (isClassFuncCall) {
+                // 类的函数调用
+
+                // 执行节点， 以获取类对象
+                doSubNodes(objNode);
+
+                // 执行参数节点
+                if (argsNode != nullptr) {
+                    thread->beginExecute(argsNode, true);
+                }
+            } else {
+                // 常规的函数调用
+                doSubNodes(n);
+            }
             nodeLink->index = 1;
             return;
         }
 
-        // logger->debug("start run real function.");
-
+        // 备注和 参数列表
         std::string remark = fileInfoString(n->fileinfo);
-        XArgsList *args = convertArgsList(oprObj->op[1]);
-        auto funcObj = objNode->value;
+        XArgsList *args = convertArgsList(argsNode);
 
+        // 获取函数， 以及执行其他类型的函数
+        auto funcObj = objNode->value;
+        do {
+            if (isClassFuncCall) {
+                // 类的函数调用， 把 funcObj 调整成类函数
+                // 目前 funcObj 的值应该是一个 nullptr 。。
+
+                // 这是一个对象节点
+                auto tmpObj = objNode->opr_obj->op[0]->value;
+                // 函数的名字
+                auto funcName = objNode->opr_obj->op[1]->var_obj->name;
+
+                __realExecCLAXX_FUNC_CALL(thread, n, tmpObj, funcName, args, remark.c_str());
+
+                if (funcObj != nullptr) {
+                    //
+                    logger->error("in here, funcObj should be nullptr ..  ");
+                    funcObj = nullptr;
+                }
+            }
+
+        } while (false);
+
+        // 执行函数
         if (funcObj != nullptr) {
+
             if (funcObj->getType() == FUNCTION) {
                 auto *f = (FunctionRef *) funcObj;
 
@@ -1068,9 +1122,12 @@ namespace langX {
                 n->value = call(n1Str->getValue(), args, str.c_str());
 
             }
+
         } else {
-            // function not found ..
-            thread->throwException(newFunctionNotFoundException("[don't know function name ...]"));
+            if (!isClassFuncCall) {
+                // function not found ..
+                thread->throwException(newFunctionNotFoundException("[don't know function name ...]"));
+            }
         }
 
         doSuffixOperationArgs(args);
@@ -1120,25 +1177,31 @@ namespace langX {
 
 
     // 执行字符串的内部函数
-    void __execStringInnerFunc(Node *n, Node *n1, NodeLink *nodeLink, langXThread *thread) {
-        // 从语法解析文件可知 此节点是一个函数调用节点
-        Node *n2 = n->opr_obj->op[1];
-        XArgsList *args = (XArgsList *) n2->opr_obj->op[1]->ptr_u;
-        if (nodeLink->index == 1) {
-            nodeLink->index = 2;
-            if (args) {
-                for (int i = 0; i < args->index; i++) {
-                    if (args->args[i] == NULL) {
-                        continue;
-                    }
+    Object* __execStringInnerFunc(langXThread *thread, Object *stringObj, const char* funcName, XArgsList *args, const char * remark) {
+        auto stringClass = getState()->getNameSpace("langX.extend")->getClass("String");
+        auto func = stringClass->getFunction(funcName);
+        if (func != nullptr) {
+            // 处理下参数
+            FunctionRef ref(func);
+            ref.setObj(nullptr);
 
-                    thread->beginExecute(args->args[i], true);
-                }
-                return;
+            auto len = 1 + args->index;
+            Object *realArgs[len];
+            realArgs[0] = stringObj;
+            for (int i = 0; i < args->index; ++i) {
+                realArgs[i + 1] = args->args[i]->value;
             }
+
+            return ref.call(realArgs, len, remark);
+
+        } else {
+            // 未找到函数， 丢个异常
+            char tmp[DEFAULT_MIN_CHAR_BUFF_SIZE];
+            sprintf(tmp, "no function %s for String", funcName);
+            thread->throwException(newFunctionNotFoundException(tmp));
         }
-        //  上面的写法是为了确保 无论如何到这个地方 index都是2
-        n->value = callInnerFunc(n1->value, n2);
+
+        return nullptr;
     }
 
 
@@ -1146,7 +1209,6 @@ namespace langX {
         Node *n = nodeLink->node;
         Node *objNode = n->opr_obj->op[0];
         if (nodeLink->index == 0) {
-//            thread->beginExecute(objNode, true);
             doSubNodes(n);
             nodeLink->index = 1;
             return;
@@ -1159,20 +1221,10 @@ namespace langX {
                     break;
                 }
 
-                if (objNode->value->getType() == STRING) {
-                    __execStringInnerFunc(n, objNode, nodeLink, thread);
-                    break;
-                }
-
                 if (objNode->value->getType() != OBJECT) {
                     thread->throwException(newTypeErrorException("left value is not class object !")->addRef());
                     break;
                 }
-
-                // 2017年12月3日   首次执行到这里的时候 把当前object的环境丢进去
-                auto objectRef = (langXObjectRef *) objNode->value;
-                Environment *env = objectRef->getRefObject()->getObjectEnvironment();
-                thread->newEnvByBridge(env);
 
                 // 根据语法解析文件可知， 第二个节点为 函数名， 第三个节点为 参数节点
                 auto oprObj = n->opr_obj;
@@ -1180,18 +1232,11 @@ namespace langX {
                 auto argsNode = oprObj->op[2];
                 auto funcName = funcNameNode->var_obj->name;
 
-                auto func = objectRef->getFunction(funcName);
 
-                if (func == nullptr) {
-                    thread->throwException(newNoClassFunctionException(funcName));
-                    break;
-                }
-
-                // call func ..
                 std::string remark = fileInfoString(n->fileinfo);
                 auto args = convertArgsList(argsNode);
 
-                n->value = callFunc(func, args, remark.c_str());
+                __realExecCLAXX_FUNC_CALL(thread, n, objNode->value, funcName, args, remark.c_str());
 
             } while (false);
         }
@@ -1199,6 +1244,27 @@ namespace langX {
         thread->backEnv();
         freeSubNodes(n);
         nodeLink->backAfterExec = true;
+    }
+
+    void __realExecCLAXX_FUNC_CALL(langXThread *thread, Node *n, Object* object, const char* funcName, XArgsList *args, const char *remark){
+        if (object->getType() == STRING) {
+            n->value = __execStringInnerFunc(thread, object, funcName, args, remark);
+            return;
+        }
+
+        // 2017年12月3日   首次执行到这里的时候 把当前object的环境丢进去
+        auto objectRef = (langXObjectRef *) object;
+        Environment *env = objectRef->getRefObject()->getObjectEnvironment();
+        thread->newEnvByBridge(env);
+
+        auto func = objectRef->getFunction(funcName);
+        if (func == nullptr) {
+            thread->throwException(newNoClassFunctionException(funcName));
+            return;
+        }
+
+        // call func ..
+        n->value = callFunc(func, args, remark);
     }
 
     void __execRESTRICT(NodeLink *nodeLink, langXThread *thread) {

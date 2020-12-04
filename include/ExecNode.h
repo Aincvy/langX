@@ -24,5 +24,4 @@ namespace langX {
      */
     ArgsList* convertArgsList(Node *node);
 
-
 }

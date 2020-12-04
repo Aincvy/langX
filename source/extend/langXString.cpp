@@ -186,7 +186,7 @@ namespace langX{
 
             auto b = args.args[1];
             auto c = args.args[2];
-            if (b->getType() == STRING && c->getType() == STRING) {
+            if (b && c && b->getType() == STRING && c->getType() == STRING) {
                 // 都是字符串
                 auto str1 = (String*)b;
                 auto str2 = (String*)c;

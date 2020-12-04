@@ -13,10 +13,10 @@ a = str.replaceFirst("qasd", "2");
 print("replaceFirst: " + a + "\n");
 
 a = str.subString(5);
-print("subString: " + a + "\n");
+print("subString 5: " + a + "\n");
 
 a = str.subString(5,3);
-print("subString: " + a + "\n");
+print("subString 5,3: " + a + "\n");
 
 a = str.split(",");
 print("split length: " + a.length + "\n");
