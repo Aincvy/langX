@@ -6,6 +6,7 @@
 #include "Utils.h"
 
 namespace langX {
+
 	String::String(const char *v)
 	{
 		this->m_value = std::string(v);

@@ -51,10 +51,9 @@
 %type <node> restrict_stmt assign_stmt number_change_assign_stmt arithmetic_stmt self_inc_dec_stmt
 
 
-
 /* 优先级是从低到高 */
-%nonassoc IFX
-%nonassoc ELSE
+%nonassoc KEY_IF
+%nonassoc KEY_ELSE
 
 %left ',' PIPELINE_OP
 %right '=' ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ
@@ -71,9 +70,6 @@
 %right '!' '~' INC_OP_BACK
 %left '(' ')' '[' ']' '.' INC_OP DEC_OP
 %left FUNC_OP
-%nonassoc PRIORITY3
-%nonassoc PRIORITY2
-%nonassoc PRIORITY1
 %nonassoc UMINUS
 
 %glr-parser
@@ -207,7 +203,7 @@ static_member_stmt
 // 函数声明语句
 func_declare_stmt
 	: func_name_types FUNC_OP code_block            { $$ = opr(FUNC_OP,3, $1, NULL, $3); }     // 和下面的节点保持对齐
-  | func_name_types FUNC_OP func_param_list code_block            { $$ = opr(FUNC_OP, 3, $1, $3, $4); }
+    | func_name_types FUNC_OP func_param_list code_block            { $$ = opr(FUNC_OP, 3, $1, $3, $4); }
 	;
 
 func_name_types
@@ -227,9 +223,9 @@ lambda_stmt
 	;
 
 lambda_args_stmt
-  : '(' ')'          { $$ = NULL; }
-  | '(' multiple_id_expr ')'  { $$ = $2; }
-  | multiple_id_expr          { $$ = $1; }
+    : '(' ')'          { $$ = NULL; }
+    | '(' multiple_id_expr ')'  { $$ = $2; }
+    | multiple_id_expr          { $$ = $1; }
 	;
 
 // 变量声明语句
@@ -239,14 +235,14 @@ var_declare_stmt
 	;
 
 var_prefix
-  : KEY_CONST    { $$ = yytokentype::KEY_CONST; }
-  | KEY_LOCAL    { $$ = yytokentype::KEY_LOCAL; }
-  ;
+    : KEY_CONST    { $$ = yytokentype::KEY_CONST; }
+    | KEY_LOCAL    { $$ = yytokentype::KEY_LOCAL; }
+    ;
 
 _elements_var_declare_stmt
-  : element_var_declare_stmt         { $$ = opr(OPR_NODE_LIST, 1 , $1); }
-  | _elements_var_declare_stmt ',' element_var_declare_stmt  { $$ = opr(OPR_NODE_LIST, 2, $1, $3); }
-  ;
+    : element_var_declare_stmt         { $$ = opr(OPR_NODE_LIST, 1 , $1); }
+    | _elements_var_declare_stmt ',' element_var_declare_stmt  { $$ = opr(OPR_NODE_LIST, 2, $1, $3); }
+    ;
 
 element_var_declare_stmt
 	: id_expr							{ $$ = $1; }
@@ -266,31 +262,31 @@ selection_stmt
 	;
 
 if_stmt
-  : single_if_stmt        { $$ = $1; }
-  | single_if_stmt else_stmt { $$ = opr(OPR_IF_ELSE, 2, $1, $2); }   // IF-ELSE
-  ;
+    : single_if_stmt        { $$ = $1; }
+    | single_if_stmt else_stmt { $$ = opr(OPR_IF_ELSE, 2, $1, $2); }   // IF-ELSE
+    ;
 
 single_if_stmt
-  : KEY_IF '(' logic_stmt ')' code_block { $$ = opr(KEY_IF ,2,$3,$5) ; }
-  ;
+    : KEY_IF '(' logic_stmt ')' code_block { $$ = opr(KEY_IF ,2,$3,$5) ; }
+    ;
 
 else_stmt
-  : else_if_stmts single_else_stmt    { $$ =  opr(OPR_IF_ELSE, 2, $1, $2); }
-  | single_else_stmt        { $$ = $1; }
-  ;
+    : else_if_stmts single_else_stmt    { $$ =  opr(OPR_IF_ELSE, 2, $1, $2); }
+    | single_else_stmt        { $$ = $1; }
+    ;
 
 else_if_stmts
-  : else_if_stmt        { $$ = opr(OPR_IF_ELSE, 2, $1, NULL); }
-  | else_if_stmts else_if_stmt    { $$ =  opr(OPR_IF_ELSE, 2, $1, $2); }
-  ;
+    : else_if_stmt        { $$ = opr(OPR_IF_ELSE, 2, $1, NULL); }
+    | else_if_stmts else_if_stmt    { $$ =  opr(OPR_IF_ELSE, 2, $1, $2); }
+    ;
 
 else_if_stmt
-  : KEY_ELSE single_if_stmt   { $$ = $2; }   // 使用2个长度的子节点表示 else if  和下面的单个else 区分
-  ;
+    : KEY_ELSE single_if_stmt   { $$ = $2; }   // 使用2个长度的子节点表示 else if  和下面的单个else 区分
+    ;
 
 single_else_stmt
-  : KEY_ELSE code_block     { $$ = opr( KEY_ELSE, 1, $2); }
-  ;
+    : KEY_ELSE code_block     { $$ = opr( KEY_ELSE, 1, $2); }
+    ;
 
 case_stmt_list
 	: case_stmt            { $$ = opr(CASE_LIST , 1 ,$1 ); }
@@ -308,15 +304,15 @@ loop_stmt
 	;
 
 for_logic_stmt
-  :       { $$ = intNode(1);  }    // true
-  | logic_stmt    { $$ = $1; }
-  ;
+    :       { $$ = intNode(1);  }    // true
+    | logic_stmt    { $$ = $1; }
+    ;
 
 for_1_stmt_list
-  :      { $$ = NULL ; }
-  | for_1_stmt    { $$ = $1; }
-  | for_1_stmt_list ',' for_1_stmt    { $$ = opr(OPR_NODE_LIST, 2, $1, $3); }
-  ;
+    :      { $$ = NULL ; }
+    | for_1_stmt    { $$ = $1; }
+    | for_1_stmt_list ',' for_1_stmt    { $$ = opr(OPR_NODE_LIST, 2, $1, $3); }
+    ;
 
 //  for 括号内的东西
 for_1_stmt
@@ -333,19 +329,19 @@ for_3_stmt_list
 
 //  for 括号里面的第三段
 for_3_stmt
-  : assign_stmt         { $$ = $1; }
-  | self_inc_dec_stmt   { $$ = $1; }
-  ;
+    : assign_stmt         { $$ = $1; }
+    | self_inc_dec_stmt   { $$ = $1; }
+    ;
 
 //  简单语句
 simple_stmt
-  : simple_stmt_types ';'   { $$ = $1; }
-  ;
+    : simple_stmt_types ';'   { $$ = $1; }
+    ;
 
 simple_stmt_types
 	: self_inc_dec_stmt { $$ = $1; }
 	| assign_stmt   { $$ = $1; }
-	| call_statement  %prec PRIORITY1 { $$ = $1; }
+	| call_statement { $$ = $1; }
 	| delete_expr    { $$ = $1; }
 	| interrupt_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
@@ -369,8 +365,8 @@ interrupt_stmt
 
 //  函数调用
 call_statement
-	: common_values_expr args_list_with_parentheses %prec PRIORITY3 { $$ = opr(FUNC_CALL, 2, $1, $2); }
-    | call_statement '.' id_expr args_list_with_parentheses  %prec PRIORITY2 { $$ = opr(CLAXX_FUNC_CALL, 3, $1, $3, $4); }
+	: common_values_expr args_list_with_parentheses { $$ = opr(FUNC_CALL, 2, $1, $2); }
+    | call_statement '.' id_expr args_list_with_parentheses  { $$ = opr(CLAXX_FUNC_CALL, 3, $1, $3, $4); }
 	;
 
 //  运算语句

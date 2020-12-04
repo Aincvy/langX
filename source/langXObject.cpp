@@ -298,7 +298,7 @@ namespace langX {
 	Object * langXObject::callFunction(const char *name, Object* args[], int len, const char * remark)
 	{
 		Function * func = getFunction(name);
-		if (func == NULL)
+		if (func == nullptr)
 		{
 			return NULL;
 		}

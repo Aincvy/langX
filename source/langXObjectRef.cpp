@@ -73,7 +73,7 @@ namespace langX {
 	{
 		if (m_object_ref == nullptr)
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		return this->m_object_ref->callFunction(name, args, len, remark);

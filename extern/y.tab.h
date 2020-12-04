@@ -117,14 +117,9 @@ extern int yydebug;
     NE_OP = 323,                   /* NE_OP  */
     AND_OP = 324,                  /* AND_OP  */
     OR_OP = 325,                   /* OR_OP  */
-    IFX = 326,                     /* IFX  */
-    ELSE = 327,                    /* ELSE  */
-    PIPELINE_OP = 328,             /* PIPELINE_OP  */
-    INC_OP_BACK = 329,             /* INC_OP_BACK  */
-    PRIORITY3 = 330,               /* PRIORITY3  */
-    PRIORITY2 = 331,               /* PRIORITY2  */
-    PRIORITY1 = 332,               /* PRIORITY1  */
-    UMINUS = 333                   /* UMINUS  */
+    PIPELINE_OP = 326,             /* PIPELINE_OP  */
+    INC_OP_BACK = 327,             /* INC_OP_BACK  */
+    UMINUS = 328                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -142,7 +137,7 @@ union YYSTYPE
  XParamsList* params; /* params value */
  XArgsList *args;    /* args value */
 
-#line 146 "y.tab.h"
+#line 141 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

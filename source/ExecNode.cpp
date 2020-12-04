@@ -139,7 +139,7 @@ namespace langX {
             env->putObject(name, val);
         } else {
             if (obj->getType() != val->getType()) {
-                logger->error("[Fatal] setValueToEnv %s left type not equal right." , name);
+                logger->error("[Fatal] setValueToEnv %s left type not equal right.", name);
                 return;
             }
 
@@ -438,7 +438,7 @@ namespace langX {
      * @param argsList
      * @param node
      */
-    void preLoopAssign(XArgsList *argsList, Node *node){
+    void preLoopAssign(XArgsList *argsList, Node *node) {
 
         if (!node) {
             // 也许是无参数的调用
@@ -473,9 +473,9 @@ namespace langX {
      * @param node
      * @return
      */
-    XArgsList *convertArgsList(Node *node){
+    XArgsList *convertArgsList(Node *node) {
         // 申请内存
-        auto argsList= (XArgsList*) calloc(1, sizeof(XArgsList));
+        auto argsList = (XArgsList *) calloc(1, sizeof(XArgsList));
         argsList->index = 0;
 
         // 前缀遍历， 赋值
@@ -484,7 +484,6 @@ namespace langX {
 
         return argsList;
     }
-
 
 
     // 释放 有 multipleId 节点转换出来的 char* 类型数组
@@ -676,7 +675,7 @@ namespace langX {
     }
 
     // 执行自增和自减语句
-    void __execINC_DEC(NodeLink *nodeLink, langXThread *thread){
+    void __execINC_DEC(NodeLink *nodeLink, langXThread *thread) {
         //
         auto node = nodeLink->node;
 
@@ -689,12 +688,12 @@ namespace langX {
 
         auto oprObj = node->opr_obj;
 
-        auto n1= oprObj->op[0];
-        auto n2= oprObj->op[1];
+        auto n1 = oprObj->op[0];
+        auto n2 = oprObj->op[1];
         // 操作符的 int 值
         int oprNumber;
         // 要变化的值的对象
-        Object* number;
+        Object *number;
         // 是否是前缀运算符
         bool prefix = false;
 
@@ -712,7 +711,8 @@ namespace langX {
         }
 
         if (number == nullptr) {
-            getState()->curThread()->throwException(newArithmeticException("value is null on opr '++'/'--'!")->addRef());
+            getState()->curThread()->throwException(
+                    newArithmeticException("value is null on opr '++'/'--'!")->addRef());
             freeSubNodes(node);
             nodeLink->backAfterExec = true;
             return;
@@ -722,7 +722,7 @@ namespace langX {
             // 这里是一个对象， 尝试调用方法
             // todo 这里可能有一个调用顺序的bug， 前缀运算符可能这样直接调用， 但是后缀可能要具体时候再进行调用
             auto funcName = oprNumber == INC_OP ? "operator++" : "operator--";
-            auto ref = (langXObjectRef*) number;
+            auto ref = (langXObjectRef *) number;
             auto func = ref->getFunction(funcName);
             if (func) {
                 X3rdArgs _3rdArgs;
@@ -742,7 +742,7 @@ namespace langX {
             return;
         }
 
-        auto tmpValue = ((Number*)number)->getDoubleValue();
+        auto tmpValue = ((Number *) number)->getDoubleValue();
         if (oprNumber == INC_OP) {
 
             tmpValue += 1;
@@ -765,9 +765,9 @@ namespace langX {
     }
 
     // 开始一个新的 if 系列语句
-    void __execSTART_IF(NodeLink *nodeLink, langXThread *thread){
+    void __execSTART_IF(NodeLink *nodeLink, langXThread *thread) {
         // 开始新的执行
-        auto & status = thread->getStackTraceTopStatus();
+        auto &status = thread->getStackTraceTopStatus();
 
         if (nodeLink->index == 0) {
             nodeLink->index = 1;
@@ -783,13 +783,13 @@ namespace langX {
         }
 
         // 还原 step
-        status.stepIf -= min(status.stepIf, status.stepIf % 2 == 0 ? (short)3: (short)2);
+        status.stepIf -= min(status.stepIf, status.stepIf % 2 == 0 ? (short) 3 : (short) 2);
 
         nodeLink->backAfterExec = true;
     }
 
     // IF - LESE 语句
-    void __execIF_ELSE(NodeLink *nodeLink, langXThread *thread){
+    void __execIF_ELSE(NodeLink *nodeLink, langXThread *thread) {
         if (thread->getStackTraceTopStatus().stepIf % 2 == 1) {
             // 一个 if 分支都没有执行， 进行判断
             auto oprObj = nodeLink->node->opr_obj;
@@ -825,7 +825,7 @@ namespace langX {
     }
 
     // else 节点的执行情况
-    void __execELSE(NodeLink *nodeLink, langXThread *thread){
+    void __execELSE(NodeLink *nodeLink, langXThread *thread) {
         if (nodeLink->index == 0) {
             // 首次执行
             nodeLink->index = 1;
@@ -1015,7 +1015,7 @@ namespace langX {
     }
 
     // 计算参数列表
-    void __execARGS_LIST(NodeLink *nodeLink, langXThread *thread){
+    void __execARGS_LIST(NodeLink *nodeLink, langXThread *thread) {
         logger->debug("exec args list node");
         if (nodeLink->index == 0) {
             nodeLink->index = 1;
@@ -1030,40 +1030,35 @@ namespace langX {
     // 执行一个函数
     void __execFUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
-        logger->debug("start run args.");
-
+        auto oprObj = n->opr_obj;
+        auto objNode = oprObj->op[0];
+        
         if (nodeLink->index == 0) {
             // 对参数的值进行运算
-//            thread->beginExecute(n1, true);
             doSubNodes(n);
             nodeLink->index = 1;
             return;
         }
 
-        logger->debug("start run real function.");
-
-        auto oprObj = n->opr_obj;
-        Node *n1 = n->opr_obj->op[0];
-
-        // nodeLink->backAfterExec = false;     // 强制更新状态为执行结束后不释放节点， 因为函数执行需要2次
+        // logger->debug("start run real function.");
 
         std::string remark = fileInfoString(n->fileinfo);
         XArgsList *args = convertArgsList(oprObj->op[1]);
+        auto funcObj = objNode->value;
 
-
-        if (n1->value != nullptr) {
-            if (n1->value->getType() == FUNCTION) {
-                FunctionRef *f = (FunctionRef *) n1->value;
+        if (funcObj != nullptr) {
+            if (funcObj->getType() == FUNCTION) {
+                auto *f = (FunctionRef *) funcObj;
 
                 n->value = f->call(args, remark.c_str());
 
-            } else if (n1->value->getType() == STRING) {
+            } else if (funcObj->getType() == STRING) {
                 std::string str = "call function ";
-                String *n1Str = (String *) n1->value;
+                String *n1Str = (String *) funcObj;
                 str += n1Str->getValue();
                 str += " by var ";
-                if (n1->var_obj) {
-                    str += n1->var_obj->name;;
+                if (objNode->var_obj) {
+                    str += objNode->var_obj->name;;
                 } else {
                     str += " [array,do not know name]";
                 }
@@ -1073,28 +1068,13 @@ namespace langX {
                 n->value = call(n1Str->getValue(), args, str.c_str());
 
             }
+        } else {
+            // function not found ..
+            thread->throwException(newFunctionNotFoundException("[don't know function name ...]"));
         }
 
-//        if (flag) {
-//            char *name = n1->var_obj->name;
-//            NodeLink *putNodeLink = nullptr;
-//            if (nodeLink->ptr_u == nullptr) {
-//                // 第一次执行， 需要让函数确认所有的参数
-//                putNodeLink = newNodeLink(nullptr, n);
-//                nodeLink->ptr_u = putNodeLink;
-//                call(name, args, remark.c_str(), putNodeLink);
-//                return;
-//            } else {
-//                putNodeLink = (NodeLink *) nodeLink->ptr_u;
-//                nodeLink->ptr_u = nullptr;
-//            }
-//            n->value = call(name, args, remark.c_str(), putNodeLink);
-//            //printf("func %s exec end\n" , name);
-//        }
-
         doSuffixOperationArgs(args);
-        Allocator::free(n1->value);
-        n1->value = nullptr;
+        freeSubNodes(n);
         nodeLink->backAfterExec = true;
     }
 
@@ -1161,55 +1141,59 @@ namespace langX {
         n->value = callInnerFunc(n1->value, n2);
     }
 
+
     void __execCLAXX_FUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
-        Node *n1 = n->opr_obj->op[0];
+        Node *objNode = n->opr_obj->op[0];
         if (nodeLink->index == 0) {
-            thread->beginExecute(n1, true);
+//            thread->beginExecute(objNode, true);
+            doSubNodes(n);
             nodeLink->index = 1;
             return;
-        }
+        } else if (nodeLink->index == 1) {
+            // 子节点都已经成功执行结束了
+            do {
+                if (objNode->value == nullptr) {
+                    thread->throwException(
+                            newTypeErrorException("left value is not class object!It's a null value.")->addRef());
+                    break;
+                }
 
-        if (n1->value == nullptr) {
-            thread->throwException(
-                    newTypeErrorException("left value is not class object!It's a null value.")->addRef());
-            freeSubNodes(n);
-            return;
-        }
+                if (objNode->value->getType() == STRING) {
+                    __execStringInnerFunc(n, objNode, nodeLink, thread);
+                    break;
+                }
 
+                if (objNode->value->getType() != OBJECT) {
+                    thread->throwException(newTypeErrorException("left value is not class object !")->addRef());
+                    break;
+                }
 
-        if (n1->value->getType() == STRING) {
-            __execStringInnerFunc(n, n1, nodeLink, thread);
-            return;
-        }
+                // 2017年12月3日   首次执行到这里的时候 把当前object的环境丢进去
+                auto objectRef = (langXObjectRef *) objNode->value;
+                Environment *env = objectRef->getRefObject()->getObjectEnvironment();
+                thread->newEnvByBridge(env);
 
-        if (n1->value->getType() != OBJECT) {
-            thread->throwException(newTypeErrorException("left value is not class object !")->addRef());
-            freeSubNodes(n);
-            return;
-        }
+                // 根据语法解析文件可知， 第二个节点为 函数名， 第三个节点为 参数节点
+                auto oprObj = n->opr_obj;
+                Node *funcNameNode = oprObj->op[1];
+                auto argsNode = oprObj->op[2];
+                auto funcName = funcNameNode->var_obj->name;
 
-        // 2017年12月3日   首次执行到这里的时候 把当前object的环境丢进去
-        if (!nodeLink->flag) {
-            nodeLink->flag = true;
+                auto func = objectRef->getFunction(funcName);
 
-            langXObjectRef *objectRef = (langXObjectRef *) n1->value;
-            Environment *env = objectRef->getRefObject()->getObjectEnvironment();
-            thread->newEnvByBridge(env);
-        }
+                if (func == nullptr) {
+                    thread->throwException(newNoClassFunctionException(funcName));
+                    break;
+                }
 
-        // 根据语法解析文件可知， 第二个节点为一个函数调用节点
-        Node *n2 = n->opr_obj->op[1];
-        if (nodeLink->index == 1) {
-            thread->beginExecute(n2, true);
-            nodeLink->index = 2;
-            return;
-        }
+                // call func ..
+                std::string remark = fileInfoString(n->fileinfo);
+                auto args = convertArgsList(argsNode);
 
-        if (n2->value != nullptr) {
-            n->value = n2->value->clone();
-        } else {
-            n->value = nullptr;
+                n->value = callFunc(func, args, remark.c_str());
+
+            } while (false);
         }
 
         thread->backEnv();
@@ -1519,7 +1503,7 @@ namespace langX {
      * @param nodeLink
      * @param thread
      */
-    void __execFUNC_OP(NodeLink *nodeLink, langXThread *thread){
+    void __execFUNC_OP(NodeLink *nodeLink, langXThread *thread) {
         // 当前节点只执行一遍就可以了 。。
         nodeLink->backAfterExec = true;
 
@@ -1536,7 +1520,7 @@ namespace langX {
         auto funcName = nameNode == nullptr ? nullptr : nameNode->var_obj->name;
 
         // 获取参数列表
-        ParamsList *paramsList = (ParamsList*) calloc(1, sizeof(ParamsList));
+        ParamsList *paramsList = (ParamsList *) calloc(1, sizeof(ParamsList));
         if (paramNode != nullptr) {
             // 存在参数列表
             int len;
@@ -1567,9 +1551,9 @@ namespace langX {
         auto currentEnv = thread->getCurrentEnv();
         auto oldFunc = currentEnv->getFunctionSelf(func->getName());
         // 如果在类环境里面 声明函数，则判断函数是否是父类得
-        bool checkFlag= true;
+        bool checkFlag = true;
         if (currentEnv->getType() == EnvironmentType::TClassBridgeEnv) {
-            auto clz = ((ClassBridgeEnv*) currentEnv)->getEnvClass();
+            auto clz = ((ClassBridgeEnv *) currentEnv)->getEnvClass();
             checkFlag = clz->hasFunction(funcName);    // 存在该函数就检测， 不存在就不检测
         }
 
@@ -1598,7 +1582,7 @@ namespace langX {
      * @param nodeLink
      * @param thread
      */
-    void __execCLASS_DECLARE(NodeLink *nodeLink, langXThread *thread){
+    void __execCLASS_DECLARE(NodeLink *nodeLink, langXThread *thread) {
         // 本节点只执行1次
         nodeLink->backAfterExec = true;
 
@@ -1614,7 +1598,7 @@ namespace langX {
         // 获取类名
         auto name = nameNode->var_obj->name;
         // 获取继承的类型
-        char** extends = nullptr;
+        char **extends = nullptr;
         // 继承的类有多少个
         int extendsLen = 0;
         if (suffixNode != nullptr) {
@@ -1632,7 +1616,7 @@ namespace langX {
             if (parentClz == nullptr) {
                 // throw exception..
                 char tmp[100] = {0};
-                sprintf(tmp, "Class %s not found." , parentName);
+                sprintf(tmp, "Class %s not found.", parentName);
                 thread->throwException(newClassNotFoundException(tmp)->addRef());
                 delete clzInfo;
                 return;
@@ -1681,7 +1665,7 @@ namespace langX {
      * @param object 变量值的引用
      * @param prefix 前缀
      */
-    void updateVariablePrefix(Object *object, int prefix){
+    void updateVariablePrefix(Object *object, int prefix) {
         // check prefix
         if (prefix == KEY_CONST) {
             object->setConst(true);
@@ -1696,7 +1680,7 @@ namespace langX {
      * @param node
      * @param thread
      */
-    void __execNodeVariableWork(Node *node, langXThread *thread){
+    void __execNodeVariableWork(Node *node, langXThread *thread) {
         // 变量名字
         auto varName = node->var_obj->name;
         auto varDeclarePrefix = thread->getVarDeclarePrefix();
@@ -1750,7 +1734,7 @@ namespace langX {
      * @param node
      * @param thread  执行的线程
      */
-    void __execNodeArrayElementWork(Node *node, NodeLink *nodeLink, langXThread *thread){
+    void __execNodeArrayElementWork(Node *node, NodeLink *nodeLink, langXThread *thread) {
         ArrayInfo *arrayInfo = node->arr_obj;
 
         auto varDeclarePrefix = thread->getVarDeclarePrefix();
@@ -1783,7 +1767,7 @@ namespace langX {
                 t->value = nullptr;
             }
 
-            XArray* array = Allocator::allocateArray(len);
+            XArray *array = Allocator::allocateArray(len);
             auto ref = array->addRef();
             ref->setEmergeEnv(thread->getCurrentEnv());
             updateVariablePrefix(ref, varDeclarePrefix);
@@ -2143,8 +2127,8 @@ namespace langX {
                 __execARGS_LIST(nodeLink, thread);
                 break;
             default:
-                nodeLink->backAfterExec= true;
-                logger->error("unknown opr: %d, jump." , node->opr_obj->opr);
+                nodeLink->backAfterExec = true;
+                logger->error("unknown opr: %d, jump.", node->opr_obj->opr);
                 break;
         }
     }
