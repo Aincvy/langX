@@ -1029,7 +1029,7 @@ namespace langX {
 
     // 计算参数列表
     void __execARGS_LIST(NodeLink *nodeLink, langXThread *thread) {
-        logger->debug("exec args list node");
+
         if (nodeLink->index == 0) {
             nodeLink->index = 1;
             doSubNodes(nodeLink->node);

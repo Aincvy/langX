@@ -353,7 +353,7 @@ namespace langX {
 		auto b = this->m_script_env_map.find(tmp);
 		if (b == this->m_script_env_map.end())
 		{
-			ScriptEnvironment * env = new ScriptEnvironment(tmp);
+			auto env = new ScriptEnvironment(tmp);
 			env->setParent(this->m_global_env);
 			this->m_script_env_map[tmp] = env;
 			newScriptEnv(env);

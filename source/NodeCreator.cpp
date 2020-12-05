@@ -19,21 +19,25 @@
 #include "../include/NullObject.h"
 #include "../include/StringType.h"
 #include "../extern/y.tab.h"
-#include "../include/langXThread.h"
 #include "../include/LogManager.h"
 #include "../include/RegObjects.h"
 #include "../include/langXCommon.h"
+#include "langXThread.h"
 
 
 using namespace langX;
+
+// 获取当前解析的是第几行
 extern int getParseLineNo();
+// lex 的 文件结束 工作
+extern void lexEOFWork();
 
 
-static langXState* state = NULL;
+static langXState* state = nullptr;
 
 void initLangX(int argc, char *argv[])
 {
-	if (state == NULL)
+	if (state == nullptr)
 	{
 		state = new langXState();
 		state->setStartArg(argc, argv);
@@ -973,6 +977,11 @@ void yyParseStopped()
 	state->setYYParsing(false);
 }
 
+void endOfFileFlag() {
+    state->curThread()->getStackTraceTopStatus().endOfFile = true;
+}
+
+
 void execNodeButLimit(XNode *n, XNode *limit) {
 	langX::__execNode(n, limit);
 }
@@ -1000,5 +1009,15 @@ void execAndFreeNode(XNode *n) {
 	}
 
 	freeNode(n);
+
+	// 判断文件是否结束了
+	auto & status = thread->getStackTraceTopStatus();
+    if (status.endOfFile) {
+        status.endOfFile = false;
+
+        lexEOFWork();
+    }
+
 }
+
 

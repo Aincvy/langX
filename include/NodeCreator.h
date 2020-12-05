@@ -93,7 +93,7 @@ extern "C" {
 
 	void popStateFrame();
 
-	// 当lex 碰到文件结束符的时候应该调用这个方法
+	// 真正处理文件结束的工作
 	void fileEOF();
 
 	const char* getParsingFilename();
@@ -103,6 +103,9 @@ extern "C" {
 
 	// yy 解析停止了 
 	void yyParseStopped();
+
+	// lex 碰到一个文件结束符
+    void endOfFileFlag();
 }
 
 langX::Object* getValue(const char*);

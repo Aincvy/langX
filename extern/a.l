@@ -33,6 +33,9 @@ void pushBuffer(FILE *fp);
 // 获得当前是在解析第几行
 int getParseLineNo();
 
+// lex 中的 文件结束的内容
+void lexEOFWork();
+
 %}
 
 %%
@@ -123,8 +126,13 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 [\n]   {count(); now_line++; }
 
 <<EOF>> {
+	// 这里只标记一下文件结束了， 在下一个节点执行结束的时候才会真正的结束文件
+	endOfFileFlag();
 
-    //printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
+	// 通知yacc 文件已经结束
+	// return YY_NULL;
+
+	//printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
 	bool flag = false;
 
 	if(fileDeep-- > 1){
@@ -145,10 +153,6 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 		flag = true;
 	}
 
-	//printf("end of file: %s\n" , getParsingFilename() );
-	popStateFrame();
-	fileEOF();
-
 	if(flag){
 		yyParseStopped();
 
@@ -159,6 +163,14 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 }
 
 %%
+
+void lexEOFWork(){
+
+	popStateFrame();
+	fileEOF();
+	
+}
+
 
 int getParseLineNo(){
 	return now_line ;

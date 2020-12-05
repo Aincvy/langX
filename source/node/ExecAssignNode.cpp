@@ -48,7 +48,6 @@ namespace langX{
                 }
             }
             else {
-                //printf("left not the CLAXX_MEMBER! \n");
                 getState()->curThread()->throwException(newException("left not the CLAXX_MEMBER!")->addRef());
                 freeSubNodes(n);
                 return;
@@ -61,7 +60,6 @@ namespace langX{
         else {
             if (left->type != NODE_VARIABLE)
             {
-                //printf("left not the NODE_VARIABLE\n");
                 getState()->curThread()->throwException(newTypeErrorException("left not the NODE_VARIABLE")->addRef());
                 freeSubNodes(n);
                 return;

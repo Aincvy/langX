@@ -60,6 +60,8 @@ namespace langX {
 
 		// 当前在获取命名空间的时候 ，如果命名空间不存在，是否需要创建 ？
 		bool createNameSpace = false;
+		// 当前解析的文件是否已经结束了
+		bool endOfFile = false;
 	};
 	
 

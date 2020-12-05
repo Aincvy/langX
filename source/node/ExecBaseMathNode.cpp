@@ -110,8 +110,6 @@ namespace langX {
             doSubNodes(n);
             nodeLink->index = 1;
         } else {
-            logger->debug("node 43");
-
             __realExec43(n);
             nodeLink->backAfterExec = true;
         }
@@ -177,7 +175,7 @@ namespace langX {
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL) {
+        if (n1->value == nullptr || n2->value == nullptr) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '*'!")->addRef());
             freeSubNodes(n);
             return;
@@ -345,7 +343,7 @@ namespace langX {
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL) {
+        if (n1->value == nullptr || n2->value == nullptr) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '^'!")->addRef());
             freeSubNodes(n);
             return;
@@ -358,7 +356,7 @@ namespace langX {
 
         int i1 = ((Number *) n1->value)->getIntValue();
         int i2 = ((Number *) n2->value)->getIntValue();
-        int i3 = i1 ^i2;
+        int i3 = i1 ^ i2;
 
         n->value = Allocator::allocateNumber(i3);
         freeSubNodes(n);
