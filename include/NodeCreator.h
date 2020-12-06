@@ -37,14 +37,10 @@ extern "C" {
 	XNode * number(double );
 	// 创建一个变量节点， 注意， 变量节点的名字 请使用 malloc等函数分配内存
 	XNode * var(char *);
-	// 创建一个变量节点， 变量名在不需要的时候 需要手动释放内存， 否则会造成泄露
-    XNode * varWithNameNeedFree(char *name);
 	// 创建一个 操作符节点
 	XNode * opr(int opr, int npos, ...);
 	// 创建一个后缀节点
 	XNode * sopr(int opr, int npos, ...);
-	// 创建一个类节点
-	XNode * classNode(char *name, char *parent, XNode * node , bool);
 	// 创建一个函数节点
 	XNode * func(char *, XParamsList *,XNode *);
 	// 创建一个 空引用节点
@@ -62,12 +58,6 @@ extern "C" {
 	XNode *objectArrayElementNode(XNode *, XNode *);
 	// 创建一个int类型的常量节点
 	XNode *intNode(int);
-	// 创建一个形参列表， 或者 追加一个参数到 列表中
-	XParamsList * params(XParamsList *, char *);
-	// xx
-	XParamsList * params2(char *,char *);
-	// 创建一个实参列表 ， 或者追加一个实参到列表中
-	XArgsList * xArgs(XArgsList *, XNode *);
 	// 预处理 switch 节点
 	void pretreatSwitch(XNode *);
 
@@ -105,8 +95,6 @@ extern "C" {
 langX::Object* getValue(const char*);
 
 langX::langXState * getState();
-
-void assignment(const char*, langX::Object * obj);
 
 // 把文件信息变一下
 std::string fileInfoString(const langX::NodeFileInfo & f);

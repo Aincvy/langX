@@ -209,7 +209,7 @@ func_declare_stmt
 
 func_name_types
     : id_expr  { $$ = $1; }
-    | '~' id_expr   { char buf[1024] = "~"; strcat(buf, $2->var_obj->name);  $$ = varWithNameNeedFree(strdup(buf)); }
+    | '~' id_expr   { char buf[1024] = "~"; strcat(buf, $2->var_obj->name);  $$ = var(strdup(buf)); }
     | OPERATOR_X__  { $$ = var($1); }
     ;
 

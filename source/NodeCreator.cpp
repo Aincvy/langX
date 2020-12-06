@@ -61,11 +61,6 @@ void closeLangX()
 	}
 }
 
-void assignment(const char *n, langX::Object * obj)
-{
-	state->curThread()->putObject(n, obj);
-}
-
 Object * getValue(const char *n)
 {
 	return state->curThread()->getObject(n);
@@ -248,10 +243,6 @@ XNode * var(char *name)
 	return node;
 }
 
-XNode * varWithNameNeedFree(char *name){
-    // todo  add impl
-    return var(name);
-}
 
 // 数组元素节点
 // 如果使用的变量， 则值放在 第三个参数lengthNode 上
@@ -336,10 +327,6 @@ XNode * sopr(int opr, int npos, ...)
 	}
 	va_end(ap);
 
-	//logger->debug("new opr node, opr is: %d\n" , opr);
-	//logger->debug("opr npos: %d\n", npos);
-	//logger->debug("node npos: %d\n", node->opr_obj->op_count);
-	//logger->debug("createOperatorNode: %p\n",node);
 	return node;
 }
 
@@ -366,38 +353,6 @@ XNode * xnull()
 	node->type = NODE_NULL;
 
 	return node;
-}
-
-XNode * classNode(char *name, char *parent, XNode * node, bool flag) {
-	ClassInfo *pclass = NULL;
-	if (parent != NULL)
-	{
-		pclass = getState()->getClass(parent);
-		if (pclass == NULL)
-		{
-			printf("error! cannot find class %s on extends!", parent);
-		}
-		free(parent);
-	}
-
-	ClassInfo *claxxInfo = new ClassInfo(name);
-	claxxInfo->setParent(pclass);
-	free(name);
-
-	if (node != NULL)
-	{
-		ClassBridgeEnv *env = claxxInfo->getClassEnv();
-		state->curThread()->newEnv(env);
-		__execNode(node, node);         // 立即处理掉这个节点，但是也仅仅只是处理到这个节点
-		state->curThread()->backEnv(false);
-	}
-
-	XNode * nodeC = newNode();
-	nodeC->type = NODE_CLASS;
-	nodeC->ptr_u = claxxInfo;
-	nodeC->state.classAuto = flag;
-
-	return nodeC;
 }
 
 // 根据名字调用一个函数
@@ -612,57 +567,6 @@ XNode * argsNode(XArgsList * args) {
 	return node;
 }
 
-XParamsList * params(XParamsList *args, char *name)
-{
-	XParamsList * list = NULL;
-	if (args == NULL)
-	{
-		list = (XParamsList*)calloc(1, sizeof(XParamsList));
-		list->index = 0;
-	}
-	else {
-		list = args;
-	}
-
-	// name 的内存是申请过的， 现在直接使用， 等不用的时候释放掉就OK了
-	//printf("第 %d 个参数，名字: %s\n",list->index,name);
-	list->args[list->index] = name;
-	list->index++;
-
-	return	list;
-}
-
-XParamsList * params2(char *name1, char *name2)
-{
-	XParamsList * list = (XParamsList*)calloc(1, sizeof(XParamsList));
-
-	// name 的内存是申请过的， 现在直接使用， 等不用的时候释放掉就OK了
-	//printf("第 %d 个参数，名字: %s\n",list->index,name);
-	list->args[list->index] = name1;
-	list->index++;
-	list->args[list->index] = name2;
-	list->index++;
-
-	return	list;
-}
-
-XArgsList * xArgs(XArgsList *args, XNode *node) {
-	XArgsList *list = NULL;
-	if (args == NULL)
-	{
-		list = (XArgsList*)calloc(1, sizeof(XArgsList));
-		list->index = 0;
-	}
-	else {
-		list = args;
-	}
-
-	list->args[list->index] = node;
-	list->index++;
-
-	return list;
-}
-
 // 预处理case list
 void pretreatCaseList(XNode *node, SwitchInfo *switchInfo) {
 	if (node == nullptr || node->type != NodeType::NODE_OPERATOR) {
@@ -822,6 +726,7 @@ void freeArrayInfo(ArrayInfo *arrayInfo){
 }
 
 void freeNode(XNode * node) {
+
 	if (node == nullptr)
 	{
 		return;
@@ -842,25 +747,20 @@ void freeNode(XNode * node) {
 	if (node->type == NODE_FUNCTION)
 	{
 		freeAllArgList(node);
-		//free(node);
-		//return;
 	}
 
-	if (node->var_obj != NULL)
+    // 根据类型释放不同内存的内容
+	if (node->type == NODE_VARIABLE)
 	{
-		if (node->var_obj->name != NULL)
+		if (node->var_obj->name != nullptr)
 		{
 			free(node->var_obj->name);
-            node->var_obj->name = NULL;
+            node->var_obj->name = nullptr;
 		}
 
 		free(node->var_obj);
-        node->var_obj = NULL;
-		free(node);
-	}
-
-	//printf("free node\node");
-	if (node->type == NODE_CONSTANT_NUMBER || node->type == NODE_CONSTANT_INTEGER )
+        node->var_obj = nullptr;
+	} else if (node->type == NODE_CONSTANT_NUMBER || node->type == NODE_CONSTANT_INTEGER )
 	{
 		if (node->con_obj->sValue != NULL)
 		{
@@ -868,7 +768,6 @@ void freeNode(XNode * node) {
             node->con_obj->sValue = NULL;
 		}
 		free(node->con_obj);
-		free(node);
 	}
 	else if (node->type == NODE_CONSTANT_STRING)
 	{
@@ -877,7 +776,6 @@ void freeNode(XNode * node) {
 			free(node->con_obj->sValue);
 		}
 		free(node->con_obj);
-		free(node);
 	}
 	else if (node->type == NODE_OPERATOR)
 	{
@@ -906,14 +804,14 @@ void freeNode(XNode * node) {
 
 		free(node->opr_obj->op);
 		free(node->opr_obj);
-		free(node);
 	}
 	else if (node->type == NODE_ARRAY_ELE)
 	{
 		freeArrayInfo(node->arr_obj);
         node->arr_obj = nullptr;
-		free(node);
 	}
+
+    free(node);
 }
 
 void popStateFrame()

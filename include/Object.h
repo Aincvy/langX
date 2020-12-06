@@ -111,11 +111,8 @@ namespace langX {
 
 	struct Variable
 	{
+	    // 变量的名字
 		char * name;
-		
-		// 07-23 注释  统一将节点的运算结果放在 Node.value 中
-		// 这个变量的值，   这个对象 在FreeNode 函数中并不会释放
-		//Object *obj;
 	};
 
 	enum NodeType
