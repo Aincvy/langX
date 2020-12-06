@@ -142,4 +142,32 @@ namespace langX {
     template short max<short >(short a, short b);
     template short min<short >(short a, short b);
 
+
+    int convertToAbsolutePath(const char * filename, const char *parsingFile, char *result){
+        //  把路径转换成绝对路径
+        if (filename[0] != '/') {
+            //  非绝对路径
+            char tmpBuf[1024];
+
+            if (realpath(parsingFile, tmpBuf)) {
+                // ok
+                std::string a(tmpBuf);
+                auto it = a.find_last_of('/');
+                if (it != std::string::npos) {
+                    // 找到了最后一个 /
+                    a = a.substr(0, it + 1);
+                    a += filename;
+                    sprintf(result, "%s", a.c_str());
+                    return 0;
+                }
+            }
+        } else {
+            //
+            sprintf(result, "%s", filename);
+            return 0;
+        }
+
+        return 1;
+    }
+
 }

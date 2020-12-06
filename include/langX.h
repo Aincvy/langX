@@ -171,4 +171,23 @@ namespace langX {
 		langXThreadMgr* m_thread_mgr;
 
 	};
+
+	/**
+	 * include 一个脚本
+	 * @param filename  文件路径
+	 */
+	void includeFile(const char *filename);
+
+	/**
+	 * require  一个脚本
+	 * @param filename   文件路径
+	 */
+    void requireFile(const char *filename);
+
+    /**
+     * require once 一个脚本
+     * @param filename   文件路径
+     */
+    void requireOnceFile(const char *filename);
+
 }

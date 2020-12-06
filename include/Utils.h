@@ -49,4 +49,14 @@ namespace langX {
     >
     T min(T a, T b);
 
+
+    /**
+     * 转换路径成  绝对路径
+     * @param filename  文件名
+     * @param parsingFile 当前 langX State正在执行的文件路径
+     * @param result   转换出来的结果的存放地方
+     * @return 1 表示失败  0表示成功
+     */
+    int convertToAbsolutePath(const char * filename, const char *parsingFile, char *result);
+
 }

@@ -4,25 +4,26 @@
 #include <iterator>
 #include <vector>
 #include <string>
-#include "../include/ClassInfo.h"
-#include "../include/Config.h"
-#include "../include/langX.h"
-#include "../include/Object.h"
-#include "../include/Number.h"
-#include "../include/Environment.h"
-#include "../include/Allocator.h"
-#include "../include/StackTrace.h"
-#include "../include/ExecNode.h"
-#include "../include/langXObject.h"
-#include "../include/langXObjectRef.h"
-#include "../include/NodeCreator.h"
-#include "../include/Exception.h"
-#include "../include/Function.h"
-#include "../include/XNameSpace.h"
-#include "../include/X3rdModule.h"
-#include "../include/langXThread.h"
-#include "../include/LogManager.h"
-#include "../include/langXrtlib.h"
+#include "ClassInfo.h"
+#include "Config.h"
+#include "langX.h"
+#include "Object.h"
+#include "Number.h"
+#include "Environment.h"
+#include "Allocator.h"
+#include "StackTrace.h"
+#include "ExecNode.h"
+#include "langXObject.h"
+#include "langXObjectRef.h"
+#include "NodeCreator.h"
+#include "Exception.h"
+#include "Function.h"
+#include "XNameSpace.h"
+#include "X3rdModule.h"
+#include "langXThread.h"
+#include "LogManager.h"
+#include "langXrtlib.h"
+#include "Utils.h"
 
 #ifdef WIN32
 //  win32 库
@@ -412,7 +413,7 @@ namespace langX {
 
 	int langXState::requireFile(const char *filename)
 	{
-		if (filename == NULL)
+		if (filename == nullptr)
 		{
 			return -1;
 		}
@@ -715,4 +716,28 @@ namespace langX {
 	{
 		return this->startArgValues;
 	}
+
+
+	void includeFile(const char *filename) {
+	    char result[1024] = { 0 };
+	    convertToAbsolutePath(filename, getParsingFilename(), result);
+
+		getState()->includeFile(result);
+	}
+
+    void requireFile(const char *filename){
+        char result[1024] = { 0 };
+        convertToAbsolutePath(filename, getParsingFilename(), result);
+
+        getState()->requireFile(result);
+	}
+
+    void requireOnceFile(const char *filename){
+        char result[1024] = { 0 };
+        convertToAbsolutePath(filename, getParsingFilename(), result);
+
+        getState()->require_onceFile(result);
+	}
+
+
 }

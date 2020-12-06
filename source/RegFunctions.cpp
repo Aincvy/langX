@@ -513,6 +513,72 @@ namespace langX {
 		return arr->addRef();
 	}
 
+	/**
+	 * langX 函数 include(file)  的实现
+	 * @param func
+	 * @param args
+	 * @return
+	 */
+    Object * langX_include(X3rdFunction *func, const X3rdArgs & args){
+        if (args.index <= 0) {
+            return nullptr;
+        }
+
+        for (int i = 0; i < args.index; ++i) {
+            auto tmp = args.args[i];
+            if (tmp && tmp->getType() == STRING) {
+                // 只 执行字符串格式的内容
+                includeFile(((String*)tmp)->getValue());
+            }
+        }
+
+        return nullptr;
+	}
+
+	/**
+	 * langX 函数 require(file)  的实现
+	 * @param func
+	 * @param args
+	 * @return
+	 */
+    Object * langX_require(X3rdFunction *func, const X3rdArgs & args){
+        if (args.index <= 0) {
+            return nullptr;
+        }
+
+        for (int i = 0; i < args.index; ++i) {
+            auto tmp = args.args[i];
+            if (tmp && tmp->getType() == STRING) {
+                // 只 执行字符串格式的内容
+                requireFile(((String*)tmp)->getValue());
+            }
+        }
+
+        return nullptr;
+    }
+
+    /**
+     * langX 函数 requireOnce(file)  的实现
+     * @param func
+     * @param args
+     * @return
+     */
+    Object * langX_requireOnce(X3rdFunction *func, const X3rdArgs & args){
+        if (args.index <= 0) {
+            return nullptr;
+        }
+
+        for (int i = 0; i < args.index; ++i) {
+            auto tmp = args.args[i];
+            if (tmp && tmp->getType() == STRING) {
+                // 只 执行字符串格式的内容
+                requireOnceFile(((String*)tmp)->getValue());
+            }
+        }
+
+        return nullptr;
+    }
+
 
 	void regFunctions(langXState *state)
 	{
@@ -541,9 +607,15 @@ namespace langX {
 		state->reg3rd("sy_argc", langX_get_start_arg_size);
 		state->reg3rd("sy_argv", langX_get_start_args);
 
+		// 文件相关的函数
+		state->reg3rd("include", langX_include);
+		state->reg3rd("require", langX_require);
+		state->reg3rd("requireOnce", langX_requireOnce);
+
 
 		// 字符串相关的函数
 		state->reg3rd("str_trim", langX_str_trim);
-
 	}
+
+
 }

@@ -3,6 +3,8 @@
 #include <string>
 #include <list>
 #include "Object.h"
+#include "langX.h"
+
 
 namespace langX {
 
@@ -280,7 +282,7 @@ namespace langX {
 		
 	};
 
-	// 类的桥接环境  
+    // 类的桥接环境
 	class ClassBridgeEnv : public Environment
 	{
 	public:

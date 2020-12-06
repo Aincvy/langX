@@ -69,9 +69,6 @@ void lexEOFWork();
 "continue" { count(); return KEY_CONTINUE; }
 "const" { count(); return KEY_CONST; }
 "local" { count(); return KEY_LOCAL; }
-"require" {count(); return KEY_REQUIRE;}
-"require_once" { count(); return KEY_REQUIRE_ONCE; }
-"include" { count(); return KEY_INCLUDE; }
 
 "=>"   {count();  return FUNC_OP; }
 "/>" {count(); return PIPELINE_OP; }
@@ -168,7 +165,7 @@ void lexEOFWork(){
 
 	popStateFrame();
 	fileEOF();
-	
+
 }
 
 

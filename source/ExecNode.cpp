@@ -1310,8 +1310,9 @@ namespace langX {
 
 
     // 包含其他文件
-    void __execINCLUDE(NodeLink *nodeLink) {
+    void __execINCLUDE(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
+
 
         char *tmp = n->opr_obj->op[0]->con_obj->sValue;
 
@@ -1319,33 +1320,17 @@ namespace langX {
 
         char tmpMsg[1024] = {0};
         sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
-        getState()->curThread()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
+        thread->getStackTrace().newFrame(nullptr, nullptr, tmpMsg);
 
-        //  把路径转换成绝对路径
-        if (filename[0] != '/') {
-            //  非绝对路径
-            char tmpBuf[1024];
-            const char *t1 = getState()->getParsingFile();
-            if (realpath(t1, tmpBuf)) {
-                // ok
-                std::string a(tmpBuf);
-                auto it = a.find_last_of('/');
-                if (it != std::string::npos) {
-                    // 找到了最后一个 /
-                    a = a.substr(0, it + 1);
-                    a += filename;
-                    free(filename);
-                    filename = strdup(a.c_str());
-                }
-            }
-        }
+        includeFile(filename);
+        free(filename);
 
-        getState()->includeFile(filename);
+        thread->getStackTrace().popFrame();
         nodeLink->backAfterExec = true;
     }
 
     // 执行 require 其他文件
-    void __execREQUIRE(NodeLink *nodeLink) {
+    void __execREQUIRE(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
 
         char *tmp = n->opr_obj->op[0]->con_obj->sValue;
@@ -1354,34 +1339,16 @@ namespace langX {
 
         char tmpMsg[1024] = {0};
         sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
-        getState()->curThread()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
+        thread->getStackTrace().newFrame(nullptr, nullptr, tmpMsg);
 
-        //  把路径转换成绝对路径
-        if (filename[0] != '/') {
-            //  非绝对路径
-            char tmpBuf[1024];
-            const char *t1 = getState()->getParsingFile();
-            if (realpath(t1, tmpBuf)) {
-                // ok
-                std::string a(tmpBuf);
-                auto it = a.find_last_of('/');
-                if (it != std::string::npos) {
-                    // 找到了最后一个 /
-                    a = a.substr(0, it + 1);
-                    a += filename;
-                    free(filename);
-                    filename = strdup(a.c_str());
-                }
-            }
-        }
+        requireFile(filename);
+        free(filename);
 
-        getState()->requireFile(filename);
-
+        thread->getStackTrace().popFrame();
         nodeLink->backAfterExec = true;
-        // it's ok ?
     }
 
-    void __execREQUIRE_ONCE(NodeLink *nodeLink) {
+    void __execREQUIRE_ONCE(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
 
         char *tmp = n->opr_obj->op[0]->con_obj->sValue;
@@ -1391,29 +1358,12 @@ namespace langX {
         // 未执行过的文件
         char tmpMsg[1024] = {0};
         sprintf(tmpMsg, "require file %s  %s", filename, fileInfoString(n->fileinfo).c_str());
-        getState()->curThread()->getStackTrace().newFrame(NULL, NULL, tmpMsg);
+        thread->getStackTrace().newFrame(nullptr, nullptr, tmpMsg);
 
-        //  把路径转换成绝对路径
-        if (filename[0] != '/') {
-            //  非绝对路径
-            char tmpBuf[1024];
-            if (realpath(getState()->getParsingFile(), tmpBuf)) {
-                // ok
-                std::string a(tmpBuf);
-                auto it = a.find_last_of('/');
-                if (it != std::string::npos) {
-                    // 找到了最后一个 /
-                    a = a.substr(0, it + 1);
-                    a += filename;
-                    free(filename);
-                    filename = strdup(a.c_str());
-                }
-            }
-        }
-
-        getState()->require_onceFile(filename);
-
+        requireOnceFile(filename);
         free(filename);
+
+        thread->getStackTrace().popFrame();
         nodeLink->backAfterExec = true;
     }
 
@@ -2144,13 +2094,13 @@ namespace langX {
                 __execSCOPE_FUNC_CALL(nodeLink, thread);
                 break;
             case KEY_REQUIRE:
-                __execREQUIRE(nodeLink);
+                __execREQUIRE(nodeLink, thread);
                 break;
             case KEY_REQUIRE_ONCE:
-                __execREQUIRE_ONCE(nodeLink);
+                __execREQUIRE_ONCE(nodeLink, thread);
                 break;
             case KEY_INCLUDE:
-                __execINCLUDE(nodeLink);
+                __execINCLUDE(nodeLink, thread);
                 break;
             case KEY_REF:
                 __execREF(nodeLink);
