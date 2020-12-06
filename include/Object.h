@@ -6,7 +6,7 @@
 
 /*
 *   创建时间：  2016-07-07
-*   作者： The World(world@aincvy.com)
+*   作者： Aincvy (aincvy@gmail.com)
 *
 *   文件描述：
 *   描述：     表示一个 langX 基础对象 
@@ -207,8 +207,6 @@ namespace langX {
 	{
 		// 数组的名字
 		char *name;
-		// 数组的索引
-		int index;
 		// 变量索引 . 如果变量索引节点存在， 则使用这个， 否则使用 index 
 		Node * indexNode;
 		// 对象节点， 运算这个节点可以获得一个数组对象
@@ -293,4 +291,12 @@ namespace langX {
 	void freeNodeLink(NodeLink *);
 
 	void x3rdArgsToArray(const X3rdArgs& args, XArray* arrayObjRef);
+
+    /**
+     * 判断参数是否是一个 nullptr 或者 NullObject
+     * @param obj
+     * @return  true: nullptr or NullObject
+     */
+    bool isNull(Object *obj);
+
 } 

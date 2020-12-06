@@ -145,4 +145,9 @@ namespace langX {
 		}
 	}
 
+    bool isNull(Object *obj) {
+        return obj == nullptr || obj->getType() == NULLOBJECT;
+    }
+
+
 }

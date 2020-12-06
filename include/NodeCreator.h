@@ -61,9 +61,9 @@ extern "C" {
 	// 创建一个节点， 节点内容为实参列表
 	XNode * argsNode(XArgsList *);
 	// 创建一个数组元素节点
-	XNode *arrayElementNode(char *, int , XNode *);
+	XNode *arrayElementNode(char *, XNode *);
 	// 创建一个数组元素节点
-	XNode *objectArrayElementNode(XNode *, int, XNode *);
+	XNode *objectArrayElementNode(XNode *, XNode *);
 	// 创建一个int类型的常量节点
 	XNode *intNode(int);
 	// 生成一个lamdba 表达式的节点

@@ -495,26 +495,7 @@ namespace langX {
 
 	void TryEnvironment::putObject(const std::string &name, Object *obj)
 	{
-		auto it = this->m_objects_map.find(name);
-
-		if (obj) {
-			obj = obj->clone();
-		}
-		else {
-			obj = Allocator::allocate(NULLOBJECT);
-		}
-		obj->setName(name);
-
-		if (it != this->m_objects_map.end())
-		{
-			// 删除 原来的值
-			Allocator::free(it->second);
-			// 替换新值
-			it->second = obj;
-		}
-		else {
-			this->m_objects_map[name] = obj;
-		}
+	    realPutObject(this, &m_objects_map, name, obj);
 	}
 
 	Object * TryEnvironment::getObject(const std::string &name)
@@ -1149,28 +1130,7 @@ namespace langX {
 
 	void ScriptEnvironment::putObject(const std::string &name, Object *obj)
 	{
-
-		// printf("putObject name: %s\n", name.c_str());
-		auto it = this->m_objects_map.find(name);
-
-		if (obj) {
-			obj = obj->clone();
-		}
-		else {
-			obj = Allocator::allocate(NULLOBJECT);
-		}
-		obj->setName(name);
-
-		if (it != this->m_objects_map.end())
-		{
-			// 删除 原来的值
-			Allocator::free(it->second);
-			// 替换新值
-			it->second = obj;
-		}
-		else {
-			this->m_objects_map[name] = obj;
-		}
+	    realPutObject(this, &m_objects_map, name, obj);
 	}
 
 	Object * ScriptEnvironment::getObject(const std::string &name)

@@ -105,7 +105,7 @@ namespace langX {
 		{
 			if (this->m_parent == nullptr)
 			{
-				logger->error("cannot find member %s!\n", name);
+				logger->error("set member error! cannot find member %s in class!\n", name);
 				return;
 			}
 

@@ -255,20 +255,19 @@ XNode * varWithNameNeedFree(char *name){
 
 // 数组元素节点
 // 如果使用的变量， 则值放在 第三个参数lengthNode 上
-XNode *arrayElementNode(char *name, int index, XNode * indexNode) {
+XNode *arrayElementNode(char *name,  XNode * indexNode) {
 	XNode * node = newNode();
 	node->arr_obj = (langX::ArrayInfo*) calloc(1, sizeof(langX::ArrayInfo) * 1);
 	node->type = NODE_ARRAY_ELE;
 
 	node->arr_obj->objNode = nullptr;
 	node->arr_obj->name = name;
-	node->arr_obj->index = index;
 	node->arr_obj->indexNode = indexNode;
 
 	return node;
 }
 
-XNode * objectArrayElementNode(XNode *objNode, int index, XNode *indexNode)
+XNode * objectArrayElementNode(XNode *objNode, XNode *indexNode)
 {
 	XNode * node = newNode();
 	node->arr_obj = (langX::ArrayInfo*) calloc(1, sizeof(langX::ArrayInfo) * 1);
@@ -276,7 +275,6 @@ XNode * objectArrayElementNode(XNode *objNode, int index, XNode *indexNode)
 
 	node->arr_obj->objNode = objNode;
 	node->arr_obj->name = nullptr;
-	node->arr_obj->index = index;
 	node->arr_obj->indexNode = indexNode;
 
 	return node;
@@ -857,98 +855,106 @@ void freeAllArgList(Node *n) {
 	}
 }
 
-void freeNode(XNode * n) {
-	if (n == nullptr)
+// 释放 数组元素的内存
+void freeArrayInfo(ArrayInfo *arrayInfo){
+    // 释放依赖
+    freeNode(arrayInfo->objNode);
+    freeNode(arrayInfo->indexNode);
+    free(arrayInfo);
+}
+
+void freeNode(XNode * node) {
+	if (node == nullptr)
 	{
 		return;
 	}
-	if (!n->freeOnExecuted)
+	if (!node->freeOnExecuted)
 	{
 		return;
 	}
 
 	// 释放值的内存
-	if (n->value != nullptr)
+	if (node->value != nullptr)
 	{
-		Allocator::free(n->value);
-		n->value = nullptr;
+		Allocator::free(node->value);
+        node->value = nullptr;
 	}
 
 	// 如果是一个函数节点， 还需要释放它的参数列表
-	if (n->type == NODE_FUNCTION)
+	if (node->type == NODE_FUNCTION)
 	{
-		freeAllArgList(n);
-		//free(n);
+		freeAllArgList(node);
+		//free(node);
 		//return;
 	}
 
-	if (n->var_obj != NULL)
+	if (node->var_obj != NULL)
 	{
-		if (n->var_obj->name != NULL)
+		if (node->var_obj->name != NULL)
 		{
-			free(n->var_obj->name);
-			n->var_obj->name = NULL;
+			free(node->var_obj->name);
+            node->var_obj->name = NULL;
 		}
 
-		free(n->var_obj);
-		n->var_obj = NULL;
-		free(n);
+		free(node->var_obj);
+        node->var_obj = NULL;
+		free(node);
 	}
 
-	//printf("free node\n");
-	if (n->type == NODE_CONSTANT_NUMBER || n->type == NODE_CONSTANT_INTEGER )
+	//printf("free node\node");
+	if (node->type == NODE_CONSTANT_NUMBER || node->type == NODE_CONSTANT_INTEGER )
 	{
-		if (n->con_obj->sValue != NULL)
+		if (node->con_obj->sValue != NULL)
 		{
-			free(n->con_obj->sValue);
-			n->con_obj->sValue = NULL;
+			free(node->con_obj->sValue);
+            node->con_obj->sValue = NULL;
 		}
-		free(n->con_obj);
-		free(n);
+		free(node->con_obj);
+		free(node);
 	}
-	else if (n->type == NODE_CONSTANT_STRING)
+	else if (node->type == NODE_CONSTANT_STRING)
 	{
-		if (n->con_obj->sValue != NULL)
+		if (node->con_obj->sValue != NULL)
 		{
-			free(n->con_obj->sValue);
+			free(node->con_obj->sValue);
 		}
-		free(n->con_obj);
-		free(n);
+		free(node->con_obj);
+		free(node);
 	}
-	else if (n->type == NODE_OPERATOR)
+	else if (node->type == NODE_OPERATOR)
 	{
-		if (n->opr_obj->opr == KEY_THIS)
+		if (node->opr_obj->opr == KEY_THIS)
 		{
-			if (n->var_obj != NULL)
+			if (node->var_obj != NULL)
 			{
-				free(n->var_obj);
-				n->var_obj = NULL;
+				free(node->var_obj);
+                node->var_obj = NULL;
 			}
 		}
-		else if (n->opr_obj->opr == KEY_SWITCH)
+		else if (node->opr_obj->opr == KEY_SWITCH)
 		{
-			SwitchInfo *switchInfo = (SwitchInfo *)n->ptr_u;
+			SwitchInfo *switchInfo = (SwitchInfo *)node->ptr_u;
 			if (switchInfo != NULL)
 			{
 				delete switchInfo;
-				n->ptr_u = NULL;
+                node->ptr_u = NULL;
 			}
 		}
 
-		for (size_t i = 0; i < n->opr_obj->op_count; i++)
+		for (size_t i = 0; i < node->opr_obj->op_count; i++)
 		{
-			freeNode(n->opr_obj->op[i]);
+			freeNode(node->opr_obj->op[i]);
 		}
 
-		free(n->opr_obj->op);
-		free(n->opr_obj);
-		free(n);
+		free(node->opr_obj->op);
+		free(node->opr_obj);
+		free(node);
 	}
-	else if (n->type == NODE_ARRAY_ELE)
+	else if (node->type == NODE_ARRAY_ELE)
 	{
-		free(n->arr_obj);
-		n->arr_obj = NULL;
-		free(n);
+		freeArrayInfo(node->arr_obj);
+        node->arr_obj = nullptr;
+		free(node);
 	}
 }
 

@@ -30,6 +30,7 @@
 
 %type <node> statement _extra_nothing con_ctl_stmt simple_stmt simple_stmt_types require_stmt interrupt_stmt new_expr null_expr delete_expr
 %type <node> func_declare_stmt out_declare_stmt var_declare_stmt element_var_declare_stmt _elements_var_declare_stmt class_declare_stmt namespace_declare_stmt
+%type <node> _var_declare_stmt_with_assign _var_declare_stmt_with_assign_list
 %type <node> call_statement assign_stmt_value_eq single_assign_stmt bool_param_expr try_stmt catch_block_stmt
 %type <node> id_expr bool_expr double_expr uminus_expr uminus_expr_values string_expr number_expr positive_number_expr int_expr
 %type <node> this_stmt array_ele_stmt static_member_stmt class_member_stmt
@@ -39,7 +40,7 @@
 %type <node> common_object_expr common_string_expr common_expr number_parentheses_stmt string_plus_stmt lambda_stmt
 %type <node> func_param_list func_name_types multiple_id_expr args_list args_list_with_parentheses lambda_args_stmt
 
-/* %type <sValue>       */
+
 %type <iValue> require_operators class_name_prefix var_prefix _symbol_compare symbol_change_assign self_inc_dec_operators _symbol_equals_not
 
 
@@ -231,7 +232,7 @@ lambda_args_stmt
 // 变量声明语句
 var_declare_stmt
 	: _elements_var_declare_stmt  { $$ = opr(VAR_DECLARE , 2, NULL, $1 ); }
-	| var_prefix _elements_var_declare_stmt { $$ = opr(VAR_DECLARE, 2, intNode($1), $2 ); }
+	| var_prefix _var_declare_stmt_with_assign_list { $$ = opr(VAR_DECLARE, 2, intNode($1), $2 ); }
 	;
 
 var_prefix
@@ -246,8 +247,19 @@ _elements_var_declare_stmt
 
 element_var_declare_stmt
 	: id_expr							{ $$ = $1; }
-	| id_expr '[' common_number_expr ']'		{ $$ = arrayElementNode($1->var_obj->name, -1, $3); }
+	| id_expr '[' common_number_expr ']'		{ $$ = arrayElementNode($1->var_obj->name, $3); }
 	;
+
+_var_declare_stmt_with_assign_list
+    : _var_declare_stmt_with_assign         { $$ = opr(OPR_NODE_LIST, 1 , $1); }
+    | _var_declare_stmt_with_assign_list ',' _var_declare_stmt_with_assign       { $$ = opr(OPR_NODE_LIST, 2, $1, $3); }
+    ;
+
+_var_declare_stmt_with_assign
+    : element_var_declare_stmt			{ $$ = $1; }
+    | single_assign_stmt                { $$ = $1; }
+    ;
+
 
 //  条件控制语句
 con_ctl_stmt
@@ -322,10 +334,10 @@ for_1_stmt
 	;
 
 for_3_stmt_list
-  :      { $$ = NULL ; }
-  | for_3_stmt    { $$ = $1; }
-  | for_3_stmt_list ',' for_3_stmt    { $$ = opr(OPR_NODE_LIST, 2, $1, $3); }
-  ;
+    :      { $$ = NULL ; }
+    | for_3_stmt    { $$ = $1; }
+    | for_3_stmt_list ',' for_3_stmt    { $$ = opr(OPR_NODE_LIST, 2, $1, $3); }
+    ;
 
 //  for 括号里面的第三段
 for_3_stmt
@@ -481,7 +493,7 @@ assign_stmt_value_eq
 // ARRAY_ELE 意思是获得数组元素
 // 数组元素获取语句
 array_ele_stmt
-	: common_object_expr '[' common_number_expr ']'  { $$ = objectArrayElementNode($1, -1, $3); }
+	: common_object_expr '[' common_number_expr ']'  { $$ = objectArrayElementNode($1, $3); }
 	;
 
 //  赋值语句

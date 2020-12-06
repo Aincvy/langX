@@ -83,17 +83,13 @@ namespace langX {
                 Object *arg1 = nullptr;
                 Number num1(0);
                 arg1 = &num1;
-                if (arrayInfo->indexNode != NULL) {
-                    Node *t = arrayInfo->indexNode;
-                    if (t->value == nullptr) {
-                        thread->throwException(newException("error index !")->addRef());
-                        return nullptr;
-                    }
-                    arg1 = t->value;
-                } else {
-                    // use arrayInfo's index
-                    num1.setValue(arrayInfo->index);
+                Node *t = arrayInfo->indexNode;
+                if (t->value == nullptr) {
+                    thread->throwException(newException("error index !")->addRef());
+                    return nullptr;
                 }
+                arg1 = t->value;
+
                 X3rdArgs _3rdArgs;
                 memset(&_3rdArgs, 0, sizeof(X3rdArgs));
                 _3rdArgs.args[0] = arg1;
@@ -108,19 +104,16 @@ namespace langX {
             return nullptr;
         }
 
-        int index = arrayInfo->index;
-        if (arrayInfo->indexNode != NULL) {
-            Node *t = arrayInfo->indexNode;
+        Node *t = arrayInfo->indexNode;
 
-            if (t->value == NULL || t->value->getType() != NUMBER) {
-                thread->throwException(newException("error array length !")->addRef());
-                return nullptr;
-            }
-
-            index = ((Number *) t->value)->getIntValue();
-            Allocator::free(t->value);
-            t->value = NULL;
+        if (t->value == nullptr || t->value->getType() != NUMBER) {
+            thread->throwException(newException("error array length !")->addRef());
+            return nullptr;
         }
+
+        auto index = ((Number *) t->value)->getIntValue();
+        Allocator::free(t->value);
+        t->value = nullptr;
 
         XArrayRef *ref = (XArrayRef *) obj;
         if (index < 0 || index >= ref->getLength()) {
@@ -1595,10 +1588,14 @@ namespace langX {
             if (len > 0) {
                 // 存在参数列表
                 for (int i = 0; i < len; ++i) {
-                    paramsList->args[i] = list[i];
+                    paramsList->args[i] = strdup(list[i]);
                 }
             }
             paramsList->index = len;
+
+            // free
+            freeMultipleIdResultArray(list, len);
+            len = 0;
         }
 
         // 建立函数对象
@@ -1678,7 +1675,7 @@ namespace langX {
         auto state = getState();
         auto clzInfo = new ClassInfo(name);
         if (extendsLen > 0) {
-            auto parentName = extends[0];
+            auto parentName = strdup(extends[0]);
             auto parentClz = state->getClass(parentName);
             if (parentClz == nullptr) {
                 // throw exception..
@@ -1691,6 +1688,10 @@ namespace langX {
 
             clzInfo->setParent(parentClz);
         }
+
+        // free
+        freeMultipleIdResultArray(extends, extendsLen);
+        extendsLen = 0;
 
         // 执行 classBody 节点， 以满足变量和函数的声明
         if (bodyNode != nullptr) {
@@ -1757,6 +1758,8 @@ namespace langX {
             auto env = thread->getCurrentEnv();
             auto value = env->getObjectSelf(varName);
 
+            logger->debug("try declare var %s, prefix: %d", varName, varDeclarePrefix);
+
             // 存在旧值， 则使用旧值， 否则使用null
             if (value != nullptr) {
                 // 存在值， 只更新前缀即可
@@ -1769,28 +1772,30 @@ namespace langX {
                 auto p = &nullObject;
                 updateVariablePrefix(p, varDeclarePrefix);
 
-                setValueToEnv(varName, p);
+                env->putObject(varName, p);
             }
 
         } else {
             // 这里应该是获取变量的值
             // 协调程序， 使变量的 obj 处于赋值状态
             if (node->value == nullptr) {
-                Object *obj = getValue(node->var_obj->name);
+                Object *obj = getValue(varName);
 
                 if (obj == nullptr) {
 
                     // find function.
-                    Function *func = thread->getFunction(node->var_obj->name);
+                    Function *func = thread->getFunction(varName);
                     if (func != nullptr) {
                         node->value = Allocator::allocateFunctionRef(func);
                     } else {
-                        node->value = new NullObject();
+                        node->value = Allocator::allocateNull();
                     }
                 } else {
-                    // 变量类型为 一个 copy
+                    // 变量值 为 一个 copy
                     node->value = obj->clone();
                 }
+
+                // 注意， 如果这里是一个函数引用， 或者是一个null的话， 变量的产生环境是无值的
             }
         }
     }
@@ -1819,7 +1824,7 @@ namespace langX {
 
             // 声明
             auto arrayName = arrayInfo->name;
-            auto len = arrayInfo->index;
+            auto len = 0;
             if (arrayInfo->indexNode != nullptr) {
                 // 存在了值
                 Node *t = arrayInfo->indexNode;
@@ -1830,8 +1835,8 @@ namespace langX {
                 }
 
                 len = ((Number *) t->value)->getIntValue();
-                Allocator::free(t->value);
-                t->value = nullptr;
+                // Allocator::free(t->value);
+                // t->value = nullptr;
             }
 
             XArray *array = Allocator::allocateArray(len);
@@ -1885,8 +1890,12 @@ namespace langX {
             __execNodeVariableWork(node, thread);
             return;
         } else if (node->type == NODE_CONSTANT_NUMBER) {
-            logger->debug("__execNode NODE_CONSTANT_NUMBER: %.4f", node->con_obj->dValue);
+            // logger->debug("__execNode NODE_CONSTANT_NUMBER: %.4f", node->con_obj->dValue);
             node->value = Allocator::allocateNumber(node->con_obj->dValue);
+            return;
+        } else if (node->type == NODE_CONSTANT_INTEGER) {
+            // logger->debug("__execNode NODE_CONSTANT_INTEGER: %d", node->con_obj->iValue);
+            node->value = Allocator::allocateNumber(node->con_obj->iValue);
             return;
         } else if (node->type == NODE_CONSTANT_STRING) {
             //  因为匹配出的字符串是带有 双引号的， 现在要去掉这个双引号
@@ -1895,11 +1904,7 @@ namespace langX {
             free(tmp);
 
             return;
-        } else if (node->type == NODE_CONSTANT_INTEGER) {
-            logger->debug("__execNode NODE_CONSTANT_INTEGER: %d", node->con_obj->iValue);
-            node->value = Allocator::allocateNumber(node->con_obj->iValue);
-            return;
-        } else if (node->type == NODE_CLASS) {
+        }else if (node->type == NODE_CLASS) {
             // 类
             if (node->ptr_u == NULL) {
                 return;
@@ -2002,7 +2007,7 @@ namespace langX {
                 __exec37(nodeLink);
                 break;
             case '=':
-                __exec61(nodeLink, thread);
+                __NEW_exec61(nodeLink, thread);
                 break;
             case ';':
                 __exec59(nodeLink, thread);

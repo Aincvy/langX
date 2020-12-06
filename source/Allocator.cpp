@@ -29,15 +29,15 @@ namespace langX {
 
 	Object * Allocator::copy(Object *obj)
 	{
-		if (obj == NULL)
+		if (obj == nullptr)
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		Object *ret = allocate(obj->getType());
-		if (ret == NULL)
+		if (ret == nullptr)
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		ret->setEmergeEnv(obj->getEmergeEnv());
@@ -52,7 +52,7 @@ namespace langX {
 	{
 		if (t == ObjectType::UNKNOWN)
 		{
-			return NULL;
+			return nullptr;
 		}
 		else if (t == ObjectType::NUMBER)
 		{

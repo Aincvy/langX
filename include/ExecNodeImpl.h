@@ -54,8 +54,10 @@ namespace langX {
     void __execDEC_OP(NodeLink *nodeLink);
 
 
-// 赋值操作 =
+    // 赋值操作 =
     void __exec61(NodeLink *nodeLink, langXThread *thread);
+
+    void __NEW_exec61(NodeLink *nodeLink, langXThread *thread);
 
     void __execADD_EQ(NodeLink *nodeLink);
 
@@ -246,6 +248,15 @@ namespace langX {
 
     // 释放 有 multipleId 节点转换出来的 char* 类型数组
     void freeMultipleIdResultArray(char **array, int len);
+
+
+    /**
+     * 更新变量的前缀  | 换句话说就是应用变量的前缀
+     * @param object 变量值的引用
+     * @param prefix 前缀
+     */
+    void updateVariablePrefix(Object *object, int prefix);
+
 
 
 }
