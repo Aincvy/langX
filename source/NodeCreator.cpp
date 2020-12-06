@@ -360,48 +360,6 @@ XNode * func(char *name, XParamsList *params, XNode *node)
 	return nodeF;
 }
 
-XNode * dtrt(char *name, XParamsList *params, XNode *node)
-{
-	if (node != NULL)
-	{
-		node->freeOnExecuted = false;
-	}
-
-	std::string str("~");
-	str += name;
-	Function *func = new Function(str.c_str(), node);
-	func->setParamsList(params);
-	free(name);
-	XNode * nodeF = newNode();
-	nodeF->type = NODE_FUNCTION;
-	nodeF->ptr_u = func;
-	return nodeF;
-}
-
-XNode *lambda(XParamsList *params, XNode *node) {
-	Function *func = new Function("", node);
-	func->setParamsList(params);
-
-	XNode * nodeF = newNode();
-	nodeF->type = NODE_FUNCTION;
-	nodeF->ptr_u = func;
-	return nodeF;
-}
-
-XNode * arrayNode(char *name, int length, XNode *lengthNode)
-{
-	XNode * node = newNode();
-	node->type = NODE_ARRAY;
-
-	XArrayNode *an = (XArrayNode*)calloc(1, sizeof(XArrayNode) * 1);
-	an->name = name;
-	an->length = length;
-	an->lengthNode = lengthNode;
-	node->ptr_u = an;
-
-	return node;
-}
-
 XNode * xnull()
 {
 	XNode * node = newNode();
@@ -1004,7 +962,7 @@ void execAndFreeNode(XNode *n) {
 		return;
 	}
 
-	logger->debug("try exec node at %s:%d", getParsingFilename(), getParseLineNo());
+	nodeLogger->debug("try exec node at %s:%d", getParsingFilename(), getParseLineNo());
 
 	execNode(n);
 

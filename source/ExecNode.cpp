@@ -1758,7 +1758,7 @@ namespace langX {
             auto env = thread->getCurrentEnv();
             auto value = env->getObjectSelf(varName);
 
-            logger->debug("try declare var %s, prefix: %d", varName, varDeclarePrefix);
+            // logger->debug("try declare var %s, prefix: %d", varName, varDeclarePrefix);
 
             // 存在旧值， 则使用旧值， 否则使用null
             if (value != nullptr) {
@@ -1973,10 +1973,6 @@ namespace langX {
         } else if (node->type == NODE_ARRAY_ELE) {
             __execNodeArrayElementWork(node, nodeLink, thread);
             return;
-        } else if (node->type == NODE_ARRAY) {
-            // 数组节点
-            logger->debug("node_array type ...");
-            // return;
         }
 
         if (node->type != NODE_OPERATOR) {
@@ -1988,7 +1984,7 @@ namespace langX {
 
         nodeLink->backAfterExec = nodeLinkBackAfterExec;
 
-        logger->debug("will execute opr: %d", node->opr_obj->opr);
+        nodeLogger->debug("will execute opr: %d", node->opr_obj->opr);
 
         switch (node->opr_obj->opr) {
             case '+':
@@ -2222,11 +2218,6 @@ namespace langX {
             //  程序没还有结束
             lastExecNode = curLink->node;
 
-            int cmd = -1;
-            if (curLink->node->type == NodeType::NODE_OPERATOR) {
-                cmd = curLink->node->opr_obj->opr;
-            }
-
             __realExecNode(curLink, thread);     // 将原来的内容丢到一个新的方法里面
             if (thread->isBackInExec()) {
                 // 上面方法可能会将  curLink 指向的位置内存被删除， 判定下两个值是否一致， 不一致则重新执行
@@ -2264,6 +2255,5 @@ namespace langX {
             lastExecNode = nullptr;
         }
 
-        // printf("one round end\n");
     }
 }

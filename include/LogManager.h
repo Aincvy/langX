@@ -26,10 +26,15 @@ namespace langX{
       void init(const char*);
 
     private:
+      // 默认的日志输出
       log4cpp::Category* m_category;
+      // 节点日志的内容
+      log4cpp::Category* m_nodeCategory;
 
   };
+
   extern log4cpp::Category *logger;
+  extern log4cpp::Category *nodeLogger;
 
 };
 

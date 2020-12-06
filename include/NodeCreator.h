@@ -47,10 +47,6 @@ extern "C" {
 	XNode * classNode(char *name, char *parent, XNode * node , bool);
 	// 创建一个函数节点
 	XNode * func(char *, XParamsList *,XNode *);
-	// 创建一个析构函数节点
-	XNode * dtrt(char *, XParamsList *, XNode *);
-	// 创建一个数组节点， 在执行这个节点的时候会创建一个数组
-	XNode * arrayNode(char *,int length, XNode *);
 	// 创建一个 空引用节点
 	XNode * xnull();
 	// 使用一个函数
@@ -66,8 +62,6 @@ extern "C" {
 	XNode *objectArrayElementNode(XNode *, XNode *);
 	// 创建一个int类型的常量节点
 	XNode *intNode(int);
-	// 生成一个lamdba 表达式的节点
-	XNode *lambda(XParamsList *,XNode *);
 	// 创建一个形参列表， 或者 追加一个参数到 列表中
 	XParamsList * params(XParamsList *, char *);
 	// xx
