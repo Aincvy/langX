@@ -190,7 +190,7 @@ namespace langX {
 			return this->m_namespace_map[name];
 		}
 
-		XNameSpace *space = new XNameSpace(name);
+		auto space = new XNameSpace(name);
 		this->m_namespace_map[name] = space;
 		return space;
 	}

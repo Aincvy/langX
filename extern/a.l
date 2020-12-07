@@ -42,6 +42,9 @@ void lexEOFWork();
 "/*"			{ comment(); }
 "//"[^\n]*      { /* consume //-comment */  }
 
+"attr"  {count();  return KEY_SET; }
+"using"  {count();  return KEY_REF ;}
+
 "auto" {count(); return KEY_AUTO;}
 "if" {count(); return KEY_IF;}
 "else" {count(); return KEY_ELSE;}
@@ -63,9 +66,7 @@ void lexEOFWork();
 "try"  {count();  return KEY_TRY; }
 "catch" {count();  return KEY_CATCH; }
 "public" {count(); return KEY_PUBLIC;}
-"set"  {count();  return KEY_SET; }
 "is"   {count();  return KEY_IS; }
-"ref"  {count();  return KEY_REF ;}
 "continue" { count(); return KEY_CONTINUE; }
 "const" { count(); return KEY_CONST; }
 "local" { count(); return KEY_LOCAL; }

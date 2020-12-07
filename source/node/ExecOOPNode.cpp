@@ -22,6 +22,7 @@
 #include "XNameSpace.h"
 #include "langXCommon.h"
 
+
 namespace langX{
 
     void __execNEW(NodeLink *nodeLink, langXThread *thread) {
@@ -407,17 +408,19 @@ namespace langX{
         auto name = opr_obj->op[1]->var_obj->name;
         auto oldSpaceNode = opr_obj->op[0];
         XNameSpace * nameSpace = nullptr;
+        // 如果找不到命名空间， 是否创建它？
+        auto createNameSpace = thread->getStackTraceTopStatus().createNameSpace;
 
         if (oldSpaceNode == nullptr) {
             // 直接从 全局空间中获取
-            nameSpace = getState()->singleGetNameSpace(name);
+            nameSpace = createNameSpace ? getState()->singleGetNameSpaceOrCreate(name) : getState()->singleGetNameSpace(name);
         } else {
             // 从前一个命名空间中获取新的值
             auto firstSon = opr_obj->op[0];
 
             // 从先前的空间中再尝试获取子空间
             auto prevNamespace = (XNameSpace*) firstSon->ptr_u;
-            nameSpace = thread->getStackTraceTopStatus().createNameSpace ?
+            nameSpace = createNameSpace ?
                     prevNamespace->getNameSpaceWithCreate(name) :
                     prevNamespace->getNameSpace(name);
 
