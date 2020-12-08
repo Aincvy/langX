@@ -12,7 +12,7 @@ It's in developing stage.
 - Easy rules.
 - Bridge other languages library.
 - The last user have power to change the library's behavior.
-- No `private` keyword, field and variable are public.
+- ~~No `private` keyword, field and variable are public.~~
 
 
 
@@ -155,9 +155,7 @@ https://github.com/Aincvy/langX-atom#screenshot
    sudo make install 
    ```
 
-5. Now, the simplest program is installed, you can use `langX [filename]` to test it.
-
-6. Note: langX do not have any options now(**include --version**).
+5. Now, the simplest program is installed, you can use `langX --version` to test it.
 
 7. You can try to compile mods now. 
 
@@ -169,7 +167,7 @@ https://github.com/Aincvy/langX-atom#screenshot
 
 - flex
 - yacc(bison)
-- Log4cpp
+- log4cpp
 
 ### lib core
 

@@ -53,12 +53,6 @@ getList().random().post( "no-extra!" ).workResult(1, $?, false);
 
 
 
-## 特殊符号定义
-
-
-
-
-
 ## 闭包
 
 虽然我也不知道闭包是啥。。 但是应该就是类似的这个东西把。。
@@ -140,23 +134,6 @@ println(outString);     // world
 local a = 1;
 const MAX = 10;  
 ```
-
-
-
-## 利用 tree-sitter 的配置文件来重构 a.y 文件
-
-
-
-## 整理 `a.l` `a.y `的代码， 修改到 cpp 文件里面
-
-并且， 修改项目结构， 把文本解析和处理的部分代码追加到 `liblangx.so` 里面。
-
-
-
-## 启动参数
-
-- `-v`， `--version`  查看版本信息
-- `-h`，`--help` 查看帮助
 
 
 
