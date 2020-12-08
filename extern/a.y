@@ -543,22 +543,22 @@ block_item
 
 // string plus string  and some others
 string_plus_stmt
-  : string_expr '+' string_plus_stmt_value   %dprec 1  { $$ = opr('+', 2, $1, $3); }
-  | string_plus_stmt_value '+' string_expr   %dprec 2 { $$ = opr('+', 2, $1, $3); }
-  | string_plus_stmt_value '+' string_plus_stmt  %dprec 3   { $$ = opr('+', 2, $1, $3); }
-  | string_plus_stmt '+' string_plus_stmt_value  %dprec 4   { $$ = opr('+', 2, $1, $3); }
-  ;
+    : string_expr '+' string_plus_stmt_value   %dprec 1  { $$ = opr('+', 2, $1, $3); }
+    | string_plus_stmt_value '+' string_expr   %dprec 2 { $$ = opr('+', 2, $1, $3); }
+    | string_plus_stmt_value '+' string_plus_stmt  %dprec 3   { $$ = opr('+', 2, $1, $3); }
+    | string_plus_stmt '+' string_plus_stmt_value  %dprec 4   { $$ = opr('+', 2, $1, $3); }
+    ;
 
 string_plus_stmt_value
-  : common_object_expr      { $$ = $1; }
-  | common_types_expr       { $$ = $1; }
-  | self_inc_dec_stmt       { $$ = $1; }
-  | number_parentheses_stmt     { $$ = $1; }
-  ;
+    : common_object_expr      { $$ = $1; }
+    | common_types_expr       { $$ = $1; }
+    | self_inc_dec_stmt       { $$ = $1; }
+    | number_parentheses_stmt     { $$ = $1; }
+    ;
 
 number_parentheses_stmt
-  : '(' common_number_expr ')'     { $$ = $2; }
-  ;
+    : '(' common_number_expr ')'     { $$ = $2; }
+    ;
 
 
 //  base element statement ..
@@ -576,18 +576,18 @@ bool_expr
 	;
 
 number_expr
-  : positive_number_expr    { $$ = $1; }
-  | uminus_expr             { $$ = $1; }
-  ;
+    : positive_number_expr    { $$ = $1; }
+    | uminus_expr             { $$ = $1; }
+    ;
 
 positive_number_expr
-  : double_expr     { $$ = $1; }
-  | int_expr        { $$ = $1; }
-  ;
+    : double_expr     { $$ = $1; }
+    | int_expr        { $$ = $1; }
+    ;
 
 int_expr
-  : TINTEGER { $$ = intNode($1); }
-  ;
+    : TINTEGER { $$ = intNode($1); }
+    ;
 
 double_expr
 	: TDOUBLE { $$ = number($1); }
