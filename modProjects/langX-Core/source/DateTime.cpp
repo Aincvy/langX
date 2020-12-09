@@ -114,6 +114,8 @@ namespace langX {
 
 		dateTime->millisecond = ms;
 		dateTime->timestamp = tv.tv_sec * 1000 + ms;
+
+		// logger->info("time stamp: %ld", dateTime->timestamp);
 	}
 
 	/**
@@ -165,6 +167,8 @@ namespace langX {
         auto obj = Allocator::newObject(clz, false, false);
         obj->set3rdObj(time);
 
+        setDateTimeObject(time, obj);
+
         return obj;
     }
 
@@ -179,7 +183,6 @@ namespace langX {
         updateFromTimestamp(time, timeArg, msPart);
 
         auto obj = mkDateTimeObject(time, state);
-        setDateTimeObject(time, obj);
 
         return obj->addRef();
     }
@@ -405,8 +408,9 @@ namespace langX {
 		info->addFunction(create3rdFunc("plus", langX_DateTime_plus));
 		info->addFunction("~DateTime", create3rdFunc("~DateTime", langX_DateTime_DateTime_Dtor));
 		info->addFunction("DateTime", create3rdFunc("DateTime", langX_DateTime_DateTime));
-		info->addFunction("fromUnixTimeStamp", create3rdFunc("fromUnixTimeStamp", langX_DateTime_fromUnixTimeStamp));
-		info->addFunction(create3rdFunc("fromDate", langX_DateTime_fromUnixTimeStampMS));
+		info->addFunction(create3rdFunc("fromUnixTimeStamp", langX_DateTime_fromUnixTimeStamp));
+		info->addFunction(create3rdFunc("fromUnixTimeStampMS", langX_DateTime_fromUnixTimeStampMS));
+		info->addFunction(create3rdFunc("fromDate", langX_DateTime_fromDate));
 
 		space->putClass(info);
 

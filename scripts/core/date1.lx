@@ -11,3 +11,9 @@ printDate(date);
 
 date.plus(1, TimeUnit::Week).plus(1, TimeUnit::Hour);
 printDate(date);
+
+tmp1 = DateTime::fromDate(2019,5,10,17,30);
+printDate(tmp1);
+
+tmp2 = DateTime::fromUnixTimeStamp(1607519812);
+printDate(tmp2);
