@@ -1,5 +1,13 @@
-ref langX.core;
+using langX.core;
+
+// 打印 一个日期
+printDate => (date) {
+    println("year=" + date.year + ",month="+ date.month + ",date=" + date.date);
+    println("hour=" + date.hour + ",minute=" + date.minute + ",second=" + date.second );
+}
 
 date = new DateTime();
-println("year=" + date.year + ",month="+ date.month + ",date=" + date.date);
-println("hour=" + date.hour + ",minute=" + date.minute + ",second=" + date.second );
+printDate(date);
+
+date.plus(1, TimeUnit::Week).plus(1, TimeUnit::Hour);
+printDate(date);

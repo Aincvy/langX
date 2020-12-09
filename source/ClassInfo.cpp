@@ -93,6 +93,14 @@ namespace langX {
 		this->m_functions[name] = func;
 	}
 
+    void ClassInfo::addFunction(Function *function) {
+        if (function == nullptr || !function->hasName()) {
+            return;
+        }
+
+        addFunction(function->getName(), function);
+    }
+
 	bool ClassInfo::hasFunction(const char *name) const
 	{
 		if (this->m_functions.find(name) != this->m_functions.end())
@@ -243,4 +251,6 @@ namespace langX {
 	{
 		this->m_local = f;
 	}
+
+
 }

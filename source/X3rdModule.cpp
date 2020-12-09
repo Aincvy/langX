@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/X3rdModule.h"
+#include "X3rdModule.h"
 
 
 namespace langX {

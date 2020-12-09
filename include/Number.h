@@ -16,6 +16,7 @@ namespace langX {
 
 		int getIntValue() const;
 		double getDoubleValue() const;
+		long getLongValue() const;
 
 		void setValue(double);
 

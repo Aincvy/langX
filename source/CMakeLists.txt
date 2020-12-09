@@ -40,6 +40,7 @@ SET( SRC_LIST
 		XArray.cpp
 		XNameSpace.cpp
 		NodeCreator.cpp
+		TypeHelper.cpp
 		extend/langXLogger.cpp
 		extend/langXString.cpp
 		node/ExecBaseMathNode.cpp

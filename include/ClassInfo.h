@@ -32,7 +32,11 @@ namespace langX {
 		// 这个请求是否是从子类产生的
 		Object * getMember(const char *,bool) const;
 
+		// 添加一个函数到本类里面，  name, function
 		void addFunction(const char*, Function*);
+		// 添加函数到本类里面
+		void addFunction(Function *function);
+		// 判断本类是否具有某个函数
 		bool hasFunction(const char*) const;
 		Function * getFunction(const char *) const;
 		// 这个请求是否是从子类产生的

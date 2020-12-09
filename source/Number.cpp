@@ -134,4 +134,9 @@ namespace langX {
 	{
 		delete this;
 	}
+
+    long Number::getLongValue() const {
+        return (long)this->m_value;
+    }
+
 }
