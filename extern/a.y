@@ -378,7 +378,7 @@ interrupt_stmt
 //  函数调用
 call_statement
 	: common_values_expr args_list_with_parentheses { $$ = opr(FUNC_CALL, 2, $1, $2); }
-    | call_statement '.' id_expr args_list_with_parentheses  { $$ = opr(CLAXX_FUNC_CALL, 3, $1, $3, $4); }
+//    | call_statement '.' id_expr args_list_with_parentheses  { $$ = opr(CLAXX_FUNC_CALL, 3, $1, $3, $4); }
 	;
 
 //  运算语句
