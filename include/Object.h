@@ -248,21 +248,24 @@ namespace langX {
 		int index;
 	};
 
-	// 这是实参
+	// 这是基于节点的 实参列表
 	struct ArgsList
 	{
+	    // 每个节点是一个参数
 		Node *args[PARAM_COUNT];
 		// 实参索引
 		int index;
 	};
 
+	// 在cpp层面调用函数使用的参数列表
 	struct X3rdArgs
 	{
+	    // 实参列表
 		Object *args[PARAM_COUNT];
 		// 实参索引, 一般表示 数量了
 		int index;
 
-		XArrayRef *arrayRef = nullptr;
+		// 调用函数的那个对象 当函数不是类的函数， 或者静态调用的时候， 此值为 nullptr
 		langXObject * object = nullptr;
 	};
 
@@ -284,14 +287,5 @@ namespace langX {
 	NodeLink * newNodeLink(NodeLink *, Node *);
 	// 释放一个nodeLink 占用的内存
 	void freeNodeLink(NodeLink *);
-
-	void x3rdArgsToArray(const X3rdArgs& args, XArray* arrayObjRef);
-
-    /**
-     * 判断参数是否是一个 nullptr 或者 NullObject
-     * @param obj
-     * @return  true: nullptr or NullObject
-     */
-    bool isNull(Object *obj);
 
 } 

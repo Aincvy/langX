@@ -91,14 +91,19 @@ namespace langX {
 		this->m_frames.clear();
 	}
 
-	StrackTraceFrame * StackTrace::newFrame(ClassInfo *a, Function *b, const char *c)
+
+    StrackTraceFrame *StackTrace::newFrame(Function *function, const char *remark) {
+        return newFrame(function->getClassInfo(), function, remark);
+    }
+
+	StrackTraceFrame * StackTrace::newFrame(ClassInfo *classInfo, Function *function, const char *remark)
 	{
-		//printf("newFrame class: %s(%p), function: %s.\n" , (a ? a->getName() : "null"),a, ( b ? b->getName() : "null"));
+		//printf("newFrame class: %s(%p), function: %s.\n" , (classInfo ? classInfo->getName() : "null"),classInfo, ( function ? function->getName() : "null"));
 
 		StrackTraceFrame *f = new StrackTraceFrame();
-		f->setClassInfo(a);
-		f->setFunction(b);
-		f->setRemark(c);
+		f->setClassInfo(classInfo);
+		f->setFunction(function);
+		f->setRemark(remark);
 
 		// 追加到尾部
 		this->m_frames.push_back(f);
@@ -142,4 +147,6 @@ namespace langX {
 
 		return (ret);
 	}
+
+
 }

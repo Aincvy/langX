@@ -45,12 +45,7 @@ extern "C" {
 	XNode * func(char *, XParamsList *,XNode *);
 	// 创建一个 空引用节点
 	XNode * xnull();
-	// 使用一个函数
-	XObject * call(const char *, XArgsList *, const char *);
-	// 调用一个函数       调用两次这个函数才能获取到函数的返回值！！
-	// NodeLink*  这个参数务必给一个全新的， 没使用的值    index=0 时会进行参数获取,  index=1 时会进行实际的函数调用
-	XObject * callFunc(XFunction*, XArgsList *, const char *);
-	// 创建一个节点， 节点内容为实参列表
+// 创建一个节点， 节点内容为实参列表
 	XNode * argsNode(XArgsList *);
 	// 创建一个数组元素节点
 	XNode *arrayElementNode(char *, XNode *);

@@ -1,12 +1,21 @@
 #pragma once
 
+#include "Object.h"
+
 namespace langX {
-	class Object;
+
+    // 类声明
 	class ClassInfo;
 	class Environment;
 	class ScriptEnvironment;
 	class langXObject;
-	struct NodeLink;
+	class langXThread;
+
+	// 部分属性
+    extern X3rdArgs* emptyArgs;
+
+
+	// Function 相关的类声明
 
 	/* 0924  现在函数不在继承自Object . 而是添加一个新的 类型 FunctionRef 继承自Object */
 	class Function 
@@ -82,15 +91,34 @@ namespace langX {
 		// 获取
 		X3rdFuncWorker getWorker() const; 
 
+		/**
+		 * 判断当前函数 是否是一个第三方函数
+		 * @return   true: 是的， false: 不是 ^_^
+		 */
 		bool is3rd() const;
-		Object *call(const X3rdArgs &);
+
+        /**
+         * 调用这个第三方函数  ^v^
+         * @param args   参数
+         * @return 函数的执行结果
+         */
+		Object *call(const X3rdArgs &args);
+
+		/**
+		 * 调用当前这个第三方函数  @.@
+		 * @param args   参数指针
+		 * @return 函数的执行结果
+		 */
+		Object *call(X3rdArgs *args);
+
+
 	private:
 		X3rdFuncWorker m_worker;
 		langXState *m_state;
 	};
 
 
-	/* langX Object.  表示一个函数引用 */
+    /* langX Object.  表示一个函数引用 */
 	class FunctionRef : public Object
 	{
 	public:
@@ -109,12 +137,12 @@ namespace langX {
 
 
 		//  函数的对象
-		langXObject *getObj() const;
-		void setObj(langXObject *);
+		langXObject *getObject() const;
+		void setObject(langXObject *a);
 
 		// 函数的类信息
-		ClassInfo *getClaxx() const;
-		void setClaxx(ClassInfo *);
+		ClassInfo *getClassInfo() const;
+		void setClassInfo(ClassInfo *a);
 
 		// 如果这个函数来自一个 对象， 则会返回一个对象环境， 如果来自类， 则返回类桥接环境
 		Environment *getFunctionEnv();
@@ -137,9 +165,91 @@ namespace langX {
 
 		//  对象函数引用。 比如  b=a.func ; 的时候， 这个m_func_obj 就指向了 a 的那个langXObject
 		langXObject *m_func_obj = nullptr;
-		//  类函数引用。  比如 b=a::func ;  的时候， 这个 m_func_claxx 就指向了 a 的类型
-		ClassInfo *m_func_claxx = nullptr;
+		//  类函数引用。  比如 b=a::func ;  的时候， 这个 m_func_class 就指向了 a 的类型
+		ClassInfo *m_func_class = nullptr;
 
 	};
+
+
+	// 函数调用的方法
+
+    /**
+     * 复制一个 args 的内容到 一个 3rdArgs
+     * @param args
+     * @param _3rdArgs
+     * @param object
+     */
+    void copyArgsTo3rdArgs(ArgsList *args, X3rdArgs *_3rdArgs, langXObject *object);
+
+    /**
+     * 添加函数的拓展变量到 函数内部 | $_, $1,$2 等
+     * @param env
+     * @param args
+     */
+    void addFunctionExtendsVar(Environment* env, X3rdArgs* args);
+
+
+    Object *callFunction(langXThread *thread, Function *function, ArgsList *args, const char *remark);
+
+    /**
+	 * 执行函数
+	 * @param thread
+	 * @param function
+	 * @param args
+	 * @param remark
+	 * @return
+	 */
+    Object *callFunction(langXThread *thread, Function *function, ArgsList *args, langXObject *object, const char *remark);
+
+
+    /**
+     *
+     * @param function
+     * @param args
+     * @param remark
+     * @return
+     */
+    Object *callFunction(Function *function, X3rdArgs *args, const char *remark);
+
+    /**
+     * 执行一个无参函数
+     * @param function
+     * @param remark
+     * @return
+     */
+    Object *callFunction(Function *function, const char *remark);
+
+	/**
+	 * 调用函数
+	 * @param function   要执行的函数
+	 * @param args       参数列表
+	 * @param remark     备注
+	 * @param thread     线程对象
+	 * @return
+	 */
+	Object *callFunction(langXThread *thread, Function *function, X3rdArgs *args, const char *remark);
+
+
+
+    /**
+     * 调用函数
+     * @param functionRef   函数引用
+     * @param args          参数列表
+     * @param remark        备注
+     * @return
+     */
+    Object *callFunction(langXThread *thread, FunctionRef *functionRef, X3rdArgs *args, const char *remark);
+
+
+    /**
+     * 使用一个 函数引用来执行一个函数
+     * @param thread
+     * @param functionRef
+     * @param args
+     * @param remark
+     * @return
+     */
+    Object *callFunction(langXThread *thread, FunctionRef *functionRef, ArgsList *args, const char *remark);
+
 
 }

@@ -4,6 +4,7 @@
 
 #include "TypeHelper.h"
 #include "Number.h"
+#include "XArray.h"
 
 namespace langX{
 
@@ -16,6 +17,22 @@ namespace langX{
         auto tmp = args.args[index];
         if (tmp && tmp->getType() == NUMBER) {
             *value = ((Number*)tmp)->getIntValue();
+        }
+    }
+
+
+    bool isNull(Object *obj) {
+        return obj == nullptr || obj->getType() == NULLOBJECT;
+    }
+
+
+    void x3rdArgsToArray(const X3rdArgs& args, XArray* arrayObjRef) {
+        XArray *arrayRef = arrayObjRef;
+
+        int length = args.index;
+        for (size_t i = 0; i < length; i++)
+        {
+            arrayRef->set(i, args.args[i]);
         }
     }
 

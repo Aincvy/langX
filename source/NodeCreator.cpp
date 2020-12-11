@@ -3,26 +3,27 @@
 #include <stdarg.h>
 #include <sstream>
 #include <iostream>
-#include "../include/NodeCreator.h"
-#include "../include/langX.h"
-#include "../include/Object.h"
-#include "../include/Number.h"
-#include "../include/ExecNode.h"
-#include "../include/RegFunctions.h"
-#include "../include/Environment.h"
-#include "../include/Allocator.h"
-#include "../include/ClassInfo.h"
-#include "../include/StackTrace.h"
-#include "../include/Exception.h"
-#include "../include/langXObject.h"
-#include "../include/langXObjectRef.h"
-#include "../include/NullObject.h"
-#include "../include/StringType.h"
+#include "NodeCreator.h"
+#include "langX.h"
+#include "Object.h"
+#include "Number.h"
+#include "ExecNode.h"
+#include "RegFunctions.h"
+#include "Environment.h"
+#include "Allocator.h"
+#include "ClassInfo.h"
+#include "StackTrace.h"
+#include "Exception.h"
+#include "langXObject.h"
+#include "langXObjectRef.h"
+#include "NullObject.h"
+#include "StringType.h"
 #include "../extern/y.tab.h"
-#include "../include/LogManager.h"
-#include "../include/RegObjects.h"
-#include "../include/langXCommon.h"
+#include "LogManager.h"
+#include "RegObjects.h"
+#include "langXCommon.h"
 #include "langXThread.h"
+#include "Utils.h"
 
 
 using namespace langX;
@@ -112,17 +113,17 @@ XNode *newNode() {
 	// 需要改成使用 new 的方式
 	// XNode * node = (XNode*)calloc(1, sizeof(XNode) * 1);
 	XNode * node = new XNode();
-	node->con_obj = NULL;
-	node->var_obj = NULL;
-	node->arr_obj = NULL;
-	node->opr_obj = NULL;
+	node->con_obj = nullptr;
+	node->var_obj = nullptr;
+	node->arr_obj = nullptr;
+	node->opr_obj = nullptr;
 
 	node->freeOnExecuted = true;
     deal_fileInfo(&node->fileinfo);
 	deal_state(&node->state);
-	node->value = NULL;
-	node->postposition = NULL;
-	node->ptr_u = NULL;
+	node->value = nullptr;
+	node->postposition = nullptr;
+	node->ptr_u = nullptr;
 
 	return node;
 }
@@ -178,18 +179,16 @@ void getObjStringDesc(langX::Object * obj, char *tmp, int maxSize)
 void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 {
 	std::stringstream ss;
-	langXObjectRef *ref1 = (langXObjectRef*)obj;
-	Function *func1 = ref1->getFunction("toString");
-	if (func1 == nullptr)
+	auto ref = (langXObjectRef*)obj;
+	auto thread = getState()->curThread();
+	Function *func = ref->getFunction("toString");
+	if (func == nullptr)
 	{
 		ss << "|[" << obj->characteristic();
 	}
 	else {
-		//
-		FunctionRef funcRef(func1);
-		funcRef.setObj(ref1->getRefObject());
 
-		Object *retObj = funcRef.call(nullptr, "<call toString()>" );
+        Object *retObj = callFunction(thread, func, nullptr, ref->getRefObject(), "<call toString() from cpp>");
 		if (retObj->getType() == STRING)
 		{
 			ss << ((String*)retObj)->getValue();
@@ -199,11 +198,7 @@ void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 	}
 
 	std::string str = ss.str();
-	int size = maxSize;
-	if (str.size() < size)
-	{
-		size = str.size();
-	}
+	int size = min(maxSize, (int) str.size());
 
 	memcpy(p + offset, str.c_str(), size);
 }
@@ -353,205 +348,6 @@ XNode * xnull()
 	node->type = NODE_NULL;
 
 	return node;
-}
-
-// 根据名字调用一个函数
-XObject * call(const char *name, XArgsList* args, const char *remark )
-{
-    auto thread = getState()->curThread();
-	Function *function = thread->getFunction(name);
-	if (function == NULL)
-	{
-		char tmp[100] = { 0 };
-		sprintf(tmp, "cannot find function %s", name);
-        thread->throwException(newFunctionNotFoundException(tmp)->addRef());
-		return NULL;
-	}
-
-	// auto env = thread->getCurrentEnv();
-	auto object = callFunc(function, args, remark );
-    // env->putObject(FE_KEY_PREV_RESULT, object);
-    return object;
-}
-
-// 调用第三方函数
-XObject *call3rdFunc(X3rdFunction *x3rdFunc, langXThread * thread, XArgsList *args ) {
-	X3rdArgs _3rdArgs;
-	memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-	if (args != nullptr)
-	{
-        for (int i = 0; i < args->index; i++)
-        {
-            if (args->args[i] == nullptr)
-            {
-                _3rdArgs.args[i] = nullptr;
-                continue;
-            }
-
-            Object * tmp1 = args->args[i]->value;
-            if (tmp1)
-            {
-                _3rdArgs.args[i] = tmp1->clone();
-            }
-            else {
-                _3rdArgs.args[i] = Allocator::allocate(NULLOBJECT);
-            }
-
-            // 释放这个参数节点的值
-            Allocator::free(args->args[i]->value);
-            args->args[i]->value = nullptr;
-        }
-
-		_3rdArgs.index = args->index;
-	}
-
-	Environment *currEnv1 = thread->getCurrentEnv();
-	if (currEnv1->isObjectEnvironment())
-	{
-		if (currEnv1->isEnvEnvironment())
-		{
-			_3rdArgs.object = ((ObjectBridgeEnv*)((EnvironmentBridgeEnv*)currEnv1)->getBridgeEnv())->getEnvObject();
-		}
-		else {
-			_3rdArgs.object = ((ObjectBridgeEnv*)currEnv1)->getEnvObject();
-		}
-	}
-
-	thread->setInFunction(true);
-	Object * ret1 = x3rdFunc->call(_3rdArgs);
-	thread->getStackTrace().popFrame();
-	thread->setInFunction(false);
-
-	for (size_t i = 0; i < _3rdArgs.index; i++)
-	{
-		Allocator::free(_3rdArgs.args[i]);
-	}
-
-	thread->setFunctionResult(ret1);
-	return ret1;
-}
-
-// 执行 函数节点的 第一阶段，  参数值的运算阶段
-void callFuncNodeLink0(XFunction *function, const XArgsList *args, const char *remark, NodeLink *nodeLink,
-                       langXThread *thread) {
-    // add stackTrace
-    thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
-
-    // 计算参数的值
-    if (args != nullptr)
-    {
-        for (int i = 0; i < args->index; i++)
-        {
-            if (args->args[i] != nullptr)
-            {
-                // 最初的时候， 参数的值应该是一个NULL 。 然后执行参数节点， 产生一个结果
-                thread->beginExecute(args->args[i], true);
-            }
-        }
-    }
-
-    nodeLink->index = 1;
-}
-
-// 添加函数的拓展变量到 函数内部 | $_, $1,$2 等
-void addFunctionExtendsVar(Environment* env, XArgsList* args){
-    if (!env->hasObject(FE_KEY_VARIABLE_COUNT)){
-        auto functionArgsCount = args == nullptr ? 0 : args->index;
-        env->putObject(FE_KEY_VARIABLE_COUNT , Allocator::allocateNumber(functionArgsCount));
-
-//         赋值给 $1,$2..
-        for (int i = 0; i < functionArgsCount; ++i) {
-            std::stringstream  ss;
-            ss << FE_KEY_VARIABLE_PREFIX;
-            ss << (i + 1);
-            const std::string & tmpVarName = ss.str();
-
-            if (!env->hasObject(tmpVarName)){
-                // 不包含这个变量， 则赋值
-                env->putObject(tmpVarName, args->args[i]->value);
-            }
-        }
-    }
-
-}
-
-XObject * callFunc(XFunction* function, XArgsList* args, const char* remark) {
-#ifdef SHOW_DETAILS
-	// logger->debug("callFunc %s %s\n" , function->getName(), remark );
-#endif
-
-	langXThread * thread = getState()->curThread();
-	if (function == nullptr)
-	{
-		thread->throwException(newException("function is null when call function.")->addRef());
-		return nullptr;
-	}
-
-	if (function->is3rd())
-	{
-		// 第三方函数
-        thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
-		X3rdFunction *x3rdFunc = (X3rdFunction*)function;
-		return call3rdFunc(x3rdFunc, thread, args );
-	}
-
-	// 函数环境
-	DefaultEnvironment defaultEnvironment;
-	Environment * env = &defaultEnvironment;
-
-	// 赋值参数列表
-    XParamsList *params = function->getParamsList();
-	if (args != nullptr && params != nullptr)
-	{
-
-		NullObject nullobj;
-
-		// put real args value
-		for (int i = 0; i < args->index; i++)
-		{
-			// 如果给出的参数个数大于需要的参数个数， 则无视剩余给出的参数
-			if (i >= params->index)
-			{
-				break;
-			}
-
-			if (args->args[i] != nullptr)
-			{
-				if (args->args[i]->value)
-				{
-					env->putObject(params->args[i], args->args[i]->value);
-				}
-				else {
-					env->putObject(params->args[i], &nullobj);
-				}
-
-				// 上面的做法是把参数的值 复制到环境内。
-				// Environment.putObject   内都是保留的一个副本。
-				// 这片代码的本意是吧参数节点的值算出来，然后丢给函数。 现在任务已经完成了。 可以把参数节点的值给释放掉了
-
-				// 释放这个参数节点的值
-				Allocator::free(args->args[i]->value);
-				args->args[i]->value = nullptr;
-
-			}
-			else {
-				// 没给出的参数 给个NULL
-				env->putObject(params->args[i], &nullobj);
-			}
-		}
-	}
-
-    // put function extends var ...
-    addFunctionExtendsVar(env, args);
-
-    // 附加函数所属环境， 然后调用函数， 之后撤销环境
-    thread->newEnv(env);
-	auto ret = function->call();
-	thread->backEnv(false);
-
-	thread->getStackTrace().popFrame();
-
-	return ret;
 }
 
 

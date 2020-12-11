@@ -12,6 +12,7 @@
 #include "Utils.h"
 #include "langXThread.h"
 #include "LogManager.h"
+#include "langXCommon.h"
 
 namespace langX {
 
@@ -251,14 +252,9 @@ namespace langX {
 		Function *func = getConstructor();
 		if (func)
 		{
-
-            thread->getStackTrace().newFrame(this->m_class_info, func, "<__init>");
-			Environment *env = getObjectEnvironment();
-            thread->newEnvByBridge(env);
-			callFunc(func, args, remark );
-			thread->getStackTrace().popFrame();
-			thread->backEnv();
-
+		    char tmp[DEFAULT_MIN_CHAR_BUFF_SIZE];
+		    sprintf(tmp, "<__init %s> %s", getClassName(), remark);
+            langX::callFunction(thread, func, args, this, tmp);
 		}
 	}
 

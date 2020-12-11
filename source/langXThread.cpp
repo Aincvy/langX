@@ -77,7 +77,6 @@ namespace langX {
 				X3rdArgs _3rdArgs;
 				_3rdArgs.object = obj->getRefObject();
 				_3rdArgs.index = 0;
-				_3rdArgs.arrayRef = NULL;
 				X3rdFunction *f = (X3rdFunction*)func;
 				f->call(_3rdArgs);
 			}

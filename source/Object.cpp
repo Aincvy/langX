@@ -135,19 +135,6 @@ namespace langX {
 		free(nodeLink);
 	}
 
-	void x3rdArgsToArray(const X3rdArgs& args, XArray* arrayObjRef) {
-		XArray *arrayRef = arrayObjRef;
-
-		int length = args.index;
-		for (size_t i = 0; i < length; i++)
-		{
-			arrayRef->set(i, args.args[i]);
-		}
-	}
-
-    bool isNull(Object *obj) {
-        return obj == nullptr || obj->getType() == NULLOBJECT;
-    }
 
 
 }

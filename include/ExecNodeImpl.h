@@ -152,14 +152,12 @@ namespace langX {
 
     void __execCLAXX_MEMBER(NodeLink *nodeLink, langXThread *thread);
 
-    void __execCLAXX_FUNC_CALL(NodeLink *nodeLink, langXThread *thread);
+    void __execCLASS_FUNC_CALL(NodeLink *nodeLink, langXThread *thread);
 
 // 执行 this.xxx
     void __execTHIS(NodeLink *nodeLink, langXThread *thread);
 
     void __execSCOPE(NodeLink *nodeLink, langXThread *thread);
-
-    void __execSCOPE_FUNC_CALL(NodeLink *nodeLink, langXThread *thread);
 
     /**
      * 获取一个 命名空间

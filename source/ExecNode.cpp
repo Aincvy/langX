@@ -1065,7 +1065,8 @@ namespace langX {
         }
 
         // 备注和 参数列表
-        std::string remark = fileInfoString(n->fileinfo);
+        auto remarkString = fileInfoString(n->fileinfo);
+        auto remark = remarkString.c_str();
         XArgsList *args = convertArgsList(argsNode);
 
         // 获取函数， 以及执行其他类型的函数
@@ -1080,7 +1081,7 @@ namespace langX {
                 // 函数的名字
                 auto funcName = objNode->opr_obj->op[1]->var_obj->name;
 
-                __realExecCLAXX_FUNC_CALL(thread, n, tmpObj, funcName, args, remark.c_str());
+                __realExecCLAXX_FUNC_CALL(thread, n, tmpObj, funcName, args, remark);
 
                 if (funcObj != nullptr) {
                     //
@@ -1097,23 +1098,35 @@ namespace langX {
             if (funcObj->getType() == FUNCTION) {
                 auto *f = (FunctionRef *) funcObj;
 
-                n->value = f->call(args, remark.c_str());
+                // n->value = f->call(args, remark);
+                n->value = callFunction(thread, f, args, remark);
 
             } else if (funcObj->getType() == STRING) {
-                std::string str = "call function ";
                 String *n1Str = (String *) funcObj;
-                str += n1Str->getValue();
-                str += " by var ";
-                if (objNode->var_obj) {
-                    str += objNode->var_obj->name;;
+                auto tmpFuncName = n1Str->getValue();
+                auto varName = objNode->var_obj ? objNode->var_obj->name : "[array,do not know name]";
+
+                auto func = thread->getFunction(tmpFuncName);
+                if (func == nullptr) {
+                    // 并没有找到函数
+                    char buf[DEFAULT_MIN_CHAR_BUFF_SIZE];
+                    sprintf(buf, "[%s by var name %s]", tmpFuncName, varName);
+                    thread->throwException(newFunctionNotFoundException(buf));
                 } else {
-                    str += " [array,do not know name]";
+                    // 执行函数
+                    std::string str = "call function ";
+                    str += tmpFuncName;
+                    str += " by var ";
+                    str += varName;
+                    str += " ";
+                    str += remark;
+
+                    n->value = callFunction(thread, func, args, remark);
                 }
-                str += " ";
-                str += remark;
 
-                n->value = call(n1Str->getValue(), args, str.c_str());
-
+            } else {
+                // 类型错误
+                thread->throwException(newTypeErrorException("type error, object is not a function"));
             }
 
         } else {
@@ -1176,7 +1189,7 @@ namespace langX {
         if (func != nullptr) {
             // 处理下参数
             FunctionRef ref(func);
-            ref.setObj(nullptr);
+            ref.setObject(nullptr);
 
             auto len = 1 + args->index;
             Object *realArgs[len];
@@ -1198,7 +1211,7 @@ namespace langX {
     }
 
 
-    void __execCLAXX_FUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
+    void __execCLASS_FUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         Node *objNode = n->opr_obj->op[0];
         if (nodeLink->index == 0) {
@@ -1244,21 +1257,27 @@ namespace langX {
             return;
         }
 
-        // 2017年12月3日   首次执行到这里的时候 把当前object的环境丢进去
         auto objectRef = (langXObjectRef *) object;
-        Environment *env = objectRef->getRefObject()->getObjectEnvironment();
-        thread->newEnvByBridge(env);
 
+        // 搜索函数
         auto func = objectRef->getFunction(funcName);
         if (func == nullptr) {
-            thread->throwException(newNoClassFunctionException(funcName));
+            // 不含有该函数， 检测属性
+            auto member = objectRef->getMember(funcName);
+            if (member == nullptr || member->getType() != ObjectType::FUNCTION) {
+                // 不存在该属性或者 该属性的值不是一个函数， 丢个异常出去
+                thread->throwException(newNoClassFunctionException(funcName));
+            }else{
+                // 存在该属性， 并且，该属性是一个函数 。
+                // 然后执行那个函数索引， 以获取执行结果
+                auto functionRef = (FunctionRef*) member;
+                n->value = callFunction(thread, functionRef, args, remark);
+            }
             return;
         }
 
         // call func ..
-        n->value = callFunc(func, args, remark);
-
-        thread->backEnv();
+        n->value = callFunction(thread, func, args, objectRef->getRefObject(), remark);
     }
 
     void __execRESTRICT(NodeLink *nodeLink, langXThread *thread) {
@@ -2064,7 +2083,7 @@ namespace langX {
                 __execCLAXX_MEMBER(nodeLink, thread);
                 break;
             case CLAXX_FUNC_CALL:
-                __execCLAXX_FUNC_CALL(nodeLink, thread);
+                __execCLASS_FUNC_CALL(nodeLink, thread);
                 break;
             case VAR_DECLARE:
                 __execVAR_DECLARE(nodeLink, thread);
@@ -2089,9 +2108,6 @@ namespace langX {
                 break;
             case SCOPE:
                 __execSCOPE(nodeLink, thread);
-                break;
-            case SCOPE_FUNC_CALL:
-                __execSCOPE_FUNC_CALL(nodeLink, thread);
                 break;
             case KEY_REQUIRE:
                 __execREQUIRE(nodeLink, thread);

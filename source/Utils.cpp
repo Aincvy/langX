@@ -142,6 +142,9 @@ namespace langX {
     template short max<short >(short a, short b);
     template short min<short >(short a, short b);
 
+    template int max<int >(int a, int b);
+    template int min<int >(int a, int b);
+
 
     int convertToAbsolutePath(const char * filename, const char *parsingFile, char *result){
         //  把路径转换成绝对路径

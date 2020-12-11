@@ -28,7 +28,7 @@ namespace langX {
 		langXObjectRef *ref1 = (langXObjectRef*)obj;
 
 		FunctionRef ref(func);
-		ref.setObj(ref1->getRefObject());
+        ref.setObject(ref1->getRefObject());
 		Object *retObj = ref.call(args->args, args->index, "");
 
 		return retObj;
@@ -97,7 +97,7 @@ namespace langX {
             if (func != nullptr) {
                 // 存在该函数， 把字符串当成参数丢进去
                 FunctionRef ref(func);
-                ref.setObj(nullptr);
+                ref.setObject(nullptr);
 
                 Object* realArgs[1 + args->index];
                 realArgs[0] = obj;

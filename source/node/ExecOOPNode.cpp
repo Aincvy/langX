@@ -174,7 +174,7 @@ namespace langX{
             if (func != nullptr)
             {
                 fr = Allocator::allocateFunctionRef(func);
-                fr->setObj(objectRef->getRefObject());
+                fr->setObject(objectRef->getRefObject());
                 fr->setEmergeEnv(getState()->curThread()->getCurrentEnv());
                 t = fr;
             }
@@ -216,69 +216,6 @@ namespace langX{
     }
 
 
-
-    void __execSCOPE_FUNC_CALL(NodeLink *nodeLink, langXThread *thread) {
-        Node *n = nodeLink->node;
-
-        nodeLink->backAfterExec = false;      // 函数需要执行两次 才会获取到结果
-
-        // 根据语法文件可知 n1 是一个SCOPE 类型
-        Node *n1 = n->opr_obj->op[0];
-        ClassInfo *claxxInfo = nullptr;
-        char *className = n1->opr_obj->op[0]->var_obj->name;
-        char *memberName = n1->opr_obj->op[1]->var_obj->name;
-        NodeLink *putNodeLink = nullptr;
-        const char *remark = fileInfoString(n->fileinfo).c_str();
-
-        if (nodeLink->index == 0) {
-            // 进行一些检测和处理参数
-            nodeLink->index = 1;
-            putNodeLink = newNodeLink(nullptr, n);
-            nodeLink->ptr_u = putNodeLink;
-
-            claxxInfo = getState()->getClass(className);
-            if (claxxInfo == NULL)
-            {
-                thread->throwException(newClassNotFoundException(className)->addRef());
-                return;
-            }
-
-            Function *t = claxxInfo->getFunction(memberName);
-            if (t == nullptr)
-            {
-                char tmp[100] = { 0 };
-                sprintf(tmp, "no function %s in class %s.", memberName, className);
-                thread->throwException(newNoClassMemberException(tmp)->addRef());
-                return;
-            }
-
-            ClassBridgeEnv *env = new ClassBridgeEnv(claxxInfo);
-            getState()->curThread()->newEnv(env);
-
-            // 根据语法解析文件得知， 第二个节点为参数节点
-            // todo add args
-            return;
-        }
-        else {
-            putNodeLink = (NodeLink*)nodeLink->ptr_u;
-        }
-
-        claxxInfo = getState()->getClass(className);
-        Function *t = claxxInfo->getFunction(memberName);
-
-        // 根据语法解析文件得知， 第二个节点为参数节点
-        XArgsList *args = (XArgsList *)n->opr_obj->op[1]->ptr_u;
-        n->value = callFunc(t, args, remark);
-
-        doSuffixOperationArgs(args);
-        n1->value = nullptr;
-
-        getState()->curThread()->backEnv();
-        nodeLink->backAfterExec = true;
-    }
-
-
-
     void __execSCOPE(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
 
@@ -305,7 +242,7 @@ namespace langX{
             }
 
             ref = Allocator::allocateFunctionRef(func);
-            ref->setClaxx(classInfo);
+            ref->setClassInfo(classInfo);
             ref->setEmergeEnv(getState()->curThread()->getCurrentEnv());
             tmp = ref;
         }

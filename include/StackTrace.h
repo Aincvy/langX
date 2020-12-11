@@ -56,6 +56,9 @@ namespace langX {
 		StackTrace();
 		~StackTrace();
 
+
+        //  生成一个新的帧
+        StrackTraceFrame *newFrame(Function *, const char *);
 		//  生成一个新的帧
 		StrackTraceFrame *newFrame(ClassInfo *, Function *, const char *);
 
