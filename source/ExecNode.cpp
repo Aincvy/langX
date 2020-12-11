@@ -475,9 +475,8 @@ namespace langX {
      * @param node
      * @return
      */
-    XArgsList *convertArgsList(Node *node) {
+    XArgsList *convertArgsList(Node *node, ArgsList *argsList) {
         // 申请内存
-        auto argsList = (XArgsList *) calloc(1, sizeof(XArgsList));
         argsList->index = 0;
 
         // 前缀遍历， 赋值
@@ -1062,7 +1061,11 @@ namespace langX {
         // 备注和 参数列表
         auto remarkString = fileInfoString(n->fileinfo);
         auto remark = remarkString.c_str();
-        XArgsList *args = convertArgsList(argsNode);
+
+        // 使用自动释放内存的 argsList
+        XArgsList argsList;
+        convertArgsList(argsNode, &argsList);
+        auto args = &argsList;
 
         // 获取函数， 以及执行其他类型的函数
         auto funcObj = objNode->value;
@@ -1233,11 +1236,13 @@ namespace langX {
                 auto argsNode = oprObj->op[2];
                 auto funcName = funcNameNode->var_obj->name;
 
-
+                // 获取当前的脚本未知
                 std::string remark = fileInfoString(n->fileinfo);
-                auto args = convertArgsList(argsNode);
+                // 使用自动释放内存的 参数列表
+                ArgsList args;
+                convertArgsList(argsNode, &args);
 
-                __realExecCLAXX_FUNC_CALL(thread, n, objNode->value, funcName, args, remark.c_str());
+                __realExecCLAXX_FUNC_CALL(thread, n, objNode->value, funcName, &args, remark.c_str());
 
             } while (false);
         }

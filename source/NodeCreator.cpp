@@ -455,47 +455,6 @@ void pretreatSwitch(XNode *node) {
 	switchInfo->caseList = caseList;
 }
 
-void freeArgsList(XArgsList *alist) {
-	if (alist != nullptr && alist->index > 0)
-	{
-		for (int i = 0; i < alist->index; i++)
-		{
-			if (alist->args[i] != nullptr)
-			{
-				freeNode(alist->args[i]);
-				alist->args[i] = nullptr;
-			}
-		}
-	}
-
-	free(alist);
-}
-
-//  释放 n 及 n 下的所有节点的参数列表内存
-void freeAllArgList(Node *n) {
-	if (!n)
-	{
-		return;
-	}
-
-	if (n->type == NODE_OPERATOR)
-	{
-		if (n->opr_obj->opr == FUNC_CALL)
-		{
-			if (n->ptr_u != NULL)
-			{
-				freeArgsList((ArgsList*)n->ptr_u);
-				n->ptr_u = NULL;
-			}
-		}
-
-		for (int i = 0; i < n->opr_obj->op_count; i++)
-		{
-			freeAllArgList(n->opr_obj->op[i]);
-		}
-	}
-}
-
 // 释放 数组元素的内存
 void freeArrayInfo(ArrayInfo *arrayInfo){
     // 释放依赖

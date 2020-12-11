@@ -58,8 +58,9 @@ namespace langX{
             langXObject *object = objectRef->getRefObject();
             if (argNode != nullptr)
             {
-                auto args = convertArgsList(argNode);
-                object->callConstructor(args, fileInfoString(n->fileinfo).c_str(), thread);
+                ArgsList args;
+                convertArgsList(argNode, &args);
+                object->callConstructor(&args, fileInfoString(n->fileinfo).c_str(), thread);
             }
             else {
                 object->callConstructor(nullptr, fileInfoString(n->fileinfo).c_str(), thread);
