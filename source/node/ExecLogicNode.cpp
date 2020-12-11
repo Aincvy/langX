@@ -12,7 +12,6 @@
 #include "ClassInfo.h"
 #include "langXObject.h"
 #include "langXObjectRef.h"
-#include "InnerFunction.h"
 
 
 namespace langX{
@@ -207,7 +206,7 @@ namespace langX{
     }
 
     // 等于
-    void __execEQ_OP(NodeLink *nodeLink) {
+    void __execEQ_OP(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -280,15 +279,13 @@ namespace langX{
             }
         }
         else if (left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
-            Function *func1 = ref1->getFunction("operator==");
-            if (func1)
+            langXObjectRef * ref = (langXObjectRef*)left;
+            Function *func = ref->getFunction("operator==");
+            if (func)
             {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = right;
-                _3rdArgs.index = 1;
-                n->value = callFunction(left, func1, &_3rdArgs);
+                // 执行操作符重载
+                auto locationString = "<call by operator==> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
 
                 freeSubNodes(n);
                 nodeLink->backAfterExec = true;
@@ -299,7 +296,7 @@ namespace langX{
             if (right && right->getType() == OBJECT)
             {
                 langXObjectRef * ref2 = (langXObjectRef*)right;
-                if (strcmp(ref1->characteristic(), ref2->characteristic()) == 0)
+                if (strcmp(ref->characteristic(), ref2->characteristic()) == 0)
                 {
                     n->value = Allocator::allocateNumber(1);
                 }
@@ -354,7 +351,7 @@ namespace langX{
     }
 
     // 不等于
-    void __execNE_OP(NodeLink *nodeLink) {
+    void __execNE_OP(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -429,15 +426,13 @@ namespace langX{
             }
         }
         else if (left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
-            Function *func1 = ref1->getFunction("operator!=");
-            if (func1)
+            langXObjectRef * ref = (langXObjectRef*)left;
+            Function *func = ref->getFunction("operator!=");
+            if (func)
             {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = right;
-                _3rdArgs.index = 1;
-                n->value = callFunction(left, func1, &_3rdArgs);
+                // 执行操作符重载
+                auto locationString = "<call by operator!=> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
 
                 freeSubNodes(n);
                 nodeLink->backAfterExec = true;
@@ -448,7 +443,7 @@ namespace langX{
             if (right && right->getType() == OBJECT)
             {
                 langXObjectRef * ref2 = (langXObjectRef*)right;
-                if (strcmp(ref1->characteristic(), ref2->characteristic()) == 0)
+                if (strcmp(ref->characteristic(), ref2->characteristic()) == 0)
                 {
                     n->value = Allocator::allocateNumber(0);
                 }

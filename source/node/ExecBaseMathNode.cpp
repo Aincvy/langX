@@ -13,19 +13,17 @@
 #include "Allocator.h"
 #include "langXObject.h"
 #include "langXObjectRef.h"
-#include "InnerFunction.h"
 #include "LogManager.h"
 
 namespace langX {
 
 
-    void __realExec43(Node *n) {
+    void __realExec43(Node *n, langXThread *thread) {
         Node *n1 = n->opr_obj->op[0];
         Node *n2 = n->opr_obj->op[1];
 
         if (n1->value == nullptr || n2->value == nullptr) {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '+'!")->addRef());
-            freeSubNodes(n);
             return;
         }
 
@@ -37,17 +35,14 @@ namespace langX {
         if (left->getType() == NUMBER && right->getType() == NUMBER) {
             n->value = Allocator::allocateNumber(
                     ((Number *) left)->getDoubleValue() + ((Number *) right)->getDoubleValue());
-        } else if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef *ref1 = (langXObjectRef *) left;
-            Function *func1 = ref1->getFunction("operator+");
-            if (func1) {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = right;
-                _3rdArgs.index = 1;
-                n->value = callFunction(left, func1, &_3rdArgs);
+        } else if (left->getType() == OBJECT) {
+            langXObjectRef *ref = (langXObjectRef *) left;
+            Function *func = ref->getFunction("operator+");
+            if (func) {
+                // 执行操作符重载
+                auto locationString = "<call by operator+> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
 
-                freeSubNodes(n);
                 return;
             }
         } else if ((left != nullptr && left->getType() == STRING) || (right != NULL && right->getType() == STRING)) {
@@ -98,25 +93,27 @@ namespace langX {
                     newArithmeticException("args type error when do opr '+' .")->addRef());
         }
 
-        freeSubNodes(n);
     }
 
     // +
     // 操作结果， 会将结果存储在当前节点中
-    void __exec43(NodeLink *nodeLink) {
+    void __exec43(NodeLink *nodeLink, langXThread *thread) {
 
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
             nodeLink->index = 1;
         } else {
-            __realExec43(n);
+            __realExec43(n, thread);
+
+            doSuffixOperation(n);
+            freeSubNodes(n);
             nodeLink->backAfterExec = true;
         }
     }
 
     // -
-    void __exec45(NodeLink *nodeLink) {
+    void __exec45(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -138,14 +135,12 @@ namespace langX {
         Object *left = n1->value;
         Object *right = n2->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef *ref1 = (langXObjectRef *) left;
-            Function *func1 = ref1->getFunction("operator-");
-            if (func1) {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = right;
-                _3rdArgs.index = 1;
-                n->value = callFunction(left, func1, &_3rdArgs);
+            langXObjectRef *ref = (langXObjectRef *) left;
+            Function *func = ref->getFunction("operator-");
+            if (func) {
+                // 执行操作符重载
+                auto locationString = "<call by operator-> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
 
                 freeSubNodes(n);
                 return;
@@ -164,7 +159,7 @@ namespace langX {
 
 
     // *
-    void __exec42(NodeLink *nodeLink) {
+    void __exec42(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -185,22 +180,20 @@ namespace langX {
 
         Object *left = n1->value;
         Object *right = n2->value;
-        if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef *ref1 = (langXObjectRef *) left;
-            Function *func1 = ref1->getFunction("operator*");
-            if (func1) {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = right;
-                _3rdArgs.index = 1;
-                n->value = callFunction(left, func1, &_3rdArgs);
+        if (left != nullptr && left->getType() == OBJECT) {
+            langXObjectRef *ref = (langXObjectRef *) left;
+            Function *func = ref->getFunction("operator*");
+            if (func) {
+                // 执行操作符重载
+                auto locationString = "<call by operator*> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
 
                 freeSubNodes(n);
                 return;
             }
         }
 
-        if (n1->value->getType() != NUMBER || n2->value->getType() != NUMBER) {
+        if (left->getType() != NUMBER || right->getType() != NUMBER) {
             getState()->curThread()->throwException(newArithmeticException("type error on opr '*'!")->addRef());
             freeSubNodes(n);
             return;
@@ -212,7 +205,7 @@ namespace langX {
     }
 
     // /
-    void __exec47(NodeLink *nodeLink) {
+    void __exec47(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -234,14 +227,12 @@ namespace langX {
         Object *left = n1->value;
         Object *right = n2->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef *ref1 = (langXObjectRef *) left;
-            Function *func1 = ref1->getFunction("operator/");
-            if (func1) {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = right;
-                _3rdArgs.index = 1;
-                n->value = callFunction(left, func1, &_3rdArgs);
+            langXObjectRef *ref = (langXObjectRef *) left;
+            Function *func = ref->getFunction("operator/");
+            if (func) {
+                // 执行操作符重载
+                auto locationString = "<call by operator/> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
 
                 freeSubNodes(n);
                 return;
@@ -268,7 +259,7 @@ namespace langX {
 
 
     // 按位或  |
-    void __exec124(NodeLink *nodeLink) {
+    void __exec124(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -300,7 +291,7 @@ namespace langX {
     }
 
     // 按位与  &
-    void __exec38(NodeLink *nodeLink) {
+    void __exec38(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -332,7 +323,7 @@ namespace langX {
     }
 
     // 按位异或  ^
-    void __exec94(NodeLink *nodeLink) {
+    void __exec94(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -364,7 +355,7 @@ namespace langX {
     }
 
     // 按位取反  ~
-    void __exec126(NodeLink *nodeLink) {
+    void __exec126(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -394,7 +385,7 @@ namespace langX {
     }
 
     // 向左移位
-    void __execLEFT_SHIFT(NodeLink *nodeLink) {
+    void __execLEFT_SHIFT(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -416,14 +407,12 @@ namespace langX {
         Object *left = n1->value;
         Object *right = n2->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef *ref1 = (langXObjectRef *) left;
-            Function *func1 = ref1->getFunction("operator<<");
-            if (func1) {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = right;
-                _3rdArgs.index = 1;
-                n->value = callFunction(left, func1, &_3rdArgs);
+            langXObjectRef *ref = (langXObjectRef *) left;
+            Function *func = ref->getFunction("operator<<");
+            if (func) {
+                // 执行操作符重载
+                auto locationString = "<call by operator<<> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
 
                 freeSubNodes(n);
                 return;
@@ -445,7 +434,7 @@ namespace langX {
     }
 
     // 向右移位
-    void __execRIGHT_SHIFT(NodeLink *nodeLink) {
+    void __execRIGHT_SHIFT(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -467,14 +456,13 @@ namespace langX {
         Object *left = n1->value;
         Object *right = n2->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef *ref1 = (langXObjectRef *) left;
-            Function *func1 = ref1->getFunction("operator>>");
-            if (func1) {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = right;
-                _3rdArgs.index = 1;
-                n->value = callFunction(left, func1, &_3rdArgs);
+            langXObjectRef *ref = (langXObjectRef *) left;
+            Function *func = ref->getFunction("operator>>");
+            if (func) {
+                // 执行操作符重载
+                auto locationString = "<call by operator>>> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
+
 
                 freeSubNodes(n);
                 return;
@@ -496,7 +484,7 @@ namespace langX {
     }
 
     //  取模运算 %
-    void __exec37(NodeLink *nodeLink) {
+    void __exec37(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -518,14 +506,12 @@ namespace langX {
         Object *left = n1->value;
         Object *right = n2->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef *ref1 = (langXObjectRef *) left;
-            Function *func1 = ref1->getFunction("operator%");
-            if (func1) {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = right;
-                _3rdArgs.index = 1;
-                n->value = callFunction(left, func1, &_3rdArgs);
+            langXObjectRef *ref = (langXObjectRef *) left;
+            Function *func = ref->getFunction("operator%");
+            if (func) {
+                // 执行操作符重载
+                auto locationString = "<call by operator%> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
 
                 freeSubNodes(n);
                 return;
@@ -548,7 +534,7 @@ namespace langX {
 
 
     // 自增运算符 ++
-    void __execINC_OP(NodeLink *nodeLink) {
+    void __execINC_OP(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -574,13 +560,12 @@ namespace langX {
 
         Object *left = n1->value;
         if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef *ref1 = (langXObjectRef *) left;
-            Function *func1 = ref1->getFunction("operator++");
-            if (func1) {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.index = 0;
-                n->value = callFunction(left, func1, &_3rdArgs);
+            langXObjectRef *ref = (langXObjectRef *) left;
+            Function *func = ref->getFunction("operator++");
+            if (func) {
+                // 执行操作符重载
+                auto locationString = "<call by operator++> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 0);
 
                 freeSubNodes(n);
                 return;
@@ -607,7 +592,7 @@ namespace langX {
     }
 
     // 自减运算符 --
-    void __execDEC_OP(NodeLink *nodeLink) {
+    void __execDEC_OP(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -635,14 +620,13 @@ namespace langX {
         nodeLink->backAfterExec = true;
 
         Object *left = n1->value;
-        if (left != NULL && left->getType() == OBJECT) {
-            langXObjectRef *ref1 = (langXObjectRef *) left;
-            Function *func1 = ref1->getFunction("operator--");
-            if (func1) {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.index = 0;
-                n->value = callFunction(left, func1, &_3rdArgs);
+        if (left != nullptr && left->getType() == OBJECT) {
+            langXObjectRef *ref = (langXObjectRef *) left;
+            Function *func = ref->getFunction("operator--");
+            if (func) {
+                // 执行操作符重载
+                auto locationString = "<call by operator--> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 0);
 
                 freeSubNodes(n);
                 return;
@@ -669,7 +653,7 @@ namespace langX {
     }
 
 
-    void __execUMINUS(NodeLink *nodeLink) {
+    void __execUMINUS(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);

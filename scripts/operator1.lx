@@ -2,32 +2,35 @@ Class1 {
 
   operator+ => (right){
     print("operator+ " + right + "\n");
+    printStackTrace();
   }
 
   operator- => (right){
     print("operator- " + right + "\n");
+    printStackTrace();
   }
-  
+
   operator* => (right){
     print("operator* " + right + "\n");
   }
-  
+
   operator/ => (right){
     print("operator/ " + right + "\n");
   }
-  
+
   operator. => (right){
     print("operator. " + right + "\n");
+    return "result from operator. ";
   }
-  
+
   operator[] => (right){
     print("operator[] " + right + "\n");
   }
-  
+
   operator++ => (right){
     print("operator++ " + right + "\n");
   }
-  
+
   operator-- => (right){
     print("operator-- " + right + "\n");
   }
@@ -48,3 +51,6 @@ r1 = c--;
 c.abc = 1 ;
 c.abc = 2 ;
 c.key = "hello" ;
+
+r1 = c.abc;
+println("r1=" + r1);

@@ -188,7 +188,7 @@ void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 	}
 	else {
 
-        Object *retObj = callFunction(thread, func, nullptr, ref->getRefObject(), "<call toString() from cpp>");
+        Object *retObj = callFunction(thread, func, emptyArgs, ref->getRefObject(), "<call toString() from cpp>");
 		if (retObj->getType() == STRING)
 		{
 			ss << ((String*)retObj)->getValue();
@@ -277,27 +277,27 @@ XNode * intNode(int i)
 	return node;
 }
 
-XNode * opr(int opr, int npos, ...)
+XNode * opr(int opr, int size, ...)
 {
 	va_list ap;
 
 	XNode * node = newNode();
 	node->opr_obj = (langX::Operator*) calloc(1, sizeof(langX::Operator) * 1);
-	node->opr_obj->op = (XNode**)calloc(1, sizeof(XNode*) * npos);
+	node->opr_obj->op = (XNode**)calloc(1, sizeof(XNode*) * size);
 	node->type = NODE_OPERATOR;
 	node->opr_obj->opr = opr;
-	node->opr_obj->op_count = npos;
+	node->opr_obj->op_count = size;
 
-	va_start(ap, npos);
-	for (size_t i = 0; i < npos; i++)
+	va_start(ap, size);
+	for (size_t i = 0; i < size; i++)
 	{
 		node->opr_obj->op[i] = va_arg(ap, XNode*);
 	}
 	va_end(ap);
 
 	//logger->debug("new opr node, opr is: %d" , opr);
-	//logger->debug(("opr npos: %d", npos);
-	//logger->debug(("node npos: %d", node->opr_obj->op_count);
+	//logger->debug(("opr size: %d", size);
+	//logger->debug(("node size: %d", node->opr_obj->op_count);
 	//logger->debug(("createOperatorNode: %p",node);
 	return node;
 }

@@ -19,7 +19,7 @@
 #include "XNameSpace.h"
 #include "StackTrace.h"
 #include "NullObject.h"
-#include "InnerFunction.h"
+
 #include "langXThread.h"
 #include "LogManager.h"
 #include "Utils.h"
@@ -75,26 +75,22 @@ namespace langX {
             return nullptr;
         }
 
+        auto n = nodeLink->node;
         if (obj->getType() == OBJECT) {
-            langXObjectRef *ref1 = (langXObjectRef *) obj;
-            Function *func1 = ref1->getFunction("operator[]");
-            if (func1) {
-                // 处理参数
-                Object *arg1 = nullptr;
-                Number num1(0);
-                arg1 = &num1;
+            langXObjectRef *ref = (langXObjectRef *) obj;
+            Function *func = ref->getFunction("operator[]");
+            if (func) {
+
                 Node *t = arrayInfo->indexNode;
                 if (t->value == nullptr) {
                     thread->throwException(newException("error index !")->addRef());
                     return nullptr;
                 }
-                arg1 = t->value;
+                auto arg1 = t->value;
 
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = arg1;
-                _3rdArgs.index = 1;
-                return callFunction(obj, func1, &_3rdArgs);
+                // 执行操作符重载
+                auto locationString = "<call by operator[]> "  + fileInfoString(n->fileinfo);
+                return callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, arg1);
             }
         }
 
@@ -731,11 +727,10 @@ namespace langX {
             auto ref = (langXObjectRef *) number;
             auto func = ref->getFunction(funcName);
             if (func) {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.index = 0;
+                // 执行操作符重载
+                auto locationString = "<call by " + std::string(funcName) + ">" + fileInfoString(node->fileinfo);
+                node->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 0);
 
-                node->value = callFunction(number, func, &_3rdArgs);
             } else {
                 // 不存在该方法
                 char tmp[DEFAULT_CHAR_BUFFER_SIZE];
@@ -1831,22 +1826,22 @@ namespace langX {
 
         switch (node->opr_obj->opr) {
             case '+':
-                __exec43(nodeLink);
+                __exec43(nodeLink, thread);
                 break;
             case '-':
-                __exec45(nodeLink);
+                __exec45(nodeLink, thread);
                 break;
             case '*':
-                __exec42(nodeLink);
+                __exec42(nodeLink, thread);
                 break;
             case '/':
-                __exec47(nodeLink);
+                __exec47(nodeLink, thread);
                 break;
             case '%':
-                __exec37(nodeLink);
+                __exec37(nodeLink, thread);
                 break;
             case '=':
-                __NEW_exec61(nodeLink, thread);
+                __exec61(nodeLink, thread);
                 break;
             case ';':
                 __exec59(nodeLink, thread);
@@ -1858,28 +1853,28 @@ namespace langX {
                 __exec60(nodeLink);
                 break;
             case '&':
-                __exec38(nodeLink);
+                __exec38(nodeLink, thread);
                 break;
             case '|':
-                __exec124(nodeLink);
+                __exec124(nodeLink, thread);
                 break;
             case '^':
-                __exec94(nodeLink);
+                __exec94(nodeLink, thread);
                 break;
             case '~':
-                __exec126(nodeLink);
+                __exec126(nodeLink, thread);
                 break;
             case '!':
                 __exec33(nodeLink);
                 break;
             case UMINUS:
-                __execUMINUS(nodeLink);
+                __execUMINUS(nodeLink, thread);
                 break;
             case INC_OP:
-                __execINC_OP(nodeLink);
+                __execINC_OP(nodeLink, thread);
                 break;
             case DEC_OP:
-                __execDEC_OP(nodeLink);
+                __execDEC_OP(nodeLink, thread);
                 break;
             case ADD_EQ:
                 __execADD_EQ(nodeLink);
@@ -1903,10 +1898,10 @@ namespace langX {
                 __execGE_OP(nodeLink);
                 break;
             case EQ_OP:
-                __execEQ_OP(nodeLink);
+                __execEQ_OP(nodeLink, nullptr);
                 break;
             case NE_OP:
-                __execNE_OP(nodeLink);
+                __execNE_OP(nodeLink, nullptr);
                 break;
             case AND_OP:
                 __execOPAND(nodeLink);
@@ -1972,10 +1967,10 @@ namespace langX {
                 __execXTRY(nodeLink, thread);
                 break;
             case LEFT_SHIFT:
-                __execLEFT_SHIFT(nodeLink);
+                __execLEFT_SHIFT(nodeLink, thread);
                 break;
             case RIGHT_SHIFT:
-                __execRIGHT_SHIFT(nodeLink);
+                __execRIGHT_SHIFT(nodeLink, thread);
                 break;
             case KEY_IS:
                 __execXIS(nodeLink, thread);

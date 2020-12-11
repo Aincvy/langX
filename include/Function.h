@@ -12,6 +12,10 @@ namespace langX {
 	class langXThread;
 
 	// 部分属性
+
+	/**
+	 * 表示一个 空的参数列表， 此值并不是null， 只是 index = 0
+	 */
     extern X3rdArgs* emptyArgs;
 
 
@@ -201,6 +205,8 @@ namespace langX {
 	 */
     Object *callFunction(langXThread *thread, Function *function, ArgsList *args, langXObject *object, const char *remark);
 
+    // 执行函数， 本函数是上面那个的 扩展品
+    Object *callFunction(langXThread *thread, Function *function, X3rdArgs *args, langXObject *object, const char *remark);
 
     /**
      *
@@ -229,6 +235,17 @@ namespace langX {
 	 */
 	Object *callFunction(langXThread *thread, Function *function, X3rdArgs *args, const char *remark);
 
+    /**
+     * 调用一个函数
+     * @param thread
+     * @param function
+     * @param object       调用该函数所属的实例
+     * @param remark
+     * @param argc      输入的参数个数
+     * @param ...       动态参数列表， 每个元素都需要放 Object*
+     * @return
+     */
+    Object *callFunction(langXThread *thread, Function *function,langXObject *object,  const char *remark, int argc, ...);
 
 
     /**
@@ -250,6 +267,9 @@ namespace langX {
      * @return
      */
     Object *callFunction(langXThread *thread, FunctionRef *functionRef, ArgsList *args, const char *remark);
+
+
+
 
 
 }

@@ -38,7 +38,7 @@ extern "C" {
 	// 创建一个变量节点， 注意， 变量节点的名字 请使用 malloc等函数分配内存
 	XNode * var(char *);
 	// 创建一个 操作符节点
-	XNode * opr(int opr, int npos, ...);
+	XNode * opr(int opr, int size, ...);
 	// 创建一个后缀节点
 	XNode * sopr(int opr, int npos, ...);
 	// 创建一个 空引用节点

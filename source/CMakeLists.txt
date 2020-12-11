@@ -20,8 +20,7 @@ SET( SRC_LIST
 		Exception.cpp
 		ExecNode.cpp
 		Function.cpp
-		InnerFunction.cpp
-		langX.cpp
+        langX.cpp
 		langXObject.cpp
 		langXObjectRef.cpp
 		langXrtlib.cpp

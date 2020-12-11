@@ -12,52 +12,49 @@ namespace langX {
 
     // +
 // 操作结果， 会将结果存储在当前节点中
-    void __exec43(NodeLink *nodeLink);
+    void __exec43(NodeLink *nodeLink, langXThread *thread);
 
 
 // -
-    void __exec45(NodeLink *nodeLink);
+    void __exec45(NodeLink *nodeLink, langXThread *thread);
 
 // *
-    void __exec42(NodeLink *nodeLink);
+    void __exec42(NodeLink *nodeLink, langXThread *thread);
 
 // /
-    void __exec47(NodeLink *nodeLink);
+    void __exec47(NodeLink *nodeLink, langXThread *thread);
 
 //  取模运算 %
-    void __exec37(NodeLink *nodeLink);
+    void __exec37(NodeLink *nodeLink, langXThread *thread);
 
 
 // 按位或  |
-    void __exec124(NodeLink *nodeLink);
+    void __exec124(NodeLink *nodeLink, langXThread *thread);
 
 // 按位与  &
-    void __exec38(NodeLink *nodeLink);
+    void __exec38(NodeLink *nodeLink, langXThread *thread);
 
 // 按位异或  ^
-    void __exec94(NodeLink *nodeLink);
+    void __exec94(NodeLink *nodeLink, langXThread *thread);
 
 // 按位取反  ~
-    void __exec126(NodeLink *nodeLink);
+    void __exec126(NodeLink *nodeLink, langXThread *thread);
 
 // 向左移位
-    void __execLEFT_SHIFT(NodeLink *nodeLink);
+    void __execLEFT_SHIFT(NodeLink *nodeLink, langXThread *thread);
 
 // 向右移位
-    void __execRIGHT_SHIFT(NodeLink *nodeLink);
+    void __execRIGHT_SHIFT(NodeLink *nodeLink, langXThread *thread);
 
 
 // 自增运算符 ++
-    void __execINC_OP(NodeLink *nodeLink);
+    void __execINC_OP(NodeLink *nodeLink, langXThread *thread);
 
 // 自减运算符 --
-    void __execDEC_OP(NodeLink *nodeLink);
+    void __execDEC_OP(NodeLink *nodeLink, langXThread *thread);
 
 
-    // 赋值操作 =
     void __exec61(NodeLink *nodeLink, langXThread *thread);
-
-    void __NEW_exec61(NodeLink *nodeLink, langXThread *thread);
 
     void __execADD_EQ(NodeLink *nodeLink);
 
@@ -68,6 +65,9 @@ namespace langX {
     void __execDIV_EQ(NodeLink *nodeLink);
 
     void __execMOD_EQ(NodeLink *nodeLink);
+
+    // - 号
+    void __execUMINUS(NodeLink *nodeLink, langXThread *thread);
 
 
 // 中断操作
@@ -101,10 +101,10 @@ namespace langX {
     void __execLE_OP(NodeLink *nodeLink);
 
 // 等于
-    void __execEQ_OP(NodeLink *nodeLink);
+    void __execEQ_OP(NodeLink *nodeLink, langXThread *thread);
 
 // 不等于
-    void __execNE_OP(NodeLink *nodeLink);
+    void __execNE_OP(NodeLink *nodeLink, langXThread *thread);
 
     void __execOPAND(NodeLink *nodeLink);
 
@@ -131,8 +131,6 @@ namespace langX {
 
     void __execDefault(NodeLink *nodeLink, langXThread *thread);
 
-    void __execUMINUS(NodeLink *nodeLink);
-
     void __execFUNC_CALL(NodeLink *nodeLink, langXThread *thread);
 
 
@@ -148,7 +146,7 @@ namespace langX {
     void __execCLAXX_BODY(NodeLink *nodeLink);
 
 // 变量声明
-    void __execVAR_DECLAR(NodeLink *nodeLink, langXThread *thread);
+    void __execVAR_DECLARE(NodeLink *nodeLink, langXThread *thread);
 
     void __execCLAXX_MEMBER(NodeLink *nodeLink, langXThread *thread);
 

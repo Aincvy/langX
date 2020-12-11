@@ -2,6 +2,8 @@
 #include <string.h>
 #include <string>
 #include <stdio.h>
+#include <stdarg.h>
+
 #include "Object.h"
 #include "ExecNode.h"
 #include "langX.h"
@@ -543,7 +545,7 @@ namespace langX {
 	    _3rdArgs.index = 0;
 	    _3rdArgs.object = nullptr;
 
-	    callFunction(function, &_3rdArgs, remark);
+        return callFunction(function, &_3rdArgs, remark);
 	}
 
     Object *callFunction(langXThread *thread, Function *function, X3rdArgs *args, const char *remark) {
@@ -567,6 +569,22 @@ namespace langX {
         return result;
     }
 
+    Object *callFunction(langXThread *thread, Function *function,langXObject *object,  const char *remark, int argc, ...){
+	    X3rdArgs _3rdArgs = {};
+	    _3rdArgs.index = argc;
+        if (argc > 0) {
+            va_list ap;
+
+            va_start(ap, argc);
+            for (int i = 0; i < argc; ++i) {
+                _3rdArgs.args[i] = va_arg(ap, Object*);
+            }
+            va_end(ap);
+        }
+
+        return callFunction(thread, function, &_3rdArgs, object, remark);
+	}
+
     Object *callFunction(langXThread *thread, Function *function, ArgsList *args, const char *remark){
         return callFunction(thread, function, args, nullptr, remark);
 	}
@@ -576,6 +594,10 @@ namespace langX {
 	    X3rdArgs _3rdArgs;
         copyArgsTo3rdArgs(args, &_3rdArgs, object);
 
+        return callFunction(thread, function, &_3rdArgs, object, remark);
+    }
+
+    Object *callFunction(langXThread *thread, Function *function, X3rdArgs *args, langXObject *object, const char *remark){
         // 进入 对象环境
         auto env = object == nullptr ? nullptr : object->getObjectEnvironment();
         if (env != nullptr) {
@@ -583,7 +605,7 @@ namespace langX {
         }
 
         // 执行函数逻辑
-        auto result = callFunction(thread, function, &_3rdArgs, remark);
+        auto result = callFunction(thread, function, args, remark);
 
         // 退出对象环境
         if (env != nullptr) {
@@ -591,7 +613,7 @@ namespace langX {
         }
 
         return result;
-    }
+	}
 
 
     Object *callFunction(langXThread *thread, FunctionRef *functionRef, X3rdArgs *args, const char *remark) {
