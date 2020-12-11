@@ -1186,14 +1186,14 @@ namespace langX {
             FunctionRef ref(func);
             ref.setObject(nullptr);
 
-            auto len = 1 + args->index;
-            Object *realArgs[len];
-            realArgs[0] = stringObj;
+            X3rdArgs _3rdArgs;
+            _3rdArgs.index = 1 + args->index;
+            _3rdArgs.args[0] = stringObj;
             for (int i = 0; i < args->index; ++i) {
-                realArgs[i + 1] = args->args[i]->value;
+                _3rdArgs.args[i + 1] = args->args[i]->value;
             }
 
-            return ref.call(realArgs, len, remark);
+            return callFunction(thread, func, &_3rdArgs, remark);
 
         } else {
             // 未找到函数， 丢个异常

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdarg.h>
+
 #include "Object.h"
 
 namespace langX {
@@ -151,14 +153,32 @@ namespace langX {
 		// 如果这个函数来自一个 对象， 则会返回一个对象环境， 如果来自类， 则返回类桥接环境
 		Environment *getFunctionEnv();
 
-		// 调用这个函数  更多解释请查看   NodeCreator.h 中 callFunction 函数的说明！
-		// 一般是在解释过程中调用这个函数， 在c++ 层面不应该直接使用这个函数
-		Object *call(ArgsList *argsList, const char *remark );
+		/**
+		 * 在 cpp层次调用这个函数
+		 * @param args   参数列表
+		 * @param remark
+		 * @return
+		 */
+		Object *call(X3rdArgs *args, const char *remark );
 
-		//  参数为1 参数数组， 参数2为数组的元素个数 参数3为 备注
-		//  此函数内部实现会对参数进行 克隆然后再使用
-		//  如果 在c++ 层面，可以使用这个函数对函数进行调用 
-		Object *call(Object* [] ,int , const char *remark);
+		/**
+		 * 在cpp层次调用这个函数
+		 * @param thread
+		 * @param args   参数列表
+		 * @param remark
+		 * @return
+		 */
+        Object *call(langXThread *thread, X3rdArgs *args, const char *remark );
+
+        /**
+         * 在 cpp 层次调用 这个函数
+         * @param thread
+         * @param remark
+         * @param argc
+         * @param ...
+         * @return
+         */
+		Object *call(langXThread *thread, const char *remark, int argc, ...);
 
 	private:
 
@@ -184,6 +204,14 @@ namespace langX {
      * @param object
      */
     void copyArgsTo3rdArgs(ArgsList *args, X3rdArgs *_3rdArgs, langXObject *object);
+
+    /**
+     * 赋值一个 va_list 到一个 3rdArgs 里面
+     * @param ap
+     * @param _3rdArgs
+     * @param argc
+     */
+    void copyVaListTo3rdArgs(va_list ap, X3rdArgs & _3rdArgs, int argc);
 
     /**
      * 添加函数的拓展变量到 函数内部 | $_, $1,$2 等
@@ -247,6 +275,18 @@ namespace langX {
      */
     Object *callFunction(langXThread *thread, Function *function,langXObject *object,  const char *remark, int argc, ...);
 
+    /**
+     * 调用一个函数  给一个可变参数的列表
+     * @param thread
+     * @param function
+     * @param object
+     * @param remark
+     * @param ap
+     * @return
+     */
+    Object *vCallFunction(langXThread *thread, Function *function, langXObject *object, const char *remark, int argc,
+                          va_list ap);
+
 
     /**
      * 调用函数
@@ -257,6 +297,27 @@ namespace langX {
      */
     Object *callFunction(langXThread *thread, FunctionRef *functionRef, X3rdArgs *args, const char *remark);
 
+    /**
+     * 使用一个函数引用 调用函数
+     * @param thread
+     * @param functionRef
+     * @param remark
+     * @param argc
+     * @param ...    可变参数列表
+     * @return
+     */
+    Object *callFunction(langXThread *thread, FunctionRef *functionRef, const char *remark, int argc, ...);
+
+    /**
+     * 使用一个函数引用调用一个函数
+     * @param thread
+     * @param functionRef
+     * @param remark
+     * @param argc
+     * @param ap    参数列表
+     * @return
+     */
+    Object *vCallFunction(langXThread *thread, FunctionRef *functionRef, const char *remark, int argc, va_list ap);
 
     /**
      * 使用一个 函数引用来执行一个函数

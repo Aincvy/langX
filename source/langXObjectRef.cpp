@@ -59,26 +59,6 @@ namespace langX {
 		return this->m_object_ref->getFunction(name);
 	}
 
-	Object * langXObjectRef::callFunction(const char *name) const
-	{
-		if (m_object_ref == nullptr)
-		{
-			return NULL;
-		}
-
-		return this->m_object_ref->callFunction(name);
-	}
-
-	Object * langXObjectRef::callFunction(const char *name, Object *args[], int len, const char *remark)
-	{
-		if (m_object_ref == nullptr)
-		{
-			return nullptr;
-		}
-
-		return this->m_object_ref->callFunction(name, args, len, remark);
-	}
-
 	const ClassInfo * langXObjectRef::getClassInfo() const
 	{
 		if (m_object_ref == nullptr)

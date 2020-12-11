@@ -355,91 +355,25 @@ namespace langX {
 		return nullptr;
 	}
 
-	Object * FunctionRef::call(ArgsList * argsList, const char * remark )
+	Object * FunctionRef::call(X3rdArgs *args, const char * remark )
 	{
 
-		return nullptr;
+		return this->call(getState()->curThread(), args, remark);
 	}
 
-	Object * FunctionRef::call(Object* args[], int len, const char * remark)
-	{
-		Function *function = this->m_func;
-		Object * ret = NULL;
+    Object *FunctionRef::call(langXThread *thread, X3rdArgs *args, const char *remark) {
+        return callFunction(thread, this, args, remark);;
+    }
 
-		langXThread * thread = getState()->curThread();
-		thread->getStackTrace().newFrame(function->getClassInfo(), function, remark);
 
-		if (function->is3rd())
-		{
-			// 第三方函数
-			X3rdFunction *x3rdfunc = (X3rdFunction*)function;
-			X3rdArgs _3rdArgs;
-			memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-			if (args != NULL)
-			{
-				for (int i = 0; i < len; i++)
-				{
-					if (args[i] == NULL)
-					{
-						_3rdArgs.args[i] = NULL;
-						continue;
-					}
+    Object *FunctionRef::call(langXThread *thread, const char *remark, int argc, ...) {
+	    va_list ap;
+	    va_start(ap, argc);
+	    auto result = vCallFunction(thread, this, remark, argc, ap);
+	    va_end(ap);
 
-					_3rdArgs.args[i] = args[i]->clone();
-				}
-				_3rdArgs.index = len;
-			}
-
-			_3rdArgs.object = this->m_func_obj;
-
-			ret = x3rdfunc->call(_3rdArgs);
-		}
-		else {
-			// 当前引用指向的那个环境
-			Environment *tEnv = getFunctionEnv();
-			if (tEnv != nullptr)
-			{
-				getState()->curThread()->newEnv(tEnv);
-			}
-
-			// 函数执行的环境
-			Environment * env = getState()->curThread()->newEnv();
-
-			if (args != NULL)
-			{
-				XParamsList *params = function->getParamsList();
-				for (int i = 0; i < len; i++)
-				{
-					if (i >= params->index)
-					{
-						break;
-					}
-
-					if (args[i])
-					{
-						env->putObject(params->args[i], args[i]);
-					}
-					else {
-						NullObject nullobj;
-						env->putObject(params->args[i], &nullobj);
-					}
-				}
-			}
-
-			ret = function->call();
-			//printf("call function %s over in function ref." ,this->m_func->getName());
-			getState()->curThread()->backEnv();
-
-			if (tEnv != NULL)
-			{
-				getState()->curThread()->backEnv();
-			}
-		}
-
-		thread->getStackTrace().popFrame();
-
-		return ret;
-	}
+        return result;
+    }
 
 	void FunctionRef::finalize()
 	{
@@ -461,6 +395,14 @@ namespace langX {
         }
     }
 
+    void copyVaListTo3rdArgs(va_list ap, X3rdArgs & _3rdArgs, int argc){
+        _3rdArgs.index = argc;
+        if (argc > 0) {
+            for (int i = 0; i < argc; ++i) {
+                _3rdArgs.args[i] = va_arg(ap, Object*);
+            }
+        }
+    }
 
     // 添加函数的拓展变量到 函数内部 | $_, $1,$2 等
     void addFunctionExtendsVar(Environment* env, X3rdArgs* args){
@@ -569,21 +511,26 @@ namespace langX {
         return result;
     }
 
-    Object *callFunction(langXThread *thread, Function *function,langXObject *object,  const char *remark, int argc, ...){
-	    X3rdArgs _3rdArgs = {};
-	    _3rdArgs.index = argc;
-        if (argc > 0) {
-            va_list ap;
 
-            va_start(ap, argc);
-            for (int i = 0; i < argc; ++i) {
-                _3rdArgs.args[i] = va_arg(ap, Object*);
-            }
-            va_end(ap);
-        }
+    Object *callFunction(langXThread *thread, Function *function,langXObject *object,  const char *remark, int argc, ...){
+
+	    va_list ap;
+	    va_start(ap, argc);
+	    auto result = vCallFunction(thread, function, object, remark, argc, ap);
+        va_end(ap);
+
+        return result;
+	}
+
+
+    Object *
+    vCallFunction(langXThread *thread, Function *function, langXObject *object, const char *remark, int argc, va_list ap) {
+
+        X3rdArgs _3rdArgs = {};
+        copyVaListTo3rdArgs(ap, _3rdArgs, argc);
 
         return callFunction(thread, function, &_3rdArgs, object, remark);
-	}
+    }
 
     Object *callFunction(langXThread *thread, Function *function, ArgsList *args, const char *remark){
         return callFunction(thread, function, args, nullptr, remark);
@@ -643,6 +590,23 @@ namespace langX {
         return callFunction(thread, functionRef, &_3rdArgs, remark);
     }
 
+    Object *langX::callFunction(langXThread *thread, FunctionRef *functionRef, const char *remark, int argc, ...) {
+	    va_list ap;
+	    va_start(ap, argc);
+	    auto result = vCallFunction(thread, functionRef, remark, argc, ap);
+	    va_end(ap);
+
+        return result;
+    }
+
+    Object *
+    langX::vCallFunction(langXThread *thread, FunctionRef *functionRef, const char *remark, int argc, va_list ap) {
+	    // 转换 va_list 变成一个 3rdArgs
+        X3rdArgs _3rdArgs = {};
+        copyVaListTo3rdArgs(ap, _3rdArgs, argc);
+
+        return callFunction(thread, functionRef, &_3rdArgs, remark);
+    }
 
 
 }

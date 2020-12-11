@@ -1,6 +1,5 @@
 #include <string>
-#include <iostream>
-#include <string.h>
+
 #include "Object.h"
 #include "ClassInfo.h"
 #include "Function.h"
@@ -49,20 +48,18 @@ namespace langX {
 
 	langXObject::~langXObject()
 	{
-		//std::cout << "langXObject::~langXObject() " << this->m_class_info->getName() << std::endl;
-
 		this->m_disposing = true;
 		// 先干掉自己， 再干掉父类对象
 
 		// 先调用自己的 析构函数
 		std::string str = "~";
 		str += this->m_class_info->getName();
-		callFunction(str.c_str());
+		callFunction(str.c_str(), "<call from cpp deconstruction>", 0);
 
-		if (this->m_my_env != NULL)
+		if (this->m_my_env != nullptr)
 		{
 			delete this->m_my_env;
-			this->m_my_env = NULL;
+			this->m_my_env = nullptr;
 		}
 
 		// 清理引用
@@ -79,10 +76,10 @@ namespace langX {
 		this->m_refs.clear();
 
 		// 干掉父类对象
-		if (this->m_parent != NULL)
+		if (this->m_parent != nullptr)
 		{
 			delete this->m_parent;
-			this->m_parent = NULL;
+			this->m_parent = nullptr;
 		}
 	}
 
@@ -263,34 +260,22 @@ namespace langX {
         callConstructor(args, remark, getState()->curThread());
 	}
 
-	Object * langXObject::callFunction(const char *name) const
-	{
-		Function * func = getFunction(name);
-		if (func == NULL)
-		{
-			return NULL;
-		}
+    Object *langXObject::callFunction(const char *name, const char *remark, int argc, ...) {
+        Function * func = getFunction(name);
+        if (func == nullptr)
+        {
+            return nullptr;
+        }
 
-        getState()->curThread()->newEnvByBridge(this->m_my_env);
-		Object *obj = func->call();
-		getState()->curThread()->backEnv();
+        auto thread = getState()->curThread();
 
-		return obj;
-	}
+        va_list ap;
+        va_start(ap, argc);
+        auto result = vCallFunction(thread, func, this, remark, argc, ap);
+        va_end(ap);
 
-	Object * langXObject::callFunction(const char *name, Object* args[], int len, const char * remark)
-	{
-		Function * func = getFunction(name);
-		if (func == nullptr)
-		{
-			return NULL;
-		}
-
-		FunctionRef fRef(func);
-		Object *ret = fRef.call(args, len, remark);
-
-		return ret;
-	}
+        return result;
+    }
 
 	void langXObject::setMembersEmergeEnv(Environment *env)
 	{
@@ -330,7 +315,9 @@ namespace langX {
 		return this->m_disposing;
 	}
 
-	langXObjectExtend::langXObjectExtend(ClassInfo *c) : langXObject(c)
+
+
+    langXObjectExtend::langXObjectExtend(ClassInfo *c) : langXObject(c)
 	{
 
 	}
