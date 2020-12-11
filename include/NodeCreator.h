@@ -41,8 +41,6 @@ extern "C" {
 	XNode * opr(int opr, int npos, ...);
 	// 创建一个后缀节点
 	XNode * sopr(int opr, int npos, ...);
-	// 创建一个函数节点
-	XNode * func(char *, XParamsList *,XNode *);
 	// 创建一个 空引用节点
 	XNode * xnull();
 // 创建一个节点， 节点内容为实参列表

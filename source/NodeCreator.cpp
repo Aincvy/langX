@@ -325,23 +325,6 @@ XNode * sopr(int opr, int npos, ...)
 	return node;
 }
 
-XNode * func(char *name, XParamsList *params, XNode *node)
-{
-
-	if (node != NULL)
-	{
-		node->freeOnExecuted = false;
-	}
-
-	Function *func = new Function(name, node);
-	func->setParamsList(params);
-	free(name);
-	XNode * nodeF = newNode();
-	nodeF->type = NODE_FUNCTION;
-	nodeF->ptr_u = func;
-	return nodeF;
-}
-
 XNode * xnull()
 {
 	XNode * node = newNode();
@@ -537,12 +520,6 @@ void freeNode(XNode * node) {
 	{
 		Allocator::free(node->value);
         node->value = nullptr;
-	}
-
-	// 如果是一个函数节点， 还需要释放它的参数列表
-	if (node->type == NODE_FUNCTION)
-	{
-		freeAllArgList(node);
 	}
 
     // 根据类型释放不同内存的内容

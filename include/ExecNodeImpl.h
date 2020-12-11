@@ -187,8 +187,6 @@ namespace langX {
 //  常量限制
     void __execCONST(NodeLink *nodeLink, langXThread *thread);
 
-    void __execLOCAL(NodeLink *nodeLink, langXThread *thread);
-
 
 
 

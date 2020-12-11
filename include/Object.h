@@ -127,8 +127,6 @@ namespace langX {
 		NODE_OPERATOR ,
 		// 实参节点   
 		NODE_ARGS  ,
-		// 函数节点 （函数声明）  当节点类型是函数的时候， 函数引用在node->value 上
-		NODE_FUNCTION,
 		// 类节点 （类声明） 当节点类型为 类的时候， 类引用在 node->ptr_u  上面
 		NODE_CLASS ,
 		// 空引用节点

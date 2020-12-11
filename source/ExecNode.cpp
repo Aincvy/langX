@@ -1327,7 +1327,6 @@ namespace langX {
         nodeLink->backAfterExec = true;
     }
 
-
     // 包含其他文件
     void __execINCLUDE(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
@@ -1386,108 +1385,13 @@ namespace langX {
         nodeLink->backAfterExec = true;
     }
 
-    void __realExecCONST(Node *n, langXThread *thread) {
-        if (!n) {
-            return;
-        }
-        Object *obj = Allocator::allocate(NULLOBJECT);
-        obj->setEmergeEnv(thread->getCurrentEnv());
-        obj->setConst(true);
-        for (int i = 0; i < n->opr_obj->op_count; i++) {
-            Node *t = n->opr_obj->op[i];
-            if (t == NULL) {
-                continue;
-            }
-            if (t->type != NODE_VARIABLE) {
-                if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLARE) {
-                    __realExecCONST(t, thread);
-                } else {
-                    // 抛出异常
-                    thread->throwException(newUnsupportedOperationException("invalid const stmt.")->addRef());
-                    return;
-                }
-                continue;
-            }
-
-            char *name = t->var_obj->name;
-            Object *tmp = thread->getCurrentEnv()->getObjectSelf(name);
-            if (tmp == NULL) {
-                setValueToEnv(name, obj);
-            } else {
-                tmp->setConst(!tmp->isConst());
-            }
-        }
-
-        Allocator::free(obj);
-    }
-
-    //  常量限制
-    void __execCONST(NodeLink *nodeLink, langXThread *thread) {
-        Node *n = nodeLink->node;
-        __realExecCONST(n, thread);
-        nodeLink->backAfterExec = true;
-    }
-
-    //  local 限制
-    void __realExecLOCAL(Node *n, langXThread *thread) {
-        if (!n) {
-            return;
-        }
-
-        Object *obj = Allocator::allocate(NULLOBJECT);
-        obj->setEmergeEnv(thread->getCurrentEnv());
-        obj->setLocal(true);
-        for (int i = 0; i < n->opr_obj->op_count; i++) {
-            Node *t = n->opr_obj->op[i];
-            if (t == NULL) {
-                continue;
-            }
-            if (t->type != NODE_VARIABLE && t->type != NodeType::NODE_CLASS) {
-                if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLARE) {
-                    __realExecLOCAL(t, thread);
-                } else {
-                    // 抛出异常
-                    thread->throwException(newUnsupportedOperationException("invalid local stmt.")->addRef());
-                    return;
-                }
-                continue;
-            }
-
-            if (t->type == NodeType::NODE_VARIABLE) {
-                char *name = t->var_obj->name;
-                Object *tmp = thread->getCurrentEnv()->getObjectSelf(name);
-                if (tmp == NULL) {
-                    setValueToEnv(name, obj);
-                } else {
-                    tmp->setLocal(!tmp->isLocal());
-                }
-            } else if (t->type == NodeType::NODE_CLASS) {
-                // 类声明
-                t->state.isLocal = true;
-                NodeLink tmpNodeLink;
-                memset(&tmpNodeLink, 0, sizeof(NodeLink));
-                tmpNodeLink.node = t;
-                __realExecNode(&tmpNodeLink, thread);
-            }
-        }
-
-        Allocator::free(obj);
-    }
-
-    void __execLOCAL(NodeLink *nodeLink, langXThread *thread) {
-        Node *n = nodeLink->node;
-        __realExecLOCAL(n, thread);
-        nodeLink->backAfterExec = true;
-    }
 
     //  continue 关键字
     void __execCONTINUE(NodeLink *nodeLink, langXThread *thread) {
-        Node *n = nodeLink->node;
-
         if (!thread->isInLoop()) {
             getState()->curThread()->throwException(
                     newUnsupportedOperationException("invalid continue stmt.")->addRef());
-            //printf("无效的CONTINUE 语句 ");
+
             return;
         }
 
@@ -1906,36 +1810,6 @@ namespace langX {
             node->ptr_u = NULL;
 
             return;
-        } else if (node->type == NODE_FUNCTION) {
-            // 函数
-            if (node->ptr_u == NULL) {
-                return;
-            }
-            Function *func = (Function *) node->ptr_u;
-            if (!func->hasName()) {
-                // 匿名函数    ...  wtf ???  当初匿名函数到底是怎么进行处理的- -
-                //  2017年12月3日   当运算一个匿名函数的时候， 就把改该节点的值 做成一个函数指针指向这个匿名函数
-                node->value = Allocator::allocateFunctionRef(func);
-                return;
-            }
-            if (thread->getCurrentEnv()->getFunctionSelf(func->getName()) != NULL) {
-                char tmp[100] = {0};
-                sprintf(tmp, "function %s already declared.", func->getName());
-                thread->throwException(newRedeclarationException(tmp)->addRef());
-                delete func;
-                node->value = NULL;
-                return;
-            }
-
-            //函数的产生环境可能在类内部
-            //func->setEmergeEnv(getState()->curThread()->getCurrentEnv());
-            Environment *env = getState()->getScriptOrNSEnv();
-            if (env != NULL && env->getType() == EnvironmentType::TScriptEnvironment) {
-                func->setScriptEnv((ScriptEnvironment *) env);
-            }
-            thread->getCurrentEnv()->putFunction(func->getName(), func);
-
-            return;
         } else if (node->type == NODE_NULL) {
             node->value = Allocator::allocate(NULLOBJECT);
             return;
@@ -2121,14 +1995,8 @@ namespace langX {
             case KEY_REF:
                 __execREF(nodeLink);
                 break;
-            case KEY_CONST:
-                __execCONST(nodeLink, thread);
-                break;
             case KEY_CONTINUE:
                 __execCONTINUE(nodeLink, thread);
-                break;
-            case KEY_LOCAL:
-                __execLOCAL(nodeLink, thread);
                 break;
             case OPR_NODE_LIST:
                 __execNODE_LIST(nodeLink, thread);
