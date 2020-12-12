@@ -80,9 +80,22 @@ namespace langX {
 		// 切换到指定的脚本环境上 [只切换环境]
 		void newScriptEnv(ScriptEnvironment *);
 
+		/**
+		 * 回退一个脚本空间
+		 * @param freeEnv  true: 释放脚本空间的环境， false: 不释放
+		 */
+		void backScriptEnv(bool freeEnv);
+
 		// 执行一个脚本  该脚本会切换到指定文件的环境（如果之前有存在，则会切换到那个环境， 没有就new一个）
 		// 返回 0 表示切换成功， 返回 -1 表示失败
 		int doFile(const char *);
+
+		/**
+		 * 执行一个字符串
+		 * @param content
+		 * @return
+		 */
+		int doString(const char *content);
 
 		// 包含一个文件  当前脚本上执行
 		int includeFile(const char *);
@@ -169,6 +182,11 @@ namespace langX {
 		char **startArgValues;
 
 		langXThreadMgr* m_thread_mgr;
+
+		/**
+		 * 如果没有在parse 就开始parse
+		 */
+		void startParseIfNot();
 
 	};
 

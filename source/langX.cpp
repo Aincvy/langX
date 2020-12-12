@@ -319,6 +319,36 @@ namespace langX {
 		this->m_script_env = env;
 	}
 
+    void langXState::backScriptEnv(bool freeEnv) {
+        if (!this->m_script_env) {
+            return;
+        }
+
+        // 重置当前的脚本环境
+        if (freeEnv) {
+            delete this->m_script_env;
+        }
+        this->m_script_env = nullptr;
+
+        if (!m_doing_script_envs.empty())
+        {
+            ScriptEnvironment *scrEnv = m_doing_script_envs.front();
+            m_doing_script_envs.erase(m_doing_script_envs.begin());
+
+//            newScriptEnv(scrEnv);
+            this->m_script_env = scrEnv;
+        }
+    }
+
+    void langXState::startParseIfNot() {
+        if (!m_yy_parsing)
+        {
+            logger->debug("re-start parsing");
+            m_yy_parsing = true;
+            yyparse();
+        }
+    }
+
 	int langXState::doFile(const char *filename)
 	{
 		if (filename == nullptr)
@@ -364,18 +394,37 @@ namespace langX {
 		}
 
 		pushBuffer(fp);
-
-		if (!m_yy_parsing)
-		{
-			logger->debug("re-start parsing");
-			m_yy_parsing = true;
-			yyparse();
-		}
+        startParseIfNot();
 
 		return 0;
 	}
 
-	int langXState::includeFile(const char *filename)
+    int langXState::doString(const char *content) {
+        if (content == nullptr) {
+            return -1;
+        }
+
+        // todo 功能尚且未完成， 需要重新确认。
+
+	    auto size = strlen(content);
+	    auto fp = fmemopen(const_cast<char*>(content), size, "r");
+
+        // 新环境
+        // todo 添加一些随机字符串
+        ScriptEnvironment env("_do_string_");
+
+        newScriptEnv(&env);
+
+        pushBuffer(fp);
+        startParseIfNot();
+
+         backScriptEnv(false);
+
+        return 0;
+    }
+
+
+    int langXState::includeFile(const char *filename)
 	{
 		if (filename == NULL)
 		{
@@ -402,11 +451,7 @@ namespace langX {
 
 		pushBuffer(fp);
 
-		if (!m_yy_parsing)
-		{
-			m_yy_parsing = true;
-			yyparse();
-		}
+		startParseIfNot();
 
 		return 0;
 	}
@@ -462,11 +507,7 @@ namespace langX {
 
 		pushBuffer(fp);
 
-		if (!m_yy_parsing)
-		{
-			m_yy_parsing = true;
-			yyparse();
-		}
+		startParseIfNot();
 
 		return 0;
 	}
@@ -524,18 +565,14 @@ namespace langX {
 		// 将新的脚本环境 应用到当前环境上
 		newScriptEnv(env);
 
-		//printf("push file %s to lex buffer!\n" , tmp);
-
 		pushBuffer(fp);
 
-		if (!m_yy_parsing)
-		{
-			m_yy_parsing = true;
-			yyparse();
-		}
+		startParseIfNot();
 
 		return 0;
 	}
+
+
 
 	bool langXState::isDidScript(const char *f)
 	{
@@ -580,17 +617,7 @@ namespace langX {
 			return;
 		}
 		
-		if (!m_doing_script_envs.empty())
-		{
-			ScriptEnvironment *scrEnv = m_doing_script_envs.front();
-			m_doing_script_envs.erase(m_doing_script_envs.begin());
-
-			newScriptEnv(scrEnv);
-		}
-		else {
-			// 重置当前的脚本环境
-			this->m_script_env = nullptr;  
-		}
+        backScriptEnv(false);
 	}
 
 #ifdef WIN32
@@ -718,7 +745,9 @@ namespace langX {
 	}
 
 
-	void includeFile(const char *filename) {
+
+
+    void includeFile(const char *filename) {
 	    char result[1024] = { 0 };
 	    convertToAbsolutePath(filename, getParsingFilename(), result);
 

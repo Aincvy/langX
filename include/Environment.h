@@ -37,7 +37,7 @@ namespace langX {
 	public:
 		Environment();
 		/* 在释放这个对象的时候并不会施放他的父级环境对象 */
-		~Environment();
+		virtual ~Environment();
 
 		// 放入一个 obj 的副本到 指定的key 
 		virtual void putObject(const char*, Object*) = 0;
