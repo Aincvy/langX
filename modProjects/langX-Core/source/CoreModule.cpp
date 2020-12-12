@@ -7,6 +7,11 @@
 
 namespace langX {
 
+    // 声明实现
+    CoreModule* coreModule = nullptr;
+    Logger* coreModuleLogger = nullptr;
+
+
 	CoreModule::CoreModule()
 	{
 		this->setName("core");
@@ -18,7 +23,9 @@ namespace langX {
 
 	int CoreModule::init(langXState *state)
 	{
-		logger->debug("init langX-core 库");
+        coreModuleLogger = m_logger;
+
+		m_logger->debug("init langX-core 库");
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.core.util");
 		regIterator(state, space);
 		regList(state, space);
@@ -30,7 +37,7 @@ namespace langX {
 		regRandom(state, space);
 
 		space = state->getNameSpaceOrCreate("langX.core");
-		regDeafult(state, space);
+        regDefault(state, space);
 
 		space = state->getNameSpaceOrCreate("langX.core.io");
 		regFile(state, space);
@@ -56,7 +63,9 @@ namespace langX {
 
 int loadModule(langX::X3rdModule *& mod)
 {
-	mod = new langX::CoreModule();
+	langX::coreModule = new langX::CoreModule();
+
+	mod = langX::coreModule;
 
 	return 0;
 }

@@ -173,4 +173,8 @@ namespace langX {
         return 1;
     }
 
+    bool isEmpty(const char *str) {
+        return str == nullptr || strlen(str) == 0;
+    }
+
 }

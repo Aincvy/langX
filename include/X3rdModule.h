@@ -11,6 +11,8 @@
 namespace langX {
 
 	class langXState;
+	// 日志对象
+	class Logger;
 
 	// 第三方模块。  所有的外部模块应该继承这个类
 	class X3rdModule
@@ -34,15 +36,31 @@ namespace langX {
 		void setSoObj(void *soObj);
 		void * getSoObj() const;
 
+		/**
+		 * 获取当前 module 的日志 输出类
+		 * @return
+		 */
+		Logger* getLogger();
+
+		/**
+		 * 初始化 日志相关的类
+		 */
+        void initLogger(langXState *state);
+
+
+    protected:
+        // 日志对象
+        Logger *m_logger = nullptr;
+
 	private:
 
 		// 模块的名字
-		char * m_name;
+		char * m_name = nullptr;
 		// 加载的模块的 so 文件的指针
-		void * m_soObj; 
+		void * m_soObj = nullptr;
 
-		// 检测是否需要释放name的内存
-		void checkForFreeName();
+		// 释放上一个name的内存
+		void freeLastName();
 	};
 
 

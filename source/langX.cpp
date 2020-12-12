@@ -4,6 +4,8 @@
 #include <iterator>
 #include <vector>
 #include <string>
+
+#include "langXCommon.h"
 #include "ClassInfo.h"
 #include "Config.h"
 #include "langX.h"
@@ -628,32 +630,38 @@ namespace langX {
 #else
 	int langXState::loadModule(const char * path) {
 		void *soObj = dlopen(path, RTLD_LAZY);
-		if (soObj == NULL) {
-			printf("dlopen err:%s.\n", dlerror());
+		if (soObj == nullptr) {
+			logger->error("dlopen err:%s.", dlerror());
 			return -1;
 		}
 
 		logger->debug("load module: %s", path);
 		LoadModuleFunPtr fptr = (LoadModuleFunPtr)dlsym(soObj, "loadModule");
-		if (fptr == NULL) {
-			return -1;
+		if (fptr == nullptr) {
+			return -2;
 		}
 
-		X3rdModule * mod = NULL;
+		X3rdModule * mod = nullptr;
 		fptr(mod);
 
-		if (mod == NULL) {
-			return -1;
+		if (mod == nullptr) {
+			return -3;
 		}
 
+		// 初始化 Mod
+        mod->initLogger(this);
 		int ret = mod->init(this);
+        if (ret != 0) {
+            return ret;
+        }
+
 		mod->setSoObj(soObj);
 
 		const char *modName = mod->getName();
 		this->m_load_libs[modName] = mod;
 		logger->debug("load module %s(%s) over", modName,path);
 
-		return ret;
+		return 0;
 	}
 #endif
 
@@ -744,7 +752,9 @@ namespace langX {
 		return this->startArgValues;
 	}
 
-
+    LogManager *langXState::getLogManager() const {
+        return this->m_log_manager;
+    }
 
 
     void includeFile(const char *filename) {

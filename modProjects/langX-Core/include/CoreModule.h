@@ -21,5 +21,7 @@ namespace langX {
 
 	};
 
+    extern CoreModule* coreModule;
+    extern Logger* coreModuleLogger;
 
 }

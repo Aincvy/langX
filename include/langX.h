@@ -115,7 +115,11 @@ namespace langX {
 		// 碰到了一个文件的 eof 符号
 		void fileEOF();
 
-		// 加载一个模块 ,成功返回 0 ， 失败返回 -1
+		/**
+		 * 加载一个模块 ,成功返回 0 ， 失败返回 -1
+		 * @param path
+		 * @return -1 表示打开动态库失败， -2表示找不到 loadModule 函数， -3 表示加载module失败 其他非0结果为 module的初始化结果
+		 */
 		int loadModule(const char *path);
 
 		// 从文件中加载配置
@@ -143,6 +147,12 @@ namespace langX {
 		int getArgc();
 		// 获取启动参数的实际值
 		char** getArgv();
+
+		/**
+		 * 获取日志管理器
+		 * @return
+		 */
+		LogManager* getLogManager() const;
 
 
 	private:

@@ -26,6 +26,24 @@
 #define THREAD_ENV_DEEP_INITIAL 1
 
 // 默认情况下的字符串缓冲区大小
-#define DEFAULT_CHAR_BUFFER_SIZE 1024
+#define DEFAULT_CHAR_BUFFER_SIZE 1024 * 3
 // 默认情况下， 较小的字符串缓冲区的 大小
 #define DEFAULT_MIN_CHAR_BUFF_SIZE 100
+
+// 如果参数是一个null, 则调用返回语句
+#define RETURN_IF_NULL(x) \
+if( !x ){                 \
+    return;               \
+}
+
+// 如果参数一个 null, 则调用返回语句，并且返回一个 nullptr
+#define RETURN_NULL_IF_NULL(x) \
+if( !x ){                 \
+    return nullptr;               \
+}
+
+
+// 目前还无法在 win32 环境下编译
+#ifdef WIN32
+#undef WIN32
+#endif

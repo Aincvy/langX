@@ -31,7 +31,7 @@ namespace langX {
 	int regRandom(langXState *state, XNameSpace* space);
 
 	//  core 库的东西 ，上面都是core.util 里面的东西
-	int regDeafult(langXState *state, XNameSpace* space);
+	int regDefault(langXState *state, XNameSpace* space);
 
 
 	// io 库里面的
