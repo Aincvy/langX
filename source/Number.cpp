@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <sstream>
 
-#include "../include/Object.h"
-#include "../include/Number.h"
+#include "Object.h"
+#include "Number.h"
 
 namespace langX {
 	Number::Number()

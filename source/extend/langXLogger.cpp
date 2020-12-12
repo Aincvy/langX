@@ -3,7 +3,6 @@
 #include "ClassInfo.h"
 #include "NodeCreator.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "XNameSpace.h"
 #include "StringType.h"
 #include "LogManager.h"

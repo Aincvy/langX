@@ -15,7 +15,6 @@
 #include "Allocator.h"
 #include "ClassInfo.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "Environment.h"
 #include "XArray.h"
 #include "XNameSpace.h"

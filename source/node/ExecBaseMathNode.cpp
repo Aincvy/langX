@@ -12,7 +12,6 @@
 #include "StringType.h"
 #include "Allocator.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "LogManager.h"
 
 namespace langX {

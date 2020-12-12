@@ -13,7 +13,6 @@
 #include "Environment.h"
 #include "ClassInfo.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "XArray.h"
 #include "Exception.h"
 #include "XNameSpace.h"

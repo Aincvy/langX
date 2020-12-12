@@ -12,7 +12,6 @@
 #include "Allocator.h"
 #include "ClassInfo.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "../extern/y.tab.h"
 #include "XArray.h"
 #include "Environment.h"

@@ -13,7 +13,8 @@
 #include "langXCommon.h"
 #include "Utils.h"
 
-// 简略的 va 形式
+
+// 执行 可变参数变换的脚本
 #define LOG_VA_WORKER(msg, level) \
 va_list ap;                 \
 va_start(ap,msg);           \

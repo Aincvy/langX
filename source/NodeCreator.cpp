@@ -15,7 +15,6 @@
 #include "StackTrace.h"
 #include "Exception.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "NullObject.h"
 #include "StringType.h"
 #include "../extern/y.tab.h"

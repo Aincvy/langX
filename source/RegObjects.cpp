@@ -3,7 +3,6 @@
 #include "../include/RegFunctions.h"
 #include "../include/ClassInfo.h"
 #include "../include/langXObject.h"
-#include "../include/langXObjectRef.h"
 #include "../include/Allocator.h"
 #include "../include/Environment.h"
 #include "../include/LogManager.h"

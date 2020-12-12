@@ -16,7 +16,6 @@
 #include "StackTrace.h"
 #include "ExecNode.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "NodeCreator.h"
 #include "Exception.h"
 #include "Function.h"

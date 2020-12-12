@@ -7,7 +7,6 @@
 #include "../include/NodeCreator.h"
 #include "../include/Object.h"
 #include "../include/langXObject.h"
-#include "../include/langXObjectRef.h"
 #include "../include/Function.h"
 #include "../include/LogManager.h"
 #include "../include/langXCommon.h"

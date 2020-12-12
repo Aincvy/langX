@@ -2,16 +2,15 @@
 // Created by Aincvy on 2020/9/28.
 //
 
-#include "../include/Program.h"
-#include "../include/langXCommon.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <string>
-#include "../include/NodeCreator.h"
 #include <tclap/CmdLine.h>
 
+#include "Program.h"
+#include "langXCommon.h"
+#include "NodeCreator.h"
 
 extern int getParseLineNo();
 extern int column;

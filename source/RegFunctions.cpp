@@ -18,7 +18,6 @@
 #include "ClassInfo.h"
 #include "NullObject.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "Allocator.h"
 #include "XArray.h"
 
