@@ -88,38 +88,37 @@ extern int yydebug;
     CLAXX_BODY = 294,              /* CLAXX_BODY  */
     CLAXX_MEMBER = 295,            /* CLAXX_MEMBER  */
     CLAXX_FUNC_CALL = 296,         /* CLAXX_FUNC_CALL  */
-    SCOPE_FUNC_CALL = 297,         /* SCOPE_FUNC_CALL  */
-    SCOPE = 298,                   /* SCOPE  */
-    LEFT_SHIFT = 299,              /* LEFT_SHIFT  */
-    RIGHT_SHIFT = 300,             /* RIGHT_SHIFT  */
-    INC_OP = 301,                  /* INC_OP  */
-    DEC_OP = 302,                  /* DEC_OP  */
-    OPR_NODE_LIST = 303,           /* OPR_NODE_LIST  */
-    OPR_CHANGE_NAME_SPACE = 304,   /* OPR_CHANGE_NAME_SPACE  */
-    OPR_GET_NAME_SPACE = 305,      /* OPR_GET_NAME_SPACE  */
-    OPR_CLASS_DECLARE = 306,       /* OPR_CLASS_DECLARE  */
-    OPR_INC_DEC = 307,             /* OPR_INC_DEC  */
-    OPR_IF_ELSE = 308,             /* OPR_IF_ELSE  */
-    OPR_MULTIPLE_ID = 309,         /* OPR_MULTIPLE_ID  */
-    OPR_START_IF = 310,            /* OPR_START_IF  */
-    OPR_ARGS_LIST = 311,           /* OPR_ARGS_LIST  */
-    KEY_REQUIRE = 312,             /* KEY_REQUIRE  */
-    KEY_REQUIRE_ONCE = 313,        /* KEY_REQUIRE_ONCE  */
-    KEY_INCLUDE = 314,             /* KEY_INCLUDE  */
-    ADD_EQ = 315,                  /* ADD_EQ  */
-    SUB_EQ = 316,                  /* SUB_EQ  */
-    MUL_EQ = 317,                  /* MUL_EQ  */
-    DIV_EQ = 318,                  /* DIV_EQ  */
-    MOD_EQ = 319,                  /* MOD_EQ  */
-    LE_OP = 320,                   /* LE_OP  */
-    GE_OP = 321,                   /* GE_OP  */
-    EQ_OP = 322,                   /* EQ_OP  */
-    NE_OP = 323,                   /* NE_OP  */
-    AND_OP = 324,                  /* AND_OP  */
-    OR_OP = 325,                   /* OR_OP  */
-    PIPELINE_OP = 326,             /* PIPELINE_OP  */
-    INC_OP_BACK = 327,             /* INC_OP_BACK  */
-    UMINUS = 328                   /* UMINUS  */
+    SCOPE = 297,                   /* SCOPE  */
+    LEFT_SHIFT = 298,              /* LEFT_SHIFT  */
+    RIGHT_SHIFT = 299,             /* RIGHT_SHIFT  */
+    INC_OP = 300,                  /* INC_OP  */
+    DEC_OP = 301,                  /* DEC_OP  */
+    OPR_NODE_LIST = 302,           /* OPR_NODE_LIST  */
+    OPR_CHANGE_NAME_SPACE = 303,   /* OPR_CHANGE_NAME_SPACE  */
+    OPR_GET_NAME_SPACE = 304,      /* OPR_GET_NAME_SPACE  */
+    OPR_CLASS_DECLARE = 305,       /* OPR_CLASS_DECLARE  */
+    OPR_INC_DEC = 306,             /* OPR_INC_DEC  */
+    OPR_IF_ELSE = 307,             /* OPR_IF_ELSE  */
+    OPR_MULTIPLE_ID = 308,         /* OPR_MULTIPLE_ID  */
+    OPR_START_IF = 309,            /* OPR_START_IF  */
+    OPR_ARGS_LIST = 310,           /* OPR_ARGS_LIST  */
+    KEY_REQUIRE = 311,             /* KEY_REQUIRE  */
+    KEY_REQUIRE_ONCE = 312,        /* KEY_REQUIRE_ONCE  */
+    KEY_INCLUDE = 313,             /* KEY_INCLUDE  */
+    ADD_EQ = 314,                  /* ADD_EQ  */
+    SUB_EQ = 315,                  /* SUB_EQ  */
+    MUL_EQ = 316,                  /* MUL_EQ  */
+    DIV_EQ = 317,                  /* DIV_EQ  */
+    MOD_EQ = 318,                  /* MOD_EQ  */
+    LE_OP = 319,                   /* LE_OP  */
+    GE_OP = 320,                   /* GE_OP  */
+    EQ_OP = 321,                   /* EQ_OP  */
+    NE_OP = 322,                   /* NE_OP  */
+    AND_OP = 323,                  /* AND_OP  */
+    OR_OP = 324,                   /* OR_OP  */
+    PIPELINE_OP = 325,             /* PIPELINE_OP  */
+    INC_OP_BACK = 326,             /* INC_OP_BACK  */
+    UMINUS = 327                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -137,7 +136,7 @@ union YYSTYPE
  XParamsList* params; /* params value */
  XArgsList *args;    /* args value */
 
-#line 141 "y.tab.h"
+#line 140 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

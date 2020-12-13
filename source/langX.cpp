@@ -25,6 +25,8 @@
 #include "LogManager.h"
 #include "langXrtlib.h"
 #include "Utils.h"
+#include "ScriptModule.h"
+
 
 #ifdef WIN32
 //  win32 库
@@ -36,6 +38,10 @@
 // 切换缓冲区到 文件指针
 extern void pushBuffer(FILE *fp);
 extern int yyparse(void);
+// lex 的 文件结束 工作
+extern void lexEOFWork();
+
+
 
 namespace langX {
 
@@ -80,17 +86,20 @@ namespace langX {
 		this->m_thread_mgr->freeAllThreads();
 		delete this->m_thread_mgr;
 
-#ifdef WIN32
+        // 清理加载的动态库
+        for (auto it = this->m_load_libs.begin(); it != this->m_load_libs.end(); it++)
+        {
+            auto module = it->second;
+            module->unload(this);
 
-		// WIN32实现
-#else
-		// 清理加载的动态库
-		for (auto it = this->m_load_libs.begin(); it != this->m_load_libs.end(); it++)
-		{
-			it->second->unload(this);
-			dlclose(it->second->getSoObj());
-		}
-#endif
+            auto soObj = module->getSoObj();
+            if (soObj) {
+                dlclose(soObj);
+            }
+
+            // 删除 动态库 ， 可能要依次按序删除内容
+            delete module;
+        }
 
 		this->m_load_libs.clear();
 	}
@@ -347,6 +356,9 @@ namespace langX {
             logger->debug("re-start parsing");
             m_yy_parsing = true;
             yyparse();
+
+            // 文件解析完毕了， 检测有没有碰到文件尾部
+            checkEndOfFile(nullptr);
         }
     }
 
@@ -427,22 +439,22 @@ namespace langX {
 
     int langXState::includeFile(const char *filename)
 	{
-		if (filename == NULL)
+		if (filename == nullptr)
 		{
 			return -1;
 		}
 
 		FILE *fp = fopen(filename, "r");
-		if (fp == NULL)
+		if (fp == nullptr)
 		{
 			curThread()->throwException(newFileNotFoundException(filename)->addRef());
-			return -1;
+			return -2;
 		}
 
-		if (this->m_parsing_file != NULL)
+		if (this->m_parsing_file != nullptr)
 		{
 			this->m_doing_files.push_front(this->m_parsing_file);
-			this->m_parsing_file = NULL;
+			this->m_parsing_file = nullptr;
 		}
 
 		this->includeDeep++;
@@ -472,10 +484,10 @@ namespace langX {
 			return -1;
 		}
 
-		if (this->m_parsing_file != NULL)
+		if (this->m_parsing_file != nullptr)
 		{
 			this->m_doing_files.push_front(this->m_parsing_file);
-			this->m_parsing_file = NULL;
+			this->m_parsing_file = nullptr;
 		}
 
 		char tmp[1024] = { 0 };
@@ -687,6 +699,9 @@ namespace langX {
 			}
 		}
 
+		logger->debug("init ScriptModule ClassInfo...");
+		initScriptModuleClassInfo(this);
+
 		logger->debug("load rt-lib.  [jump ...]");
 		// loadRTLib(this);
 
@@ -754,6 +769,46 @@ namespace langX {
     LogManager *langXState::getLogManager() const {
         return this->m_log_manager;
     }
+
+    ScriptModule *langXState::loadScriptModule(const char *path) {
+	    struct stat buf;
+	    auto tmp = stat(path, &buf);
+        if (tmp != 0) {
+            // 文件不存在
+            return nullptr;
+        }
+
+        if (S_ISDIR(buf.st_mode)) {
+            // 是一个目录
+            auto module = new ScriptModule(path, this);
+
+            // todo add error handle
+            module->loadPackageScript();
+            module->executeEntrypoint();
+
+            // add to map.     todo check name conflict
+            this->m_load_libs[module->getName()] = module;
+
+            return module;
+        }
+
+        return nullptr;
+    }
+
+    void langXState::checkEndOfFile(langXThread *thread){
+        if (thread == nullptr) {
+            thread = curThread();
+        }
+
+        // 判断文件是否结束了
+        auto & status = thread->getStackTraceTopStatus();
+        if (status.endOfFile) {
+            status.endOfFile = false;
+
+            lexEOFWork();
+        }
+	}
+
 
 
     void includeFile(const char *filename) {

@@ -1,7 +1,7 @@
-set public = langX.ext.trello;
+attr public = langX.ext.trello;
 
-ref langX.python;
-ref langX.core.util;
+// using langX.python;
+// using langX.core.util;
 
 // Card
 TrelloCard {

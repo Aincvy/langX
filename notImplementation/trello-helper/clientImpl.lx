@@ -48,7 +48,7 @@ auto TrelloClient {
         all_boards = pyFuncList.callMethod();
 
         boardList = new List();
-        for( i = 0; i < all_boards.size() i++){
+        for( i = 0; i < all_boards.size(); i++){
             // 填充列表
             board = new TrelloBoard();
             board._py_board = all_boards.get(i);

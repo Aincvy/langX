@@ -32,7 +32,7 @@ namespace langX {
 	{
 	public:
 		Object();
-		~Object();
+		virtual ~Object();
 
 		/* 自增当前对象的引用次数 */
 		void incRefCount();

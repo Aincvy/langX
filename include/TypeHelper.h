@@ -8,6 +8,8 @@
 
 namespace langX {
 
+    class langXObject;
+
     /**
      * 从参数中 读取数字
      * @param args
@@ -30,5 +32,13 @@ namespace langX {
      * @param arrayObjRef
      */
     void x3rdArgsToArray(const X3rdArgs& args, XArray* arrayObjRef);
+
+    /**
+     * 从一个对象里面， 尝试获取到一个字符串得属性
+     * @param object
+     * @param memberName
+     * @return
+     */
+    const char* getStringFromObject(langXObject* object, const char* memberName);
 
 }

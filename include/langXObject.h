@@ -4,6 +4,8 @@
 #include <string>
 
 #include "Object.h"
+#include "ScriptModule.h"
+
 
 namespace langX {
 
@@ -121,8 +123,7 @@ namespace langX {
 		bool m_disposing = false;
 	};
 
-
-	// 具有扩展能力的 langXObject
+    // 具有扩展能力的 langXObject
 	class langXObjectExtend : public langXObject {
 
 	public:

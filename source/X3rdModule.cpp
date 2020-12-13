@@ -76,5 +76,29 @@ namespace langX {
         this->m_logger->setPrefix(this->m_name);
     }
 
+	const char *X3rdModule::getAuthor() const {
+		return nullptr;
+	}
+
+	const char *X3rdModule::getVersion() const {
+		return nullptr;
+	}
+
+	const char *X3rdModule::getRepository() const {
+		return nullptr;
+	}
+
+	const char *X3rdModule::getEntrypoint() const {
+		return nullptr;
+	}
+
+	ModuleType X3rdModule::getModuleType() const {
+		return X3rd;
+	}
+
+    const char *X3rdModule::getDescription() const {
+        return nullptr;
+    }
+
 
 }

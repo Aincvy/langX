@@ -8,19 +8,26 @@
 #include "Config.h"
 
 namespace langX {
+
 	class Environment;
+	class GlobalEnvironment;
+	class ScriptEnvironment;
 	class XNameSpaceEnvironment;
+
 	class Allocator;
 	class ClassInfo;
 	class langXObjectRef;
 	class langXObject;
 	class XNameSpace;
-	class GlobalEnvironment;
-	class ScriptEnvironment;
-	class X3rdModule;
 	class langXThreadMgr;
 	class langXThread;
 	class LogManager;
+	class Logger;
+
+	class X3rdModule;
+	class ScriptModule;
+	class langXModule;
+
 
 	/*
 	  所有的脚本环境最后在释放内存。
@@ -122,7 +129,11 @@ namespace langX {
 		 */
 		int loadModule(const char *path);
 
-		// 从文件中加载配置
+		/**
+		 * 从文件中加载配置  | 次方法 目前越等于初始化 方法
+		 * @param path
+		 * @return
+		 */
 		int loadConfig(const char *path);
 
 		// 是否正在销毁中
@@ -154,6 +165,19 @@ namespace langX {
 		 */
 		LogManager* getLogManager() const;
 
+		/**
+		 * 加载一个模块
+		 * @param path   可以是一个文件夹， 或者是一个 （脚本包， 目前还没有实现相关内容）
+		 * @return   加载成功返回一个 指针， 否则返回一个 nullptr
+		 */
+		ScriptModule* loadScriptModule(const char* path);
+
+		/**
+		 * 检测一下某个线程正在执行得文件是否结束了
+		 * @param thread
+		 */
+		void checkEndOfFile(langXThread *thread);
+
 
 	private:
 		// 全局环境
@@ -176,10 +200,11 @@ namespace langX {
 		//  k:  脚本文件绝对路径，  v: 脚本环境.  仅供 require_once 使用
 		std::map<std::string, ScriptEnvironment*> m_script_env_map;
 		// 加载完成的动态库
-		std::map<std::string, X3rdModule*> m_load_libs;
+		std::map<std::string, langXModule*> m_load_libs;
+
 
 		// 正在解析的文件的绝对路径
-		char * m_parsing_file = NULL;
+		char * m_parsing_file = nullptr;
 		// 使用 include 关键字包含脚本的深度
 		int includeDeep = 0;
 
@@ -188,10 +213,10 @@ namespace langX {
 		bool m_disposing = false;
 
 		// 启动的参数信息
-		int startArgSize;
-		char **startArgValues;
+		int startArgSize = 0;
+		char **startArgValues = nullptr;
 
-		langXThreadMgr* m_thread_mgr;
+		langXThreadMgr* m_thread_mgr = nullptr;
 
 		/**
 		 * 如果没有在parse 就开始parse
@@ -199,6 +224,102 @@ namespace langX {
 		void startParseIfNot();
 
 	};
+
+	/**
+	 * 模块类型
+	 */
+	enum ModuleType{
+		// 脚本模块
+		Script,
+		// 第三方 一般是cpp得模块
+		X3rd,
+		// 自定义得类型， 这个 目前没有使用， 仅占位使用
+		Custom,
+	};
+
+
+	/**
+	 * 表示一个 langX 得模块  | cpp 编写得模块和 langX脚本编写得模块都会继承自此类
+	 */
+	class langXModule{
+
+	public:
+
+		langXModule() = default;
+		virtual ~langXModule() = default;
+
+
+		/**
+		 * 获取当前模块得名字
+		 * @return
+		 */
+		virtual const char* getName() const = 0;
+
+		/**
+		 * 获取当前模块得 描述信息
+		 * @return
+		 */
+		virtual const char* getDescription() const = 0;
+
+		/**
+		 * 获取当前模块得作者信息
+		 * @return
+		 */
+		virtual const char* getAuthor() const = 0;
+
+		/**
+		 * 获取当前模块得版本信息
+		 * @return
+		 */
+		virtual const char* getVersion() const = 0;
+
+		/**
+		 * 获取当前模块得 仓库信息
+		 * @return
+		 */
+		virtual const char* getRepository() const = 0;
+
+		/**
+		 * 获取当前模块得入口点
+		 * @return
+		 */
+		virtual const char* getEntrypoint() const = 0;
+
+		/**
+		 * 获取模块得类型
+		 * @return
+		 */
+		virtual ModuleType getModuleType() const = 0;
+
+		/**
+		 * 卸载 模块
+		 * @return
+		 */
+		virtual int unload(langXState *) = 0;
+
+		/**
+		 * 初始化模块
+		 * @return
+		 */
+		virtual int init(langXState *) = 0;
+
+		/**
+		 * 获取 动态库得指针
+		 * @return
+		 */
+		virtual void * getSoObj() const = 0;
+
+
+	protected:
+
+		// 日志对象
+		Logger *m_logger = nullptr;
+
+		// 当前得脚本模块是哪个 m_state 加载得
+		langXState* m_state = nullptr;
+
+	};
+
 
 	/**
 	 * include 一个脚本

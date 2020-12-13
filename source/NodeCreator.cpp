@@ -29,8 +29,6 @@ using namespace langX;
 
 // 获取当前解析的是第几行
 extern int getParseLineNo();
-// lex 的 文件结束 工作
-extern void lexEOFWork();
 
 
 static langXState* state = nullptr;
@@ -572,6 +570,8 @@ void yyParseStopped()
 
 void endOfFileFlag() {
     state->curThread()->getStackTraceTopStatus().endOfFile = true;
+
+    logger->debug("eof flag of %s", getParsingFilename());
 }
 
 
@@ -603,14 +603,7 @@ void execAndFreeNode(XNode *n) {
 
 	freeNode(n);
 
-	// 判断文件是否结束了
-	auto & status = thread->getStackTraceTopStatus();
-    if (status.endOfFile) {
-        status.endOfFile = false;
-
-        lexEOFWork();
-    }
-
+    getState()->checkEndOfFile(thread);
 }
 
 
