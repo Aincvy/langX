@@ -178,6 +178,12 @@ namespace langX {
 		 */
 		void checkEndOfFile(langXThread *thread);
 
+		/**
+		 * 输出 module 得日志到 module.log 里面
+		 * @param module
+		 */
+		void logModule(langXModule * module);
+
 
 	private:
 		// 全局环境
@@ -222,6 +228,13 @@ namespace langX {
 		 * 如果没有在parse 就开始parse
 		 */
 		void startParseIfNot();
+
+		/**
+		 * loadModule OSX/Linux 版本得实现
+		 * @param path
+		 * @return
+		 */
+		int loadModuleOSX(const char* path);
 
 	};
 

@@ -1,7 +1,6 @@
-#include <stdio.h>
+
 #include "../include/CoreModule.h"
 #include "../include/RegCoreModule.h"
-#include "../../../include/XNameSpace.h"
 #include "../../../include/ClassInfo.h"
 #include "../../../include/LogManager.h"
 
@@ -57,6 +56,26 @@ namespace langX {
 	{
 		return 0;
 	}
+
+    const char *CoreModule::getName() const {
+        return X3rdModule::getName();
+    }
+
+    const char *CoreModule::getAuthor() const {
+        return "Aincvy(aincvy@gmail.com) ";
+    }
+
+    const char *CoreModule::getVersion() const {
+        return CORE_MODULE_VERSION;
+    }
+
+    const char *CoreModule::getDescription() const {
+        return "base types(map,list,set), time types(dateTime..), stream types and so on...";
+    }
+
+    const char *CoreModule::getRepository() const {
+        return "https://github.com/Aincvy/langX";
+    }
 
 }
 

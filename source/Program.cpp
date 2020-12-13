@@ -86,7 +86,7 @@ int programRun(int argc, char *argv[]){
 
     // 加载 script module...
     for (auto i = addModules.begin(); i != addModules.end() ; ++i) {
-        printf("module: %s\n" , i->c_str());
+        // printf("module: %s\n" , i->c_str());
         auto path = i->c_str();
         getState()->loadScriptModule(path);
     }

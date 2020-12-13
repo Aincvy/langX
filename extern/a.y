@@ -361,7 +361,6 @@ interrupt_stmt
 	: KEY_BREAK { $$ = opr(KEY_BREAK, 0); }
 	| KEY_RETURN { $$ = opr(KEY_RETURN , 0); }
 	| KEY_RETURN common_expr { $$ = opr(KEY_RETURN , 1 ,$2); }
-	| KEY_RETURN logic_stmt { $$ = opr(KEY_RETURN , 1 ,$2); }
     | KEY_CONTINUE { $$ = opr(KEY_CONTINUE,0); }
 	;
 
@@ -654,11 +653,11 @@ common_string_expr
   ;
 
 common_expr
-  : common_types_expr       { $$ = $1; }
-  | common_values_expr      { $$ = $1; }
-  | common_result_of_call_expr  { $$ = $1; }
-  | string_plus_stmt        { $$ = $1; }
-  // | logic_stmt              { $$ = $1; }
+  : common_types_expr       %dprec 5 { $$ = $1; }
+  | common_values_expr      %dprec 5 { $$ = $1; }
+  | common_result_of_call_expr  %dprec 5 { $$ = $1; }
+  | string_plus_stmt        %dprec 5 { $$ = $1; }
+  | logic_stmt              %dprec 1 { $$ = $1; }
   ;
 
 %%

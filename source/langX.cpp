@@ -633,6 +633,45 @@ namespace langX {
         backScriptEnv(false);
 	}
 
+	int langXState::loadModuleOSX(const char* path){
+        void *soObj = dlopen(path, RTLD_LAZY);
+        if (soObj == nullptr) {
+            logger->error("dlopen err:%s.", dlerror());
+            return -1;
+        }
+
+        logger->debug("load module: %s", path);
+        LoadModuleFunPtr fptr = (LoadModuleFunPtr)dlsym(soObj, "loadModule");
+        if (fptr == nullptr) {
+            return -2;
+        }
+
+        X3rdModule * mod = nullptr;
+        fptr(mod);
+
+        if (mod == nullptr) {
+            return -3;
+        }
+
+        // 初始化 Mod
+        mod->initLogger(this);
+        int ret = mod->init(this);
+        if (ret != 0) {
+            return ret;
+        }
+
+        mod->setSoObj(soObj);
+
+        const char *modName = mod->getName();
+        this->m_load_libs[modName] = mod;
+        logger->debug("load module %s(%s) over", modName,path);
+
+        moduleLogger->info("Module is loaded. ⬇⬇⬇");
+        logModule(mod);
+
+        return 0;
+	}
+
 #ifdef WIN32
 	int langXState::loadModule(const char * path) {
 		// WIN32实现
@@ -640,39 +679,7 @@ namespace langX {
 	}
 #else
 	int langXState::loadModule(const char * path) {
-		void *soObj = dlopen(path, RTLD_LAZY);
-		if (soObj == nullptr) {
-			logger->error("dlopen err:%s.", dlerror());
-			return -1;
-		}
-
-		logger->debug("load module: %s", path);
-		LoadModuleFunPtr fptr = (LoadModuleFunPtr)dlsym(soObj, "loadModule");
-		if (fptr == nullptr) {
-			return -2;
-		}
-
-		X3rdModule * mod = nullptr;
-		fptr(mod);
-
-		if (mod == nullptr) {
-			return -3;
-		}
-
-		// 初始化 Mod
-        mod->initLogger(this);
-		int ret = mod->init(this);
-        if (ret != 0) {
-            return ret;
-        }
-
-		mod->setSoObj(soObj);
-
-		const char *modName = mod->getName();
-		this->m_load_libs[modName] = mod;
-		logger->debug("load module %s(%s) over", modName,path);
-
-		return 0;
+        return loadModuleOSX(path);
 	}
 #endif
 
@@ -786,6 +793,9 @@ namespace langX {
             module->loadPackageScript();
             module->executeEntrypoint();
 
+            moduleLogger->info("Module is loaded. ⬇⬇⬇");
+            logModule(module);
+
             // add to map.     todo check name conflict
             this->m_load_libs[module->getName()] = module;
 
@@ -809,6 +819,18 @@ namespace langX {
         }
 	}
 
+	void langXState::logModule(langXModule *module) {
+        if (module == nullptr) {
+            return;
+        }
+
+	    moduleLogger->info("       Name: %s", module->getName());
+	    moduleLogger->info("     Author: %s", module->getAuthor());
+	    moduleLogger->info("    Version: %s", module->getVersion());
+	    moduleLogger->info("Description: %s", module->getDescription());
+	    moduleLogger->info(" Repository: %s", module->getRepository());
+
+	}
 
 
     void includeFile(const char *filename) {
