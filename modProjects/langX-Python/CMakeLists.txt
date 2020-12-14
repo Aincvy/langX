@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.13)
 SET(CMAKE_MODULE_PATH APPEND "${CMAKE_SOURCE_DIR}/../../cmake/" )
 
 PROJECT(LANGX_PYTHON)

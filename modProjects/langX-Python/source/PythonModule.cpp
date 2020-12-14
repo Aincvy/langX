@@ -21,7 +21,8 @@ namespace langX {
 	int PythonModule::init(langXState *state)
 	{
 	    pythonModuleLogger = m_logger;
-		m_logger->debug("init langX-Python 库");
+		m_logger->debug("init langX-Python 库. " );
+		m_logger->debug("python version: %s", Py_GetVersion());
 
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.python");
 

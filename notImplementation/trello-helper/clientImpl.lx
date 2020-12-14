@@ -31,7 +31,7 @@ auto TrelloClient {
         pyFuncTrelloClient = _py_trello.get("TrelloClient");
         _py_client = pyFuncTrelloClient.callMethod(args);
 
-        if( _py_client == null || _py_client.isNull() ){
+        if( !_py_client || _py_client.isNull() ){
             return 103;
         }
 

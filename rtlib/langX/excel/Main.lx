@@ -9,7 +9,7 @@
 
 attr public = langX.rt.util.excel;
 
-include(Workbook.lx)
+include("Workbook.lx");
 
 // python 的 excel 操作模块
 _py_openpyxl ;
@@ -26,7 +26,7 @@ initExcelTools => (){
 		return 101 ;
 	}
 
-	ref langX.python;
+	using langX.python;
 	PythonLib::load();
 	_py_hook = new PythonHook();
 
