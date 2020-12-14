@@ -1,13 +1,13 @@
-#include <stdio.h>
+
+#include "../../../include/LogManager.h"
 
 #include "../include/PythonModule.h"
 #include "../include/RegPythonModule.h"
 
-#include "../../../include/langX.h"
-#include "../../../include/XNameSpace.h"
-#include "../../../include/LogManager.h"
-
 namespace langX {
+
+    PythonModule* pythonModule;
+    Logger* pythonModuleLogger;
 
 	PythonModule::PythonModule()
 	{
@@ -20,7 +20,8 @@ namespace langX {
 
 	int PythonModule::init(langXState *state)
 	{
-		logger->debug("init langX-Python 库");
+	    pythonModuleLogger = m_logger;
+		m_logger->debug("init langX-Python 库");
 
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.python");
 
@@ -41,11 +42,29 @@ namespace langX {
 		return 0;
 	}
 
+    const char *PythonModule::getDescription() const {
+        return "bridge python functions...  you can call python library...";
+    }
+
+    const char *PythonModule::getAuthor() const {
+        return "Aincvy(aincvy@gmail.com)";
+    }
+
+    const char *PythonModule::getRepository() const {
+        return "https://github.com/Aincvy/langX";
+    }
+
+    const char *PythonModule::getVersion() const {
+        return "0.0.1";
+    }
+
+
 }
 
 int loadModule(langX::X3rdModule *& mod) {
 	
-	mod = new langX::PythonModule();
+	langX::pythonModule = new langX::PythonModule();
+    mod = langX::pythonModule;
 
 	return 0;
 }

@@ -15,7 +15,7 @@ auto TrelloClient {
 
         _py_trello = _py_hook.importModule("trello");
 
-        if ( _py_openpyxl.isNull() ) {
+        if ( !_py_trello || _py_trello.isNull() ) {
         	return 102 ;
         }
 

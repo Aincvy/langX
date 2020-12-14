@@ -1,3 +1,5 @@
+#include "../../../include/LogManager.h"
+
 #include "../include/RegPythonModule.h"
 #include "../include/PythonModule.h"
 
@@ -10,12 +12,14 @@
 #include "../../../include/Number.h"
 #include "../../../include/StringType.h"
 #include "../../../include/XArray.h"
+#include "../../../include/TypeHelper.h"
 
 #ifdef WIN32
 #include "../../../lib/Python-3.5.2/Include/Python.h"
 #else
 #include <python/Python.h>
 #endif
+
 
 namespace langX {
 
@@ -95,7 +99,7 @@ namespace langX {
 	Object * langX_PyObject_setType(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_setType error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_setType error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -115,7 +119,7 @@ namespace langX {
 	Object * langX_PyObject_getType(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_getType error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_getType error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -127,7 +131,7 @@ namespace langX {
 	Object * langX_PyObject_toString(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_toString error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_toString error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -145,7 +149,7 @@ namespace langX {
 	Object * langX_PyObject_toNumber(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_toNumber error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_toNumber error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -159,7 +163,7 @@ namespace langX {
 	Object * langX_PyObject_callMethod(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_callMethod error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_callMethod error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -209,7 +213,7 @@ namespace langX {
 	Object * langX_PyObject_newInstance(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_newInstance error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_newInstance error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -223,7 +227,7 @@ namespace langX {
 	Object * langX_PyObject_size(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_size error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_size error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -255,7 +259,7 @@ namespace langX {
 	Object * langX_PyObject_setItem(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_setItem error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_setItem error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -391,7 +395,7 @@ namespace langX {
 	Object * langX_PyObject_getString(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_getString error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_getString error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -447,7 +451,7 @@ namespace langX {
 	Object * langX_PyObject_getNumber(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_getNumber error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_getNumber error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -569,7 +573,7 @@ namespace langX {
 	Object * langX_PyObject_get(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_get error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_get error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -582,7 +586,7 @@ namespace langX {
 	Object * langX_PyObject_set(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_get error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_get error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -596,7 +600,7 @@ namespace langX {
 	Object * langX_PyObject_operator_square_brackets(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_operator_square_brackets error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_operator_square_brackets error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -606,7 +610,7 @@ namespace langX {
 	Object * langX_PyObject_PyObject_Dtor(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_PyObject_Dtor error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_PyObject_Dtor error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -622,12 +626,12 @@ namespace langX {
 	Object * langX_PyObject_isNull(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_isNull error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_isNull error! NO OBJ!\n");
 			return nullptr;
 		}
 
 		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
-		if (obj->pyObj == NULL)
+		if (obj->pyObj == nullptr)
 		{
 			return Allocator::allocateNumber(1);
 		}
@@ -638,7 +642,7 @@ namespace langX {
 	Object * langX_PyObject_o(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_isNull error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_isNull error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -651,7 +655,7 @@ namespace langX {
 	Object * langX_PyObject_value(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_isNull error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_isNull error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -682,7 +686,7 @@ namespace langX {
 	Object * langX_PyObject_detectPyType(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PyObject_isNull error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PyObject_isNull error! NO OBJ!\n");
 			return nullptr;
 		}
 

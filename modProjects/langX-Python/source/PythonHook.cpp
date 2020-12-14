@@ -1,3 +1,5 @@
+#include "../../../include/LogManager.h"
+
 #include "../include/RegPythonModule.h"
 #include "../include/PythonModule.h"
 
@@ -24,33 +26,29 @@ namespace langX {
 	Object * langX_PythonHook_importModule(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_PythonHook_import error! NO OBJ!\n");
+			pythonModuleLogger->error("langX_PythonHook_import error! NO OBJ!\n");
 			return nullptr;
 		}
 
-		/*PyObject *path= PySys_GetObject("path");
-		int size = PyList_Size(path);
-		for (size_t i = 0; i < size; i++)
-		{
-			PyObject * t = PyList_GetItem(path, i);
-			char *p = NULL;
-			PyArg_Parse(t, "s", &p);
-			printf("%d: %s", i , p);
-		}*/
 		Object *a = args.args[0];
 		if (a && a->getType() == STRING)
 		{
-			String *str = (String*)a;
+			auto str = (String*)a;
 			str->simpleEscape();
 
-			
 			PyObject *ret = PyImport_ImportModule(str->getValue());
-			langXObject *aobj = claxxPyObj->newObject();
-			XClassPyObject * bobj = createXClassPyObject();
-			bobj->type = PyObjectType::Module;
-			bobj->pyObj = ret;
-			aobj->set3rdObj(bobj);
-			return aobj->addRef();
+            if (ret == nullptr) {
+                pythonModuleLogger->debug("module %s import failed.", str->getValue());
+                PyErr_Print();
+                return nullptr;
+            }
+
+			langXObject *obj = claxxPyObj->newObject();
+			XClassPyObject * myPyObj = createXClassPyObject();
+            myPyObj->type = PyObjectType::Module;
+            myPyObj->pyObj = ret;
+			obj->set3rdObj(myPyObj);
+			return obj->addRef();
 		}
 
 		return nullptr;

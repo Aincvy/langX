@@ -86,19 +86,21 @@ namespace langX {
 		this->m_thread_mgr->freeAllThreads();
 		delete this->m_thread_mgr;
 
-        // 清理加载的动态库
+        // 清理加载的动态库 , 可能要依次按序删除内容
         for (auto it = this->m_load_libs.begin(); it != this->m_load_libs.end(); it++)
         {
             auto module = it->second;
             module->unload(this);
 
             auto soObj = module->getSoObj();
+
+            // 释放这个 模块占用得内存。  如果模块是一个 动态库得话， 则module 得指针很可能指向得是动态库里面得内容
+            // 使用 dlclose 函数之后， module指向得内存就已经被释放了。 无需再次调用delete ..
             if (soObj) {
                 dlclose(soObj);
+            } else {
+                delete module;
             }
-
-            // 删除 动态库 ， 可能要依次按序删除内容
-            delete module;
         }
 
 		this->m_load_libs.clear();
@@ -831,7 +833,6 @@ namespace langX {
 	    moduleLogger->info(" Repository: %s", module->getRepository());
 
 	}
-
 
     void includeFile(const char *filename) {
 	    char result[1024] = { 0 };

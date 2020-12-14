@@ -26,7 +26,7 @@ namespace langX{
         }
 
         Node *n1 = n->opr_obj->op[0];
-        if (n1->value == NULL)
+        if (n1->value == nullptr)
         {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
             freeSubNodes(n);
@@ -525,32 +525,44 @@ namespace langX{
         nodeLink->backAfterExec = true;
     }
 
-    void __execOPOR(NodeLink *nodeLink) {
-        Node *n = nodeLink->node;
+    void __realExecOPOR(NodeLink *nodeLink, langXThread *thread) {
+        Node *node = nodeLink->node;
+        auto oprObj = node->opr_obj;
+        auto left = oprObj->op[0];
         if (nodeLink->index == 0) {
-            doSubNodes(n);
+            // 只尝试执行左边得节点， 如果是true ,就直接返回
+            thread->beginExecute(left, true);
             nodeLink->index = 1;
-            return;
+
+        } else if (nodeLink->index == 1) {
+            // 左值已经执行完毕了， 检测一下
+            if (__tryConvertToBool(left)) {
+                nodeLink->index = 10;
+                node->value = Allocator::allocateNumber(1);
+            } else {
+                // 左值有问题， 运算右值
+                nodeLink->index = 2;
+                thread->beginExecute(oprObj->op[1], true);
+            }
+
+        } else if (nodeLink->index == 2) {
+            // 已经获取了右值， 判断一下即可
+            node->value = __tryConvertToBool(oprObj->op[1]) ? Allocator::allocateNumber(1) : Allocator::allocateNumber(0);
+            nodeLink->index = 10;
         }
 
-        stateExtends(n);
-        bool f = __tryConvertToBool(n->opr_obj->op[0]);
-        if (getState()->curThread()->isInException())
-        {
-            freeSubNodes(n);
-            return;
-        }
+    }
 
-        if (f)
-        {
-            n->value = Allocator::allocateNumber(1);
-        }
-        else {
-            n->value = __tryConvertToBool(n->opr_obj->op[1]) ? n->value = Allocator::allocateNumber(1) : n->value = Allocator::allocateNumber(0);
-        }
+    void __execOPOR(NodeLink *nodeLink, langXThread *thread) {
+        Node *node = nodeLink->node;
 
-        freeSubNodes(n);
-        nodeLink->backAfterExec = true;
+        __realExecOPOR(nodeLink, thread);
+
+        if (nodeLink->index == 10) {
+            doSuffixOperation(node);
+            freeSubNodes(node);
+            nodeLink->backAfterExec = true;
+        }
     }
 
 

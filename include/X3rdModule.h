@@ -29,7 +29,7 @@ namespace langX {
 
 		// 动态库的 .so 文件的位置
 		void setSoObj(void *soObj);
-		void * getSoObj() const;
+		void * getSoObj() const override;
 
 		/**
 		 * 获取当前 module 的日志 输出类

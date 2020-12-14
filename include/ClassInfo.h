@@ -82,9 +82,9 @@ namespace langX {
 		std::string m_name;
 
 		//  当前类的桥接环境
-		ClassBridgeEnv *m_classEnv;
+		ClassBridgeEnv *m_classEnv = nullptr;
 		// local 属性
-		bool m_local;
+		bool m_local = false;
 
 		// 父类
 		ClassInfo *m_parent = nullptr;

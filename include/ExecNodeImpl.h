@@ -108,7 +108,7 @@ namespace langX {
 
     void __execOPAND(NodeLink *nodeLink);
 
-    void __execOPOR(NodeLink *nodeLink);
+    void __execOPOR(NodeLink *nodeLink, langXThread *thread);
 
 //  类型判断语句， 返回一个 true/false
     void __execXIS(NodeLink *nodeLink, langXThread *thread);

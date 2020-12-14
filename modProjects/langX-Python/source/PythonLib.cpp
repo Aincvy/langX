@@ -1,5 +1,7 @@
-#include "../include/RegPythonModule.h"
+#include "../../../include/LogManager.h"
 
+#include "../include/RegPythonModule.h"
+#include "../include/PythonModule.h"
 
 #include "../../../include/ClassInfo.h"
 #include "../../../include/NodeCreator.h"
@@ -7,7 +9,6 @@
 #include "../../../include/langXObject.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
-#include "../../../include/LogManager.h"
 
 
 #ifdef WIN32 
@@ -51,11 +52,11 @@ namespace langX {
 		
 		if (Py_IsInitialized())
 		{
-			logger->debug("load python lib ok.");
+			pythonModuleLogger->debug("load python lib ok.");
 			return Allocator::allocateNumber(1);
 		}
 
-		logger->debug("load python lib fail.");
+        pythonModuleLogger->debug("load python lib fail.");
 		return Allocator::allocateNumber(0);
 	}
 

@@ -102,6 +102,8 @@ void deal_fileInfo(NodeFileInfo *f) {
         f->filename = filepath;
     }
 
+    auto a = fileInfoString(*f);
+    logger->debug("after deal_fileInfo: %s", a.c_str());
 }
 
 XNode *newNode() {

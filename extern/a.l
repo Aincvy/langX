@@ -4,6 +4,7 @@
 #include <string.h>
 #include <string>
 #include "../include/NodeCreator.h"
+#include "../include/LogManager.h"
 #include "y.tab.h"
 
 extern "C"{
@@ -125,10 +126,15 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 
 <<EOF>> {
 	// 这里只标记一下文件结束了， 在下一个节点执行结束的时候才会真正的结束文件
-	endOfFileFlag();
+	// endOfFileFlag();
 
-	// 通知yacc 文件已经结束
-	// return YY_NULL;
+	langX::logger->debug("on end of file, yy_n_chars: %d", yy_n_chars);
+	if( yy_n_chars > 0) {
+		//
+		endOfFileFlag();
+	} else {
+		lexEOFWork();
+	}
 
 	//printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
 	bool flag = false;
@@ -158,6 +164,8 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 		yyterminate();
 	}
 
+	// 这里不需要 return 任何东西
+	// 如果文件还是不对， 可以考虑这里return 一个 EOF得语法标记， 然后在外面处理一下。
 }
 
 %%

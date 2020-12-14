@@ -356,12 +356,12 @@ namespace langX {
     // 如果这个节点并没有被运算， 则会运算这个节点
     // 判断之后， 并不会释放这个节点的内存
     bool __tryConvertToBool(Node *n) {
-        if (n == NULL) {
+        if (n == nullptr) {
             return false;
         }
 
         //checkValue(n, getState()->curThread());      // 2017年11月30日 在外层确保值是有的吧
-        if (n->value == NULL) {
+        if (n->value == nullptr) {
             return false;
         }
 
@@ -1256,6 +1256,11 @@ namespace langX {
             return;
         }
 
+        if (object->getType() != ObjectType::OBJECT) {
+            thread->throwException(newTypeErrorException("left value is not class instance !")->addRef());
+            return;
+        }
+
         auto objectRef = (langXObjectRef *) object;
 
         // 搜索函数
@@ -1567,14 +1572,14 @@ namespace langX {
 
         // 执行 classBody 节点， 以满足变量和函数的声明
         if (bodyNode != nullptr) {
-            logger->debug("will do class %s body node", name);
+            // logger->debug("will do class %s body node", name);
             auto *env = clzInfo->getClassEnv();
             thread->newEnv(env);
             thread->beginExecute(bodyNode, true);
             __execNode(nullptr, bodyNode);     // 立即处理掉这个节点，但是也仅仅只是处理 到 这个节点
             thread->backEnv(false);
 
-            logger->debug("class %s body node done.", name);
+            // logger->debug("class %s body node done.", name);
         }
 
         // 关于类前缀的判断和应用
@@ -1911,7 +1916,7 @@ namespace langX {
                 __execOPAND(nodeLink);
                 break;
             case OR_OP:
-                __execOPOR(nodeLink);
+                __execOPOR(nodeLink, thread);
                 break;
             case KEY_IF:
                 __execIF(nodeLink, thread);

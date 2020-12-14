@@ -104,9 +104,9 @@ namespace langX {
 		// 引用的那些引用
 		std::vector<langXObjectRef*> m_refs;
 
-		ClassInfo *m_class_info;
+		ClassInfo *m_class_info = nullptr;
 		// 当前对象的环境
-		ObjectBridgeEnv *m_my_env;
+		ObjectBridgeEnv *m_my_env = nullptr;
 		int  m_ref_count = 0;
 		// 引用变成0，及负数的时间
 		long m_zero_ref_time = 0;
@@ -114,7 +114,7 @@ namespace langX {
 		langXObject *m_parent = nullptr;
 
 		// 引用的第三方对象
-		void *m_3rdObj; 
+		void *m_3rdObj = nullptr;
 
 		// 这个对象的特性字符串
 		std::string m_characteristic;

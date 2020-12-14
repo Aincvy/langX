@@ -1,45 +1,46 @@
-#include "../include/Exception.h"
-#include "../include/Object.h"
-#include "../include/NodeCreator.h"
-#include "../include/ClassInfo.h"
-#include "../include/StringType.h"
-#include "../include/Function.h"
-#include "../include/langXObject.h"
-#include "../include/langXThread.h"
+#include "Exception.h"
+#include "Object.h"
+#include "NodeCreator.h"
+#include "ClassInfo.h"
+#include "StringType.h"
+#include "Function.h"
+#include "langXObject.h"
+#include "langXThread.h"
+#include "LogManager.h"
 
 namespace langX {
 	// 构造方法
 	Object * langX_Exception_Exception(X3rdFunction *func, const X3rdArgs & args) {
-		if (args.object == NULL)
+		if (args.object == nullptr)
 		{
-			printf("langX_Exception_Exception error! NO OBJ!\n");
-			return NULL;
+			logger->error("langX_Exception_Exception error! NO OBJ!");
+			return nullptr;
 		}
 
 		langXObject * object = args.object;
 		if (args.index <= 0)
 		{
-			printf("langX_Exception_Exception error! NO ARG!\n");
-			return NULL;
+			logger->error("langX_Exception_Exception error! NO ARG!");
+			return nullptr;
 		}
 
 		if (args.args[0]->getType() != STRING)
 		{
-			printf("langX_Exception_Exception error! TYPE ERROR!\n");
-			return NULL;
+			logger->error("langX_Exception_Exception error! TYPE ERROR!");
+			return nullptr;
 		}
 
 		object->setMember("message", args.args[0]);
-		return NULL;
+		return nullptr;
 	}
 
 	// 异常类的 get Message 方法
 	Object * langX_Exception_getMessage(X3rdFunction *func, const X3rdArgs & args) {
 		// 错误判断等会做
-		if (args.object == NULL)
+		if (args.object == nullptr)
 		{
-			printf("langX_Exception_getMessage error! NO OBJ!\n");
-			return NULL;
+			logger->error("langX_Exception_getMessage error! NO OBJ!");
+			return nullptr;
 		}
 
 		return args.object->getMember("message");
@@ -48,20 +49,22 @@ namespace langX {
 	// 打印堆栈信息
 	Object * langX_Exception_printStackTrace(X3rdFunction *func, const X3rdArgs & args) {
 		// 先打印exception 的message
-		if (args.object == NULL)
+		if (args.object == nullptr)
 		{
-			printf("langX_Exception_getMessage error! NO OBJ!\n");
-			return NULL;
+			logger->error("langX_Exception_getMessage error! NO OBJ!");
+			return nullptr;
 		}
 
 		langXThread *thread = func->getLangX()->curThread();
 
+		// 先打印报错得那个是哪一行， 然后再打印调用堆栈
 		NodeFileInfo f = thread->getCurrentNodeFileInfo();
-		printf("%s: %s  \n%s\n", args.object->getClassName(), ((String*)args.object->getMember("message"))->getValue(), fileInfoString(f).c_str());
+		auto msg = ((String*)args.object->getMember("message"))->getValue();
+		printf("%s: %s  \n%s\n", args.object->getClassName(), msg, fileInfoString(f).c_str());
 
 		thread->printStackTrace();
 
-		return NULL;
+		return nullptr;
 	}
 
 	void regExceptions()
@@ -165,7 +168,7 @@ namespace langX {
 		langXObject *obj = getState()->newObject(className);
 		if (obj == NULL)
 		{
-			printf("class error!\n");
+			logger->error("class error!");
 			return NULL;
 		}
 		obj->setMember("message", new String(message));

@@ -15,6 +15,7 @@ namespace langX {
 	X3rdModule::~X3rdModule()
 	{
 	    // 清理 日志类 占用的内存
+
         if (this->m_logger) {
             delete this->m_logger;
             this->m_logger = nullptr;

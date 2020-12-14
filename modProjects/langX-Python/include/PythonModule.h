@@ -12,6 +12,7 @@ namespace langX {
 
 	class langXObject;
 	class Object;
+	class Logger;
 
 	class PythonModule : public X3rdModule
 	{
@@ -19,9 +20,17 @@ namespace langX {
 		PythonModule();
 		~PythonModule();
 
-		int init(langXState *);
+		int init(langXState *) override;
 
-		virtual int unload(langXState *);
+		virtual int unload(langXState *) override;
+
+		const char * getDescription() const override;
+
+		const char * getAuthor() const override;
+
+		const char * getRepository() const override;
+
+		const char * getVersion() const override;
 
 	private:
 
@@ -83,6 +92,11 @@ namespace langX {
 	Object * langX_PyObject_set_impl(XClassPyObject * obj, Object * key, Object *value);
 
 	PyObject * langXToPyObject(Object *);
+
+
+	extern PythonModule* pythonModule;
+	// python module 得日志
+	extern Logger* pythonModuleLogger;
 
 }
 
