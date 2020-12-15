@@ -66,6 +66,12 @@ TrelloList {
     return null;
   }
 
+  // 添加一个卡片到当前得列表
+  // card: 需要是一个 TrelloCard 对象
+  addCard => (card) {
+
+  }
+
 }
 
 

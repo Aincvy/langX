@@ -207,75 +207,75 @@ namespace langX{
 
     // 等于
     void __execEQ_OP(NodeLink *nodeLink, langXThread *thread) {
-        Node *n = nodeLink->node;
+        Node *node = nodeLink->node;
         if (nodeLink->index == 0) {
-            doSubNodes(n);
+            doSubNodes(node);
             nodeLink->index = 1;
             return;
         }
 
-        Node *n1 = n->opr_obj->op[0];
-        Node *n2 = n->opr_obj->op[1];
+        Node *leftNode = node->opr_obj->op[0];
+        Node *rightNode = node->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
+        if (leftNode->value == nullptr || rightNode->value == nullptr)
         {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '=='!")->addRef());
-            freeSubNodes(n);
+            freeSubNodes(node);
             return;
         }
 
-        Object * left = n1->value;
-        Object * right = n2->value;
+        Object * left = leftNode->value;
+        Object * right = rightNode->value;
 
         if (left->getType() == NULLOBJECT)
         {
             if (right->getType() == NULLOBJECT)
             {
-                n->value = Allocator::allocateNumber(1);
+                node->value = Allocator::allocateNumber(1);
             }
             else {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
         }
         else if (left->getType() == NUMBER)
         {
-            if (n2->value->getType() == NUMBER)
+            if (right->getType() == NUMBER)
             {
-                double a = ((Number*)n1->value)->getDoubleValue();
-                double b = ((Number*)n2->value)->getDoubleValue();
+                double a = ((Number*)leftNode->value)->getDoubleValue();
+                double b = ((Number*)rightNode->value)->getDoubleValue();
                 logger->debug("eq op: a: %.4f, b: %.4f", a, b);
 
                 if (a == b)
                 {
-                    n->value = Allocator::allocateNumber(1);
+                    node->value = Allocator::allocateNumber(1);
                 }
                 else {
-                    n->value = Allocator::allocateNumber(0);
+                    node->value = Allocator::allocateNumber(0);
                 }
             }
             else {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
         }
         else if (left->getType() == STRING)
         {
-            if (n2->value->getType() == STRING)
+            if (right->getType() == STRING)
             {
                 // 字符串比较
-                const char * a = ((String*)n1->value)->getValue();
-                const char * b = ((String*)n2->value)->getValue();
+                const char * a = ((String*)leftNode->value)->getValue();
+                const char * b = ((String*)rightNode->value)->getValue();
                 // logger->debug("a: %s,b: %s",a,b);
 
                 if (strcmp(a, b) == 0)
                 {
-                    n->value = Allocator::allocateNumber(1);
+                    node->value = Allocator::allocateNumber(1);
                 }
                 else {
-                    n->value = Allocator::allocateNumber(0);
+                    node->value = Allocator::allocateNumber(0);
                 }
             }
             else {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
         }
         else if (left->getType() == OBJECT) {
@@ -284,10 +284,10 @@ namespace langX{
             if (func)
             {
                 // 执行操作符重载
-                auto locationString = "<call by operator==> "  + fileInfoString(n->fileinfo);
-                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
+                auto locationString = "<call by operator==> "  + fileInfoString(node->fileinfo);
+                node->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
 
-                freeSubNodes(n);
+                freeSubNodes(node);
                 nodeLink->backAfterExec = true;
                 return;
             }
@@ -298,19 +298,19 @@ namespace langX{
                 langXObjectRef * ref2 = (langXObjectRef*)right;
                 if (strcmp(ref->characteristic(), ref2->characteristic()) == 0)
                 {
-                    n->value = Allocator::allocateNumber(1);
+                    node->value = Allocator::allocateNumber(1);
                 }
                 else {
-                    n->value = Allocator::allocateNumber(0);
+                    node->value = Allocator::allocateNumber(0);
                 }
             }
             else if (right->getType() == NULLOBJECT || right->getType() == XARRAY)
             {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
             else {
                 getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
         }
         else if (left->getType() == XARRAY)
@@ -318,35 +318,35 @@ namespace langX{
             // 数组
             if (right && right->getType() == OBJECT)
             {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
             else if (right->getType() == NULLOBJECT)
             {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
             else if (right->getType() == XARRAY)
             {
                 if (strcmp(left->characteristic(), right->characteristic()) == 0)
                 {
-                    n->value = Allocator::allocateNumber(1);
+                    node->value = Allocator::allocateNumber(1);
                 }
                 else {
-                    n->value = Allocator::allocateNumber(0);
+                    node->value = Allocator::allocateNumber(0);
                 }
             }
             else {
                 getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
         }
         else {
             //printf("类型不同，无法比较");
             getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-            n->value = Allocator::allocateNumber(0);
+            node->value = Allocator::allocateNumber(0);
         }
 
-        doSuffixOperation(n);
-        freeSubNodes(n);
+        doSuffixOperation(node);
+        freeSubNodes(node);
         nodeLink->backAfterExec = true;
     }
 

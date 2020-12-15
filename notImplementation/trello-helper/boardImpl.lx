@@ -29,20 +29,22 @@ auto TrelloBoard {
 
             listList.add(l);
         }
+
+        println("update list over, size: " + listList.size());
     }
 
     //
     getListByName => ( name ) {
-      return filterList( list => { return list.name == name; });
+      return filterList( (list, arg) => { return list.name == arg; }, name);
     }
 
     //
     getListById => ( id ) {
-      return filterList( list => { return list.id == id; });
+      return filterList( (list, arg) => { return list.id == arg; }, id);
     }
 
     // 过滤列表
-    filterList => ( filter ) {
+    filterList => ( filter,arg ) {
 
         if ( ! _init_list ) {
             _init_list = true;
@@ -54,7 +56,7 @@ auto TrelloBoard {
         for( i = 0; i < listList.size(); i++){
             tmp = listList.get(i);
 
-            if( filter(tmp) ) {
+            if( filter(tmp, arg) ) {
                 return tmp;
             }
         }

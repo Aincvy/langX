@@ -68,9 +68,9 @@ namespace langX {
             obj = arrayInfo->objNode->value;
         }
 
-        if (obj == NULL) {
+        if (obj == nullptr) {
             thread->throwException(
-                    newUnsupportedOperationException("left value is not array with array operator!")->addRef());
+                    newUnsupportedOperationException("left value is null with array operator!")->addRef());
             return nullptr;
         }
 

@@ -47,8 +47,8 @@ auto TrelloClient {
         pyFuncList = _py_client.get("list_boards");
         all_boards = pyFuncList.callMethod();
 
-        println("pyFuncList isNull: " + pyFuncList.isNull());
-        println("size: " + all_boards.size());
+        // println("pyFuncList isNull: " + pyFuncList.isNull());
+        // println("size: " + all_boards.size());
 
         boardList = new List();
         for( i = 0; i < all_boards.size(); i++){
@@ -65,23 +65,24 @@ auto TrelloClient {
 
     // 实现函数
     getBoardByName => ( name ){
-        return filterBoard( tmp => { return tmp.name == name; } );
+        return filterBoard( (tmp, arg) => { return tmp.name == arg; } , name);
     }
 
     // 实现函数
     getBoardById => ( id ) {
-        return filterBoard( tmp => { return tmp.id == id; } );
+        return filterBoard( (tmp, arg) => { return tmp.id == arg; } , id);
     }
 
     // 过滤看板
     // filter:   函数， true 表示是， false: 不是
-    filterBoard => (filter ) {
+    // arg:   传来得参数， 会直接传给 filter
+    filterBoard => (filter, arg) {
         local tmp;
         // 遍历列表， 检测id
         for ( i = 0; i < boardList.size(); i++ ){
             tmp = boardList.get(i);
 
-            if( filter(tmp) ){
+            if( filter(tmp, arg) ){
                 return tmp;
             }
         }
