@@ -116,9 +116,10 @@ extern int yydebug;
     NE_OP = 322,                   /* NE_OP  */
     AND_OP = 323,                  /* AND_OP  */
     OR_OP = 324,                   /* OR_OP  */
-    PIPELINE_OP = 325,             /* PIPELINE_OP  */
-    INC_OP_BACK = 326,             /* INC_OP_BACK  */
-    UMINUS = 327                   /* UMINUS  */
+    TOKEN_END_OF_FILE = 325,       /* TOKEN_END_OF_FILE  */
+    PIPELINE_OP = 326,             /* PIPELINE_OP  */
+    INC_OP_BACK = 327,             /* INC_OP_BACK  */
+    UMINUS = 328                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -127,7 +128,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 9 "a.y"
+#line 11 "a.y"
 
  int iValue;
  double dValue; /* double value */
@@ -136,7 +137,7 @@ union YYSTYPE
  XParamsList* params; /* params value */
  XArgsList *args;    /* args value */
 
-#line 140 "y.tab.h"
+#line 141 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

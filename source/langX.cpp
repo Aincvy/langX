@@ -36,7 +36,8 @@
 #endif // WIN32
 
 // 切换缓冲区到 文件指针
-extern void pushBuffer(FILE *fp);
+void pushBuffer(FILE *fp, const char* fileName);
+
 extern int yyparse(void);
 // lex 的 文件结束 工作
 extern void lexEOFWork();
@@ -408,7 +409,7 @@ namespace langX {
 			newScriptEnv(b->second);
 		}
 
-		pushBuffer(fp);
+		pushBuffer(fp, this->m_parsing_file);
         startParseIfNot();
 
 		return 0;
@@ -430,7 +431,7 @@ namespace langX {
 
         newScriptEnv(&env);
 
-        pushBuffer(fp);
+        pushBuffer(fp, this->m_parsing_file);
         startParseIfNot();
 
          backScriptEnv(false);
@@ -464,7 +465,7 @@ namespace langX {
 
 		logger->info("include file: %s", filename);
 
-		pushBuffer(fp);
+		pushBuffer(fp, this->m_parsing_file);
 
 		startParseIfNot();
 
@@ -520,7 +521,7 @@ namespace langX {
 
 		//printf("push file %s to lex buffer!\n" , tmp);
 
-		pushBuffer(fp);
+		pushBuffer(fp, this->m_parsing_file);
 
 		startParseIfNot();
 
@@ -580,7 +581,7 @@ namespace langX {
 		// 将新的脚本环境 应用到当前环境上
 		newScriptEnv(env);
 
-		pushBuffer(fp);
+		pushBuffer(fp, this->m_parsing_file);
 
 		startParseIfNot();
 

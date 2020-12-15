@@ -586,6 +586,11 @@ void execNode(XNode *n) {
 }
 
 void execAndFreeNode(XNode *n) {
+    // 如果传来得参数是空指针， 则跳过执行
+    if (!n) {
+        return;
+    }
+
 	langXThread * thread = getState()->curThread();
 	if (thread->isInException())
 	{

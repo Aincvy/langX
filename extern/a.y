@@ -4,6 +4,8 @@
 #include "../include/NodeCreator.h"
 #include "../include/Program.h"
 
+extern void lexEOFWork();
+
 %}
 
 %union {
@@ -27,6 +29,7 @@
 %token OPR_ARGS_LIST
 %token KEY_REQUIRE KEY_REQUIRE_ONCE KEY_INCLUDE
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<'  AND_OP OR_OP
+%token TOKEN_END_OF_FILE
 
 %type <node> statement _extra_nothing con_ctl_stmt simple_stmt simple_stmt_types interrupt_stmt new_expr null_expr delete_expr
 %type <node> func_declare_stmt out_declare_stmt var_declare_stmt element_var_declare_stmt _elements_var_declare_stmt class_declare_stmt namespace_declare_stmt
@@ -84,14 +87,16 @@ program
 
 statement_list
     : statement_list statement      { execAndFreeNode($2); }
-	|
+    |
 	;
+
 statement
 	: _extra_nothing     { $$ = $1; }
 	| out_declare_stmt    { $$ = $1; }
 	| con_ctl_stmt   { $$ = $1; }
 	| simple_stmt    { $$ = $1; }
 	| try_stmt       { $$ = $1; }
+    | TOKEN_END_OF_FILE { lexEOFWork();  $$ = nullptr; }
 	;
 
 _extra_nothing
