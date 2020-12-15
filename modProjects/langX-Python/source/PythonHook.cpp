@@ -13,22 +13,10 @@
 #include "../../../include/StringType.h"
 
 
-#ifdef WIN32 
-#include "../../../lib/Python-3.5.2/Include/Python.h"
-#else
-#include <python/Python.h>
-#endif
-
-extern langX::ClassInfo *claxxPyObj;
-
 namespace langX {
 
+
 	Object * langX_PythonHook_importModule(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			pythonModuleLogger->error("langX_PythonHook_import error! NO OBJ!\n");
-			return nullptr;
-		}
 
 		Object *a = args.args[0];
 		if (a && a->getType() == STRING)
@@ -38,8 +26,8 @@ namespace langX {
 
 			PyObject *ret = PyImport_ImportModule(str->getValue());
             if (ret == nullptr) {
-                pythonModuleLogger->debug("module %s import failed.", str->getValue());
-                PyErr_Print();
+                pythonModuleLogger->error("module %s import failed.", str->getValue());
+                logPythonErrorMsg();
                 return nullptr;
             }
 
@@ -56,11 +44,6 @@ namespace langX {
 
 
 	Object * langX_PythonHook_doSString(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonHook_doSString error! NO OBJ!\n");
-			return nullptr;
-		}
 
 		Object *a = args.args[0];
 		if (a && a->getType() == STRING)
@@ -76,11 +59,6 @@ namespace langX {
 
 
 	Object * langX_PythonHook_PythonHook_Dtor(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonHook_PythonHook_Dtor error! NO OBJ!\n");
-			return nullptr;
-		}
 
 		return nullptr;
 	}
@@ -88,21 +66,11 @@ namespace langX {
 
 
 	Object * langX_PythonHook_PythonHook(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonHook_PythonHook error! NO OBJ!\n");
-			return nullptr;
-		}
 
 		return nullptr;
 	}
 
 	Object * langX_PythonHook_newDict(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonHook_newDict error! NO OBJ!\n");
-			return nullptr;
-		}
 
 		PyObject *ret = PyDict_New();
 		return createLangXObjectPyObj(ret, PyObjectType::Dict)->addRef();
@@ -112,11 +80,6 @@ namespace langX {
 
 
 	Object * langX_PythonHook_newTuple(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonHook_newTuple error! NO OBJ!\n");
-			return nullptr;
-		}
 
 		Object *a = args.args[0];
 		if (a && a->getType() == NUMBER)
@@ -131,11 +94,6 @@ namespace langX {
 
 
 	Object * langX_PythonHook_newList(X3rdFunction *func, const X3rdArgs &args) {
-		if (args.object == nullptr)
-		{
-			printf("langX_PythonHook_newList error! NO OBJ!\n");
-			return nullptr;
-		}
 
 		Object *a = args.args[0];
 		if (a && a->getType() == NUMBER)
@@ -160,7 +118,6 @@ namespace langX {
 	Object * langX_PythonHook_clearError(X3rdFunction *func, const X3rdArgs &args) {
 		
 		PyErr_Clear();
-
 		return nullptr;
 	}
 

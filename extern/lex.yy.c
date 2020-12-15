@@ -887,7 +887,7 @@ yy_find_action:
 		if ( yy_act == 0 )
 			{ /* have to back up */
 			yy_cp = (yy_last_accepting_cpos);
-			yy_current_state = (yy_last_accepting_state);
+			yy_current_state = (b);
 			yy_act = yy_accept[yy_current_state];
 			}
 
@@ -1281,7 +1281,13 @@ case YY_STATE_EOF(INITIAL):
 	// 这里只标记一下文件结束了， 在下一个节点执行结束的时候才会真正的结束文件
 	// endOfFileFlag();
 
-	langX::logger->debug("on end of file, yy_n_chars: %d", yy_n_chars);
+	langX::logger->debug("on end of file, yy_hold_char: %d", yy_hold_char);
+	langX::logger->debug("on end of file, yy_c_buf_p: %c", (*yy_c_buf_p));
+	auto tmpPoint = YY_CURRENT_BUFFER;
+	if(tmpPoint){
+		langX::logger->debug("on end of file, yy_buffer_status: %d", tmpPoint->yy_buffer_status);
+	}
+
 	if( yy_n_chars > 0) {
 		//
 		endOfFileFlag();
@@ -1322,10 +1328,10 @@ case YY_STATE_EOF(INITIAL):
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 171 "a.l"
+#line 177 "a.l"
 ECHO;
 	YY_BREAK
-#line 1329 "lex.yy.c"
+#line 1335 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2320,7 +2326,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 171 "a.l"
+#line 177 "a.l"
 
 
 

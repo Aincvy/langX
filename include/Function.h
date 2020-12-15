@@ -210,8 +210,9 @@ namespace langX {
      * @param ap
      * @param _3rdArgs
      * @param argc
+     * @param object  将赋值给 X3rdArgs 得对象属性
      */
-    void copyVaListTo3rdArgs(va_list ap, X3rdArgs & _3rdArgs, int argc);
+    void copyVaListTo3rdArgs(va_list ap, X3rdArgs & _3rdArgs, int argc, langXObject *object);
 
     /**
      * 添加函数的拓展变量到 函数内部 | $_, $1,$2 等

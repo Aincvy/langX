@@ -5,6 +5,8 @@ auto TrelloList {
     // 列表的python 对象
     _py_list;
 
+    _init_card = false;
+
     // 更新当前的列表的属性
     updateSelf => (){
         name = _py_list.get("name").toStr();
@@ -13,6 +15,10 @@ auto TrelloList {
         // 更新卡片列表
         allCards = _py_list.get("list_cards").callMethod();
 
+    }
+
+    // 更新当前列表得所有卡片信息
+    updateCards => (){
         cardList = new List();
         for( i = 0; i < allCards.size(); i++){
             card = new TrelloCard();
@@ -22,7 +28,6 @@ auto TrelloList {
 
             cardList.add(card);
         }
-
     }
 
     getCardById => ( id ){
@@ -49,6 +54,11 @@ auto TrelloList {
     }
 
     filterCard => ( filter ) {
+        if( ! _init_card ){
+            _init_card = true;
+            updateCards();
+        }
+
         local tmp;
 
         for( i = 0; i < cardList.size(); i++){

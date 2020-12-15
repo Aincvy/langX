@@ -2,11 +2,7 @@
 
 #include "../../../include/X3rdModule.h"
 
-#ifdef WIN32 
-#include "../../../lib/Python-3.5.2/Include/Python.h"
-#else
-#include <python/Python.h>
-#endif
+#include <Python.h>
 
 namespace langX {
 
@@ -93,6 +89,23 @@ namespace langX {
 
 	PyObject * langXToPyObject(Object *);
 
+	/**
+	 * 尝试矫正 对象得 python 类型
+	 * @param obj
+	 */
+    void detectPyType(XClassPyObject *obj);
+
+	/**
+	 * 将 python得 错误信息输出到日志里面
+	 */
+    void logPythonErrorMsg();
+
+    /**
+     * 把一个 langX 对象转换成一个python 对象
+     * @param obj
+     * @return
+     */
+    PyObject * langXToPyObject(Object *obj);
 
 	extern PythonModule* pythonModule;
 	// python module 得日志

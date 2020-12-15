@@ -395,7 +395,9 @@ namespace langX {
         }
     }
 
-    void copyVaListTo3rdArgs(va_list ap, X3rdArgs & _3rdArgs, int argc){
+    void copyVaListTo3rdArgs(va_list ap, X3rdArgs & _3rdArgs, int argc, langXObject *object){
+	    _3rdArgs.object = object;
+
         _3rdArgs.index = argc;
         if (argc > 0) {
             for (int i = 0; i < argc; ++i) {
@@ -527,7 +529,7 @@ namespace langX {
     vCallFunction(langXThread *thread, Function *function, langXObject *object, const char *remark, int argc, va_list ap) {
 
         X3rdArgs _3rdArgs = {};
-        copyVaListTo3rdArgs(ap, _3rdArgs, argc);
+        copyVaListTo3rdArgs(ap, _3rdArgs, argc, object);
 
         return callFunction(thread, function, &_3rdArgs, object, remark);
     }
@@ -603,7 +605,7 @@ namespace langX {
     langX::vCallFunction(langXThread *thread, FunctionRef *functionRef, const char *remark, int argc, va_list ap) {
 	    // 转换 va_list 变成一个 3rdArgs
         X3rdArgs _3rdArgs = {};
-        copyVaListTo3rdArgs(ap, _3rdArgs, argc);
+        copyVaListTo3rdArgs(ap, _3rdArgs, argc, functionRef->getObject());
 
         return callFunction(thread, functionRef, &_3rdArgs, remark);
     }

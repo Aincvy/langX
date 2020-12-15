@@ -21,10 +21,10 @@ auto TrelloClient {
 
         // 构造调用函数所需要的参数
         local args;
-        args = _py_hook.newDict();
-        args.setItem("api_key", apiKey);
-        args.setItem("api_secret", apiSecret);
-        args.setItem("token", token);
+        args = _py_hook.newTuple(3);
+        args.setItem(0, apiKey);
+        args.setItem(1, apiSecret);
+        args.setItem(2, token);
 
         // 获取函数， 并调用
         local pyFuncTrelloClient;
@@ -47,12 +47,16 @@ auto TrelloClient {
         pyFuncList = _py_client.get("list_boards");
         all_boards = pyFuncList.callMethod();
 
+        println("pyFuncList isNull: " + pyFuncList.isNull());
+        println("size: " + all_boards.size());
+
         boardList = new List();
         for( i = 0; i < all_boards.size(); i++){
             // 填充列表
             board = new TrelloBoard();
             board._py_board = all_boards.get(i);
             board.updateSelf();
+            println("get board: " + board.name);
 
             boardList.add(board);
         }

@@ -128,7 +128,13 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 	// 这里只标记一下文件结束了， 在下一个节点执行结束的时候才会真正的结束文件
 	// endOfFileFlag();
 
-	langX::logger->debug("on end of file, yy_n_chars: %d", yy_n_chars);
+	langX::logger->debug("on end of file, yy_hold_char: %d", yy_hold_char);
+	langX::logger->debug("on end of file, yy_c_buf_p: %c", (*yy_c_buf_p));
+	auto tmpPoint = YY_CURRENT_BUFFER;
+	if(tmpPoint){
+		langX::logger->debug("on end of file, yy_buffer_status: %d", tmpPoint->yy_buffer_status);
+	}
+
 	if( yy_n_chars > 0) {
 		//
 		endOfFileFlag();
