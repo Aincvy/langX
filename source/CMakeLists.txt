@@ -22,8 +22,7 @@ SET( SRC_LIST
 		Function.cpp
         langX.cpp
 		langXObject.cpp
-		langXrtlib.cpp
-		langXThread.cpp
+        langXThread.cpp
 		LogManager.cpp
 		NullObject.cpp
 		Number.cpp

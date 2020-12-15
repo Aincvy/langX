@@ -1,0 +1,34 @@
+// 简单点。。
+
+// N 秒后执行一个函数
+// @param time    N 秒
+// @param callback   到了时间之后 执行得函数
+// @return    临时得中间表示， 可以用于取消任务
+setTimeout => ( time, callback){
+    return null;
+}
+
+// N 秒后，  执行1次，之后每过N秒执行一次 callback
+// 参数和返回值和 setTimeout 类似
+setInterval => ( time, interval, callback){
+
+    return null;
+}
+
+// 添加一个任务到指定得日期
+// @param date   日期参数， 会精确到秒
+// @param callback  回调
+addTaskToDate => ( date, callback ){
+
+}
+
+// 开启定时器
+// 调用这个方法会卡住线程
+startTimer => (){
+
+}
+
+// 停止定时器
+stopTimer => (){
+
+}

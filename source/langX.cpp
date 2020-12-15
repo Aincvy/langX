@@ -23,7 +23,6 @@
 #include "X3rdModule.h"
 #include "langXThread.h"
 #include "LogManager.h"
-#include "langXrtlib.h"
 #include "Utils.h"
 #include "ScriptModule.h"
 
