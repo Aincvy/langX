@@ -13,13 +13,12 @@
 #include "Environment.h"
 #include "ClassInfo.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "XArray.h"
 #include "Exception.h"
 #include "XNameSpace.h"
 #include "StackTrace.h"
 #include "NullObject.h"
-#include "InnerFunction.h"
+
 #include "langXThread.h"
 #include "LogManager.h"
 #include "Utils.h"
@@ -69,32 +68,28 @@ namespace langX {
             obj = arrayInfo->objNode->value;
         }
 
-        if (obj == NULL) {
+        if (obj == nullptr) {
             thread->throwException(
-                    newUnsupportedOperationException("left value is not array with array operator!")->addRef());
+                    newUnsupportedOperationException("left value is null with array operator!")->addRef());
             return nullptr;
         }
 
+        auto n = nodeLink->node;
         if (obj->getType() == OBJECT) {
-            langXObjectRef *ref1 = (langXObjectRef *) obj;
-            Function *func1 = ref1->getFunction("operator[]");
-            if (func1) {
-                // 处理参数
-                Object *arg1 = nullptr;
-                Number num1(0);
-                arg1 = &num1;
+            langXObjectRef *ref = (langXObjectRef *) obj;
+            Function *func = ref->getFunction("operator[]");
+            if (func) {
+
                 Node *t = arrayInfo->indexNode;
                 if (t->value == nullptr) {
                     thread->throwException(newException("error index !")->addRef());
                     return nullptr;
                 }
-                arg1 = t->value;
+                auto arg1 = t->value;
 
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = arg1;
-                _3rdArgs.index = 1;
-                return callFunction(obj, func1, &_3rdArgs);
+                // 执行操作符重载
+                auto locationString = "<call by operator[]> "  + fileInfoString(n->fileinfo);
+                return callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, arg1);
             }
         }
 
@@ -361,12 +356,12 @@ namespace langX {
     // 如果这个节点并没有被运算， 则会运算这个节点
     // 判断之后， 并不会释放这个节点的内存
     bool __tryConvertToBool(Node *n) {
-        if (n == NULL) {
+        if (n == nullptr) {
             return false;
         }
 
         //checkValue(n, getState()->curThread());      // 2017年11月30日 在外层确保值是有的吧
-        if (n->value == NULL) {
+        if (n->value == nullptr) {
             return false;
         }
 
@@ -479,9 +474,8 @@ namespace langX {
      * @param node
      * @return
      */
-    XArgsList *convertArgsList(Node *node) {
+    XArgsList *convertArgsList(Node *node, ArgsList *argsList) {
         // 申请内存
-        auto argsList = (XArgsList *) calloc(1, sizeof(XArgsList));
         argsList->index = 0;
 
         // 前缀遍历， 赋值
@@ -731,11 +725,10 @@ namespace langX {
             auto ref = (langXObjectRef *) number;
             auto func = ref->getFunction(funcName);
             if (func) {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.index = 0;
+                // 执行操作符重载
+                auto locationString = "<call by " + std::string(funcName) + ">" + fileInfoString(node->fileinfo);
+                node->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 0);
 
-                node->value = callFunction(number, func, &_3rdArgs);
             } else {
                 // 不存在该方法
                 char tmp[DEFAULT_CHAR_BUFFER_SIZE];
@@ -1067,7 +1060,11 @@ namespace langX {
         // 备注和 参数列表
         auto remarkString = fileInfoString(n->fileinfo);
         auto remark = remarkString.c_str();
-        XArgsList *args = convertArgsList(argsNode);
+
+        // 使用自动释放内存的 argsList
+        XArgsList argsList;
+        convertArgsList(argsNode, &argsList);
+        auto args = &argsList;
 
         // 获取函数， 以及执行其他类型的函数
         auto funcObj = objNode->value;
@@ -1191,14 +1188,14 @@ namespace langX {
             FunctionRef ref(func);
             ref.setObject(nullptr);
 
-            auto len = 1 + args->index;
-            Object *realArgs[len];
-            realArgs[0] = stringObj;
+            X3rdArgs _3rdArgs;
+            _3rdArgs.index = 1 + args->index;
+            _3rdArgs.args[0] = stringObj;
             for (int i = 0; i < args->index; ++i) {
-                realArgs[i + 1] = args->args[i]->value;
+                _3rdArgs.args[i + 1] = args->args[i]->value;
             }
 
-            return ref.call(realArgs, len, remark);
+            return callFunction(thread, func, &_3rdArgs, remark);
 
         } else {
             // 未找到函数， 丢个异常
@@ -1238,11 +1235,13 @@ namespace langX {
                 auto argsNode = oprObj->op[2];
                 auto funcName = funcNameNode->var_obj->name;
 
-
+                // 获取当前的脚本未知
                 std::string remark = fileInfoString(n->fileinfo);
-                auto args = convertArgsList(argsNode);
+                // 使用自动释放内存的 参数列表
+                ArgsList args;
+                convertArgsList(argsNode, &args);
 
-                __realExecCLAXX_FUNC_CALL(thread, n, objNode->value, funcName, args, remark.c_str());
+                __realExecCLAXX_FUNC_CALL(thread, n, objNode->value, funcName, &args, remark.c_str());
 
             } while (false);
         }
@@ -1254,6 +1253,11 @@ namespace langX {
     void __realExecCLAXX_FUNC_CALL(langXThread *thread, Node *n, Object* object, const char* funcName, XArgsList *args, const char *remark){
         if (object->getType() == STRING) {
             n->value = __execStringInnerFunc(thread, object, funcName, args, remark);
+            return;
+        }
+
+        if (object->getType() != ObjectType::OBJECT) {
+            thread->throwException(newTypeErrorException("left value is not class instance !")->addRef());
             return;
         }
 
@@ -1327,7 +1331,6 @@ namespace langX {
         nodeLink->backAfterExec = true;
     }
 
-
     // 包含其他文件
     void __execINCLUDE(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
@@ -1386,108 +1389,13 @@ namespace langX {
         nodeLink->backAfterExec = true;
     }
 
-    void __realExecCONST(Node *n, langXThread *thread) {
-        if (!n) {
-            return;
-        }
-        Object *obj = Allocator::allocate(NULLOBJECT);
-        obj->setEmergeEnv(thread->getCurrentEnv());
-        obj->setConst(true);
-        for (int i = 0; i < n->opr_obj->op_count; i++) {
-            Node *t = n->opr_obj->op[i];
-            if (t == NULL) {
-                continue;
-            }
-            if (t->type != NODE_VARIABLE) {
-                if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLARE) {
-                    __realExecCONST(t, thread);
-                } else {
-                    // 抛出异常
-                    thread->throwException(newUnsupportedOperationException("invalid const stmt.")->addRef());
-                    return;
-                }
-                continue;
-            }
-
-            char *name = t->var_obj->name;
-            Object *tmp = thread->getCurrentEnv()->getObjectSelf(name);
-            if (tmp == NULL) {
-                setValueToEnv(name, obj);
-            } else {
-                tmp->setConst(!tmp->isConst());
-            }
-        }
-
-        Allocator::free(obj);
-    }
-
-    //  常量限制
-    void __execCONST(NodeLink *nodeLink, langXThread *thread) {
-        Node *n = nodeLink->node;
-        __realExecCONST(n, thread);
-        nodeLink->backAfterExec = true;
-    }
-
-    //  local 限制
-    void __realExecLOCAL(Node *n, langXThread *thread) {
-        if (!n) {
-            return;
-        }
-
-        Object *obj = Allocator::allocate(NULLOBJECT);
-        obj->setEmergeEnv(thread->getCurrentEnv());
-        obj->setLocal(true);
-        for (int i = 0; i < n->opr_obj->op_count; i++) {
-            Node *t = n->opr_obj->op[i];
-            if (t == NULL) {
-                continue;
-            }
-            if (t->type != NODE_VARIABLE && t->type != NodeType::NODE_CLASS) {
-                if (t->type == NODE_OPERATOR && t->opr_obj->opr == VAR_DECLARE) {
-                    __realExecLOCAL(t, thread);
-                } else {
-                    // 抛出异常
-                    thread->throwException(newUnsupportedOperationException("invalid local stmt.")->addRef());
-                    return;
-                }
-                continue;
-            }
-
-            if (t->type == NodeType::NODE_VARIABLE) {
-                char *name = t->var_obj->name;
-                Object *tmp = thread->getCurrentEnv()->getObjectSelf(name);
-                if (tmp == NULL) {
-                    setValueToEnv(name, obj);
-                } else {
-                    tmp->setLocal(!tmp->isLocal());
-                }
-            } else if (t->type == NodeType::NODE_CLASS) {
-                // 类声明
-                t->state.isLocal = true;
-                NodeLink tmpNodeLink;
-                memset(&tmpNodeLink, 0, sizeof(NodeLink));
-                tmpNodeLink.node = t;
-                __realExecNode(&tmpNodeLink, thread);
-            }
-        }
-
-        Allocator::free(obj);
-    }
-
-    void __execLOCAL(NodeLink *nodeLink, langXThread *thread) {
-        Node *n = nodeLink->node;
-        __realExecLOCAL(n, thread);
-        nodeLink->backAfterExec = true;
-    }
 
     //  continue 关键字
     void __execCONTINUE(NodeLink *nodeLink, langXThread *thread) {
-        Node *n = nodeLink->node;
-
         if (!thread->isInLoop()) {
             getState()->curThread()->throwException(
                     newUnsupportedOperationException("invalid continue stmt.")->addRef());
-            //printf("无效的CONTINUE 语句 ");
+
             return;
         }
 
@@ -1664,14 +1572,14 @@ namespace langX {
 
         // 执行 classBody 节点， 以满足变量和函数的声明
         if (bodyNode != nullptr) {
-            logger->debug("will do class %s body node", name);
+            // logger->debug("will do class %s body node", name);
             auto *env = clzInfo->getClassEnv();
             thread->newEnv(env);
             thread->beginExecute(bodyNode, true);
             __execNode(nullptr, bodyNode);     // 立即处理掉这个节点，但是也仅仅只是处理 到 这个节点
             thread->backEnv(false);
 
-            logger->debug("class %s body node done.", name);
+            // logger->debug("class %s body node done.", name);
         }
 
         // 关于类前缀的判断和应用
@@ -1906,36 +1814,6 @@ namespace langX {
             node->ptr_u = NULL;
 
             return;
-        } else if (node->type == NODE_FUNCTION) {
-            // 函数
-            if (node->ptr_u == NULL) {
-                return;
-            }
-            Function *func = (Function *) node->ptr_u;
-            if (!func->hasName()) {
-                // 匿名函数    ...  wtf ???  当初匿名函数到底是怎么进行处理的- -
-                //  2017年12月3日   当运算一个匿名函数的时候， 就把改该节点的值 做成一个函数指针指向这个匿名函数
-                node->value = Allocator::allocateFunctionRef(func);
-                return;
-            }
-            if (thread->getCurrentEnv()->getFunctionSelf(func->getName()) != NULL) {
-                char tmp[100] = {0};
-                sprintf(tmp, "function %s already declared.", func->getName());
-                thread->throwException(newRedeclarationException(tmp)->addRef());
-                delete func;
-                node->value = NULL;
-                return;
-            }
-
-            //函数的产生环境可能在类内部
-            //func->setEmergeEnv(getState()->curThread()->getCurrentEnv());
-            Environment *env = getState()->getScriptOrNSEnv();
-            if (env != NULL && env->getType() == EnvironmentType::TScriptEnvironment) {
-                func->setScriptEnv((ScriptEnvironment *) env);
-            }
-            thread->getCurrentEnv()->putFunction(func->getName(), func);
-
-            return;
         } else if (node->type == NODE_NULL) {
             node->value = Allocator::allocate(NULLOBJECT);
             return;
@@ -1957,22 +1835,22 @@ namespace langX {
 
         switch (node->opr_obj->opr) {
             case '+':
-                __exec43(nodeLink);
+                __exec43(nodeLink, thread);
                 break;
             case '-':
-                __exec45(nodeLink);
+                __exec45(nodeLink, thread);
                 break;
             case '*':
-                __exec42(nodeLink);
+                __exec42(nodeLink, thread);
                 break;
             case '/':
-                __exec47(nodeLink);
+                __exec47(nodeLink, thread);
                 break;
             case '%':
-                __exec37(nodeLink);
+                __exec37(nodeLink, thread);
                 break;
             case '=':
-                __NEW_exec61(nodeLink, thread);
+                __exec61(nodeLink, thread);
                 break;
             case ';':
                 __exec59(nodeLink, thread);
@@ -1984,28 +1862,28 @@ namespace langX {
                 __exec60(nodeLink);
                 break;
             case '&':
-                __exec38(nodeLink);
+                __exec38(nodeLink, thread);
                 break;
             case '|':
-                __exec124(nodeLink);
+                __exec124(nodeLink, thread);
                 break;
             case '^':
-                __exec94(nodeLink);
+                __exec94(nodeLink, thread);
                 break;
             case '~':
-                __exec126(nodeLink);
+                __exec126(nodeLink, thread);
                 break;
             case '!':
                 __exec33(nodeLink);
                 break;
             case UMINUS:
-                __execUMINUS(nodeLink);
+                __execUMINUS(nodeLink, thread);
                 break;
             case INC_OP:
-                __execINC_OP(nodeLink);
+                __execINC_OP(nodeLink, thread);
                 break;
             case DEC_OP:
-                __execDEC_OP(nodeLink);
+                __execDEC_OP(nodeLink, thread);
                 break;
             case ADD_EQ:
                 __execADD_EQ(nodeLink);
@@ -2029,16 +1907,16 @@ namespace langX {
                 __execGE_OP(nodeLink);
                 break;
             case EQ_OP:
-                __execEQ_OP(nodeLink);
+                __execEQ_OP(nodeLink, nullptr);
                 break;
             case NE_OP:
-                __execNE_OP(nodeLink);
+                __execNE_OP(nodeLink, nullptr);
                 break;
             case AND_OP:
                 __execOPAND(nodeLink);
                 break;
             case OR_OP:
-                __execOPOR(nodeLink);
+                __execOPOR(nodeLink, thread);
                 break;
             case KEY_IF:
                 __execIF(nodeLink, thread);
@@ -2098,10 +1976,10 @@ namespace langX {
                 __execXTRY(nodeLink, thread);
                 break;
             case LEFT_SHIFT:
-                __execLEFT_SHIFT(nodeLink);
+                __execLEFT_SHIFT(nodeLink, thread);
                 break;
             case RIGHT_SHIFT:
-                __execRIGHT_SHIFT(nodeLink);
+                __execRIGHT_SHIFT(nodeLink, thread);
                 break;
             case KEY_IS:
                 __execXIS(nodeLink, thread);
@@ -2121,14 +1999,8 @@ namespace langX {
             case KEY_REF:
                 __execREF(nodeLink);
                 break;
-            case KEY_CONST:
-                __execCONST(nodeLink, thread);
-                break;
             case KEY_CONTINUE:
                 __execCONTINUE(nodeLink, thread);
-                break;
-            case KEY_LOCAL:
-                __execLOCAL(nodeLink, thread);
                 break;
             case OPR_NODE_LIST:
                 __execNODE_LIST(nodeLink, thread);

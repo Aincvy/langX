@@ -9,7 +9,6 @@
 #include "../include/Function.h"
 #include "../include/ClassInfo.h"
 #include "../include/langXObject.h"
-#include "../include/langXObjectRef.h"
 #include "../include/XArray.h"
 #include "../include/NodeCreator.h"
 #include "../include/XNameSpace.h"

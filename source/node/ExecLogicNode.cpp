@@ -1,7 +1,8 @@
 //
 // Created by Aincvy(aincvy@gmail.com) on 2020/11/7.
 // 执行 逻辑判断相关的节点
-#include <LogManager.h>
+
+#include "LogManager.h"
 #include "ExecNode.h"
 #include "ExecNodeImpl.h"
 #include "NodeCreator.h"
@@ -11,8 +12,6 @@
 #include "Allocator.h"
 #include "ClassInfo.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
-#include "InnerFunction.h"
 
 
 namespace langX{
@@ -27,7 +26,7 @@ namespace langX{
         }
 
         Node *n1 = n->opr_obj->op[0];
-        if (n1->value == NULL)
+        if (n1->value == nullptr)
         {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '-'!")->addRef());
             freeSubNodes(n);
@@ -207,90 +206,88 @@ namespace langX{
     }
 
     // 等于
-    void __execEQ_OP(NodeLink *nodeLink) {
-        Node *n = nodeLink->node;
+    void __execEQ_OP(NodeLink *nodeLink, langXThread *thread) {
+        Node *node = nodeLink->node;
         if (nodeLink->index == 0) {
-            doSubNodes(n);
+            doSubNodes(node);
             nodeLink->index = 1;
             return;
         }
 
-        Node *n1 = n->opr_obj->op[0];
-        Node *n2 = n->opr_obj->op[1];
+        Node *leftNode = node->opr_obj->op[0];
+        Node *rightNode = node->opr_obj->op[1];
 
-        if (n1->value == NULL || n2->value == NULL)
+        if (leftNode->value == nullptr || rightNode->value == nullptr)
         {
             getState()->curThread()->throwException(newArithmeticException("value is null on opr '=='!")->addRef());
-            freeSubNodes(n);
+            freeSubNodes(node);
             return;
         }
 
-        Object * left = n1->value;
-        Object * right = n2->value;
+        Object * left = leftNode->value;
+        Object * right = rightNode->value;
 
         if (left->getType() == NULLOBJECT)
         {
             if (right->getType() == NULLOBJECT)
             {
-                n->value = Allocator::allocateNumber(1);
+                node->value = Allocator::allocateNumber(1);
             }
             else {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
         }
         else if (left->getType() == NUMBER)
         {
-            if (n2->value->getType() == NUMBER)
+            if (right->getType() == NUMBER)
             {
-                double a = ((Number*)n1->value)->getDoubleValue();
-                double b = ((Number*)n2->value)->getDoubleValue();
+                double a = ((Number*)leftNode->value)->getDoubleValue();
+                double b = ((Number*)rightNode->value)->getDoubleValue();
                 logger->debug("eq op: a: %.4f, b: %.4f", a, b);
 
                 if (a == b)
                 {
-                    n->value = Allocator::allocateNumber(1);
+                    node->value = Allocator::allocateNumber(1);
                 }
                 else {
-                    n->value = Allocator::allocateNumber(0);
+                    node->value = Allocator::allocateNumber(0);
                 }
             }
             else {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
         }
         else if (left->getType() == STRING)
         {
-            if (n2->value->getType() == STRING)
+            if (right->getType() == STRING)
             {
                 // 字符串比较
-                const char * a = ((String*)n1->value)->getValue();
-                const char * b = ((String*)n2->value)->getValue();
+                const char * a = ((String*)leftNode->value)->getValue();
+                const char * b = ((String*)rightNode->value)->getValue();
                 // logger->debug("a: %s,b: %s",a,b);
 
                 if (strcmp(a, b) == 0)
                 {
-                    n->value = Allocator::allocateNumber(1);
+                    node->value = Allocator::allocateNumber(1);
                 }
                 else {
-                    n->value = Allocator::allocateNumber(0);
+                    node->value = Allocator::allocateNumber(0);
                 }
             }
             else {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
         }
         else if (left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
-            Function *func1 = ref1->getFunction("operator==");
-            if (func1)
+            langXObjectRef * ref = (langXObjectRef*)left;
+            Function *func = ref->getFunction("operator==");
+            if (func)
             {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = right;
-                _3rdArgs.index = 1;
-                n->value = callFunction(left, func1, &_3rdArgs);
+                // 执行操作符重载
+                auto locationString = "<call by operator==> "  + fileInfoString(node->fileinfo);
+                node->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
 
-                freeSubNodes(n);
+                freeSubNodes(node);
                 nodeLink->backAfterExec = true;
                 return;
             }
@@ -299,21 +296,21 @@ namespace langX{
             if (right && right->getType() == OBJECT)
             {
                 langXObjectRef * ref2 = (langXObjectRef*)right;
-                if (strcmp(ref1->characteristic(), ref2->characteristic()) == 0)
+                if (strcmp(ref->characteristic(), ref2->characteristic()) == 0)
                 {
-                    n->value = Allocator::allocateNumber(1);
+                    node->value = Allocator::allocateNumber(1);
                 }
                 else {
-                    n->value = Allocator::allocateNumber(0);
+                    node->value = Allocator::allocateNumber(0);
                 }
             }
             else if (right->getType() == NULLOBJECT || right->getType() == XARRAY)
             {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
             else {
                 getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
         }
         else if (left->getType() == XARRAY)
@@ -321,40 +318,40 @@ namespace langX{
             // 数组
             if (right && right->getType() == OBJECT)
             {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
             else if (right->getType() == NULLOBJECT)
             {
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
             else if (right->getType() == XARRAY)
             {
                 if (strcmp(left->characteristic(), right->characteristic()) == 0)
                 {
-                    n->value = Allocator::allocateNumber(1);
+                    node->value = Allocator::allocateNumber(1);
                 }
                 else {
-                    n->value = Allocator::allocateNumber(0);
+                    node->value = Allocator::allocateNumber(0);
                 }
             }
             else {
                 getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-                n->value = Allocator::allocateNumber(0);
+                node->value = Allocator::allocateNumber(0);
             }
         }
         else {
             //printf("类型不同，无法比较");
             getState()->curThread()->throwException(newArithmeticException("type error on opr '=='! only can number or string!")->addRef());
-            n->value = Allocator::allocateNumber(0);
+            node->value = Allocator::allocateNumber(0);
         }
 
-        doSuffixOperation(n);
-        freeSubNodes(n);
+        doSuffixOperation(node);
+        freeSubNodes(node);
         nodeLink->backAfterExec = true;
     }
 
     // 不等于
-    void __execNE_OP(NodeLink *nodeLink) {
+    void __execNE_OP(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         if (nodeLink->index == 0) {
             doSubNodes(n);
@@ -429,15 +426,13 @@ namespace langX{
             }
         }
         else if (left->getType() == OBJECT) {
-            langXObjectRef * ref1 = (langXObjectRef*)left;
-            Function *func1 = ref1->getFunction("operator!=");
-            if (func1)
+            langXObjectRef * ref = (langXObjectRef*)left;
+            Function *func = ref->getFunction("operator!=");
+            if (func)
             {
-                X3rdArgs _3rdArgs;
-                memset(&_3rdArgs, 0, sizeof(X3rdArgs));
-                _3rdArgs.args[0] = right;
-                _3rdArgs.index = 1;
-                n->value = callFunction(left, func1, &_3rdArgs);
+                // 执行操作符重载
+                auto locationString = "<call by operator!=> "  + fileInfoString(n->fileinfo);
+                n->value = callFunction(thread, func, ref->getRefObject(), locationString.c_str(), 1, right);
 
                 freeSubNodes(n);
                 nodeLink->backAfterExec = true;
@@ -448,7 +443,7 @@ namespace langX{
             if (right && right->getType() == OBJECT)
             {
                 langXObjectRef * ref2 = (langXObjectRef*)right;
-                if (strcmp(ref1->characteristic(), ref2->characteristic()) == 0)
+                if (strcmp(ref->characteristic(), ref2->characteristic()) == 0)
                 {
                     n->value = Allocator::allocateNumber(0);
                 }
@@ -530,32 +525,44 @@ namespace langX{
         nodeLink->backAfterExec = true;
     }
 
-    void __execOPOR(NodeLink *nodeLink) {
-        Node *n = nodeLink->node;
+    void __realExecOPOR(NodeLink *nodeLink, langXThread *thread) {
+        Node *node = nodeLink->node;
+        auto oprObj = node->opr_obj;
+        auto left = oprObj->op[0];
         if (nodeLink->index == 0) {
-            doSubNodes(n);
+            // 只尝试执行左边得节点， 如果是true ,就直接返回
+            thread->beginExecute(left, true);
             nodeLink->index = 1;
-            return;
+
+        } else if (nodeLink->index == 1) {
+            // 左值已经执行完毕了， 检测一下
+            if (__tryConvertToBool(left)) {
+                nodeLink->index = 10;
+                node->value = Allocator::allocateNumber(1);
+            } else {
+                // 左值有问题， 运算右值
+                nodeLink->index = 2;
+                thread->beginExecute(oprObj->op[1], true);
+            }
+
+        } else if (nodeLink->index == 2) {
+            // 已经获取了右值， 判断一下即可
+            node->value = __tryConvertToBool(oprObj->op[1]) ? Allocator::allocateNumber(1) : Allocator::allocateNumber(0);
+            nodeLink->index = 10;
         }
 
-        stateExtends(n);
-        bool f = __tryConvertToBool(n->opr_obj->op[0]);
-        if (getState()->curThread()->isInException())
-        {
-            freeSubNodes(n);
-            return;
-        }
+    }
 
-        if (f)
-        {
-            n->value = Allocator::allocateNumber(1);
-        }
-        else {
-            n->value = __tryConvertToBool(n->opr_obj->op[1]) ? n->value = Allocator::allocateNumber(1) : n->value = Allocator::allocateNumber(0);
-        }
+    void __execOPOR(NodeLink *nodeLink, langXThread *thread) {
+        Node *node = nodeLink->node;
 
-        freeSubNodes(n);
-        nodeLink->backAfterExec = true;
+        __realExecOPOR(nodeLink, thread);
+
+        if (nodeLink->index == 10) {
+            doSuffixOperation(node);
+            freeSubNodes(node);
+            nodeLink->backAfterExec = true;
+        }
     }
 
 

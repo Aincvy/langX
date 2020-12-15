@@ -4,6 +4,8 @@
 #include <iterator>
 #include <vector>
 #include <string>
+
+#include "langXCommon.h"
 #include "ClassInfo.h"
 #include "Config.h"
 #include "langX.h"
@@ -14,7 +16,6 @@
 #include "StackTrace.h"
 #include "ExecNode.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "NodeCreator.h"
 #include "Exception.h"
 #include "Function.h"
@@ -24,6 +25,8 @@
 #include "LogManager.h"
 #include "langXrtlib.h"
 #include "Utils.h"
+#include "ScriptModule.h"
+
 
 #ifdef WIN32
 //  win32 库
@@ -33,8 +36,13 @@
 #endif // WIN32
 
 // 切换缓冲区到 文件指针
-extern void pushBuffer(FILE *fp);
+void pushBuffer(FILE *fp, const char* fileName);
+
 extern int yyparse(void);
+// lex 的 文件结束 工作
+extern void lexEOFWork();
+
+
 
 namespace langX {
 
@@ -79,17 +87,22 @@ namespace langX {
 		this->m_thread_mgr->freeAllThreads();
 		delete this->m_thread_mgr;
 
-#ifdef WIN32
+        // 清理加载的动态库 , 可能要依次按序删除内容
+        for (auto it = this->m_load_libs.begin(); it != this->m_load_libs.end(); it++)
+        {
+            auto module = it->second;
+            module->unload(this);
 
-		// WIN32实现
-#else
-		// 清理加载的动态库
-		for (auto it = this->m_load_libs.begin(); it != this->m_load_libs.end(); it++)
-		{
-			it->second->unload(this);
-			dlclose(it->second->getSoObj());
-		}
-#endif
+            auto soObj = module->getSoObj();
+
+            // 释放这个 模块占用得内存。  如果模块是一个 动态库得话， 则module 得指针很可能指向得是动态库里面得内容
+            // 使用 dlclose 函数之后， module指向得内存就已经被释放了。 无需再次调用delete ..
+            if (soObj) {
+                dlclose(soObj);
+            } else {
+                delete module;
+            }
+        }
 
 		this->m_load_libs.clear();
 	}
@@ -319,6 +332,39 @@ namespace langX {
 		this->m_script_env = env;
 	}
 
+    void langXState::backScriptEnv(bool freeEnv) {
+        if (!this->m_script_env) {
+            return;
+        }
+
+        // 重置当前的脚本环境
+        if (freeEnv) {
+            delete this->m_script_env;
+        }
+        this->m_script_env = nullptr;
+
+        if (!m_doing_script_envs.empty())
+        {
+            ScriptEnvironment *scrEnv = m_doing_script_envs.front();
+            m_doing_script_envs.erase(m_doing_script_envs.begin());
+
+//            newScriptEnv(scrEnv);
+            this->m_script_env = scrEnv;
+        }
+    }
+
+    void langXState::startParseIfNot() {
+        if (!m_yy_parsing)
+        {
+            logger->debug("re-start parsing");
+            m_yy_parsing = true;
+            yyparse();
+
+            // 文件解析完毕了， 检测有没有碰到文件尾部
+            checkEndOfFile(nullptr);
+        }
+    }
+
 	int langXState::doFile(const char *filename)
 	{
 		if (filename == nullptr)
@@ -363,36 +409,55 @@ namespace langX {
 			newScriptEnv(b->second);
 		}
 
-		pushBuffer(fp);
-
-		if (!m_yy_parsing)
-		{
-			logger->debug("re-start parsing");
-			m_yy_parsing = true;
-			yyparse();
-		}
+		pushBuffer(fp, this->m_parsing_file);
+        startParseIfNot();
 
 		return 0;
 	}
 
-	int langXState::includeFile(const char *filename)
+    int langXState::doString(const char *content) {
+        if (content == nullptr) {
+            return -1;
+        }
+
+        // todo 功能尚且未完成， 需要重新确认。
+
+	    auto size = strlen(content);
+	    auto fp = fmemopen(const_cast<char*>(content), size, "r");
+
+        // 新环境
+        // todo 添加一些随机字符串
+        ScriptEnvironment env("_do_string_");
+
+        newScriptEnv(&env);
+
+        pushBuffer(fp, this->m_parsing_file);
+        startParseIfNot();
+
+         backScriptEnv(false);
+
+        return 0;
+    }
+
+
+    int langXState::includeFile(const char *filename)
 	{
-		if (filename == NULL)
+		if (filename == nullptr)
 		{
 			return -1;
 		}
 
 		FILE *fp = fopen(filename, "r");
-		if (fp == NULL)
+		if (fp == nullptr)
 		{
 			curThread()->throwException(newFileNotFoundException(filename)->addRef());
-			return -1;
+			return -2;
 		}
 
-		if (this->m_parsing_file != NULL)
+		if (this->m_parsing_file != nullptr)
 		{
 			this->m_doing_files.push_front(this->m_parsing_file);
-			this->m_parsing_file = NULL;
+			this->m_parsing_file = nullptr;
 		}
 
 		this->includeDeep++;
@@ -400,13 +465,9 @@ namespace langX {
 
 		logger->info("include file: %s", filename);
 
-		pushBuffer(fp);
+		pushBuffer(fp, this->m_parsing_file);
 
-		if (!m_yy_parsing)
-		{
-			m_yy_parsing = true;
-			yyparse();
-		}
+		startParseIfNot();
 
 		return 0;
 	}
@@ -426,10 +487,10 @@ namespace langX {
 			return -1;
 		}
 
-		if (this->m_parsing_file != NULL)
+		if (this->m_parsing_file != nullptr)
 		{
 			this->m_doing_files.push_front(this->m_parsing_file);
-			this->m_parsing_file = NULL;
+			this->m_parsing_file = nullptr;
 		}
 
 		char tmp[1024] = { 0 };
@@ -460,13 +521,9 @@ namespace langX {
 
 		//printf("push file %s to lex buffer!\n" , tmp);
 
-		pushBuffer(fp);
+		pushBuffer(fp, this->m_parsing_file);
 
-		if (!m_yy_parsing)
-		{
-			m_yy_parsing = true;
-			yyparse();
-		}
+		startParseIfNot();
 
 		return 0;
 	}
@@ -524,18 +581,14 @@ namespace langX {
 		// 将新的脚本环境 应用到当前环境上
 		newScriptEnv(env);
 
-		//printf("push file %s to lex buffer!\n" , tmp);
+		pushBuffer(fp, this->m_parsing_file);
 
-		pushBuffer(fp);
-
-		if (!m_yy_parsing)
-		{
-			m_yy_parsing = true;
-			yyparse();
-		}
+		startParseIfNot();
 
 		return 0;
 	}
+
+
 
 	bool langXState::isDidScript(const char *f)
 	{
@@ -580,17 +633,46 @@ namespace langX {
 			return;
 		}
 		
-		if (!m_doing_script_envs.empty())
-		{
-			ScriptEnvironment *scrEnv = m_doing_script_envs.front();
-			m_doing_script_envs.erase(m_doing_script_envs.begin());
+        backScriptEnv(false);
+	}
 
-			newScriptEnv(scrEnv);
-		}
-		else {
-			// 重置当前的脚本环境
-			this->m_script_env = nullptr;  
-		}
+	int langXState::loadModuleOSX(const char* path){
+        void *soObj = dlopen(path, RTLD_LAZY);
+        if (soObj == nullptr) {
+            logger->error("dlopen err:%s.", dlerror());
+            return -1;
+        }
+
+        logger->debug("load module: %s", path);
+        LoadModuleFunPtr fptr = (LoadModuleFunPtr)dlsym(soObj, "loadModule");
+        if (fptr == nullptr) {
+            return -2;
+        }
+
+        X3rdModule * mod = nullptr;
+        fptr(mod);
+
+        if (mod == nullptr) {
+            return -3;
+        }
+
+        // 初始化 Mod
+        mod->initLogger(this);
+        int ret = mod->init(this);
+        if (ret != 0) {
+            return ret;
+        }
+
+        mod->setSoObj(soObj);
+
+        const char *modName = mod->getName();
+        this->m_load_libs[modName] = mod;
+        logger->debug("load module %s(%s) over", modName,path);
+
+        moduleLogger->info("Module is loaded. ⬇⬇⬇");
+        logModule(mod);
+
+        return 0;
 	}
 
 #ifdef WIN32
@@ -600,33 +682,7 @@ namespace langX {
 	}
 #else
 	int langXState::loadModule(const char * path) {
-		void *soObj = dlopen(path, RTLD_LAZY);
-		if (soObj == NULL) {
-			printf("dlopen err:%s.\n", dlerror());
-			return -1;
-		}
-
-		logger->debug("load module: %s", path);
-		LoadModuleFunPtr fptr = (LoadModuleFunPtr)dlsym(soObj, "loadModule");
-		if (fptr == NULL) {
-			return -1;
-		}
-
-		X3rdModule * mod = NULL;
-		fptr(mod);
-
-		if (mod == NULL) {
-			return -1;
-		}
-
-		int ret = mod->init(this);
-		mod->setSoObj(soObj);
-
-		const char *modName = mod->getName();
-		this->m_load_libs[modName] = mod;
-		logger->debug("load module %s(%s) over", modName,path);
-
-		return ret;
+        return loadModuleOSX(path);
 	}
 #endif
 
@@ -652,6 +708,9 @@ namespace langX {
 				return -1;
 			}
 		}
+
+		logger->debug("init ScriptModule ClassInfo...");
+		initScriptModuleClassInfo(this);
 
 		logger->debug("load rt-lib.  [jump ...]");
 		// loadRTLib(this);
@@ -717,8 +776,66 @@ namespace langX {
 		return this->startArgValues;
 	}
 
+    LogManager *langXState::getLogManager() const {
+        return this->m_log_manager;
+    }
 
-	void includeFile(const char *filename) {
+    ScriptModule *langXState::loadScriptModule(const char *path) {
+	    struct stat buf;
+	    auto tmp = stat(path, &buf);
+        if (tmp != 0) {
+            // 文件不存在
+            return nullptr;
+        }
+
+        if (S_ISDIR(buf.st_mode)) {
+            // 是一个目录
+            auto module = new ScriptModule(path, this);
+
+            // todo add error handle
+            module->loadPackageScript();
+            module->executeEntrypoint();
+
+            moduleLogger->info("Module is loaded. ⬇⬇⬇");
+            logModule(module);
+
+            // add to map.     todo check name conflict
+            this->m_load_libs[module->getName()] = module;
+
+            return module;
+        }
+
+        return nullptr;
+    }
+
+    void langXState::checkEndOfFile(langXThread *thread){
+        if (thread == nullptr) {
+            thread = curThread();
+        }
+
+        // 判断文件是否结束了
+        auto & status = thread->getStackTraceTopStatus();
+        if (status.endOfFile) {
+            status.endOfFile = false;
+
+            lexEOFWork();
+        }
+	}
+
+	void langXState::logModule(langXModule *module) {
+        if (module == nullptr) {
+            return;
+        }
+
+	    moduleLogger->info("       Name: %s", module->getName());
+	    moduleLogger->info("     Author: %s", module->getAuthor());
+	    moduleLogger->info("    Version: %s", module->getVersion());
+	    moduleLogger->info("Description: %s", module->getDescription());
+	    moduleLogger->info(" Repository: %s", module->getRepository());
+
+	}
+
+    void includeFile(const char *filename) {
 	    char result[1024] = { 0 };
 	    convertToAbsolutePath(filename, getParsingFilename(), result);
 

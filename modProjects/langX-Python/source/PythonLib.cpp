@@ -1,21 +1,15 @@
-#include "../include/RegPythonModule.h"
+#include "../../../include/LogManager.h"
 
+#include "../include/RegPythonModule.h"
+#include "../include/PythonModule.h"
 
 #include "../../../include/ClassInfo.h"
 #include "../../../include/NodeCreator.h"
 #include "../../../include/Object.h"
 #include "../../../include/langXObject.h"
-#include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
-#include "../../../include/LogManager.h"
 
-
-#ifdef WIN32 
-#include "../../../lib/Python-3.5.2/Include/Python.h"
-#else
-#include <python/Python.h>
-#endif
 
 
 namespace langX {
@@ -52,11 +46,11 @@ namespace langX {
 		
 		if (Py_IsInitialized())
 		{
-			logger->debug("load python lib ok.");
+			pythonModuleLogger->debug("load python lib ok.");
 			return Allocator::allocateNumber(1);
 		}
 
-		logger->debug("load python lib fail.");
+        pythonModuleLogger->debug("load python lib fail.");
 		return Allocator::allocateNumber(0);
 	}
 

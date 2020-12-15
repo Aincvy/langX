@@ -15,8 +15,6 @@
 #include "Allocator.h"
 #include "ClassInfo.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
-#include "InnerFunction.h"
 #include "Environment.h"
 #include "XArray.h"
 #include "XNameSpace.h"
@@ -59,8 +57,9 @@ namespace langX{
             langXObject *object = objectRef->getRefObject();
             if (argNode != nullptr)
             {
-                auto args = convertArgsList(argNode);
-                object->callConstructor(args, fileInfoString(n->fileinfo).c_str(), thread);
+                ArgsList args;
+                convertArgsList(argNode, &args);
+                object->callConstructor(&args, fileInfoString(n->fileinfo).c_str(), thread);
             }
             else {
                 object->callConstructor(nullptr, fileInfoString(n->fileinfo).c_str(), thread);
@@ -152,12 +151,11 @@ namespace langX{
         Function *func1 = objectRef->getFunction("operator.");
         if (func1)
         {
-            X3rdArgs _3rdArgs;
-            memset(&_3rdArgs, 0, sizeof(X3rdArgs));
             String tmpStr(memberName);
-            _3rdArgs.args[0] = &tmpStr;
-            _3rdArgs.index = 1;
-            n->value = callFunction(objectRef, func1, &_3rdArgs);
+
+            // 执行操作符重载
+            auto locationString = "<call by operator.> " + fileInfoString(n->fileinfo);
+            n->value = callFunction(thread, func1, objectRef->getRefObject(), locationString.c_str(), 1, &tmpStr);
 
             freeSubNodes(n);
             return;

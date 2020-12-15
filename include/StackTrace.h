@@ -14,11 +14,11 @@ namespace langX {
 	class Function;
 
 	// 堆栈跟踪的一帧
-	class StrackTraceFrame
+	class StackTraceFrame
 	{
 	public:
-		StrackTraceFrame();
-		~StrackTraceFrame();
+		StackTraceFrame();
+		~StackTraceFrame();
 
 		void setRemark(const char*);
 		const char* getRemark() const;
@@ -45,7 +45,7 @@ namespace langX {
 
 	struct StrackTraceFrameArray
 	{
-		const StrackTraceFrame ** frame;
+		const StackTraceFrame ** frame;
 		int length;
 	};
 
@@ -58,21 +58,21 @@ namespace langX {
 
 
         //  生成一个新的帧
-        StrackTraceFrame *newFrame(Function *, const char *);
+        StackTraceFrame *newFrame(Function *, const char *);
 		//  生成一个新的帧
-		StrackTraceFrame *newFrame(ClassInfo *, Function *, const char *);
+		StackTraceFrame *newFrame(ClassInfo *, Function *, const char *);
 
 		// 取出栈顶的帧 (会移除)
 		void popFrame();
 
-		StrackTraceFrame *top() const;
+		StackTraceFrame *top() const;
 
 		// 获得帧数组.  帧数组内的 frames 需要在使用后用 free 函数进行释放
 		StrackTraceFrameArray frames() const;
 
 	private:
 
-		std::vector<StrackTraceFrame*> m_frames;
+		std::vector<StackTraceFrame*> m_frames;
 	};
 
 

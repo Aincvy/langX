@@ -1,7 +1,7 @@
-set public = langX.ext.trello;
+attr public = langX.ext.trello;
 
-ref langX.python;
-ref langX.core.util;
+using langX.python;
+using langX.core.util;
 
 // Card
 TrelloCard {
@@ -64,6 +64,12 @@ TrelloList {
   // return a card.
   randomCard => (){
     return null;
+  }
+
+  // 添加一个卡片到当前得列表
+  // card: 需要是一个 TrelloCard 对象
+  addCard => (card) {
+
   }
 
 }

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <string>
 #include "../include/NodeCreator.h"
+#include "../include/LogManager.h"
 #include "y.tab.h"
 
 extern "C"{
@@ -12,14 +13,25 @@ int yylex(void);
 
 extern YYSTYPE yylval;
 
+// 。。
+typedef struct {
+	// Yacc 得 buffer
+	YY_BUFFER_STATE state;
+	// 上面得 buffer 对应得文件名， 这个指针是需要释放得
+	char *parsingFile;
+	// 解析到得行数
+	int line;
+} includeLayer;
+
 void comment(void);
 int column = 0;
 void count(void);
 
 #define MAX_INCLUDE_DEPTH 45
-YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
-int line_stack[MAX_INCLUDE_DEPTH] ;       // 记录行的栈
-int now_line = 1 ;     // 当前行
+includeLayer include_stack[MAX_INCLUDE_DEPTH];
+
+// 当前行
+int now_line = 1 ;
 //  这个数值永远指向栈顶
 int include_stack_ptr = -1;
 //  文件深度 默认是0 ，解析文件1 ，将会变成1
@@ -27,8 +39,11 @@ int include_stack_ptr = -1;
 //           退回到文件1的时候， 文件深度就会变成1
 int fileDeep = 0 ;
 
+// 正在解析中得文件得名字
+char *parsingFile = nullptr;
+
 // 切换缓冲区到 文件指针
-void pushBuffer(FILE *fp);
+void pushBuffer(FILE *fp, const char* fileName);
 
 // 获得当前是在解析第几行
 int getParseLineNo();
@@ -124,48 +139,56 @@ operator([\+\-\*\/\.\=]|<<|>>|\+\+|\-\-|\[\])  {count();  yylval.sValue=strdup(y
 [\n]   {count(); now_line++; }
 
 <<EOF>> {
-	// 这里只标记一下文件结束了， 在下一个节点执行结束的时候才会真正的结束文件
-	endOfFileFlag();
+	auto p = getParsingFilename();
 
-	// 通知yacc 文件已经结束
-	// return YY_NULL;
-
-	//printf("read one file over! stack_ptr: %d\n" , include_stack_ptr);
-	bool flag = false;
-
-	if(fileDeep-- > 1){
-	  // 包含文件栈 存在其他缓冲区
-	  yy_delete_buffer( YY_CURRENT_BUFFER );
-	  yy_switch_to_buffer(
-		include_stack[include_stack_ptr] );
-
-	  // 删除栈顶元素
-	  include_stack[include_stack_ptr] = NULL ;
-	  // 调整行信息
-	  now_line = line_stack[ include_stack_ptr ] ;
-	  line_stack[ include_stack_ptr ] = 0 ;
-	  //
-	  include_stack_ptr-- ;
-	  //printf("remove stack top buffer to current.\n");
-	}else{
-		flag = true;
-	}
-
-	if(flag){
-		yyParseStopped();
+	// 如果没有当前正在解析得文件， 或者正在解析得文件和当前文件不一致， 则终止解析？
+	if( !p || !parsingFile) {
 
 		// yyterminate() 是一个宏。。  不是一个方法。。 会执行return 语句
 		yyterminate();
 	}
 
+	return TOKEN_END_OF_FILE;
 }
 
 %%
 
+
 void lexEOFWork(){
+
+	langX::logger->debug("on end of file.. %s", parsingFile);
 
 	popStateFrame();
 	fileEOF();
+
+	// 释放 文件名占用得内存
+	free(parsingFile);
+	parsingFile = nullptr;
+
+	// 判断一下 是否还有其他得文件需要解析
+	if(fileDeep-- > 1){
+	  // 包含文件栈 存在其他缓冲区
+	  auto & stack = include_stack[include_stack_ptr--];
+
+	  // 切换 yacc 解析得缓冲区
+	  yy_delete_buffer( YY_CURRENT_BUFFER );
+	  yy_switch_to_buffer( stack.state );
+
+	  // 调整行信息
+	  now_line = stack.line ;
+
+	  // 恢复解析得文件信息
+	  parsingFile = stack.parsingFile;
+
+	  // 重置元素得属性
+	  stack.state = nullptr;
+	  stack.line = 0;
+	  stack.parsingFile = nullptr;
+
+
+	}else{
+		yyParseStopped();
+	}
 
 }
 
@@ -174,11 +197,8 @@ int getParseLineNo(){
 	return now_line ;
 }
 
-void pushBuffer(FILE *fp){
-
-	//printf("pushBuffer %d\n" , include_stack_ptr);
-
-    if(fp == NULL )
+void pushBuffer(FILE *fp, const char* fileName){
+	if(fp == NULL )
 	  return ;
 
 	if(++fileDeep > 1) {
@@ -187,10 +207,18 @@ void pushBuffer(FILE *fp){
 			fprintf( stderr, "Includes nested too deeply" );
 			exit( 1 );
 		}
-		include_stack[++include_stack_ptr] = YY_CURRENT_BUFFER;
-		line_stack[include_stack_ptr] = now_line ;
-		//printf("add current buffer to stack.\n");
+
+		auto & stack = include_stack[++include_stack_ptr];
+		stack.state = YY_CURRENT_BUFFER;
+		stack.parsingFile = parsingFile;
+		stack.line = now_line;
+		// line_stack[include_stack_ptr] = now_line ;
 	}
+
+	// copy fileName;
+	// todo 释放指针
+	parsingFile = strdup(fileName);
+	langX::logger->debug("pushBuffer file.. %s", parsingFile);
 
 	now_line = 1;
 	column = 0;

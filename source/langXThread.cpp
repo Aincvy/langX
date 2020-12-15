@@ -7,7 +7,6 @@
 #include "../include/NodeCreator.h"
 #include "../include/Object.h"
 #include "../include/langXObject.h"
-#include "../include/langXObjectRef.h"
 #include "../include/Function.h"
 #include "../include/LogManager.h"
 #include "../include/langXCommon.h"
@@ -481,11 +480,11 @@ namespace langX {
 	NodeFileInfo langXThread::getCurrentNodeFileInfo()
 	{
 		// 如果在异常中， 就优先丢出那个异常时候的节点
-		if (this->m_thrown_exec_node != NULL) {
+		if (this->m_thrown_exec_node != nullptr) {
 			return this->m_thrown_exec_node->fileinfo;
 		}
 
-		if (this->currentExecute != NULL)
+		if (this->currentExecute != nullptr)
 		{
 			return this->currentExecute->node->fileinfo;
 		}

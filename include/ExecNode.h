@@ -22,6 +22,6 @@ namespace langX {
      * @param node
      * @return
      */
-    ArgsList* convertArgsList(Node *node);
+    ArgsList* convertArgsList(Node *node, ArgsList *argsList);
 
 }

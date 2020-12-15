@@ -59,4 +59,11 @@ namespace langX {
      */
     int convertToAbsolutePath(const char * filename, const char *parsingFile, char *result);
 
+    /**
+     * 判断一个字符串是否为 nullptr 或者空字符串
+     * @param str
+     * @return  true: 是的, false: 不是
+     */
+    bool isEmpty(const char * str);
+
 }

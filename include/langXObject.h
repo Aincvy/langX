@@ -3,19 +3,22 @@
 #include <vector>
 #include <string>
 
+#include "Object.h"
+#include "ScriptModule.h"
+
+
 namespace langX {
 
-	class Object;
 	class ClassInfo;
 	class langXObjectRef;
 	class ObjectBridgeEnv;
 	class Environment;
 	class Function;
 	class langXThread;
-	struct NodeLink;
 
-	/*
-	 * langXObject  与object 独立分开
+	/**
+	 * langXObject  与object 独立分开 。
+	 * 表示一个 类的实例，  继承 Object是一个叫做 对象引用的类， 在下面进行的声明。
 	 */
 	class langXObject 
 	{
@@ -68,11 +71,8 @@ namespace langX {
 		// 调用这个类的构造函数  | 给第三方库使用的，强制执行构造函数
 		void callConstructor(ArgsList *, const char * );
 
-		// 调用无参函数 ,如果找不到函数，直接返回NULL
-		Object * callFunction(const char*) const;
-
 		// 调用一个带参函数   ,如果找不到函数，直接返回NULL
-		Object * callFunction(const char *, Object* [], int, const char*);
+		Object * callFunction(const char *name,  const char*remark, int argc, ...);
 
 		// 设置这个对象的成员的产生环境
 		void setMembersEmergeEnv(Environment *);
@@ -104,9 +104,9 @@ namespace langX {
 		// 引用的那些引用
 		std::vector<langXObjectRef*> m_refs;
 
-		ClassInfo *m_class_info;
+		ClassInfo *m_class_info = nullptr;
 		// 当前对象的环境
-		ObjectBridgeEnv *m_my_env;
+		ObjectBridgeEnv *m_my_env = nullptr;
 		int  m_ref_count = 0;
 		// 引用变成0，及负数的时间
 		long m_zero_ref_time = 0;
@@ -114,7 +114,7 @@ namespace langX {
 		langXObject *m_parent = nullptr;
 
 		// 引用的第三方对象
-		void *m_3rdObj; 
+		void *m_3rdObj = nullptr;
 
 		// 这个对象的特性字符串
 		std::string m_characteristic;
@@ -123,8 +123,7 @@ namespace langX {
 		bool m_disposing = false;
 	};
 
-
-	// 具有扩展能力的 langXObject
+    // 具有扩展能力的 langXObject
 	class langXObjectExtend : public langXObject {
 
 	public:
@@ -143,5 +142,49 @@ namespace langX {
 		// key: 函数名, value: 函数
 		std::map<std::string, Function*> m_function_map;
 	};
+
+    /**
+     * langX 对象的引用
+     */
+    class langXObjectRef : public Object
+    {
+    public:
+        // 构造的时候并不增加 对象的引用次数。  但是析构的时候会减少对象的引用次数
+        langXObjectRef(langXObject *);
+        // 构造的时候并不增加 对象的引用次数。  但是析构的时候会减少对象的引用次数
+        ~langXObjectRef();
+
+        //  获得引用的是哪个object
+        langXObject *getRefObject();
+
+        void setMember(const char*, Object *);
+        Object * getMember(const char *) const;
+        Function *getFunction(const char *) const;
+
+
+        // 获得类信息
+        const ClassInfo * getClassInfo() const;
+
+        // 获得构造函数
+        Function * getConstructor() const;
+
+        // 设置这个对象的成员的产生环境
+        void setMembersEmergeEnv(Environment *);
+
+        bool isTrue() const;
+        ObjectType getType() const;
+        Object* clone() const;
+        //  更新当前引用， 引用到另外一个对象身上
+        void update(Object *);
+
+        // 设置当前引用的是哪个对象
+        void setRefObject(langXObject *);
+
+    private:
+        void finalize();
+
+        // 引用的哪个object
+        langXObject *m_object_ref = nullptr;
+    };
 
 }

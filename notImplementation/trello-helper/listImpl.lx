@@ -5,12 +5,20 @@ auto TrelloList {
     // 列表的python 对象
     _py_list;
 
+    _init_card = false;
+
     // 更新当前的列表的属性
     updateSelf => (){
         name = _py_list.get("name").toStr();
         id = _py_list.get("id").toStr();
 
+    }
+
+    // 更新当前列表得所有卡片信息
+    updateCards => (){
         // 更新卡片列表
+
+        local allCards;
         allCards = _py_list.get("list_cards").callMethod();
 
         cardList = new List();
@@ -23,14 +31,15 @@ auto TrelloList {
             cardList.add(card);
         }
 
+        println("update cards over. size: " + cardList.size());
     }
 
     getCardById => ( id ){
-      return filterCard(card => { return card.id == id; });
+      return filterCard( (card,arg) => { return card.id == arg; }, id);
     }
 
     getCardByName => ( name ){
-      return filterCard(card => { return card.name == name; });
+      return filterCard( (card,arg) => { return card.name == arg; }, name);
     }
 
     newCard => ( name, description, dueDate ){
@@ -38,23 +47,36 @@ auto TrelloList {
     }
 
     randomCard => (){
+        checkCardList();
+
         local size,index;
         size = cardList.size();
         if(size <= 0 ){
             return null;
         }
 
-        index = Random::nextInt(size);
+        r = new Random();
+
+        index = r.nextInt(size);
         return cardList[index];
     }
 
-    filterCard => ( filter ) {
+    checkCardList => (){
+        if( ! _init_card ){
+            _init_card = true;
+            updateCards();
+        }
+    }
+
+    filterCard => ( filter , arg) {
+        checkCardList();
+
         local tmp;
 
         for( i = 0; i < cardList.size(); i++){
             tmp = cardList.get(i);
 
-            if( filter(tmp)) {
+            if( filter(tmp, arg)) {
                 return tmp;
             }
         }

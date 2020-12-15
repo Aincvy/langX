@@ -15,7 +15,6 @@
 #include "StackTrace.h"
 #include "Exception.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "NullObject.h"
 #include "StringType.h"
 #include "../extern/y.tab.h"
@@ -30,8 +29,6 @@ using namespace langX;
 
 // 获取当前解析的是第几行
 extern int getParseLineNo();
-// lex 的 文件结束 工作
-extern void lexEOFWork();
 
 
 static langXState* state = nullptr;
@@ -105,6 +102,8 @@ void deal_fileInfo(NodeFileInfo *f) {
         f->filename = filepath;
     }
 
+    //auto a = fileInfoString(*f);
+    //logger->debug("after deal_fileInfo: %s", a.c_str());
 }
 
 XNode *newNode() {
@@ -188,7 +187,7 @@ void objToString(langX::Object * obj, char *p, int offset, int maxSize)
 	}
 	else {
 
-        Object *retObj = callFunction(thread, func, nullptr, ref->getRefObject(), "<call toString() from cpp>");
+        Object *retObj = callFunction(thread, func, emptyArgs, ref->getRefObject(), "<call toString() from cpp>");
 		if (retObj->getType() == STRING)
 		{
 			ss << ((String*)retObj)->getValue();
@@ -277,27 +276,27 @@ XNode * intNode(int i)
 	return node;
 }
 
-XNode * opr(int opr, int npos, ...)
+XNode * opr(int opr, int size, ...)
 {
 	va_list ap;
 
 	XNode * node = newNode();
 	node->opr_obj = (langX::Operator*) calloc(1, sizeof(langX::Operator) * 1);
-	node->opr_obj->op = (XNode**)calloc(1, sizeof(XNode*) * npos);
+	node->opr_obj->op = (XNode**)calloc(1, sizeof(XNode*) * size);
 	node->type = NODE_OPERATOR;
 	node->opr_obj->opr = opr;
-	node->opr_obj->op_count = npos;
+	node->opr_obj->op_count = size;
 
-	va_start(ap, npos);
-	for (size_t i = 0; i < npos; i++)
+	va_start(ap, size);
+	for (size_t i = 0; i < size; i++)
 	{
 		node->opr_obj->op[i] = va_arg(ap, XNode*);
 	}
 	va_end(ap);
 
 	//logger->debug("new opr node, opr is: %d" , opr);
-	//logger->debug(("opr npos: %d", npos);
-	//logger->debug(("node npos: %d", node->opr_obj->op_count);
+	//logger->debug(("opr size: %d", size);
+	//logger->debug(("node size: %d", node->opr_obj->op_count);
 	//logger->debug(("createOperatorNode: %p",node);
 	return node;
 }
@@ -323,23 +322,6 @@ XNode * sopr(int opr, int npos, ...)
 	va_end(ap);
 
 	return node;
-}
-
-XNode * func(char *name, XParamsList *params, XNode *node)
-{
-
-	if (node != NULL)
-	{
-		node->freeOnExecuted = false;
-	}
-
-	Function *func = new Function(name, node);
-	func->setParamsList(params);
-	free(name);
-	XNode * nodeF = newNode();
-	nodeF->type = NODE_FUNCTION;
-	nodeF->ptr_u = func;
-	return nodeF;
 }
 
 XNode * xnull()
@@ -472,47 +454,6 @@ void pretreatSwitch(XNode *node) {
 	switchInfo->caseList = caseList;
 }
 
-void freeArgsList(XArgsList *alist) {
-	if (alist != nullptr && alist->index > 0)
-	{
-		for (int i = 0; i < alist->index; i++)
-		{
-			if (alist->args[i] != nullptr)
-			{
-				freeNode(alist->args[i]);
-				alist->args[i] = nullptr;
-			}
-		}
-	}
-
-	free(alist);
-}
-
-//  释放 n 及 n 下的所有节点的参数列表内存
-void freeAllArgList(Node *n) {
-	if (!n)
-	{
-		return;
-	}
-
-	if (n->type == NODE_OPERATOR)
-	{
-		if (n->opr_obj->opr == FUNC_CALL)
-		{
-			if (n->ptr_u != NULL)
-			{
-				freeArgsList((ArgsList*)n->ptr_u);
-				n->ptr_u = NULL;
-			}
-		}
-
-		for (int i = 0; i < n->opr_obj->op_count; i++)
-		{
-			freeAllArgList(n->opr_obj->op[i]);
-		}
-	}
-}
-
 // 释放 数组元素的内存
 void freeArrayInfo(ArrayInfo *arrayInfo){
     // 释放依赖
@@ -537,12 +478,6 @@ void freeNode(XNode * node) {
 	{
 		Allocator::free(node->value);
         node->value = nullptr;
-	}
-
-	// 如果是一个函数节点， 还需要释放它的参数列表
-	if (node->type == NODE_FUNCTION)
-	{
-		freeAllArgList(node);
 	}
 
     // 根据类型释放不同内存的内容
@@ -637,6 +572,8 @@ void yyParseStopped()
 
 void endOfFileFlag() {
     state->curThread()->getStackTraceTopStatus().endOfFile = true;
+
+    logger->debug("eof flag of %s", getParsingFilename());
 }
 
 
@@ -649,6 +586,11 @@ void execNode(XNode *n) {
 }
 
 void execAndFreeNode(XNode *n) {
+    // 如果传来得参数是空指针， 则跳过执行
+    if (!n) {
+        return;
+    }
+
 	langXThread * thread = getState()->curThread();
 	if (thread->isInException())
 	{
@@ -668,14 +610,7 @@ void execAndFreeNode(XNode *n) {
 
 	freeNode(n);
 
-	// 判断文件是否结束了
-	auto & status = thread->getStackTraceTopStatus();
-    if (status.endOfFile) {
-        status.endOfFile = false;
-
-        lexEOFWork();
-    }
-
+    getState()->checkEndOfFile(thread);
 }
 
 

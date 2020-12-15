@@ -7,9 +7,10 @@
 
 #include <stdlib.h>
 
-#include "../include/Utils.h"
+#include "Utils.h"
 
 namespace langX {
+
 	static const char * aZ0_str = "qwertyuiopasdfghjklzxcvbnm0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
 	static const int aZ0_len = 62 - 1;
 
@@ -171,6 +172,10 @@ namespace langX {
         }
 
         return 1;
+    }
+
+    bool isEmpty(const char *str) {
+        return str == nullptr || strlen(str) == 0;
     }
 
 }

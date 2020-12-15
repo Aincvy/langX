@@ -2,16 +2,13 @@
 
 #include "../../../include/X3rdModule.h"
 
-#ifdef WIN32 
-#include "../../../lib/Python-3.5.2/Include/Python.h"
-#else
-#include <python/Python.h>
-#endif
+#include <Python.h>
 
 namespace langX {
 
 	class langXObject;
 	class Object;
+	class Logger;
 
 	class PythonModule : public X3rdModule
 	{
@@ -19,9 +16,17 @@ namespace langX {
 		PythonModule();
 		~PythonModule();
 
-		int init(langXState *);
+		int init(langXState *) override;
 
-		virtual int unload(langXState *);
+		virtual int unload(langXState *) override;
+
+		const char * getDescription() const override;
+
+		const char * getAuthor() const override;
+
+		const char * getRepository() const override;
+
+		const char * getVersion() const override;
 
 	private:
 
@@ -83,6 +88,28 @@ namespace langX {
 	Object * langX_PyObject_set_impl(XClassPyObject * obj, Object * key, Object *value);
 
 	PyObject * langXToPyObject(Object *);
+
+	/**
+	 * 尝试矫正 对象得 python 类型
+	 * @param obj
+	 */
+    void detectPyType(XClassPyObject *obj);
+
+	/**
+	 * 将 python得 错误信息输出到日志里面
+	 */
+    void logPythonErrorMsg();
+
+    /**
+     * 把一个 langX 对象转换成一个python 对象
+     * @param obj
+     * @return
+     */
+    PyObject * langXToPyObject(Object *obj);
+
+	extern PythonModule* pythonModule;
+	// python module 得日志
+	extern Logger* pythonModuleLogger;
 
 }
 

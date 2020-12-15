@@ -20,10 +20,8 @@ SET( SRC_LIST
 		Exception.cpp
 		ExecNode.cpp
 		Function.cpp
-		InnerFunction.cpp
-		langX.cpp
+        langX.cpp
 		langXObject.cpp
-		langXObjectRef.cpp
 		langXrtlib.cpp
 		langXThread.cpp
 		LogManager.cpp
@@ -41,13 +39,14 @@ SET( SRC_LIST
 		XNameSpace.cpp
 		NodeCreator.cpp
 		TypeHelper.cpp
+		ScriptModule.cpp
 		extend/langXLogger.cpp
 		extend/langXString.cpp
 		node/ExecBaseMathNode.cpp
 		node/ExecAssignNode.cpp
 		node/ExecLogicNode.cpp
 		node/ExecOOPNode.cpp
-        )
+		)
 
 FILE(GLOB EXT_FILES "${CMAKE_CURRENT_LIST_DIR}/../extern/*.c")
 ADD_LIBRARY(liblangX.so SHARED ${SRC_LIST} ${EXT_FILES})

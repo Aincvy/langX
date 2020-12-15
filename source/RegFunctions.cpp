@@ -18,7 +18,6 @@
 #include "ClassInfo.h"
 #include "NullObject.h"
 #include "langXObject.h"
-#include "langXObjectRef.h"
 #include "Allocator.h"
 #include "XArray.h"
 
@@ -579,6 +578,26 @@ namespace langX {
         return nullptr;
     }
 
+    /**
+     * 执行一段字符串
+     * @param func
+     * @param args
+     * @return
+     */
+    Object * langX_doString(X3rdFunction *func, const X3rdArgs & args){
+        if (args.index <= 0) {
+            return nullptr;
+        }
+
+        auto a = args.args[0];
+        if (a && a->getType() == STRING) {
+            auto text = ((String*)a)->getValue();
+
+            func->getLangX()->doString(text);
+        }
+
+        return nullptr;
+    }
 
 	void regFunctions(langXState *state)
 	{
@@ -591,6 +610,7 @@ namespace langX {
 		state->reg3rd("sy_run", langX_system_run);
 		state->reg3rd("println", langX_println);
 		state->reg3rd("sy_do_file", langX_do_file);
+		state->reg3rd("sy_doString", langX_doString);
 		state->reg3rd("sy_exit", langX_exit);
 		state->reg3rd("readLine", langX_read_line);
 		state->reg3rd("sy_exists", langX_sy_exists);

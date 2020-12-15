@@ -2,16 +2,16 @@
 // Created by Aincvy on 2020/9/28.
 //
 
-#include "../include/Program.h"
-#include "../include/langXCommon.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <string>
-#include "../include/NodeCreator.h"
 #include <tclap/CmdLine.h>
 
+#include "Program.h"
+#include "langXCommon.h"
+#include "NodeCreator.h"
+#include "langX.h"
 
 extern int getParseLineNo();
 extern int column;
@@ -45,13 +45,14 @@ int programRun(int argc, char *argv[]){
     // 获取启动参数
     // 脚本文件和 给予脚本文件的参数
     std::vector<std::string> fileAndArgs;
+    std::vector<std::string> addModules;
 
     try {
         TCLAP::CmdLine cmdLine("langX - a simple script language.", ' ', LANGX_VERSION);
 
-        // test name
-        TCLAP::ValueArg<std::string> testArg("n","name", "name to print (test code, will delete)", false, "default", "string");
-        cmdLine.add(testArg);
+
+        TCLAP::MultiArg<std::string> addModuleArg("A", "add-module", "add a script module ", false,"string" );
+        cmdLine.add(addModuleArg);
 
         // file name and args
         TCLAP::UnlabeledMultiArg<std::string> multiArg("file", "script file and file args", true, "string");
@@ -59,9 +60,11 @@ int programRun(int argc, char *argv[]){
 
         cmdLine.parse(argc, argv);
 
-//        std::string name = testArg.getValue();
 
         fileAndArgs = multiArg.getValue();
+        if (addModuleArg.isSet()) {
+             addModules = addModuleArg.getValue();
+        }
 
     } catch (TCLAP::ArgException &e) {
         // parse exception
@@ -81,6 +84,14 @@ int programRun(int argc, char *argv[]){
 
     initLangX(langXArgc, langXArgv);
 
+    // 加载 script module...
+    for (auto i = addModules.begin(); i != addModules.end() ; ++i) {
+        // printf("module: %s\n" , i->c_str());
+        auto path = i->c_str();
+        getState()->loadScriptModule(path);
+    }
+
+    // 执行脚本内容
     const char * scriptFile = fileAndArgs[0].c_str();
     doFile(scriptFile);
 

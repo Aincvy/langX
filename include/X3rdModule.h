@@ -1,5 +1,6 @@
 #pragma once
 
+#include "langX.h"
 
 /*
  * @date 2016-10-30
@@ -10,39 +11,64 @@
 
 namespace langX {
 
-	class langXState;
+	// 日志对象
+	class Logger;
 
 	// 第三方模块。  所有的外部模块应该继承这个类
-	class X3rdModule
+	class X3rdModule : public langXModule
 	{
 	public:
 		X3rdModule();
 		virtual ~X3rdModule();
 
 		// 初始化模块 . 初始化成功返回0 ，失败返回 -1
-		virtual int init(langXState *);
+		virtual int init(langXState *) override;
 
 		// 卸载模块，  卸载成功返回 0 ， 失败返回 -1
-		virtual int unload(langXState *);
-
-		// 获取这个模块的名字
-		const char * getName() const;
-		// 设置当前模块的名字，  会复制参数指向的内存
-		void setName(const char *);
+		virtual int unload(langXState *) override;
 
 		// 动态库的 .so 文件的位置
 		void setSoObj(void *soObj);
-		void * getSoObj() const;
+		void * getSoObj() const override;
+
+		/**
+		 * 获取当前 module 的日志 输出类
+		 * @return
+		 */
+		Logger* getLogger();
+
+		/**
+		 * 初始化 日志相关的类
+		 */
+        void initLogger(langXState *state);
+
+
+        // 获取这个模块的名字
+        const char * getName() const override;
+        // 设置当前模块的名字，  会复制参数指向的内存
+        void setName(const char *);
+
+        virtual const char* getDescription() const override;
+
+        virtual const char *getAuthor() const override;
+
+        virtual const char *getVersion() const override;
+
+        virtual const char *getRepository() const override;
+
+        virtual const char *getEntrypoint() const override;
+
+        ModuleType getModuleType() const override;
 
 	private:
 
 		// 模块的名字
-		char * m_name;
+		char * m_name = nullptr;
 		// 加载的模块的 so 文件的指针
-		void * m_soObj; 
+		void * m_soObj = nullptr;
 
-		// 检测是否需要释放name的内存
-		void checkForFreeName();
+		// 释放上一个name的内存
+		void freeLastName();
 	};
 
 

@@ -7,16 +7,16 @@
 //
 
 
-set public = langX.rt.util.excel;
+attr public = langX.rt.util.excel;
 
-include "Workbook.lx"
+include("Workbook.lx");
 
 // python 的 excel 操作模块
 _py_openpyxl ;
 _py_hook;
 
 // 初始化excel 工具
-// 
+//
 // 返回 101 说明 没有python 库
 // 返回 102 说明 没有找到 openpyxl 库
 // 返回 0 表示初始化成功
@@ -26,7 +26,7 @@ initExcelTools => (){
 		return 101 ;
 	}
 
-	ref langX.python;
+	using langX.python;
 	PythonLib::load();
 	_py_hook = new PythonHook();
 

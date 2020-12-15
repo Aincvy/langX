@@ -4,14 +4,17 @@ auto TrelloBoard {
 
     // python 库 trello 的board 引用
     _py_board;
-
+    // 是否对列表进行了初始化 ？
+    _init_list = false;
 
     // 使用 trello 库更新当前看板的信息
     updateSelf => (){
         name = _py_board.get("name").toStr();
         id = _py_board.get("id").toStr();
         description = _py_board.get("description").toStr();
+    }
 
+    updateList => (){
         // 更新列表
         local pyFuncList;
         pyFuncList = _py_board.get("list_lists");
@@ -27,26 +30,33 @@ auto TrelloBoard {
             listList.add(l);
         }
 
+        println("update list over, size: " + listList.size());
     }
 
     //
     getListByName => ( name ) {
-      return filterList( list => { return list.name == name; });
+      return filterList( (list, arg) => { return list.name == arg; }, name);
     }
 
     //
     getListById => ( id ) {
-      return filterList( list => { return list.id == id; });
+      return filterList( (list, arg) => { return list.id == arg; }, id);
     }
 
     // 过滤列表
-    filterList => ( filter ) {
+    filterList => ( filter,arg ) {
+
+        if ( ! _init_list ) {
+            _init_list = true;
+            updateList();
+        }
+
         local tmp ;
 
         for( i = 0; i < listList.size(); i++){
             tmp = listList.get(i);
 
-            if( filter(tmp) ) {
+            if( filter(tmp, arg) ) {
                 return tmp;
             }
         }

@@ -4,45 +4,46 @@
 #include "../include/StackTrace.h"
 
 namespace langX {
-	StrackTraceFrame::StrackTraceFrame()
+
+	StackTraceFrame::StackTraceFrame()
 	{
 	}
 
-	StrackTraceFrame::~StrackTraceFrame()
+	StackTraceFrame::~StackTraceFrame()
 	{
 	}
 
-	void StrackTraceFrame::setRemark(const char *a)
+	void StackTraceFrame::setRemark(const char *a)
 	{
 		this->m_remark = std::string(a);
 	}
 
-	const char * StrackTraceFrame::getRemark() const
+	const char * StackTraceFrame::getRemark() const
 	{
 		return this->m_remark.c_str();
 	}
 
-	void StrackTraceFrame::setClassInfo(ClassInfo *a)
+	void StackTraceFrame::setClassInfo(ClassInfo *a)
 	{
 		this->m_class_info = a;
 	}
 
-	const ClassInfo & StrackTraceFrame::getClassInfo() const
+	const ClassInfo & StackTraceFrame::getClassInfo() const
 	{
 		return *this->m_class_info;
 	}
 
-	void StrackTraceFrame::setFunction(Function *a)
+	void StackTraceFrame::setFunction(Function *a)
 	{
 		this->m_function = a;
 	}
 
-	const Function & StrackTraceFrame::getFunction() const
+	const Function & StackTraceFrame::getFunction() const
 	{
 		return *this->m_function;
 	}
 
-	const char * StrackTraceFrame::getInfo() const
+	const char * StackTraceFrame::getInfo() const
 	{
 		this->m_info.clear();
 		bool flag = false;
@@ -92,15 +93,15 @@ namespace langX {
 	}
 
 
-    StrackTraceFrame *StackTrace::newFrame(Function *function, const char *remark) {
+    StackTraceFrame *StackTrace::newFrame(Function *function, const char *remark) {
         return newFrame(function->getClassInfo(), function, remark);
     }
 
-	StrackTraceFrame * StackTrace::newFrame(ClassInfo *classInfo, Function *function, const char *remark)
+	StackTraceFrame * StackTrace::newFrame(ClassInfo *classInfo, Function *function, const char *remark)
 	{
 		//printf("newFrame class: %s(%p), function: %s.\n" , (classInfo ? classInfo->getName() : "null"),classInfo, ( function ? function->getName() : "null"));
 
-		StrackTraceFrame *f = new StrackTraceFrame();
+		StackTraceFrame *f = new StackTraceFrame();
 		f->setClassInfo(classInfo);
 		f->setFunction(function);
 		f->setRemark(remark);
@@ -118,13 +119,13 @@ namespace langX {
 			return;
 		}
 
-		StrackTraceFrame  *ret = this->m_frames.back();
+		StackTraceFrame  *ret = this->m_frames.back();
 		this->m_frames.pop_back();
 		delete ret;
 		return;
 	}
 
-	StrackTraceFrame * StackTrace::top() const
+	StackTraceFrame * StackTrace::top() const
 	{
 		if (this->m_frames.empty())
 		{
@@ -138,7 +139,7 @@ namespace langX {
 	{
 		StrackTraceFrameArray ret;
 		ret.length = this->m_frames.size();
-		ret.frame = (const StrackTraceFrame**)calloc(ret.length, sizeof(StrackTraceFrame*));
+		ret.frame = (const StackTraceFrame**)calloc(ret.length, sizeof(StackTraceFrame*));
 
 		for (int i = 0; i < this->m_frames.size(); i++)
 		{

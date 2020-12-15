@@ -4,6 +4,8 @@
 #include "../include/NodeCreator.h"
 #include "../include/Program.h"
 
+extern void lexEOFWork();
+
 %}
 
 %union {
@@ -27,8 +29,9 @@
 %token OPR_ARGS_LIST
 %token KEY_REQUIRE KEY_REQUIRE_ONCE KEY_INCLUDE
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ LE_OP GE_OP EQ_OP NE_OP '>' '<'  AND_OP OR_OP
+%token TOKEN_END_OF_FILE
 
-%type <node> statement _extra_nothing con_ctl_stmt simple_stmt simple_stmt_types require_stmt interrupt_stmt new_expr null_expr delete_expr
+%type <node> statement _extra_nothing con_ctl_stmt simple_stmt simple_stmt_types interrupt_stmt new_expr null_expr delete_expr
 %type <node> func_declare_stmt out_declare_stmt var_declare_stmt element_var_declare_stmt _elements_var_declare_stmt class_declare_stmt namespace_declare_stmt
 %type <node> _var_declare_stmt_with_assign _var_declare_stmt_with_assign_list
 %type <node> call_statement assign_stmt_value_eq single_assign_stmt bool_param_expr try_stmt catch_block_stmt
@@ -41,7 +44,7 @@
 %type <node> func_param_list func_name_types multiple_id_expr args_list args_list_with_parentheses lambda_args_stmt
 
 
-%type <iValue> require_operators class_name_prefix var_prefix _symbol_compare symbol_change_assign self_inc_dec_operators _symbol_equals_not
+%type <iValue> class_name_prefix var_prefix _symbol_compare symbol_change_assign self_inc_dec_operators _symbol_equals_not
 
 
 %type <node> class_name_suffix class_body class_body_items class_body_item namespace_name_stmt
@@ -83,38 +86,30 @@ program
 	;
 
 statement_list
-  : statement_list statement      { execAndFreeNode($2); }
-	|
+    : statement_list statement      { execAndFreeNode($2); }
+    |
 	;
+
 statement
 	: _extra_nothing     { $$ = $1; }
 	| out_declare_stmt    { $$ = $1; }
 	| con_ctl_stmt   { $$ = $1; }
 	| simple_stmt    { $$ = $1; }
 	| try_stmt       { $$ = $1; }
+    | TOKEN_END_OF_FILE { lexEOFWork();  $$ = nullptr; }
 	;
 
 _extra_nothing
-  : ';'         { $$ = NULL; }
-  ;
+    : ';'         { $$ = NULL; }
+    ;
 
 out_declare_stmt
-  : func_declare_stmt          { $$ = $1; }
-  | class_declare_stmt         { $$ = $1; }
-  | namespace_declare_stmt     { $$ = $1; }
-  | namespace_ref_stmt        { $$ = $1; }
-  ;
-
-// 需求语句
-require_stmt
-	: require_operators string_expr         { $$ = opr($1 , 1 , $2); }
-	;
-
-require_operators
-    : KEY_REQUIRE             { $$ = yytokentype::KEY_REQUIRE; }
-    | KEY_REQUIRE_ONCE        { $$ = yytokentype::KEY_REQUIRE_ONCE; }
-    | KEY_INCLUDE            { $$ = yytokentype::KEY_INCLUDE; }
+    : func_declare_stmt          { $$ = $1; }
+    | class_declare_stmt         { $$ = $1; }
+    | namespace_declare_stmt     { $$ = $1; }
+    | namespace_ref_stmt        { $$ = $1; }
     ;
+
 
 // try 语句
 try_stmt
@@ -358,7 +353,6 @@ simple_stmt_types
 	| interrupt_stmt { $$ = $1; }
 	| new_expr       { $$ = $1; }
 	| restrict_stmt  { $$ = $1; }
-    | require_stmt      { $$ = $1; }
     | var_declare_stmt   { $$ = $1; }
 	;
 
@@ -371,7 +365,7 @@ restrict_stmt
 interrupt_stmt
 	: KEY_BREAK { $$ = opr(KEY_BREAK, 0); }
 	| KEY_RETURN { $$ = opr(KEY_RETURN , 0); }
-	| KEY_RETURN common_expr { $$ = opr(KEY_RETURN , 1 ,$2);}
+	| KEY_RETURN common_expr { $$ = opr(KEY_RETURN , 1 ,$2); }
     | KEY_CONTINUE { $$ = opr(KEY_CONTINUE,0); }
 	;
 
@@ -438,36 +432,36 @@ type_judge_stmt
 	;
 
 not_bool_param_expr
-  : '!' bool_param_expr   { $$ = opr('!', 1, $2); }
-  ;
+    : '!' bool_param_expr   { $$ = opr('!', 1, $2); }
+    ;
 
 // 比较表达式
 compare_expr
-  : number_compare_expr   %dprec 2  { $$ = $1; }
-  | object_compare_expr   %dprec 1 { $$ = $1; }
-  ;
+    : number_compare_expr   %dprec 2  { $$ = $1; }
+    | object_compare_expr   %dprec 1 { $$ = $1; }
+    ;
 
 number_compare_expr
-  : common_number_expr _symbol_compare common_number_expr  { $$ = opr($2, 2, $1, $3); }
-  ;
+    : common_number_expr _symbol_compare common_number_expr  { $$ = opr($2, 2, $1, $3); }
+    ;
 
 object_compare_expr
-  : common_object_expr _symbol_equals_not common_types_expr  { $$ = opr($2, 2, $1, $3); }
-  ;
+    : common_object_expr _symbol_equals_not common_types_expr  { $$ = opr($2, 2, $1, $3); }
+    ;
 
 _symbol_compare
-  : '>'       { $$ = '>'; }
-  | '<'       { $$ = '<'; }
-  | GE_OP     { $$ = yytokentype::GE_OP; }
-  | LE_OP     { $$ = yytokentype::LE_OP; }
-  | NE_OP     { $$ = yytokentype::NE_OP; }
-  | EQ_OP     { $$ = yytokentype::EQ_OP; }
-  ;
+    : '>'       { $$ = '>'; }
+    | '<'       { $$ = '<'; }
+    | GE_OP     { $$ = yytokentype::GE_OP; }
+    | LE_OP     { $$ = yytokentype::LE_OP; }
+    | NE_OP     { $$ = yytokentype::NE_OP; }
+    | EQ_OP     { $$ = yytokentype::EQ_OP; }
+    ;
 
 _symbol_equals_not
-  : NE_OP     { $$ = yytokentype::NE_OP; }
-  | EQ_OP     { $$ = yytokentype::EQ_OP; }
-  ;
+    : NE_OP     { $$ = yytokentype::NE_OP; }
+    | EQ_OP     { $$ = yytokentype::EQ_OP; }
+    ;
 
 //  自增 OR 自减
 self_inc_dec_stmt
@@ -476,9 +470,9 @@ self_inc_dec_stmt
 	;
 
 self_inc_dec_operators
-  : INC_OP        { $$ = yytokentype::INC_OP; }
-  | DEC_OP        { $$ = yytokentype::DEC_OP; }
-  ;
+    : INC_OP        { $$ = yytokentype::INC_OP; }
+    | DEC_OP        { $$ = yytokentype::DEC_OP; }
+    ;
 
 
 //  += -= *= /=  的值
@@ -664,10 +658,11 @@ common_string_expr
   ;
 
 common_expr
-  : common_types_expr       { $$ = $1; }
-  | common_values_expr      { $$ = $1; }
-  | common_result_of_call_expr  { $$ = $1; }
-  | string_plus_stmt        { $$ = $1; }
+  : common_types_expr       %dprec 5 { $$ = $1; }
+  | common_values_expr      %dprec 5 { $$ = $1; }
+  | common_result_of_call_expr  %dprec 5 { $$ = $1; }
+  | string_plus_stmt        %dprec 5 { $$ = $1; }
+  | logic_stmt              %dprec 1 { $$ = $1; }
   ;
 
 %%

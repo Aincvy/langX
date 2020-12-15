@@ -2,12 +2,12 @@
 #include <sys/time.h>
 
 #include "../include/RegDefaultClasses.h"
+#include "../include/CoreModule.h"
 
 #include "../../../include/ClassInfo.h"
 #include "../../../include/NodeCreator.h"
 #include "../../../include/Object.h"
 #include "../../../include/langXObject.h"
-#include "../../../include/langXObjectRef.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
 #include "../../../include/LogManager.h"
@@ -212,7 +212,7 @@ namespace langX {
 	Object * langX_DateTime_update(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-            logger->error("langX_DateTime_update error! NO OBJ!");
+            coreModuleLogger->error("langX_DateTime_update error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -227,7 +227,7 @@ namespace langX {
 	Object * langX_DateTime_DateTime_Dtor(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-            logger->error("langX_DateTime_DateTime_Dtor error! NO OBJ!");
+            coreModuleLogger->error("langX_DateTime_DateTime_Dtor error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -241,7 +241,7 @@ namespace langX {
 	Object * langX_DateTime_DateTime(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			logger->error("langX_DateTime_DateTime error! NO OBJ!");
+			coreModuleLogger->error("langX_DateTime_DateTime error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -425,6 +425,8 @@ namespace langX {
         timeUnitClass->addMember("Month", Allocator::allocateNumber(TimeUnitMonth));
         timeUnitClass->addMember("Year", Allocator::allocateNumber(TimeUnitYear));
         space->putClass(timeUnitClass);
+
+        coreModuleLogger->info("reg DateTime and TimeUnit class.. %d", 0);
 
 		return 0;
 	}

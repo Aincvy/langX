@@ -1,11 +1,15 @@
-#include <stdio.h>
+
 #include "../include/CoreModule.h"
 #include "../include/RegCoreModule.h"
-#include "../../../include/XNameSpace.h"
 #include "../../../include/ClassInfo.h"
 #include "../../../include/LogManager.h"
 
 namespace langX {
+
+    // 声明实现
+    CoreModule* coreModule = nullptr;
+    Logger* coreModuleLogger = nullptr;
+
 
 	CoreModule::CoreModule()
 	{
@@ -18,7 +22,9 @@ namespace langX {
 
 	int CoreModule::init(langXState *state)
 	{
-		logger->debug("init langX-core 库");
+        coreModuleLogger = m_logger;
+
+		m_logger->debug("init langX-core 库");
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.core.util");
 		regIterator(state, space);
 		regList(state, space);
@@ -30,7 +36,7 @@ namespace langX {
 		regRandom(state, space);
 
 		space = state->getNameSpaceOrCreate("langX.core");
-		regDeafult(state, space);
+        regDefault(state, space);
 
 		space = state->getNameSpaceOrCreate("langX.core.io");
 		regFile(state, space);
@@ -51,12 +57,34 @@ namespace langX {
 		return 0;
 	}
 
+    const char *CoreModule::getName() const {
+        return X3rdModule::getName();
+    }
+
+    const char *CoreModule::getAuthor() const {
+        return "Aincvy(aincvy@gmail.com) ";
+    }
+
+    const char *CoreModule::getVersion() const {
+        return CORE_MODULE_VERSION;
+    }
+
+    const char *CoreModule::getDescription() const {
+        return "base types(map,list,set), time types(dateTime..), stream types and so on...";
+    }
+
+    const char *CoreModule::getRepository() const {
+        return "https://github.com/Aincvy/langX";
+    }
+
 }
 
 
 int loadModule(langX::X3rdModule *& mod)
 {
-	mod = new langX::CoreModule();
+	langX::coreModule = new langX::CoreModule();
+
+	mod = langX::coreModule;
 
 	return 0;
 }

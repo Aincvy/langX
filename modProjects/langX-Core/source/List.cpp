@@ -1,6 +1,7 @@
 #include <list>
 #include <string.h>
 
+#include "../include/CoreModule.h"
 #include "../include/RegCoreModule.h"
 #include "../../../include/ClassInfo.h"
 #include "../../../include/NodeCreator.h"
@@ -8,13 +9,14 @@
 #include "../../../include/langXObject.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+#include "../../../include/LogManager.h"
 
 namespace langX {
 
 	Object * langX_List_List(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_List_List error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_List error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -28,7 +30,7 @@ namespace langX {
 	Object * langX_List_List_Dtor(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_List_List_Dtor error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_List_Dtor error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -50,7 +52,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_List_Add error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_Add error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -69,7 +71,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_List_Remove error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_Remove error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -112,7 +114,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_List_Get error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_Get error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -142,7 +144,7 @@ namespace langX {
 	Object * langX_List_Size(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_List_Size error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_Size error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -155,7 +157,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_List_Size error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_Size error! NO OBJ!");
 			return nullptr;
 		}
 		if (args.index < 1)
@@ -194,7 +196,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_List_Clear error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_Clear error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -208,7 +210,7 @@ namespace langX {
 	Object * langX_List_Iterator(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_List_Iterator error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_Iterator error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -221,14 +223,15 @@ namespace langX {
 	int regList(langXState *state, XNameSpace* space) {
 
 		ClassInfo *list = new ClassInfo("List");
-		list->addFunction("List", create3rdFunc("List", langX_List_List));
-		list->addFunction("~List", create3rdFunc("~List", langX_List_List_Dtor));
-		list->addFunction("add", create3rdFunc("add", langX_List_Add));
-		list->addFunction("remove", create3rdFunc("remove", langX_List_Remove));
-		list->addFunction("get", create3rdFunc("get", langX_List_Get));
-		list->addFunction("size", create3rdFunc("size", langX_List_Size));
-		list->addFunction("set2", create3rdFunc("set2", langX_List_Set));
-		list->addFunction("iterator", create3rdFunc("iterator", langX_List_Iterator));
+		list->addFunction(create3rdFunc("List", langX_List_List));
+		list->addFunction(create3rdFunc("~List", langX_List_List_Dtor));
+		list->addFunction(create3rdFunc("add", langX_List_Add));
+		list->addFunction(create3rdFunc("remove", langX_List_Remove));
+		list->addFunction(create3rdFunc("get", langX_List_Get));
+		list->addFunction(create3rdFunc("operator[]", langX_List_Get));
+		list->addFunction(create3rdFunc("size", langX_List_Size));
+		list->addFunction(create3rdFunc("set", langX_List_Set));
+		list->addFunction(create3rdFunc("iterator", langX_List_Iterator));
 		space->putClass(list);
 
 		return 0;
