@@ -1,9 +1,24 @@
 FIND_PACKAGE(Log4cpp REQUIRED)
 
-AUX_SOURCE_DIRECTORY(. SRC_LIST)
 link_directories("/usr/local/lib")
 
-ADD_LIBRARY(libevent SHARED ${SRC_LIST} )
+SET(SRC_LIST
+		BytesDecoder.cpp
+		BytesEncoder.cpp
+		DefaultBytesDecoder.cpp
+		DefaultBytesEncoder.cpp
+		DefaultNetPacket.cpp
+		DefaultNetPacketX.cpp
+		HttpRequest.cpp
+		HttpResponse.cpp
+		HttpServer.cpp
+		HttpServerRoute.cpp
+		libeventModule.cpp
+		TcpClient.cpp
+		TcpServer.cpp
+		Timer.cpp EventBase.cpp)
+
+ADD_LIBRARY(libevent SHARED ${SRC_LIST} Timer.cpp)
 
 target_link_libraries(libevent "langX")
 target_link_libraries(libevent "event")

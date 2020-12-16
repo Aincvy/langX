@@ -25,6 +25,7 @@
 #include "LogManager.h"
 #include "Utils.h"
 #include "ScriptModule.h"
+#include "TypeHelper.h"
 
 
 #ifdef WIN32
@@ -118,11 +119,7 @@ namespace langX {
 
 	void langXState::reg3rd(const char *name, X3rdFuncWorker worker)
 	{
-		X3rdFunction *func = new X3rdFunction();
-		func->setName(name);
-		func->setWorker(worker);
-		func->setParamsList(nullptr);
-		func->setLangX(this);
+		auto func = create3rdFunc(name, worker);
 		this->m_global_env->putFunction(name, func);
 	}
 
@@ -656,6 +653,7 @@ namespace langX {
         }
 
         // 初始化 Mod
+        mod->setState(this);
         mod->initLogger(this);
         int ret = mod->init(this);
         if (ret != 0) {
@@ -791,6 +789,7 @@ namespace langX {
         if (S_ISDIR(buf.st_mode)) {
             // 是一个目录
             auto module = new ScriptModule(path, this);
+            module->setState(this);
 
             // todo add error handle
             module->loadPackageScript();
@@ -835,6 +834,14 @@ namespace langX {
 
 	}
 
+	void langXModule::setState(langXState *state) {
+        this->m_state = state;
+	}
+
+	langXState * langXModule::getState() const {
+        return this->m_state;
+	}
+
     void includeFile(const char *filename) {
 	    char result[1024] = { 0 };
 	    convertToAbsolutePath(filename, getParsingFilename(), result);
@@ -856,5 +863,8 @@ namespace langX {
         getState()->require_onceFile(result);
 	}
 
+    langXState *getCurrentState() {
+        return getState();
+    }
 
 }

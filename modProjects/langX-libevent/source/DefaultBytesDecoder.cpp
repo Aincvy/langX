@@ -1,7 +1,7 @@
 #include "../include/DefaultBytesDecoder.h"
-#include "../../../include/Object.h"
-#include "../../../include/Function.h"
-#include "../../../include/langXObject.h"
+#include "Object.h"
+#include "Function.h"
+#include "langXObject.h"
 
 namespace langX {
 

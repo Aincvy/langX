@@ -9,7 +9,7 @@
 #define YYDEBUG 1
 
 // langX 的版本
-#define LANGX_VERSION "0.2.2"
+#define LANGX_VERSION "0.2.3"
 #define LANGX_VERSION_CODE 10
 
 

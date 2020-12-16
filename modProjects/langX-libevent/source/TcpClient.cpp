@@ -1,12 +1,10 @@
 #include "../include/ReglibeventModule.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
+#include "ClassInfo.h"
+#include "TypeHelper.h"
+#include "Allocator.h"
+#include "Number.h"
+#include "StringType.h"
 
 #ifdef WIN32
 #include "../../../lib/libevent-2.0.21-stable/include/event2/bufferevent.h"

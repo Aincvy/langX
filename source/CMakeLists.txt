@@ -69,6 +69,6 @@ set_property(TARGET liblangX.so PROPERTY INTERFACE_CUSTOM_PROP ON)
 target_link_libraries(langX liblangX.so)
 
 INSTALL(TARGETS liblangX.so langX
-RUNTIME DESTINATION bin
-LIBRARY DESTINATION lib
-)
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	)

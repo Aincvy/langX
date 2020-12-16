@@ -1,19 +1,10 @@
 #pragma once
 #include <map>
 
-#ifdef WIN32
-#include "../../../lib/libevent-2.0.21-stable/include/event2/event.h"
-#include "../../../lib/libevent-2.0.21-stable/include/event2/http.h"
-#include "../../../lib/libevent-2.0.21-stable/include/event2/keyvalq_struct.h"
-#include "../../../lib/libevent-2.0.21-stable/include/event2/http_struct.h"
-
-#else
 #include <event2/event.h>
 #include <event2/http.h>
 #include <event2/keyvalq_struct.h>
 #include <event2/http_struct.h>
-#endif
-
 
 #include "../../../include/X3rdModule.h"
 #include "../../../include/langX.h"

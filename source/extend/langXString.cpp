@@ -7,7 +7,7 @@
 
 #include "RegObjects.h"
 #include "ClassInfo.h"
-#include "NodeCreator.h"
+#include "TypeHelper.h"
 #include "StringType.h"
 #include "Allocator.h"
 #include "Number.h"

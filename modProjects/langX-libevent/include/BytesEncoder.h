@@ -9,7 +9,7 @@ namespace langX {
 		virtual ~BytesEncoder();
 
 		//  编码 ， 第二个参数为长度
-		virtual char * encord(void *, int *) = 0;
+		virtual char * encode(void *, int *) = 0;
 
 	private:
 
@@ -23,7 +23,7 @@ namespace langX {
 		langXBytesEncoder();
 		~langXBytesEncoder();
 
-		char * encord(void *, int *);
+		char * encode(void *, int *);
 
 	};
 

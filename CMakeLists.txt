@@ -38,3 +38,10 @@ ENDIF()
 IF(NOT EXISTS /etc/langX/mods )
 	INSTALL(DIRECTORY DESTINATION /etc/langX/mods)
 ENDIF()
+
+# 头文件安装
+INSTALL(DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/" # source directory
+		DESTINATION "include/langX" # target directory
+		FILES_MATCHING # install only matched files
+		PATTERN "*.h" # select header files
+		)

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Object.h"
+#include "Function.h"
 
 namespace langX {
 
@@ -40,5 +41,16 @@ namespace langX {
      * @return
      */
     const char* getStringFromObject(langXObject* object, const char* memberName);
+
+
+    /**
+     * 创建一个第三方函数
+     * @param name
+     * @param worker
+     * @return
+     */
+    Function* create3rdFunc(const char *name, X3rdFuncWorker worker);
+
+
 
 }

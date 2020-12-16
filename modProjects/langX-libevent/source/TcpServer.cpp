@@ -9,14 +9,14 @@
 #include "../include/DefaultBytesEncoder.h"
 #include "../include/DefaultNetPacket.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
-#include "../../../include/langXThread.h"
+#include "ClassInfo.h"
+#include "TypeHelper.h"
+#include "Object.h"
+#include "langXObject.h"
+#include "Allocator.h"
+#include "Number.h"
+#include "StringType.h"
+#include "langXThread.h"
 
 #ifdef WIN32
 #include "../../../lib/libevent-2.0.21-stable/include/event2/buffer.h"
@@ -61,7 +61,7 @@ namespace langX {
 //				arglist[2] = &astr;
 //				arg->readcb->call(arglist, 3, "in libevent conn_readcb");
 
-                auto thread = getState()->getThreadManager()->getMainThread();
+                auto thread = getCurrentState()->getThreadManager()->getMainThread();
 
                 // server,client,data
                 arg->readcb->call(thread, "in libevent conn_readcb", 3,arg->xobject->addRef(), clientArgs->clientObject->addRef(), &astr);
@@ -120,7 +120,7 @@ namespace langX {
 		}
 
 		// 调用 onaccept 回调
-		langXObject * clientObject = getState()->getNameSpace("langX.libevent")->getClass("TcpClient")->newObject();
+		langXObject * clientObject = getCurrentState()->getNameSpace("langX.libevent")->getClass("TcpClient")->newObject();
 		TcpClientArgs *clientArgs = (TcpClientArgs*)calloc(1, sizeof(TcpClientArgs));
 		clientArgs->bev = bev;
 		clientArgs->clientObject = clientObject;
@@ -136,7 +136,8 @@ namespace langX {
 //			arg->acceptcb->call(arglist, 2, "in libevent listener_cb");
 			//printf("call acceptcb cb\n");
 
-			auto thread = getState()->getThreadManager()->getMainThread();
+
+			auto thread = getCurrentState()->getThreadManager()->getMainThread();
 
             // server,client
 			arg->acceptcb->call(thread, "in libevent listener_cb", 2, arg->xobject->addRef(), clientObject->addRef());

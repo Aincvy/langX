@@ -138,17 +138,6 @@ std::string fileInfoString(const NodeFileInfo & f) {
 	return std::string(ss.str());
 }
 
-XFunction * create3rdFunc(const char *name, langX::X3rdFuncWorker worker)
-{
-	X3rdFunction *func = new X3rdFunction();
-	func->setName(name);
-	func->setWorker(worker);
-	func->setParamsList(NULL);
-	func->setLangX(state);
-
-	return func;
-}
-
 void getObjStringDesc(langX::Object * obj, char *tmp, int maxSize)
 {
 	if (!obj) {

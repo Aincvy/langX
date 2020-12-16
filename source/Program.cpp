@@ -45,13 +45,18 @@ int programRun(int argc, char *argv[]){
     // 获取启动参数
     // 脚本文件和 给予脚本文件的参数
     std::vector<std::string> fileAndArgs;
+    // 额外增加得 脚本 module
     std::vector<std::string> addModules;
+    // 是否禁用所有得 module | 在配置文件里面得  TODO 禁用模块加载
+    bool disableAllModules = false;
 
     try {
         TCLAP::CmdLine cmdLine("langX - a simple script language.", ' ', LANGX_VERSION);
 
+        TCLAP::SwitchArg disableAllModulesArg("","disable-all-modules","Disable load modules from config file. TODO",false);
+        cmdLine.add(disableAllModulesArg);
 
-        TCLAP::MultiArg<std::string> addModuleArg("A", "add-module", "add a script module ", false,"string" );
+        TCLAP::MultiArg<std::string> addModuleArg("A", "add-module", "Add a script module.", false,"string" );
         cmdLine.add(addModuleArg);
 
         // file name and args
@@ -64,6 +69,9 @@ int programRun(int argc, char *argv[]){
         fileAndArgs = multiArg.getValue();
         if (addModuleArg.isSet()) {
              addModules = addModuleArg.getValue();
+        }
+        if (disableAllModulesArg.isSet()) {
+            disableAllModules = disableAllModulesArg.getValue();
         }
 
     } catch (TCLAP::ArgException &e) {

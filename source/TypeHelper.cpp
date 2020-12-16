@@ -7,6 +7,7 @@
 #include "XArray.h"
 #include "StringType.h"
 #include "langXObject.h"
+#include "NodeCreator.h"
 
 namespace langX {
 
@@ -54,6 +55,16 @@ namespace langX {
         }
 
         return nullptr;
+    }
+
+    Function *create3rdFunc(const char *name, langX::X3rdFuncWorker worker) {
+        auto func = new X3rdFunction();
+        func->setName(name);
+        func->setWorker(worker);
+        func->setParamsList(nullptr);
+        func->setLangX(getState());
+
+        return func;
     }
 
 

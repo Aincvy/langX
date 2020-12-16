@@ -10,3 +10,11 @@
 // 5. 卡片得标签
 
 //
+
+eventBase = new EventBase();
+
+eventBase.newTimer().setTimeout(5, null);
+eventBase.setTimeout();  //  ?
+
+// 启动事件
+eventBase.dispatch();

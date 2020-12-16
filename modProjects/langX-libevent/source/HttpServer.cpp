@@ -1,19 +1,14 @@
 ﻿#include "../include/RegHttpServer.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/langXThread.h"
+#include "ClassInfo.h"
+#include "Object.h"
+#include "langXObject.h"
+#include "Allocator.h"
+#include "Number.h"
+#include "langXThread.h"
+#include "TypeHelper.h"
 
-#ifdef WIN32
-#include "../../../lib/libevent-2.0.21-stable/include/event2/buffer.h"
-
-#else
 #include <event2/buffer.h>
-#endif
 
 
 namespace langX {
@@ -122,7 +117,7 @@ namespace langX {
 
         // 先借个线程 *.* 这里后面需要补上
         // todo 修正线程得内容
-		auto thread = getState()->getThreadManager()->getMainThread();
+		auto thread = getCurrentState()->getThreadManager()->getMainThread();
 		if (cb != nullptr)
 		{
 			cb->call(thread, "from libevent httpd_handler", 2, request->addRef(), response->addRef());

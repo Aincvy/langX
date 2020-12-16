@@ -328,6 +328,18 @@ namespace langX {
 		 */
 		virtual void * getSoObj() const = 0;
 
+        /**
+         * 设置 state
+         * @param state
+         */
+		void setState(langXState *state);
+
+		/**
+		 * 获取 state
+		 * @return
+		 */
+		langXState * getState() const;
+
 
 	protected:
 
@@ -357,5 +369,11 @@ namespace langX {
      * @param filename   文件路径
      */
     void requireOnceFile(const char *filename);
+
+    /**
+     * 获取当前得 state 对象
+     * @return
+     */
+    langXState* getCurrentState();
 
 }

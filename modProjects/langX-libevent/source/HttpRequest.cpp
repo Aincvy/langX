@@ -1,13 +1,13 @@
 ﻿
 #include "../include/RegHttpServer.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
+#include "ClassInfo.h"
+#include "TypeHelper.h"
+#include "Object.h"
+#include "langXObject.h"
+#include "Allocator.h"
+#include "Number.h"
+#include "StringType.h"
 
 static langX::ClassInfo *httpRequestClass;
 
