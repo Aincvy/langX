@@ -614,6 +614,12 @@ namespace langX {
 		thread->setStatus(langXThreadStatus::Running);
 		this->m_selfmap[id] = thread;
 		this->m_idmap[curThreadId] = thread;
+
+		this->m_mainThread = thread;
+	}
+
+	langXThread* langXThreadMgr::getMainThread() const{
+        return this->m_mainThread;
 	}
 
 	void langXThreadMgr::freeAllThreads()

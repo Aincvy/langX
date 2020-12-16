@@ -725,6 +725,10 @@ namespace langX {
 		return this->m_thread_mgr->currentThread();
 	}
 
+	langXThreadMgr * langXState::getThreadManager() const {
+        return this->m_thread_mgr;
+	}
+
 	const ConfigX & langXState::getConfig() const
 	{
 		return this->m_config;

@@ -230,6 +230,9 @@ namespace langX {
 		// 获得当前线程的对象
 		langXThread *currentThread();
 
+		// 获取 主线程得对象
+        langXThread *getMainThread() const;
+
 	private:
 		
 		// key: 从系统函数获取的线程id ,value: 线程对象
@@ -238,10 +241,12 @@ namespace langX {
 		std::map<int, langXThread*> m_selfmap;
 		
 		// id 自增量
-		int m_id_gen;
+		int m_id_gen = 0;
 		// 用于id自增量的互斥锁
 		std::mutex m_mutex_id_gen;
 
+		// 主线程
+		langXThread* m_mainThread = nullptr;
 
 	};
 

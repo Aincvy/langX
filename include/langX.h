@@ -142,6 +142,12 @@ namespace langX {
 		// 返回当前线程信息
 		langXThread* curThread() const;
 
+		/**
+		 * 获取当前得 线程管理器得信息
+		 * @return
+		 */
+        langXThreadMgr* getThreadManager() const;
+
 		// 获取当前正在使用中的配置
 		const ConfigX & getConfig() const;
 

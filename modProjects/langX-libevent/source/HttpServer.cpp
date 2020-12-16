@@ -6,6 +6,7 @@
 #include "../../../include/langXObject.h"
 #include "../../../include/Allocator.h"
 #include "../../../include/Number.h"
+#include "../../../include/langXThread.h"
 
 #ifdef WIN32
 #include "../../../lib/libevent-2.0.21-stable/include/event2/buffer.h"
@@ -119,12 +120,12 @@ namespace langX {
 		evhttp_add_header(req->output_headers, "Content-Type", "text/html; charset=UTF-8");
 		evhttp_add_header(req->output_headers, "Connection", "close");
 
+        // 先借个线程 *.* 这里后面需要补上
+        // todo 修正线程得内容
+		auto thread = getState()->getThreadManager()->getMainThread();
 		if (cb != nullptr)
 		{
-			Object *list1[2];
-			list1[0] = request->addRef();
-			list1[1] = response->addRef();
-			cb->call(list1,2,"in libevent httpd_handler");
+			cb->call(thread, "from libevent httpd_handler", 2, request->addRef(), response->addRef());
 		}
 
 		

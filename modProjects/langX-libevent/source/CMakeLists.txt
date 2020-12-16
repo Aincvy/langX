@@ -1,9 +1,6 @@
 FIND_PACKAGE(Log4cpp REQUIRED)
 
 AUX_SOURCE_DIRECTORY(. SRC_LIST)
-
-include_directories("/usr/local/include")
-
 link_directories("/usr/local/lib")
 
 ADD_LIBRARY(libevent SHARED ${SRC_LIST} )

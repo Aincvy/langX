@@ -1,65 +1,8 @@
 include("define.lx");
 
 // 编译一个 mod, 参数为项目路径
-compileMod => ( projectDir ){
-    println("try to compile project: " + projectDir);
-	exist = sy_exists(projectDir) ;
-	if( !exist ){
-		println("工程目录" + projectDir + " 不存在，跳过" );
-		return 1;
-	}
-
-	buildDir = projectDir + "/build" ;
-	exist = sy_exists(buildDir) ;
-	if ( !exist ){
-		sy_mkdir(buildDir);
-	}
-
-	// 把工作目录定位到build 里面
-	sy_chdir(buildDir);
-	//sy_run_and_print("cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local");  //
-	//sy_run_and_print("make");
-
-	println("=========================================================");
-	println("|   build " + projectDir + " over");
-	println("=========================================================");
-
-    return 0;
+modWork => ( projectDir ){
+    return operateMod(projectDir, ModsOperation::Compile);
 }
 
-// 根据 args 得内容进行编译
-compileModByArgs => (argc){
-
-    for( i = 0; i < argc; i++){
-        str = sy_arg(i);
-
-        println("str=" + str);
-        tmp = compileMod(BasePath + str);
-        if( tmp == 1){
-            // 不存在， 添加前缀后尝试下
-            compileMod(BasePath + "langX-" +str);
-        }
-
-    }
-
-}
-
-// 编译全部得内容
-compileModByAll => (){
-    println("BasePath=" + BasePath);
-
-    foreachProjects( p => {
-        compileMod(BasePath + p);
-    });
-}
-
-// 根据参数个数 执行不同得函数
-if(argc > 0){
-    println(1);
-    compileModByArgs(argc);
-} else {
-    println(2);
-    compileModByAll();
-}
-
-println("==== END =====");
+main();

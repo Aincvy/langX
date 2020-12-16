@@ -1,0 +1,8 @@
+include("define.lx");
+
+// 执行首次编译
+modWork => ( projectDir ){
+    return operateMod(projectDir, ModsOperation::FirstMake);
+}
+
+main();
