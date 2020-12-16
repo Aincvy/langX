@@ -195,7 +195,7 @@ namespace langX {
 			else {
 				// 其他的正常对象
 				// 先看看 该对象有无 toJSONString 函数， 如果有的话就调用一下
-				Object *ret= ref->callFunction("toJSONString");
+				Object *ret= ref->getRefObject()->callFunction("toJSONString", "from json library..", 0);
 				cJSON *data = nullptr;
 				if (ret && ret->getType() == ObjectType::STRING)
 				{

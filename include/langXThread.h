@@ -62,6 +62,12 @@ namespace langX {
 		bool createNameSpace = false;
 		// 当前解析的文件是否已经结束了
 		bool endOfFile = false;
+
+		// 是否执行了 break 语句
+		bool flagBreak = false;
+		// 是否执行了 continue 语句
+		bool flagContinue = false;
+
 	};
 	
 

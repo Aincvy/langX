@@ -307,13 +307,8 @@ case_stmt
 
 loop_stmt
 	: KEY_WHILE '(' logic_stmt ')' code_block { $$ = opr(KEY_WHILE , 2, $3, $5 ); }
-	| KEY_FOR '(' for_1_stmt_list ';' for_logic_stmt ';' for_3_stmt_list ')' code_block { $$ = opr(KEY_FOR,4,$3,$5,$7,$9); }
+	| KEY_FOR '(' for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list ')' code_block { $$ = opr(KEY_FOR,4,$3,$5,$7,$9); }
 	;
-
-for_logic_stmt
-    :       { $$ = intNode(1);  }    // true
-    | logic_stmt    { $$ = $1; }
-    ;
 
 for_1_stmt_list
     :      { $$ = NULL ; }

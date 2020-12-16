@@ -1,0 +1,62 @@
+
+include("define.lx");
+
+
+installMod => (projectDir) {
+    println("try to install project: " + projectDir);
+    exist = sy_exists(projectDir) ;
+    if( !exist ){
+        println("工程目录" + projectDir + " 不存在，跳过" );
+        return 1;
+    }
+
+    buildDir = projectDir + "/build" ;
+    exist = sy_exists(buildDir) ;
+    if ( !exist ){
+        sy_mkdir(buildDir);
+    }
+
+    // 把工作目录定位到build 里面
+    sy_chdir(buildDir);
+    // sy_run_and_print("cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local");
+    sy_run_and_print("make install");
+
+    println("=========================================================");
+    println("|   install " + projectDir + " over");
+    println("=========================================================");
+
+    return 0;
+}
+
+// 安装所有得 mod
+installAllMods => (){
+    foreachProjects( p => {
+        installMod(BasePath + p);
+    });
+}
+
+// 根据 args 得内容进行 安装
+installModByArgs => (argc){
+
+    for( i = 0; i < argc; i++){
+        str = sy_arg(i);
+
+        println("projectName=" + str);
+        tmp = compileMod(BasePath + str);
+        if( tmp == 1){
+            // 不存在， 添加前缀后尝试下
+            installMod(BasePath + "langX-" +str);
+        }
+
+    }
+
+}
+
+if(argc > 0){
+    // 安装部分得几个指定得Mod
+    installModByArgs();
+} else {
+    installAllMods();
+}
+
+println("==== END =====");

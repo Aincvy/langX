@@ -1,0 +1,36 @@
+
+projectList[20];
+projectIndex = 0;
+
+projectList[0] = "langX-Core";
+projectList[1] = "langX-Json";
+projectList[2] = "langX-libevent";
+projectList[3] = "langX-Python";
+projectList[4] = "langX-Mysql";
+
+// modProjects 目录所在得文件夹
+BasePath = "/Users/alias/langX/modProjects/";
+
+argc = sy_argc();
+println("argc=" + argc);
+
+
+foreachProjects => ( callback ){
+    if( !callback) {
+        println("no callback, jump execute...");
+        return ;
+    }
+
+    for(i = 0; i < projectList.length; i++){
+        projectName = projectList[i];
+        if(!projectName){
+            break;
+        }
+
+        println("projectName=" + projectName);
+
+        // 执行操作
+        callback(projectName);
+        // installMod(projectName);
+    }
+}

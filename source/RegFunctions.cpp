@@ -618,6 +618,7 @@ namespace langX {
 		state->reg3rd("sy_to_int", langX_sy_to_int);
 		state->reg3rd("sy_cwd", langX_sy_cwd);
 		state->reg3rd("sy_chdir", langX_sy_chdir);
+		state->reg3rd("sy_cd", langX_sy_chdir);
 		state->reg3rd("sy_run_and_print", langX_sy_run_and_print);
 		state->reg3rd("sy_metadata", langX_sy_metadata);
 		state->reg3rd("co_typeof", langX_co_typeof);

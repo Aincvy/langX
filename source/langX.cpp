@@ -711,9 +711,6 @@ namespace langX {
 		logger->debug("init ScriptModule ClassInfo...");
 		initScriptModuleClassInfo(this);
 
-		logger->debug("load rt-lib.  [jump ...]");
-		// loadRTLib(this);
-
 		logger->debug("load config file over.");
 		return 0;
 	}

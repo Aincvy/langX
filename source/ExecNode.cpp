@@ -61,7 +61,7 @@ namespace langX {
             }
         }
 
-        Object *obj = NULL;
+        Object *obj = nullptr;
         if (arrayInfo->name != NULL) {
             obj = getValue(arrayInfo->name);
         } else if (arrayInfo->objNode != NULL) {
@@ -99,16 +99,17 @@ namespace langX {
             return nullptr;
         }
 
-        Node *t = arrayInfo->indexNode;
+        Node *indexNode = arrayInfo->indexNode;
 
-        if (t->value == nullptr || t->value->getType() != NUMBER) {
+        if (indexNode->value == nullptr || indexNode->value->getType() != NUMBER) {
             thread->throwException(newException("error array length !")->addRef());
             return nullptr;
         }
 
-        auto index = ((Number *) t->value)->getIntValue();
-        Allocator::free(t->value);
-        t->value = nullptr;
+        auto index = ((Number *) indexNode->value)->getIntValue();
+        doSuffixOperation(indexNode);
+        Allocator::free(indexNode->value);
+        indexNode->value = nullptr;
 
         XArrayRef *ref = (XArrayRef *) obj;
         if (index < 0 || index >= ref->getLength()) {
@@ -189,7 +190,7 @@ namespace langX {
         } else if (n->type == NODE_VARIABLE && n->postposition != NULL) {
             setValueToEnv(n->var_obj->name, n->postposition);
             Allocator::free(n->postposition);
-            n->postposition = NULL;
+            n->postposition = nullptr;
         }
     }
 
@@ -492,38 +493,27 @@ namespace langX {
     }
 
 
-    void __execBREAK(NodeLink *nodeLink, langXThread *thread) {
-        if (!thread->isInLoop() && !thread->isInSwitch()) {
-            getState()->curThread()->throwException(newUnsupportedOperationException("invalid break stmt.")->addRef());
-            //printf("无效的BREAK 语句 ");
+    //  continue 关键字
+    void __execCONTINUE(NodeLink *nodeLink, langXThread *thread) {
+        if (!thread->isInLoop()) {
+            getState()->curThread()->throwException(
+                    newUnsupportedOperationException("invalid continue stmt.")->addRef());
             return;
         }
 
-        do {
-            if (nodeLink == nullptr) {
-                break;
-            }
+        thread->getStackTraceTopStatus().flagContinue = true;
+        nodeLink->backAfterExec = true;
+    }
 
-            Node *n = nodeLink->node;
-            freeSubNodes(n);      //  释放节点的值的内存
-            nodeLink = nodeLink->previous;
-            thread->endExecute();
-
-            if (n->type == NodeType::NODE_OPERATOR) {
-                int opr = n->opr_obj->opr;
-                if (opr == KEY_WHILE || opr == KEY_FOR || opr == KEY_SWITCH) {
-                    // 找到了该节点
-                    break;
-                }
-            }
-        } while (true);
-
-        thread->setBackInExec(true);
-        if (thread->isInLoop()) {
-            thread->setInLoop(false);
-        } else {
-            thread->setInSwitch(false);
+    void __execBREAK(NodeLink *nodeLink, langXThread *thread) {
+        if (!thread->isInLoop() && !thread->isInSwitch()) {
+            getState()->curThread()->throwException(newUnsupportedOperationException("invalid break stmt.")->addRef());
+            return;
         }
+
+        thread->getStackTraceTopStatus().flagBreak = true;
+        nodeLink->backAfterExec = true;
+
     }
 
     void __execRETURN(NodeLink *nodeLink, langXThread *thread) {
@@ -540,12 +530,12 @@ namespace langX {
 
             // 确定返回值
             if (n->opr_obj->op_count <= 0) {
-                n->value = NULL;
+                n->value = nullptr;
             } else {
                 // 存在返回值
                 Node *a = n->opr_obj->op[0];
-                if (a == NULL) {
-                    n->value = NULL;
+                if (a == nullptr) {
+                    n->value = nullptr;
                 } else {
                     thread->beginExecute(a, true);
                 }
@@ -562,44 +552,10 @@ namespace langX {
             n->value = a->value->clone();
         }
 
-
         freeSubNodes(n);
         thread->setFunctionResult(n->value);
-        Allocator::free(n->value);
-        n->value = nullptr;
         thread->setBackInExec(true);
         nodeLink->backAfterExec = true;
-
-        // 回退节点
-        Node *funcRootNode = thread->getFuncRootNode();
-        do {
-            if (nodeLink == nullptr) {
-                break;
-            }
-
-            Node *n = nodeLink->node;
-            freeSubNodes(n);
-            if (funcRootNode == n) {
-                // 找到了该节点
-                nodeLink->index = 1000;       // 函数已经获取到返回值
-                break;
-            }
-
-            nodeLink = nodeLink->previous;
-            thread->endExecute();
-        } while (true);
-
-#ifdef SHOW_DETAILS
-        //printf("want back to %p,cmd %d \n", funcRootNode, funcRootNode == nullptr ? -1 : funcRootNode->opr_obj->opr);
-        //if (nodeLink == nullptr)
-        //{
-        //	printf("after return back. nodeLink is null.\n");
-        //}
-        //else {
-        //	Node *tmpNode1 = nodeLink->node;
-        //	printf("after return back. on node %p cmd %d\n", tmpNode1, tmpNode1->type == NodeType::NODE_OPERATOR ? tmpNode1->opr_obj->opr : -1);
-        //}
-#endif
     }
 
 
@@ -609,17 +565,16 @@ namespace langX {
 
         nodeLink->backAfterExec = false;      //  这是一个复合性质的节点， 自己管理这个状态就好了
         int oprCount = n->opr_obj->op_count;
-        if (oprCount <= 0) {
-            // 在语法定义中 就没有子节点要执行， 直接返回把
-            nodeLink->backAfterExec = true;
-            return;
-        }
 
-        if (nodeLink->index < oprCount) {
-            // 遍历节点
-            Node *run = n->opr_obj->op[nodeLink->index];
-            nodeLink->index++;
-            if (run != NULL) {
+        // 当前是否调用了中断语句得判断
+        auto & topStatus = thread->getStackTraceTopStatus();
+        auto tmpStatus = thread->isBackInExec() || topStatus.flagBreak || topStatus.flagContinue;
+
+        if ( !tmpStatus && oprCount > 0 && nodeLink->index < oprCount) {
+            // 遍历 执行 节点
+            Node *run = n->opr_obj->op[nodeLink->index++];
+            //nodeLink->index++;
+            if (run != nullptr) {
                 thread->beginExecute(run, true);
             }
             return;
@@ -656,13 +611,15 @@ namespace langX {
             bool f = __tryConvertToBool(n1);
 
             if (f) {
+                // 条件为真， 执行
+                thread->getStackTraceTopStatus().stepIf++;
+//                logger->debug("if is true, now stepIf: %d", thread->getStackTraceTopStatus().stepIf);
+
                 Node *a = n->opr_obj->op[1];
                 if (a != nullptr) {
                     thread->beginExecute(a, true);
                 }
 
-                // 条件为真， 执行
-                thread->getStackTraceTopStatus().stepIf++;
             }
             nodeLink->index = 2;
             return;
@@ -765,14 +722,19 @@ namespace langX {
 
     // 开始一个新的 if 系列语句
     void __execSTART_IF(NodeLink *nodeLink, langXThread *thread) {
+
         // 开始新的执行
         auto &status = thread->getStackTraceTopStatus();
 
         if (nodeLink->index == 0) {
             nodeLink->index = 1;
 
+//            logger->debug("start of __execSTART_IF: %d", status.stepIf);
+
             // 奇数 + 2， 偶数 + 1 ,确保执行后是个奇数
             status.stepIf += status.stepIf % 2 == 0 ? 1 : 2;
+
+//            logger->debug("middle of __execSTART_IF: %d", status.stepIf);
 
             // 执行节点
             nodeLink->backAfterExec = false;
@@ -781,10 +743,16 @@ namespace langX {
             return;
         }
 
+        // 先前是奇数就还原成奇数， 先前是偶数就还原成偶数
         // 还原 step
-        status.stepIf -= min(status.stepIf, status.stepIf % 2 == 0 ? (short) 3 : (short) 2);
+        status.stepIf -= status.stepIf % 2 == 0 ? 2 : 1;
+
+
+//        logger->debug("end of __execSTART_IF: %d", status.stepIf);
 
         nodeLink->backAfterExec = true;
+
+
     }
 
     // IF - LESE 语句
@@ -831,6 +799,7 @@ namespace langX {
             thread->getStackTraceTopStatus().stepIf++;   // 直接 + 1
             nodeLink->backAfterExec = true;      // 直接 back
 
+//            logger->debug("into else node, after +1, now stepId: %d", thread->getStackTraceTopStatus().stepIf);
             // 执行新的节点
             thread->beginExecute(nodeLink->node->opr_obj->op[0], true);
         }
@@ -842,6 +811,29 @@ namespace langX {
     void __execWHILE(NodeLink *nodeLink, langXThread *thread) {
         Node *n = nodeLink->node;
         nodeLink->backAfterExec = false;
+
+        // 这里判断一下是否调用了 中断语句
+        auto & topStatus = thread->getStackTraceTopStatus();
+        if (topStatus.flagBreak) {
+            // 调用了 break 语句
+            topStatus.flagBreak = false;
+
+            thread->setInLoop(false);
+            nodeLink->backAfterExec = true;
+            freeSubNodes(n);
+
+            return;
+        } else if (topStatus.flagContinue) {
+            // 执行了 continue 语句
+            topStatus.flagContinue = false;
+
+            // 跳到 收尾循环体节点内容得那点
+            nodeLink->index = 2;
+        }
+
+        // while 语句得解构
+        // while ( 条件节点 )
+        // 循环体
 
         // 先执行条件 节点 ,然后判断条件 节点的值， 然后释放条件 节点的内存
         // 循环执行结束 ， 释放掉  所有节点值 的内存
@@ -876,7 +868,7 @@ namespace langX {
             // 循环内部的节点已经执行完毕， 现在做一些后续操作
             freeSubNodes(run);
             recursiveFreeNodeValue(run);
-            nodeLink->index = 0;    //
+            nodeLink->index = 0;    // 重新回到条件节点
         }
     }
 
@@ -889,6 +881,31 @@ namespace langX {
             nodeLink->flag = true;
         }
 
+        // 这里判断一下是否调用了 中断语句
+        auto & topStatus = thread->getStackTraceTopStatus();
+        if (topStatus.flagBreak) {
+            // 调用了 break 语句
+            topStatus.flagBreak = false;
+
+            thread->setInLoop(false);
+            nodeLink->backAfterExec = true;
+            freeSubNodes(n);
+
+            return;
+        } else if (topStatus.flagContinue) {
+            // 执行了 continue 语句
+            topStatus.flagContinue = false;
+
+            // 跳到执行后置节点得那点     | 这句可能是多余得 *_* ..
+            nodeLink->index = 3;
+        }
+
+        // for 循环语句得解构
+        // for( 前置节点 ； 条件节点 ; 后置节点 )
+        // 循环体
+
+        // 常规得 for 循环节点内容执行
+
         Node *conNode = n->opr_obj->op[1];
         // 后置节点
         Node *sNode = n->opr_obj->op[2];
@@ -899,7 +916,8 @@ namespace langX {
             thread->beginExecute(n->opr_obj->op[0], true);
             nodeLink->index = 1;
         } else if (nodeLink->index == 1) {
-            thread->beginExecute(conNode, true);    // 执行条件节点
+            // 执行条件节点
+            thread->beginExecute(conNode, true);
             nodeLink->index = 2;
         } else if (nodeLink->index == 2) {
             // 判定条件
@@ -1390,44 +1408,6 @@ namespace langX {
     }
 
 
-    //  continue 关键字
-    void __execCONTINUE(NodeLink *nodeLink, langXThread *thread) {
-        if (!thread->isInLoop()) {
-            getState()->curThread()->throwException(
-                    newUnsupportedOperationException("invalid continue stmt.")->addRef());
-
-            return;
-        }
-
-        //
-        do {
-            if (nodeLink == nullptr) {
-                break;
-            }
-
-            Node *n = nodeLink->node;
-            freeSubNodes(n);
-            if (n->type == NodeType::NODE_OPERATOR) {
-                int opr = n->opr_obj->opr;
-                if (opr == KEY_WHILE || opr == KEY_FOR) {
-                    // 找到了该节点
-                    if (opr == KEY_WHILE) {
-                        // 跳到判定条件的地方
-                        nodeLink->index = 2;
-                    } else if (opr == KEY_FOR) {
-                        // 跳到后置节点的地方
-                        nodeLink->index = 3;
-                    }
-                    break;
-                }
-            }
-
-            nodeLink = nodeLink->previous;
-            thread->endExecute();
-        } while (true);
-
-        thread->setBackInExec(true);
-    }
 
     // node list  挨个执行子节点即可
     void __execNODE_LIST(NodeLink *nodeLink, langXThread *thread) {
@@ -2057,24 +2037,24 @@ namespace langX {
             lastExecNode = curLink->node;
 
             __realExecNode(curLink, thread);     // 将原来的内容丢到一个新的方法里面
-            if (thread->isBackInExec()) {
-                // 上面方法可能会将  curLink 指向的位置内存被删除， 判定下两个值是否一致， 不一致则重新执行
-                thread->setBackInExec(false);
-                NodeLink *tmpNodeLink = thread->getCurrentExecute();
-                if (tmpNodeLink == nullptr) {
-                    break;            // 栈顶已经没有元素
-                }
-                if (tmpNodeLink != curLink) {
-                    // tmpNodeLink 是最新的数据
-                    if (tmpNodeLink->node == limitNode) {
-                        // 强制跳跃到 限制节点了， 直接退出循环
-                        thread->endExecute();
-                        break;
-                    }
-
-                    continue;
-                }
-            }
+//            if (thread->isBackInExec()) {
+//                // 上面方法可能会将  curLink 指向的位置内存被删除， 判定下两个值是否一致， 不一致则重新执行
+//                // thread->setBackInExec(false);
+//                NodeLink *tmpNodeLink = thread->getCurrentExecute();
+//                if (tmpNodeLink == nullptr) {
+//                    break;            // 栈顶已经没有元素
+//                }
+//                if (tmpNodeLink != curLink) {
+//                    // tmpNodeLink 是最新的数据
+//                    if (tmpNodeLink->node == limitNode) {
+//                        // 强制跳跃到 限制节点了， 直接退出循环
+//                        thread->endExecute();
+//                        break;
+//                    }
+//
+//                    continue;
+//                }
+//            }
 
             if (curLink->next == nullptr && curLink->backAfterExec) {
                 // will end execute .

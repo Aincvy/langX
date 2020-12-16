@@ -44,8 +44,14 @@ namespace langX {
 		// 获取参数个数
 		int getArgsCount() const;
 		
-		// 调用这个函数， 在调用这个方法之前得确保参数都放入了最近的一个环境里面 
-		// 一般不直接使用这个函数， 而是使用 FunctionRef 的函数
+
+		/**
+		 * ！！仅限内部使用！！， 在外部使用得时候 请使用 callFunction(xx,xx,xx,xx) 得方法
+		 *
+		 * 调用这个函数， 在调用这个方法之前得确保参数都放入了最近的一个环境里面
+		 * 一般不直接使用这个函数， 而是使用 FunctionRef 的函数
+		 * @return
+		 */
 		Object *call() const;
 
 		// 是否是第三方函数
