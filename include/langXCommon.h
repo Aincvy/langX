@@ -6,7 +6,7 @@
 #pragma once
 
 // yacc debug 标识
-#define YYDEBUG 1
+// #define YYDEBUG 1
 
 // langX 的版本
 #define LANGX_VERSION "0.2.4"

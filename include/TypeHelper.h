@@ -8,8 +8,19 @@
 #include "Function.h"
 
 
-// 快速申请 一个类型得内存
+/**
+ * 快速申请 一个类型得内存
+ */
 #define QUICK_CALLOC(type) (type*)calloc(1, sizeof(type))
+
+/**
+ * 检测 3rd 函数得参数个数是否足够
+ * 如果不足够， 则返回一个 nullptr 出去
+ */
+#define CHECK_ARGS_SIZE(args, num) \
+if (args.index < num) { \
+    return nullptr; \
+} void(0)
 
 namespace langX {
 

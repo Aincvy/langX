@@ -59,7 +59,7 @@ namespace langX {
 			str->simpleEscape();
 			const char * text = str->getValue();
 
-			evbuffer_add_printf(reqInfo->buffer, text);
+			evbuffer_add_printf(reqInfo->buffer, "%s", text);
 		}
 
 		return nullptr;

@@ -9,7 +9,7 @@
 // 用于快速得转换 3rdObject 成一个  struct event_base*
 #define EVENT_BASE_PTR(args) (struct event_base*)args.object->get3rdObj()
 
-#define MY_TIMER_PTR(args) (struct MyTimerEvent*)args.object->get3rdObj()
+#define MY_TIMER_EVENT_PTR(args) (struct MyTimerEvent*)args.object->get3rdObj()
 
 // 检测参数是否是一个实例在调用
 #define CHECK_OBJECT_NOT_NULL(args, msg) \

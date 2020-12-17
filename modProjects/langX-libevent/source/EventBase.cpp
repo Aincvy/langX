@@ -88,6 +88,8 @@ namespace langX{
 
         auto object = newTimerObject(ptr);
         if (object) {
+            langXObjectRef ref(args.object);
+            object->setMember("eventBase", &ref);
             return object->addRef();
         }
 

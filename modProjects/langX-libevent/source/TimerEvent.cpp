@@ -52,7 +52,11 @@ namespace langX{
         auto ptr = (MyTimerEvent*) object->get3rdObj();
 
         auto thread = getCurrentState()->curThread();
-        ptr->callback->call(thread, "timeout callback", 0);
+
+        // 在调用回调函数得时候， 把 TimerEvent 类得实例传递进去， 让玩家可以进行事件得取消
+        //
+        langXObjectRef ref(object);
+        ptr->callback->call(thread, "timeout callback", 1, &ref);
 
     }
 
@@ -65,7 +69,7 @@ namespace langX{
     static Object *realWorkTimerEvent(const X3rdArgs &args, short flags){
 
         // 先尝试判断 当前得对象是否已经被使用了
-        auto ptr = MY_TIMER_PTR(args);
+        auto ptr = MY_TIMER_EVENT_PTR(args);
         if (ptr->event) {
             moduleLogger->error("One timer event only can add 1 event.If you call it again, it will be do nothing.");
             return nullptr;
@@ -117,6 +121,21 @@ namespace langX{
     }
 
     /**
+     * 释放一个 MyTimerEvent 指针内部得属性内存占用
+     * @param ptr
+     */
+    static void freeMyTimerEvent(MyTimerEvent * ptr){
+        if (ptr->event) {
+            event_free(ptr->event);
+            ptr->event = nullptr;
+        }
+        if (ptr->callback) {
+            Allocator::freeFunctionRef(ptr->callback);
+            ptr->callback = nullptr;
+        }
+    }
+
+    /**
      * langX 函数， set time out
      * @param func
      * @param args
@@ -143,6 +162,28 @@ namespace langX{
     }
 
     /**
+     * 取消当前得事件
+     * @param func
+     * @param args
+     * @return
+     */
+    Object * langX_TimerEvent_cancel(X3rdFunction *func, const X3rdArgs &args){
+        CHECK_OBJECT_NOT_NULL(args, "langX_TimerEvent_setTimeout");
+
+        auto ptr = MY_TIMER_EVENT_PTR(args);
+        if (ptr->event) {
+            // 取消事件
+
+            // todo add error handle
+            event_del(ptr->event);
+        }
+
+        // free
+        freeMyTimerEvent(ptr);
+        return nullptr;
+    }
+
+    /**
      * 析构方法
      * @param func
      * @param args
@@ -151,17 +192,9 @@ namespace langX{
     Object * langX_TimerEvent_Dtor(X3rdFunction *func, const X3rdArgs &args){
         CHECK_OBJECT_NOT_NULL(args, "langX_TimerEvent_Dtor");
 
-        auto ptr = MY_TIMER_PTR(args);
+        auto ptr = MY_TIMER_EVENT_PTR(args);
 
-        if (ptr->event) {
-            event_free(ptr->event);
-            ptr->event = nullptr;
-        }
-        if (ptr->callback) {
-            Allocator::freeFunctionRef(ptr->callback);
-            ptr->callback = nullptr;
-        }
-
+        freeMyTimerEvent(ptr);
         free(ptr);
         RESET_3RD_OBJECT(args);
 
@@ -186,10 +219,14 @@ namespace langX{
     void regTimerEvent(langXState* state, XNameSpace* space) {
 
         ClassInfo* info = new ClassInfo("TimerEvent");
+
+        NullObject nullObject;
+        info->addMember("eventBase", &nullObject);
         info->addFunction(create3rdFunc("TimerEvent", langX_TimerEvent_Timer));
         info->addFunction(create3rdFunc("~TimerEvent", langX_TimerEvent_Dtor));
         info->addFunction(create3rdFunc("setTimeout", langX_TimerEvent_setTimeout));
         info->addFunction(create3rdFunc("setInterval", langX_TimerEvent_setInterval));
+        info->addFunction(create3rdFunc("cancel", langX_TimerEvent_cancel));
 
         timerEventClass = info;
         space->putClass(info);

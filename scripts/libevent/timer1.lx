@@ -6,18 +6,21 @@ using langX.core;
 println("try test timer ...");
 
 // 测试函数
-testFunc => {
+testFunc => (e){
     now = new DateTime();
     println("test func is called: " + now);
     // println("script env: " + fromOut);
 
     // eventBase.newTimer().setTimeout(1, testFunc);
+    // println("e: " + e);
 
+    // e.eventBase.setInterval(3, testFunc);
+    e.cancel();
 }
 
 eventBase = new EventBase();
 
-eventBase.setTimeout(1, testFunc);
+// eventBase.setTimeout(1, testFunc);
 
 eventBase.setInterval(3, testFunc);
 // eventBase.newTimerEvent().setTimeout(2.5, testFunc);

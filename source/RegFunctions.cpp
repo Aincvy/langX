@@ -107,7 +107,7 @@ namespace langX {
 			{
 				char tmp[2048] = {0 };
 				objToString(obj, tmp, 0, 2048);
-				printf(tmp);
+				printf("%s", tmp);
 			}
 		}
 
@@ -137,7 +137,7 @@ namespace langX {
 				String * str = (String*)obj;
 				str->simpleEscape();
 
-				printf(str->getValue());
+				printf("%s",str->getValue());
 			}
 			else if (obj->getType() == NUMBER)
 			{
@@ -146,13 +146,13 @@ namespace langX {
 
 			else if (obj->getType() == OBJECT)
 			{
-				char atmp[2048] = { 0 };
-				objToString(obj, atmp, 0, 2048);
-				printf(atmp);
+				char buf[2048] = {0 };
+				objToString(obj, buf, 0, 2048);
+				printf("%s", buf);
 			}
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	//  c system 函数的桥接

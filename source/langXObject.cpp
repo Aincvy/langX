@@ -505,9 +505,10 @@ namespace langX {
     {
     }
 
-
-
-
-
+    const char *langXObjectRef::characteristic() const {
+        return m_object_ref
+            ? m_object_ref->characteristic()
+            : Object::characteristic();
+    }
 
 }
