@@ -12,8 +12,13 @@
 #include "NodeCreator.h"
 #include "Allocator.h"
 #include "Utils.h"
+#include "NullObject.h"
 
 namespace langX {
+
+    Number* shortcutNumberZero = new Number(0);
+    Number* shortcutNumberOne = new Number(1);
+    NullObject* shortcutNullObject = new NullObject();
 
 
     void readNumber(const X3rdArgs &args, int index, int *value) {

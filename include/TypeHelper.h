@@ -22,9 +22,36 @@ if (args.index < num) { \
     return nullptr; \
 } void(0)
 
+/**
+ * 获取一个对象得某个属性， 并把该属性转换成 number 类型指针
+ */
+#define NUMBER_PTR(object, mem) (Number*)object->getMember(mem);
+
+/**
+ * 获取一个对象得某个属性， 并把该属性转换成 string 类型指针
+ */
+#define STRING_PTR(object, mem) (String*)object->getMember(mem);
+
+
+
 namespace langX {
 
     class langXObject;
+    class Number;
+    class NullObject;
+
+
+    //  一些属性
+
+    // 数字： 0
+    extern Number* shortcutNumberZero;
+    // 数字: 1
+    extern Number* shortcutNumberOne;
+    // 空对象
+    extern NullObject* shortcutNullObject;
+
+
+    // 一些函数
 
     /**
      * 从参数中 读取数字
@@ -80,5 +107,7 @@ namespace langX {
      * @param dst
      */
     void copyX3rdArgs(const X3rdArgs &src, X3rdArgs &dst);
+
+
 
 }

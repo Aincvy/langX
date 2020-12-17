@@ -20,7 +20,7 @@ TrelloCard {
 
   }
 
-  // 删除当前这张卡
+  // 删除当前这张卡 | 永久删除
   deleteCard => () {
 
   }
@@ -30,6 +30,12 @@ TrelloCard {
 
   }
 
+  /*
+   * 给卡片设置新的名字
+  */
+  setName => (newName){
+
+  }
 
 }
 

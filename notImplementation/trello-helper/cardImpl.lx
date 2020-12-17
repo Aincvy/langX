@@ -16,5 +16,26 @@ auto TrelloCard {
     }
 
 
+    setName => (newName){
+
+    }
+
+    moveTo => ( list, board ){
+
+    }
+
+
+    deleteCard => () {
+
+        _py_card.get("delete").callMethod();
+
+        if ( list ){
+            list.cardList.remove(this);
+        }
+    }
+
+    archive => (){
+
+    }
 
 }

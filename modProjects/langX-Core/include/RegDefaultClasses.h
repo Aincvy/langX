@@ -13,6 +13,8 @@ namespace langX {
 
 	int regDateTime(langXState *state, XNameSpace* space);
 
+    void regTimeSpan(langXState *state, XNameSpace *space);
+
 	int regConvert(langXState *state, XNameSpace* space);
 
 	int regThread(langXState *state, XNameSpace* space);

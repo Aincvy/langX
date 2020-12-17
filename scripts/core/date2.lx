@@ -1,0 +1,10 @@
+using langX.core;
+
+now = new DateTime();
+time = new DateTime().plus(5, TimeUnit::Second).plus(287, TimeUnit::MilliSecond);
+
+tmp = time - now;
+println("tmp=" + tmp.getSeconds());
+
+now.nextDayOfWeek(Week::Wednesday);
+println("after next, is: " + now);
