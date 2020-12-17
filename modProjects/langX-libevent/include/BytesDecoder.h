@@ -18,7 +18,7 @@ namespace langX {
 	};
 
 
-	// ÕâÊÇÒ»¸ö langX º¯ÊıµÄ ½âÂëÆ÷
+	// è¿™æ˜¯ä¸€ä¸ª langX å‡½æ•°çš„ è§£ç å™¨
 	class langXBytesDecoder : public BytesDecoder {
 
 	public:
@@ -27,11 +27,11 @@ namespace langX {
 		langXBytesDecoder(langXObject *langXObject, int bufferSize);
 		~langXBytesDecoder();
 
-		//  
+		//
 		langXObject* decode(char *buf, int len);
 
 	private:
-		// ÄÚ²¿·ÅÒ»¸öĞ¡Ò»Ğ©µÄbuffer
+		// å†…éƒ¨æ”¾ä¸€ä¸ªå°ä¸€äº›çš„buffer
 		char *m_buffer;
 		int m_pos;
 		int m_bufferSize;

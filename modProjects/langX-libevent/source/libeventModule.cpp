@@ -37,8 +37,9 @@ namespace langX {
 		regHttpRequest(state, space);
 		regHttpResponse(state, space);
 
+		// event base && timer
 		regEventBase(state, space);
-
+        regTimer(state, space);
 
 		return 0;
 	}

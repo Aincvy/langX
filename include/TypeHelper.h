@@ -7,6 +7,10 @@
 #include "Object.h"
 #include "Function.h"
 
+
+// 快速申请 一个类型得内存
+#define QUICK_CALLOC(type) (type*)calloc(1, sizeof(type))
+
 namespace langX {
 
     class langXObject;

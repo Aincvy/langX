@@ -33,7 +33,7 @@ extern int getParseLineNo();
 
 static langXState* state = nullptr;
 
-void initLangX(int argc, char *argv[])
+void initLangX(int argc, char **argv, const langXStateConfig &stateConfig)
 {
 	if (state == nullptr)
 	{
@@ -45,7 +45,7 @@ void initLangX(int argc, char *argv[])
 		regExceptions();
 		regObjects(state);
 
-		state->loadConfig("/etc/langX/langX.properties");
+        state->loadConfig("/etc/langX/langX.properties", stateConfig);
 	}
 }
 

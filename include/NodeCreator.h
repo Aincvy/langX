@@ -20,12 +20,12 @@ typedef langX::ArgsList XArgsList;
 typedef langX::Object XObject;
 typedef langX::Function XFunction;
 typedef langX::NodeLink NodeLink;
-
+typedef langX::langXStateConfig langXStateConfig;
 
 //  lex/yacc 是C语言的
 extern "C" {
 
-	void initLangX(int argc,char *argv[]);
+	void initLangX(int argc, char **argv, const langXStateConfig &stateConfig);
 
 	void closeLangX();
 

@@ -3,6 +3,7 @@
 //
 
 #include "libeventModule.h"
+#include "ReglibeventModule.h"
 
 #include <ClassInfo.h>
 #include <XNameSpace.h>
@@ -19,19 +20,40 @@ namespace langX{
 
 
     /**
+     * 新建一个 timer
+     * @param func
+     * @param args
+     * @return
+     */
+    Object * langX_EventBase_newTimer(X3rdFunction *func, const X3rdArgs &args){
+        CHECK_OBJECT_NOT_NULL(args, "langX_EventBase_newTimer");
+        auto ptr = EVENT_BASE_PTR(args);
+
+        auto object =  newTimerObject(ptr);
+        if (object) {
+            return object->addRef();
+        }
+
+        return nullptr;
+    }
+
+
+    /**
      * 循环当前得事件
      * @param func
      * @param args
      * @return
      */
     Object * langX_EventBase_dispatch(X3rdFunction *func, const X3rdArgs &args) {
-
+        CHECK_OBJECT_NOT_NULL(args, "langX_EventBase_dispatch");
         auto ptr = EVENT_BASE_PTR(args);
 
         event_base_dispatch(ptr);
 
         return nullptr;
     }
+
+
 
     /**
      * 析构方法
@@ -73,6 +95,7 @@ namespace langX{
         info->addFunction(create3rdFunc("EventBase", langX_EventBase_EventBase));
         info->addFunction(create3rdFunc("~EventBase", langX_EventBase_Dtor));
         info->addFunction(create3rdFunc("dispatch", langX_EventBase_dispatch));
+        info->addFunction(create3rdFunc("newTimer", langX_EventBase_newTimer));
 
         space->putClass(info);
     }

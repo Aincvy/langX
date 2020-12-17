@@ -683,8 +683,10 @@ namespace langX {
 	}
 #endif
 
-	int langXState::loadConfig(const char * path)
+	int langXState::loadConfig(const char *path, const langXStateConfig &stateConfig)
 	{
+	    this->m_stateConfig = stateConfig;
+
 		logger->debug("using config file %s", path);
 		int a = this->m_config.loadFrom(path);
 		if (a < 0)
@@ -692,19 +694,23 @@ namespace langX {
 			return -1;
 		}
 
-		logger->debug("load module(s).");
-		std::string &dir = this->m_config.getLibDir();
-		std::vector<std::string> & paths = this->m_config.getLibPath();
-		for (auto i = paths.begin(); i != paths.end(); i++)
-		{
-			std::string abc = dir + "/" + (*i);
-			// logger->debug("load module: %s" ,abc.c_str());
-			a = this->loadModule(abc.c_str());
-			if (a < 0)
-			{
-				return -1;
-			}
-		}
+        if (m_stateConfig.disableLoadModules) {
+            logger->info("disableLoadModules = true, jump load modules..");
+        } else {
+            logger->debug("load module(s).");
+            std::string &dir = this->m_config.getLibDir();
+            std::vector<std::string> & paths = this->m_config.getLibPath();
+            for (auto i = paths.begin(); i != paths.end(); i++)
+            {
+                std::string abc = dir + "/" + (*i);
+                // logger->debug("load module: %s" ,abc.c_str());
+                a = this->loadModule(abc.c_str());
+                if (a < 0)
+                {
+                    return -1;
+                }
+            }
+        }
 
 		logger->debug("init ScriptModule ClassInfo...");
 		initScriptModuleClassInfo(this);

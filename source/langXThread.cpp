@@ -595,6 +595,10 @@ namespace langX {
 		return this->m_exec_status;
 	}
 
+	int langXThread::getThreadId() const {
+        return this->m_thread_id;
+	}
+
 	langXThreadMgr::langXThreadMgr()
 	{
 		this->m_id_gen = 0;
@@ -608,11 +612,10 @@ namespace langX {
 	{
 		std::thread::id curThreadId = std::this_thread::get_id();
 
-		int id = this->m_id_gen++;
-		langXThread *thread = new langXThread(id);
-		thread->setName("main");   // 设置线程名字为主线程
-		thread->setStatus(langXThreadStatus::Running);
-		this->m_selfmap[id] = thread;
+		auto thread = requireNewThreadInfo("main");
+		thread->setMainThread(true);
+		thread->setStatus(Running);
+
 		this->m_idmap[curThreadId] = thread;
 
 		this->m_mainThread = thread;
@@ -653,8 +656,29 @@ namespace langX {
 		if (it != this->m_idmap.end())
 		{
 			return it->second;
+		} else {
+		    auto thread = requireNewThreadInfo(nullptr);
+            thread->setStatus(Running);
+		    this->m_idmap[curThreadId] = thread;
+
+            return thread;
 		}
 
 		return nullptr;
 	}
+
+    langXThread *langXThreadMgr::requireNewThreadInfo(const char *name) {
+        int id = this->m_id_gen++;
+        auto thread = new langXThread(id);
+        thread->setStatus(langXThreadStatus::Init);
+
+        this->m_selfmap[id] = thread;
+
+        if (name) {
+            thread->setName(name);
+        }
+
+        return thread;
+    }
+
 }

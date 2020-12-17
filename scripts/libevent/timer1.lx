@@ -1,0 +1,18 @@
+// 测试 timer 是否可用
+
+using langX.libevent;
+
+println("try test timer ...");
+
+// 测试函数
+testFunc => {
+    println("test func is called.");
+}
+
+eventBase = new EventBase();
+
+eventBase.newTimer().setTimeout(3, testFunc);
+
+eventBase.dispatch();
+
+println("end ..");

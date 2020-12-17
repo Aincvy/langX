@@ -6,11 +6,11 @@
 #include <event2/keyvalq_struct.h>
 #include <event2/http_struct.h>
 
-#include "../../../include/X3rdModule.h"
-#include "../../../include/langX.h"
-#include "../../../include/XNameSpace.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Function.h"
+#include "X3rdModule.h"
+#include "langX.h"
+#include "XNameSpace.h"
+#include "langXObject.h"
+#include "Function.h"
 
 namespace langX {
 

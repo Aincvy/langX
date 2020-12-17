@@ -33,8 +33,26 @@ namespace langX {
 	 */
     void regEventBase(langXState *state, XNameSpace *space);
 
+    /**
+     *
+     * @param state
+     * @param space
+     */
+    void regTimer(langXState* state, XNameSpace* space);
+
+
+
+    /**
+     * 新建一个 timer 得对象
+     * @param eventBase
+     * @return
+     */
+    langXObject *newTimerObject(struct event_base* eventBase);
+
+
 	// 初始化server 需要的一些工具
 	void initServerSupportTools();
+
 
 	// TcpServer 的一些参数
 	struct TcpServerArgs

@@ -22,19 +22,6 @@ void yyerror(const char *s) {
 
 }
 
-char *namespaceNameCat(char *arg1,char *arg2){
-    int len = strlen(arg1) + strlen(arg2) + 1;
-    char *p = (char*)calloc(1, len + 1);
-    strcat(p,arg1);
-    strcat(p,".");
-    strcat(p,arg2);
-    p[len] = '\0' ;
-
-    free(arg1);
-    free(arg2);
-    return p;
-}
-
 
 int programRun(int argc, char *argv[]){
     if(argc <= 1){
@@ -47,14 +34,17 @@ int programRun(int argc, char *argv[]){
     std::vector<std::string> fileAndArgs;
     // 额外增加得 脚本 module
     std::vector<std::string> addModules;
-    // 是否禁用所有得 module | 在配置文件里面得  TODO 禁用模块加载
-    bool disableAllModules = false;
+
+    struct langX::langXStateConfig stateConfig;
 
     try {
         TCLAP::CmdLine cmdLine("langX - a simple script language.", ' ', LANGX_VERSION);
 
-        TCLAP::SwitchArg disableAllModulesArg("","disable-all-modules","Disable load modules from config file. TODO",false);
+        TCLAP::SwitchArg disableAllModulesArg("","disable-all-modules","Disable all modules, do not load any modules.",false);
         cmdLine.add(disableAllModulesArg);
+
+        TCLAP::SwitchArg disableLoadModulesArg("","disable-load-modules","Disable load modules from config file. ",false);
+        cmdLine.add(disableLoadModulesArg);
 
         TCLAP::MultiArg<std::string> addModuleArg("A", "add-module", "Add a script module.", false,"string" );
         cmdLine.add(addModuleArg);
@@ -71,7 +61,10 @@ int programRun(int argc, char *argv[]){
              addModules = addModuleArg.getValue();
         }
         if (disableAllModulesArg.isSet()) {
-            disableAllModules = disableAllModulesArg.getValue();
+            stateConfig.disableAllModules = disableAllModulesArg.getValue();
+        }
+        if (disableLoadModulesArg.isSet()) {
+            stateConfig.disableLoadModules = disableLoadModulesArg.getValue();
         }
 
     } catch (TCLAP::ArgException &e) {
@@ -90,7 +83,7 @@ int programRun(int argc, char *argv[]){
         langXArgv[i - 1] = tmp;
     }
 
-    initLangX(langXArgc, langXArgv);
+    initLangX(langXArgc, langXArgv, stateConfig);
 
     // 加载 script module...
     for (auto i = addModules.begin(); i != addModules.end() ; ++i) {

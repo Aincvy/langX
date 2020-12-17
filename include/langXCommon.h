@@ -9,7 +9,7 @@
 #define YYDEBUG 1
 
 // langX 的版本
-#define LANGX_VERSION "0.2.3"
+#define LANGX_VERSION "0.2.4"
 #define LANGX_VERSION_CODE 10
 
 
@@ -30,6 +30,7 @@
 // 默认情况下， 较小的字符串缓冲区的 大小
 #define DEFAULT_MIN_CHAR_BUFF_SIZE 100
 
+
 // 如果参数是一个null, 则调用返回语句
 #define RETURN_IF_NULL(x) \
 if( !x ){                 \
@@ -42,8 +43,3 @@ if( !x ){                 \
     return nullptr;               \
 }
 
-
-// 目前还无法在 win32 环境下编译
-#ifdef WIN32
-#undef WIN32
-#endif

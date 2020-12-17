@@ -1,24 +1,20 @@
 //
 // Created by Aincvy(aincvy@gmail.com) on 2020/12/16.
 //
+
 #include "libeventModule.h"
+#include "ReglibeventModule.h"
 
 #include <time.h>
 
-#include <XNameSpace.h>
-#include <ClassInfo.h>
-#include <LogManager.h>
-#include <langXObject.h>
-#include <Allocator.h>
-#include <Number.h>
-#include <Function.h>
-#include <langXThread.h>
-#include <TypeHelper.h>
+#include <langXSimple.h>
 
 #include <event2/event.h>
 
 
 #define QUICK_CALLOC(type) (type*)calloc(1, sizeof(type))
+
+static langX::ClassInfo* timerClass;
 
 namespace langX{
 
@@ -31,6 +27,19 @@ namespace langX{
         FunctionRef* callback = nullptr;
     };
 
+
+    langXObject *newTimerObject(struct event_base* eventBase){
+        if (!eventBase) {
+            return nullptr;
+        }
+
+        auto object = Allocator::newObject(timerClass, false ,true);
+        ((MyTimer*)object->get3rdObj())->eventBase = eventBase;
+
+        return object;
+    }
+
+
     /**
      * libevent 触发了这个事件
      * @param fd
@@ -41,7 +50,7 @@ namespace langX{
         auto object = (langXObject*) arg;
         auto ptr = (MyTimer*) object->get3rdObj();
 
-        auto thread = getCurrentState()->getThreadManager()->getMainThread();
+        auto thread = getCurrentState()->curThread();
         ptr->callback->call(thread, "timeout callback", 0);
 
     }
@@ -96,7 +105,7 @@ namespace langX{
         event_add(event, &time);
 
         ptr->event = event;
-        ptr->callback = callback;
+        ptr->callback = (FunctionRef*)callback->clone();
 
         return Allocator::allocateNumber(1);
     }
@@ -143,6 +152,7 @@ namespace langX{
         info->addFunction(create3rdFunc("~Timer", langX_Timer_Dtor));
         info->addFunction(create3rdFunc("setTimeout", langX_Timer_setTimeout));
 
+        timerClass = info;
         space->putClass(info);
     }
 

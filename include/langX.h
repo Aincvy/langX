@@ -33,6 +33,16 @@ namespace langX {
 	  所有的脚本环境最后在释放内存。
 	*/
 
+	/**
+	 * 一些参数
+	 */
+	struct langXStateConfig{
+	    // 是否禁用全部得 module ?
+        bool disableAllModules = false;
+        // 是否禁用 自动加载mod
+        bool disableLoadModules = false;
+
+	};
 
 	// langX state
 	class langXState
@@ -134,7 +144,7 @@ namespace langX {
 		 * @param path
 		 * @return
 		 */
-		int loadConfig(const char *path);
+        int loadConfig(const char *path, const langXStateConfig &stateConfig);
 
 		// 是否正在销毁中
 		bool isDisposing() const;
@@ -213,6 +223,9 @@ namespace langX {
 		std::map<std::string, ScriptEnvironment*> m_script_env_map;
 		// 加载完成的动态库
 		std::map<std::string, langXModule*> m_load_libs;
+
+		// 也算启动配置把
+		langXStateConfig m_stateConfig;
 
 
 		// 正在解析的文件的绝对路径
