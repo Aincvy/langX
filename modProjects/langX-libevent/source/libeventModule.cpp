@@ -39,7 +39,7 @@ namespace langX {
 
 		// event base && timer
 		regEventBase(state, space);
-        regTimer(state, space);
+        regTimerEvent(state, space);
 
 		return 0;
 	}

@@ -241,27 +241,27 @@ namespace langX {
 	// 参数列表 ,最大不超过30个参数
 	struct ParamsList
 	{
-		char* args[PARAM_COUNT];
+		char* args[PARAM_COUNT] = { nullptr };
 		// 参数索引
-		int index;
+		int index = 0;
 	};
 
 	// 这是基于节点的 实参列表
 	struct ArgsList
 	{
 	    // 每个节点是一个参数
-		Node *args[PARAM_COUNT];
+		Node *args[PARAM_COUNT] = { nullptr };
 		// 实参索引
-		int index;
+		int index = 0;
 	};
 
 	// 在cpp层面调用函数使用的参数列表
 	struct X3rdArgs
 	{
 	    // 实参列表
-		Object *args[PARAM_COUNT];
+		Object *args[PARAM_COUNT] = { nullptr } ;
 		// 实参索引, 一般表示 数量了
-		int index;
+		int index = 0;
 
 		// 调用函数的那个对象 当函数不是类的函数， 或者静态调用的时候， 此值为 nullptr
 		langXObject * object = nullptr;

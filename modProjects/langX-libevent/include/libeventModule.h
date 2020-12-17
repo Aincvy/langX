@@ -9,7 +9,7 @@
 // 用于快速得转换 3rdObject 成一个  struct event_base*
 #define EVENT_BASE_PTR(args) (struct event_base*)args.object->get3rdObj()
 
-#define MY_TIMER_PTR(args) (struct MyTimer*)args.object->get3rdObj()
+#define MY_TIMER_PTR(args) (struct MyTimerEvent*)args.object->get3rdObj()
 
 // 检测参数是否是一个实例在调用
 #define CHECK_OBJECT_NOT_NULL(args, msg) \
@@ -33,10 +33,10 @@ namespace langX {
 		~libeventModule();
 
 		// 初始化 libevent模块
-		int init(langXState *);
+		int init(langXState *) override;
 
 		// 卸载 libevent模块
-		int unload(langXState *);
+		int unload(langXState *) override;
 
 		const char * getName() const override;
 

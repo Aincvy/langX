@@ -1,7 +1,7 @@
 #include <iterator>
-#include "../include/RegCoreModule.h"
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
+#include "RegCoreModule.h"
+
+#include "langXSimple.h"
 
 namespace langX {
 

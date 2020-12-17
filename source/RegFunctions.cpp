@@ -20,6 +20,7 @@
 #include "langXObject.h"
 #include "Allocator.h"
 #include "XArray.h"
+#include "TypeHelper.h"
 
 static struct termios old, newone;
 

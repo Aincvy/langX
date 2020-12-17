@@ -73,7 +73,7 @@ void setStateToCanFree(langX::Node *n) {
 namespace langX {
 
     // 实例化 空参数指针
-    X3rdArgs *emptyArgs = {};
+    X3rdArgs *emptyArgs = new X3rdArgs();
 
     // Function  以及相关的类实现
 

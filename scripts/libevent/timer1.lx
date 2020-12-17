@@ -1,18 +1,31 @@
 // 测试 timer 是否可用
 
 using langX.libevent;
+using langX.core;
 
 println("try test timer ...");
 
 // 测试函数
 testFunc => {
-    println("test func is called.");
+    now = new DateTime();
+    println("test func is called: " + now);
+    // println("script env: " + fromOut);
+
+    // eventBase.newTimer().setTimeout(1, testFunc);
+
 }
 
 eventBase = new EventBase();
 
-eventBase.newTimer().setTimeout(3, testFunc);
+eventBase.setTimeout(1, testFunc);
 
+eventBase.setInterval(3, testFunc);
+// eventBase.newTimerEvent().setTimeout(2.5, testFunc);
+// eventBase.newTimerEvent().setTimeout(5, testFunc);
+
+fromOut = "This is out..";
+now = new DateTime();
+println("before dispatch: " + now);
 eventBase.dispatch();
 
 println("end ..");

@@ -14,14 +14,15 @@
 
 #define QUICK_CALLOC(type) (type*)calloc(1, sizeof(type))
 
-static langX::ClassInfo* timerClass;
+// 类信息得 指针
+static langX::ClassInfo* timerEventClass;
 
 namespace langX{
 
     /**
      * cpp 对象
      */
-    struct MyTimer{
+    struct MyTimerEvent{
         struct event_base *eventBase = nullptr;
         struct event *event = nullptr;
         FunctionRef* callback = nullptr;
@@ -33,8 +34,8 @@ namespace langX{
             return nullptr;
         }
 
-        auto object = Allocator::newObject(timerClass, false ,true);
-        ((MyTimer*)object->get3rdObj())->eventBase = eventBase;
+        auto object = Allocator::newObject(timerEventClass, false , true);
+        ((MyTimerEvent*)object->get3rdObj())->eventBase = eventBase;
 
         return object;
     }
@@ -48,7 +49,7 @@ namespace langX{
      */
     void setTimeoutCallback(evutil_socket_t fd, short event, void *arg){
         auto object = (langXObject*) arg;
-        auto ptr = (MyTimer*) object->get3rdObj();
+        auto ptr = (MyTimerEvent*) object->get3rdObj();
 
         auto thread = getCurrentState()->curThread();
         ptr->callback->call(thread, "timeout callback", 0);
@@ -56,15 +57,21 @@ namespace langX{
     }
 
     /**
-     * langX 函数， set time out
-     * @param func
+     * 添加 事件得真正实现部分
      * @param args
-     * @return
+     * @param flags
+     * @return  添加成功返回 1 ，失败 返回 null | 后面可能会增加 error code 得返回
      */
-    Object * langX_Timer_setTimeout(X3rdFunction *func, const X3rdArgs &args){
-        CHECK_OBJECT_NOT_NULL(args, "langX_Timer_setTimeout");
-        CHECK_ARGS_SIZE(args, 2);
+    static Object *realWorkTimerEvent(const X3rdArgs &args, short flags){
 
+        // 先尝试判断 当前得对象是否已经被使用了
+        auto ptr = MY_TIMER_PTR(args);
+        if (ptr->event) {
+            moduleLogger->error("One timer event only can add 1 event.If you call it again, it will be do nothing.");
+            return nullptr;
+        }
+
+        // 参数判断和获取
         auto timeArg = args.args[0];
         auto callbackArg = args.args[1];
 
@@ -100,8 +107,7 @@ namespace langX{
 
         // todo add error handle..
 
-        auto ptr = MY_TIMER_PTR(args);
-        auto event = event_new(ptr->eventBase, 0, 0, setTimeoutCallback, args.object);
+        auto event = event_new(ptr->eventBase, 0, flags, setTimeoutCallback, args.object);
         event_add(event, &time);
 
         ptr->event = event;
@@ -110,8 +116,40 @@ namespace langX{
         return Allocator::allocateNumber(1);
     }
 
-    Object * langX_Timer_Dtor(X3rdFunction *func, const X3rdArgs &args){
-        CHECK_OBJECT_NOT_NULL(args, "langX_Timer_Dtor");
+    /**
+     * langX 函数， set time out
+     * @param func
+     * @param args
+     * @return
+     */
+    Object * langX_TimerEvent_setTimeout(X3rdFunction *func, const X3rdArgs &args){
+        CHECK_OBJECT_NOT_NULL(args, "langX_TimerEvent_setTimeout");
+        CHECK_ARGS_SIZE(args, 2);
+
+        return realWorkTimerEvent(args,0);
+    }
+
+    /**
+     * 每隔 N秒执行一次函数
+     * @param func
+     * @param args
+     * @return
+     */
+    Object * langX_TimerEvent_setInterval(X3rdFunction *func, const X3rdArgs &args){
+        CHECK_OBJECT_NOT_NULL(args, "langX_TimerEvent_setTimeout");
+        CHECK_ARGS_SIZE(args, 2);
+
+        return realWorkTimerEvent(args,EV_PERSIST);
+    }
+
+    /**
+     * 析构方法
+     * @param func
+     * @param args
+     * @return
+     */
+    Object * langX_TimerEvent_Dtor(X3rdFunction *func, const X3rdArgs &args){
+        CHECK_OBJECT_NOT_NULL(args, "langX_TimerEvent_Dtor");
 
         auto ptr = MY_TIMER_PTR(args);
 
@@ -136,23 +174,24 @@ namespace langX{
      * @param args
      * @return
      */
-    Object * langX_Timer_Timer(X3rdFunction *func, const X3rdArgs &args){
-        CHECK_OBJECT_NOT_NULL(args, "langX_Timer_Timer");
+    Object * langX_TimerEvent_Timer(X3rdFunction *func, const X3rdArgs &args){
+        CHECK_OBJECT_NOT_NULL(args, "langX_TimerEvent_Timer");
 
-        auto ptr = QUICK_CALLOC(MyTimer);
+        auto ptr = QUICK_CALLOC(MyTimerEvent);
         args.object->set3rdObj(ptr);
 
         return nullptr;
     }
 
-    void regTimer(langXState* state, XNameSpace* space) {
+    void regTimerEvent(langXState* state, XNameSpace* space) {
 
-        ClassInfo* info = new ClassInfo("Timer");
-        info->addFunction(create3rdFunc("Timer", langX_Timer_Timer));
-        info->addFunction(create3rdFunc("~Timer", langX_Timer_Dtor));
-        info->addFunction(create3rdFunc("setTimeout", langX_Timer_setTimeout));
+        ClassInfo* info = new ClassInfo("TimerEvent");
+        info->addFunction(create3rdFunc("TimerEvent", langX_TimerEvent_Timer));
+        info->addFunction(create3rdFunc("~TimerEvent", langX_TimerEvent_Dtor));
+        info->addFunction(create3rdFunc("setTimeout", langX_TimerEvent_setTimeout));
+        info->addFunction(create3rdFunc("setInterval", langX_TimerEvent_setInterval));
 
-        timerClass = info;
+        timerEventClass = info;
         space->putClass(info);
     }
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../include/X3rdModule.h"
-#include "../../../include/langX.h"
+#include "X3rdModule.h"
+#include "langX.h"
 
 /**
  * core 模块得版本

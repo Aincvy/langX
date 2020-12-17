@@ -92,8 +92,6 @@ langX::langXState * getState();
 // 把文件信息变一下
 std::string fileInfoString(const langX::NodeFileInfo & f);
 
-// 将一个 langXObject 转成字符串， 可能会调用该对象的 toString() 方法
-void objToString(langX::Object * obj,char *, int offset, int maxSize);
 
 //  获取一个对象的字符串描述
 void getObjStringDesc(langX::Object *obj, char *, int maxSize);

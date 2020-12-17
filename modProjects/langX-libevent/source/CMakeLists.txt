@@ -16,9 +16,9 @@ SET(SRC_LIST
 		libeventModule.cpp
 		TcpClient.cpp
 		TcpServer.cpp
-		Timer.cpp EventBase.cpp)
+		TimerEvent.cpp EventBase.cpp)
 
-ADD_LIBRARY(libevent SHARED ${SRC_LIST} Timer.cpp)
+ADD_LIBRARY(libevent SHARED ${SRC_LIST} TimerEvent.cpp)
 
 target_link_libraries(libevent "langX")
 target_link_libraries(libevent "event")

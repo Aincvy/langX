@@ -1,8 +1,9 @@
 
-#include "../include/CoreModule.h"
-#include "../include/RegCoreModule.h"
-#include "../../../include/ClassInfo.h"
-#include "../../../include/LogManager.h"
+#include "CoreModule.h"
+#include "RegCoreModule.h"
+
+#include "ClassInfo.h"
+#include "LogManager.h"
 
 namespace langX {
 

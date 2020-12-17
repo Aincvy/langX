@@ -38,7 +38,7 @@ namespace langX {
      * @param state
      * @param space
      */
-    void regTimer(langXState* state, XNameSpace* space);
+    void regTimerEvent(langXState* state, XNameSpace* space);
 
 
 

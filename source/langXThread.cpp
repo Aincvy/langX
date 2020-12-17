@@ -1,29 +1,20 @@
-#include "../include/langXThread.h"
-#include "../include/Environment.h"
-#include "../include/Function.h"
-#include "../include/ExecNode.h"
-#include "../include/Allocator.h"
-#include "../include/langX.h"
-#include "../include/NodeCreator.h"
-#include "../include/Object.h"
-#include "../include/langXObject.h"
-#include "../include/Function.h"
-#include "../include/LogManager.h"
-#include "../include/langXCommon.h"
+#include "langXThread.h"
+#include "Environment.h"
+#include "Function.h"
+#include "ExecNode.h"
+#include "Allocator.h"
+#include "langX.h"
+#include "NodeCreator.h"
+#include "Object.h"
+#include "langXObject.h"
+#include "Function.h"
+#include "LogManager.h"
+#include "langXCommon.h"
 
-#ifdef WIN32
-// win32的库
-#else
-// linux 库
 #include <pthread.h>
 #include <thread>
 #include <unistd.h>
-#endif
-
-#ifdef SHOW_DETAILS
-#include <iostream>
-#include <stdio.h>
-#endif
+#include <sstream>
 
 // 释放环境内存
 void freeEnv(langX::Environment **env) {
@@ -661,6 +652,11 @@ namespace langX {
             thread->setStatus(Running);
 		    this->m_idmap[curThreadId] = thread;
 
+		    std::stringstream  ss;
+		    ss << curThreadId;
+
+		    std::string str = ss.str();
+		    logger->info("no current thread info, new it. cpp thread id: %s", str.c_str());
             return thread;
 		}
 
@@ -677,6 +673,8 @@ namespace langX {
         if (name) {
             thread->setName(name);
         }
+
+        logger->info("new thread name: %s, langX thread id: %d", thread->getName(), thread->getThreadId());
 
         return thread;
     }

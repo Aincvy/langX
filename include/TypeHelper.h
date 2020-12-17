@@ -55,6 +55,19 @@ namespace langX {
      */
     Function* create3rdFunc(const char *name, X3rdFuncWorker worker);
 
+    /**
+     * 将一个 langXObject 转成字符串， 可能会调用该对象的 toString() 方法
+     * @param obj
+     * @param offset
+     * @param maxSize
+     */
+    void objToString(langX::Object * obj,char *, int offset, int maxSize);
 
+    /**
+     * 把 src 得内容复制给 dst
+     * @param src
+     * @param dst
+     */
+    void copyX3rdArgs(const X3rdArgs &src, X3rdArgs &dst);
 
 }

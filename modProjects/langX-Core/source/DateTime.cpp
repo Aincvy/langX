@@ -1,18 +1,10 @@
 ﻿#include <time.h>
 #include <sys/time.h>
 
-#include "../include/RegDefaultClasses.h"
-#include "../include/CoreModule.h"
+#include "RegDefaultClasses.h"
+#include "CoreModule.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/LogManager.h"
-#include "../../../include/TypeHelper.h"
-
+#include "langXSimple.h"
 
 
 #define TimeUnitMilliSecond 1
@@ -34,8 +26,11 @@ namespace langX {
 		int month;
 		int date;
 		int hour;
+		// 分钟
 		int minute;
+		// 秒数部分
 		int second;
+		// 毫秒部分
 		int millisecond;
 
 		// unix 时间戳  毫秒数
@@ -390,6 +385,34 @@ namespace langX {
         return mkDateTimeObject(dateTime, func->getLangX())->addRef();
     }
 
+    /**
+     * date to string ..
+     * @param func
+     * @param args
+     * @return
+     */
+    Object *langX_DateTime_toString(X3rdFunction *func, const X3rdArgs &args){
+        if (args.object == nullptr) {
+            coreModuleLogger->error("langX_DateTime_toString error, NO OBJ!");
+            return nullptr;
+        }
+
+        auto object = args.object;
+        auto dateTime = (DateTimeCoreX*) object->get3rdObj();
+
+        // 转换成 yyyy-MM-dd HH:mm:ss xxx 得形式把
+        char buf [1024] = {0};
+        sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d %03d",
+                dateTime->year,
+                dateTime->month,
+                dateTime->date,
+                dateTime->hour,
+                dateTime->minute,
+                dateTime->second,
+                dateTime->millisecond);
+
+        return Allocator::allocateString(buf);
+    }
 
 
 	int regDateTime(langXState *state, XNameSpace* space) {
@@ -411,6 +434,7 @@ namespace langX {
 		info->addFunction(create3rdFunc("fromUnixTimeStamp", langX_DateTime_fromUnixTimeStamp));
 		info->addFunction(create3rdFunc("fromUnixTimeStampMS", langX_DateTime_fromUnixTimeStampMS));
 		info->addFunction(create3rdFunc("fromDate", langX_DateTime_fromDate));
+		info->addFunction(create3rdFunc("toString", langX_DateTime_toString));
 
 		space->putClass(info);
 

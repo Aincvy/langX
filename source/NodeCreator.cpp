@@ -164,33 +164,6 @@ void getObjStringDesc(langX::Object * obj, char *tmp, int maxSize)
 	}
 }
 
-void objToString(langX::Object * obj, char *p, int offset, int maxSize)
-{
-	std::stringstream ss;
-	auto ref = (langXObjectRef*)obj;
-	auto thread = getState()->curThread();
-	Function *func = ref->getFunction("toString");
-	if (func == nullptr)
-	{
-		ss << "|[" << obj->characteristic();
-	}
-	else {
-
-        Object *retObj = callFunction(thread, func, emptyArgs, ref->getRefObject(), "<call toString() from cpp>");
-		if (retObj->getType() == STRING)
-		{
-			ss << ((String*)retObj)->getValue();
-		}
-		Allocator::free(retObj);
-		retObj = nullptr;
-	}
-
-	std::string str = ss.str();
-	int size = min(maxSize, (int) str.size());
-
-	memcpy(p + offset, str.c_str(), size);
-}
-
 XNode * string(char *v)
 {
 	XNode * node = newNode();

@@ -1,11 +1,7 @@
-﻿#include "../include/RegCoreModule.h"
+﻿#include "RegCoreModule.h"
+#include "CoreModule.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
+#include "langXSimple.h"
 
 namespace langX {
 
@@ -13,7 +9,7 @@ namespace langX {
 	Object * langX_ByteArray_length(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_ByteArray_length error! NO OBJ!\n");
+			coreModuleLogger->error("langX_ByteArray_length error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -25,7 +21,7 @@ namespace langX {
 	Object * langX_ByteArray_operator_square_brackets(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_ByteArray_operator_square_brackets error! NO OBJ!\n");
+            coreModuleLogger->error("langX_ByteArray_operator_square_brackets error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -37,7 +33,7 @@ namespace langX {
 	Object * langX_ByteArray_ByteArray_Dtor(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_ByteArray_ByteArray_Dtor error! NO OBJ!\n");
+            coreModuleLogger->error("langX_ByteArray_ByteArray_Dtor error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -49,7 +45,7 @@ namespace langX {
 	Object * langX_ByteArray_ByteArray(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_ByteArray_ByteArray error! NO OBJ!\n");
+            coreModuleLogger->error("langX_ByteArray_ByteArray error! NO OBJ!\n");
 			return nullptr;
 		}
 

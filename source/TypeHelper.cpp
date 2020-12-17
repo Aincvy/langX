@@ -2,12 +2,16 @@
 // Created by Aincvy(aincvy@gmail.com) on 2020/12/9.
 //
 
+#include <sstream>
+
 #include "TypeHelper.h"
 #include "Number.h"
 #include "XArray.h"
 #include "StringType.h"
 #include "langXObject.h"
 #include "NodeCreator.h"
+#include "Allocator.h"
+#include "Utils.h"
 
 namespace langX {
 
@@ -67,5 +71,42 @@ namespace langX {
         return func;
     }
 
+    void objToString(langX::Object * obj, char *p, int offset, int maxSize)
+    {
+        std::stringstream ss;
+        auto ref = (langXObjectRef*)obj;
+        auto thread = getState()->curThread();
+        Function *func = ref->getFunction("toString");
+        if (func == nullptr)
+        {
+            ss << "|[" << obj->characteristic();
+        }
+        else {
+
+            X3rdArgs args;
+            args.object = ref->getRefObject();
+            Object *retObj = callFunction(thread, func, &args, ref->getRefObject(), "<call toString() from cpp>");
+            if (retObj != nullptr && retObj->getType() == STRING)
+            {
+                ss << ((String*)retObj)->getValue();
+            }
+            Allocator::free(retObj);
+            retObj = nullptr;
+        }
+
+        std::string str = ss.str();
+        int size = min(maxSize, (int) str.size());
+
+        memcpy(p + offset, str.c_str(), size);
+    }
+
+    void copyX3rdArgs(const X3rdArgs &src, X3rdArgs &dst) {
+        dst.object = src.object;
+        dst.index = src.index;
+
+        for (int i = 0; i < dst.index; ++i) {
+            dst.args[i] = src.args[i];
+        }
+    }
 
 }

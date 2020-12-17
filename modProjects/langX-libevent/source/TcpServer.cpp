@@ -61,7 +61,7 @@ namespace langX {
 //				arglist[2] = &astr;
 //				arg->readcb->call(arglist, 3, "in libevent conn_readcb");
 
-                auto thread = getCurrentState()->getThreadManager()->getMainThread();
+                auto thread = getCurrentState()->curThread();
 
                 // server,client,data
                 arg->readcb->call(thread, "in libevent conn_readcb", 3,arg->xobject->addRef(), clientArgs->clientObject->addRef(), &astr);
@@ -137,7 +137,7 @@ namespace langX {
 			//printf("call acceptcb cb\n");
 
 
-			auto thread = getCurrentState()->getThreadManager()->getMainThread();
+			auto thread = getCurrentState()->curThread();
 
             // server,client
 			arg->acceptcb->call(thread, "in libevent listener_cb", 2, arg->xobject->addRef(), clientObject->addRef());

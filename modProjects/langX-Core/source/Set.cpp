@@ -1,12 +1,8 @@
 #include <set>
 
-#include "../include/RegCoreModule.h"
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Number.h"
+#include "RegCoreModule.h"
+
+#include "langXSimple.h"
 
 namespace langX {
 

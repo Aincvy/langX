@@ -1,5 +1,5 @@
-#include "../include/RegCoreModule.h"
-#include "../include/RegDefaultClasses.h"
+#include "RegCoreModule.h"
+#include "RegDefaultClasses.h"
 
 namespace langX {
 

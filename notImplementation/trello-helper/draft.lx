@@ -16,5 +16,15 @@ eventBase = new EventBase();
 eventBase.newTimer().setTimeout(5, null);
 eventBase.setTimeout();  //  ?
 
+timer = eventBase.newTimer();
+timer.setTimeout(5, null);
+timer.setInterval(5, null);
+
+eventBase.newTimerEvent().setTimeout(5, null);
+eventBase.setTimeout(5, nullptr);
+
+theDate = DateTime::fromDate(2020,12,31,10,0,0);
+timer.addTaskToDate(theDate, null);
+
 // 启动事件
 eventBase.dispatch();

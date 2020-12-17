@@ -48,14 +48,17 @@ namespace langX {
 
 	langXState::langXState()
 	{
+	    // 优先初始化 日志管理器， 好让下面得功能使用日志
+        this->m_log_manager = new LogManager();
+        this->m_log_manager->init("/etc/langX/log4cpp.properties");
+
+        // 一次初始化 其他组件
 		this->m_global_env = new GlobalEnvironment();
 		this->m_global_env->setParent(NULL);
 		this->m_global_env->setDeep(0);
 		this->m_disposing = false;
 		this->m_thread_mgr = new langXThreadMgr();
 		this->m_thread_mgr->initMainThreadInfo();
-		this->m_log_manager = new LogManager();
-		this->m_log_manager->init("/etc/langX/log4cpp.properties");
 	}
 
 	langXState::~langXState()
