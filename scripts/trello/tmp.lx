@@ -1,0 +1,71 @@
+
+println("test trello library");
+
+using langX.ext.trello;
+using langX.python;
+using langX.core.util;
+using langX.core;
+
+client = new TrelloClient("_apiKey_","_apiSecret_","_token_");
+
+a = client.init();
+println("a=" + a);
+
+boardList = client.boardList;
+println("board size: " + boardList.size());
+
+// 随机一个博客
+tmpBoard = client.getBoardByName("生活资料库");
+
+runningBoard = client.getBoardByName("进行中");
+sundryList = runningBoard.getListByName("杂项");
+runningBoard.initLabelList();
+
+println("tmpBoard: " + tmpBoard);
+if(tmpBoard) {
+    tmpList = tmpBoard.getListByName("测试列表");
+    println("tmpList: " + tmpList);
+    if (tmpList){
+        println(tmpList.name);
+
+        // test add card .
+        // tmpList.newCard("测试卡片","这是一张从trello-helper 添加得卡片");
+
+        card = tmpList.randomCard();
+        println("card: " + card);
+
+        if(card) {
+            println("card name: " + card.name);
+            // card.setName(card.name + " **Add Suffix**");
+
+            now = new DateTime().plus(3, TimeUnit::Day);
+            println("now="+now);
+            //card.setDueDate(now);
+
+            // 添加一个评论
+            // card.addComment("这时一条来自langX得评论信息");
+
+            // 添加一个自定义字段
+            tmpField = card.getCustomField("测试字段");
+            println("tmpField: " + tmpField.getValueAsNumber());
+            tmpField.setValue(15);
+
+            // 添加一个checklist
+            checkList = new TrelloCheckList("扫除");
+            checkList.addItem("大厅", true);
+            checkList.addItem("厨房", true);
+            checkList.addItem("卫生间", true);
+            checkList.addItem("卧室", false);
+            checkList.addItem("走廊", false);
+            // card.addCheckList(checkList);
+
+            // card.moveTo(sundryList, runningBoard);
+
+            // 添加标签
+            //label = runningBoard.getLabelByName("一级");
+            //if(label){
+            //    card.addLabel(label);
+            //}
+        }
+    }
+}

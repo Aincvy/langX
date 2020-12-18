@@ -1,0 +1,54 @@
+// python 得 DateTime 模块得桥接脚本
+//  ... 突然发现， python 提供了 c级别得api
+// 所以准备使用那个实现。。。 
+
+using langX.core;
+
+PyDateTime {
+
+    // 是否已经初始化过了
+    __init = false;
+
+    // python datetime 模块得实例
+    _py_datetime;
+
+    /*
+     * 初始化 这个模块
+     * @return 0=成功，101 导入python得dateTime模块失败
+     */
+    init => (){
+        if(__init){
+            return 0;
+        }
+
+        _py_datetime = PythonHook::importModule("datetime");
+        if ( ! _py_datetime || _py_datetime.isNull()){
+            return 101;
+        }
+
+        __init = true;
+        return 0;
+    }
+
+    /**
+     * 将一个 langX.core.DateTime 转换成一个 python 得 datetime 对象
+     * @return 转换成功返回该对象， 失败返回 null
+     */
+    fromDateTime => (dateTime){
+        if( ! dateTime){
+            return null;
+        }
+
+        if ( ! _py_datetime){
+            return null;
+        }
+
+        // 函数
+        local pyFunc = _py_datetime.get("datetime");
+        pyFunc.callMethod();
+
+
+        return null;
+    }
+
+}

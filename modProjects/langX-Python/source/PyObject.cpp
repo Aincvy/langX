@@ -1,8 +1,8 @@
 #include <langXSimple.h>
 #include <XArray.h>
 
-#include "../include/RegPythonModule.h"
-#include "../include/PythonModule.h"
+#include "RegPythonModule.h"
+#include "PythonModule.h"
 
 
 
@@ -127,6 +127,7 @@ namespace langX {
 		if (a)
 		{
 			PyObject *arg = nullptr;
+			bool flag = false;
 			if (a->getType() == OBJECT)
 			{
 				langXObjectRef *ref1 = (langXObjectRef*)a;
@@ -137,19 +138,25 @@ namespace langX {
 				}
 
 				XClassPyObject *argPyObj = (XClassPyObject *)obj->get3rdObj();
-				arg = argPyObj->pyObj;
+				auto tmp = argPyObj->pyObj;
+                if (PyTuple_Check(tmp)) {
+                    // 是一个 tuple 类型 ，参数调用得时候只能传递这个类型
+                    arg = tmp;
+                    flag = true;
+                }
 			}
-			else {
-				// 自动转换类型, 不支持的类型会返回nullptr
-				XArray array(args.index);
-				x3rdArgsToArray(args, &array);
-				XArrayRef ref(&array);
-				arg = langXToPyObject(&ref);
-			}
+
+            if (!flag) {
+                // 自动转换类型, 不支持的类型会返回nullptr
+                XArray array(args.index);
+                x3rdArgsToArray(args, &array);
+                XArrayRef ref(&array);
+                arg = langXToPyObject(&ref);
+            }
 
 			PyObject *ret = PyEval_CallObject(pyObj->pyObj, arg);
             if (ret == nullptr) {
-                PyErr_Print();
+                logPythonErrorMsg();
                 return nullptr;
             }
 			return createLangXObjectPyObj(ret, PyObjectType::Unknown)->addRef();
@@ -476,7 +483,14 @@ namespace langX {
 			{
 				PyObject *pyValue = langXToPyObject(value);
 
-				PyObject_SetAttrString(obj->pyObj, str->getValue(), pyValue);
+				auto ret = PyObject_SetAttrString(obj->pyObj, str->getValue(), pyValue);
+                freePyObjectRef(pyValue);
+
+                if (ret == -1) {
+                    // 失败
+                    logPythonErrorMsg();
+                    return Allocator::allocateNumber(0);
+                }
 				return Allocator::allocateNumber(1);
 			}
 		}
@@ -568,8 +582,12 @@ namespace langX {
 		}
 
 		XClassPyObject *obj = (XClassPyObject *)args.object->get3rdObj();
-		Py_DECREF(obj->pyObj);
-		obj->pyObj = NULL;
+
+        if (obj->pyObj) {
+            Py_DECREF(obj->pyObj);
+            obj->pyObj = nullptr;
+        }
+
 		freeXClassPyObject(&obj);
 		args.object->set3rdObj(nullptr);
 
@@ -656,16 +674,18 @@ namespace langX {
 		info->addFunction("~PyObject", create3rdFunc("~PyObject", langX_PyObject_PyObject_Dtor));
 		info->addFunction("setType", create3rdFunc("setType", langX_PyObject_setType));
 		info->addFunction("getType", create3rdFunc("getType", langX_PyObject_getType));
-		info->addFunction("toStr", create3rdFunc("toStr", langX_PyObject_toString));
-		info->addFunction("toNumber", create3rdFunc("toNumber", langX_PyObject_toNumber));
-		info->addFunction("callMethod", create3rdFunc("callMethod", langX_PyObject_callMethod));
-		info->addFunction("newInstance", create3rdFunc("newInstance", langX_PyObject_newInstance));
-		info->addFunction("size", create3rdFunc("size", langX_PyObject_size));
-		info->addFunction("setItem", create3rdFunc("setItem", langX_PyObject_setItem));
-		info->addFunction("getString", create3rdFunc("getString", langX_PyObject_getString));
-		info->addFunction("getNumber", create3rdFunc("getNumber", langX_PyObject_getNumber));
-		info->addFunction("get", create3rdFunc("get", langX_PyObject_get));
-		info->addFunction("set2", create3rdFunc("set", langX_PyObject_set));
+		info->addFunction(create3rdFunc("toStr", langX_PyObject_toString));
+		info->addFunction(create3rdFunc("toString", langX_PyObject_toString));
+		info->addFunction(create3rdFunc("toNumber", langX_PyObject_toNumber));
+		info->addFunction(create3rdFunc("callMethod", langX_PyObject_callMethod));
+		info->addFunction(create3rdFunc("newInstance", langX_PyObject_newInstance));
+		info->addFunction(create3rdFunc("size", langX_PyObject_size));
+		info->addFunction(create3rdFunc("setItem", langX_PyObject_setItem));
+		info->addFunction(create3rdFunc("getString", langX_PyObject_getString));
+		info->addFunction(create3rdFunc("getNumber", langX_PyObject_getNumber));
+		info->addFunction(create3rdFunc("get", langX_PyObject_get));
+		info->addFunction(create3rdFunc("set2", langX_PyObject_set));
+		info->addFunction(create3rdFunc("set", langX_PyObject_set));
 		info->addFunction("operator[]", create3rdFunc("operator[]", langX_PyObject_operator_square_brackets));
 		info->addFunction("isNull", create3rdFunc("isNull", langX_PyObject_isNull));
 		info->addFunction("o", create3rdFunc("o", langX_PyObject_o));

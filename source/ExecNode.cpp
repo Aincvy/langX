@@ -1041,13 +1041,16 @@ namespace langX {
     // 计算参数列表
     void __execARGS_LIST(NodeLink *nodeLink, langXThread *thread) {
 
+        auto node = nodeLink->node;
         if (nodeLink->index == 0) {
             nodeLink->index = 1;
-            doSubNodes(nodeLink->node);
+            doSubNodes(node);
             return;
         }
 
-        doSuffixOperation(nodeLink->node);
+        doSuffixOperation(node);
+        // 这里不能free 值， 值会在后面得地方使用
+        // freeSubNodes(node);
         nodeLink->backAfterExec = true;
     }
 
@@ -1086,6 +1089,8 @@ namespace langX {
         auto remarkString = fileInfoString(n->fileinfo);
         auto remark = remarkString.c_str();
 
+        nodeLogger->debug("trace function %s", remarkString.c_str());
+
         // 使用自动释放内存的 argsList
         XArgsList argsList;
         convertArgsList(argsNode, &argsList);
@@ -1120,7 +1125,6 @@ namespace langX {
             if (funcObj->getType() == FUNCTION) {
                 auto *f = (FunctionRef *) funcObj;
 
-                // n->value = f->call(args, remark);
                 n->value = callFunction(thread, f, args, remark);
 
             } else if (funcObj->getType() == STRING) {
@@ -1158,7 +1162,11 @@ namespace langX {
             }
         }
 
+        // 释放 args 所有节点得值
         doSuffixOperationArgs(args);
+        recursiveFreeNodeValue(argsNode);
+
+        //
         freeSubNodes(n);
         nodeLink->backAfterExec = true;
     }
@@ -2046,24 +2054,6 @@ namespace langX {
             lastExecNode = curLink->node;
 
             __realExecNode(curLink, thread);     // 将原来的内容丢到一个新的方法里面
-//            if (thread->isBackInExec()) {
-//                // 上面方法可能会将  curLink 指向的位置内存被删除， 判定下两个值是否一致， 不一致则重新执行
-//                // thread->setBackInExec(false);
-//                NodeLink *tmpNodeLink = thread->getCurrentExecute();
-//                if (tmpNodeLink == nullptr) {
-//                    break;            // 栈顶已经没有元素
-//                }
-//                if (tmpNodeLink != curLink) {
-//                    // tmpNodeLink 是最新的数据
-//                    if (tmpNodeLink->node == limitNode) {
-//                        // 强制跳跃到 限制节点了， 直接退出循环
-//                        thread->endExecute();
-//                        break;
-//                    }
-//
-//                    continue;
-//                }
-//            }
 
             if (curLink->next == nullptr && curLink->backAfterExec) {
                 // will end execute .

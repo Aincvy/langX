@@ -1,14 +1,14 @@
 #include <memory>
 #include <stdio.h>
-#include "../include/XArray.h"
-#include "../include/NullObject.h"
-#include "../include/Allocator.h"
-#include "../include/NodeCreator.h"
-#include "../include/Exception.h"
-#include "../include/langXObject.h"
-#include "../include/langXThread.h"
 
-extern langX::Allocator m_exec_alloc;
+#include "XArray.h"
+#include "NullObject.h"
+#include "Allocator.h"
+#include "NodeCreator.h"
+#include "Exception.h"
+#include "langXObject.h"
+#include "langXThread.h"
+
 
 namespace langX {
 
@@ -67,7 +67,7 @@ namespace langX {
 			return;
 		}
 
-		if ((obj == NULL || obj->getType() == NULLOBJECT) && this->m_array[index]->getType() == NULLOBJECT)
+		if ((obj == nullptr || obj->getType() == NULLOBJECT) && this->m_array[index]->getType() == NULLOBJECT)
 		{
 			return;
 		}
@@ -86,7 +86,7 @@ namespace langX {
 		}
 		else {
 			this->m_array[index] = obj->clone();
-			m_exec_alloc.free(old);
+            Allocator::free(old);
 		}
 	}
 

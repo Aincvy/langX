@@ -1,7 +1,7 @@
 #pragma once
 
-#include "langX.h"
-#include "XNameSpace.h"
+#include <langX.h>
+#include <XNameSpace.h>
 
 
 namespace langX {
@@ -26,5 +26,8 @@ namespace langX {
 	int regPySomeFunction(langXState *state, XNameSpace* space);
 
 	int regPyObjectEasy(langXState *state, XNameSpace* space);
+
+
+    void regPyDateTime(langXState *state, XNameSpace *space);
 
 }

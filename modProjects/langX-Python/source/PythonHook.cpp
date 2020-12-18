@@ -18,7 +18,7 @@ namespace langX {
 
 			PyObject *ret = PyImport_ImportModule(str->getValue());
             if (ret == nullptr) {
-                pythonModuleLogger->error("module %s import failed.", str->getValue());
+                pythonModuleLogger->error("pyModule %s import failed.", str->getValue());
                 logPythonErrorMsg();
                 return nullptr;
             }
@@ -44,6 +44,7 @@ namespace langX {
 			str->simpleEscape();
 
 			PyRun_SimpleString(str->getValue());
+
 		}
 
 		return nullptr;

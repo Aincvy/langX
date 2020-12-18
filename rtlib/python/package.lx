@@ -1,0 +1,6 @@
+
+name = "python-script";
+description="bridge more python library functions to langX.";
+version = "0.0.1";
+author = "Aincvy(aincvy@gmail.com)";
+repository="";     // 仓库地址  git 或者别什么的地址

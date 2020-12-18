@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TypeHelper.h"
+
 namespace langX {
 	class Object;
 	

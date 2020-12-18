@@ -140,6 +140,7 @@ namespace langX {
 	 * @param object
 	 */
     void setDateTimeObject(DateTimeCoreX *time, langXObject *object){
+        // todo 全是内存泄露 。。
         object->setMember("millisecond", Allocator::allocateNumber(time->millisecond));
         object->setMember("second", Allocator::allocateNumber(time->second));
         object->setMember("minute", Allocator::allocateNumber(time->minute));
@@ -213,16 +214,38 @@ namespace langX {
      * @param minute
      * @param second
      */
-    void setProperties(DateTimeCoreX *dateTime, int year, int month, int date, int hour, int minute, int second){
+    void setProperties(DateTimeCoreX *dateTime, int year, int month, int date, int hour, int minute, int second, int ms){
         dateTime->year = year;
         dateTime->month = month;
         dateTime->date = date;
         dateTime->hour = hour;
         dateTime->minute = minute;
         dateTime->second = second;
+        dateTime->millisecond = ms;
 
         // 更新时间戳
+        dateTime->updateTimestamp();
+    }
 
+    /**
+     * 同步 object 得属性给 dateTime
+     * @param dateTime
+     * @param object
+     */
+    void syncMemberToDateTime(DateTimeCoreX *dateTime, langXObject *object){
+        if (!dateTime || !object) {
+            return;
+        }
+
+        setProperties(dateTime,
+                      getIntFromObject(object, "year"),
+                      getIntFromObject(object, "month"),
+                      getIntFromObject(object, "date"),
+                      getIntFromObject(object, "hour"),
+                      getIntFromObject(object, "minute"),
+                      getIntFromObject(object, "second"),
+                      getIntFromObject(object, "millisecond")
+                      );
     }
 
     /**
@@ -283,6 +306,24 @@ namespace langX {
     }
 
 
+
+    /**
+     * 将 member 得属性同步给 3rdObject
+     * @param func
+     * @param args
+     * @return
+     */
+    Object * langX_DateTime_syncFromMember(X3rdFunction *func, const X3rdArgs &args){
+        CHECK_OBJECT_NOT_NULL(args, "langX_DateTime_syncFromMember");
+
+        // 修改数据
+        auto object = args.object;
+        DateTimeCoreX* dateTime = (DateTimeCoreX*)object->get3rdObj();
+
+        syncMemberToDateTime(dateTime, object);
+
+        return object->addRef();
+    }
 
     /**
      * 获取当前时间得下一个星期几
@@ -398,7 +439,7 @@ namespace langX {
 
         // 转换成 yyyy-MM-dd HH:mm:ss xxx 得形式把
         char buf [1024] = {0};
-        sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d %03d",
+        sprintf(buf, "%04d-%02d-%02dT%02d:%02d:%02d.%03dZ",
                 dateTime->year,
                 dateTime->month,
                 dateTime->date,
@@ -534,12 +575,13 @@ namespace langX {
 		info->addMember("date", Allocator::allocateNumber(1));
 		info->addMember("month", Allocator::allocateNumber(1));
 		info->addMember("year", Allocator::allocateNumber(1900));
-		info->addFunction("update", create3rdFunc("update", langX_DateTime_update));
+		info->addFunction(create3rdFunc("update", langX_DateTime_update));
 		info->addFunction(create3rdFunc("plus", langX_DateTime_plus));
-		info->addFunction("~DateTime", create3rdFunc("~DateTime", langX_DateTime_DateTime_Dtor));
-		info->addFunction("DateTime", create3rdFunc("DateTime", langX_DateTime_DateTime));
+		info->addFunction(create3rdFunc("~DateTime", langX_DateTime_DateTime_Dtor));
+		info->addFunction(create3rdFunc("DateTime", langX_DateTime_DateTime));
         info->addFunction(create3rdFunc("toString", langX_DateTime_toString));
         info->addFunction(create3rdFunc("nextDayOfWeek", langX_DateTime_nextDayOfWeek));
+        info->addFunction(create3rdFunc("syncFromMember", langX_DateTime_syncFromMember));
         info->addFunction(create3rdFunc("operator-", langX_DateTime_subtract));
 
 		info->addFunction(create3rdFunc("fromUnixTimeStamp", langX_DateTime_fromUnixTimeStamp));
