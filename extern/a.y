@@ -50,7 +50,7 @@ extern void lexEOFWork();
 %type <node> class_name_suffix class_body class_body_items class_body_item namespace_name_stmt
 %type <node> namespace_ref_stmt single_assign_stmt_value string_plus_stmt_value
 %type <node> if_stmt single_if_stmt else_stmt single_else_stmt else_if_stmt else_if_stmts
-%type <node> for_1_stmt for_1_stmt_list for_logic_stmt for_3_stmt for_3_stmt_list
+%type <node> for_1_stmt for_1_stmt_list for_3_stmt for_3_stmt_list
 %type <node> compare_expr number_compare_expr object_compare_expr not_bool_param_expr type_judge_stmt
 %type <node> restrict_stmt assign_stmt number_change_assign_stmt arithmetic_stmt self_inc_dec_stmt
 
@@ -561,7 +561,7 @@ multiple_id_expr
     ;
 
 bool_expr
-	: TBOOL   { $$ = intNode($1); }
+	: TBOOL   { $$ = boolNode($1); }
 	;
 
 number_expr

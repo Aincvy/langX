@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../include/X3rdModule.h"
+#include "X3rdModule.h"
 
 #include <Python.h>
 

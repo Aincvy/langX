@@ -2,8 +2,8 @@
 
 #include "../include/JsonModule.h"
 #include "../include/RegJsonModule.h"
-#include "../../../include/XNameSpace.h"
-#include "../../../include/LogManager.h"
+
+#include <langXSimple.h>
 
 namespace langX {
 

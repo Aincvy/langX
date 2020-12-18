@@ -238,6 +238,13 @@ XNode * intNode(int i)
 	return node;
 }
 
+XNode *boolNode(int i) {
+
+    XNode * node = intNode(i);
+    node->con_obj->flagBool = true;
+    return node;
+}
+
 XNode * opr(int opr, int size, ...)
 {
 	va_list ap;
@@ -574,5 +581,7 @@ void execAndFreeNode(XNode *n) {
 
     getState()->checkEndOfFile(thread);
 }
+
+
 
 

@@ -182,6 +182,9 @@ namespace langX {
 		double dValue;
 		char* sValue;
 		char cValue;
+
+		// 当前常量是否是一个 bool 类型得元素
+		bool flagBool = false;
 	};
 
 	// 数组声明时使用

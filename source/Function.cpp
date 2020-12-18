@@ -512,7 +512,9 @@ namespace langX {
         thread->setInFunction(true);
 
         auto result = realCallFunction(thread, function, args);
-        thread->setFunctionResult(result);
+        if (function->is3rd()) {
+            thread->setFunctionResult(result);
+        }
 
         // 执行层次 出栈
         stackTrace.popFrame();

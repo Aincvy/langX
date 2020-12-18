@@ -17,6 +17,7 @@
 #include "Number.h"
 #include "StringType.h"
 #include "NullObject.h"
+#include "XArray.h"
 
 
 // 面向对象

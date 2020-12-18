@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../include/langX.h"
-#include "../../../include/XNameSpace.h"
+#include "langX.h"
+#include "XNameSpace.h"
 
 #ifdef WIN32
 #include "../../../lib/cJSON-1.3.0/cJSON.h"
@@ -19,37 +19,37 @@ namespace langX {
 
 	int regJsonObject(langXState *state, XNameSpace* space);
 
-	// ²ÎÊýÎª Õâ¸öjsonobj µÄ¸ù£¬ Èç¹û¸ø¸önull Ôò»á×Ô¶¯´´½¨Ò»¸ö
+	// ï¿½ï¿½ï¿½ï¿½Îª ï¿½ï¿½ï¿½jsonobj ï¿½Ä¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½null ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
 	langXObject * createJsonObject(cJSON *);
-	// ²ÎÊýÎª Õâ¸öjsonarray µÄ¸ù£¬ Èç¹û¸ø¸önull Ôò»á×Ô¶¯´´½¨Ò»¸ö
+	// ï¿½ï¿½ï¿½ï¿½Îª ï¿½ï¿½ï¿½jsonarray ï¿½Ä¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½null ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
 	langXObject * createJsonArray(cJSON *);
 	
-	// °ÑÒ»¸öÊý×é×ª»»³ÉÒ»¸öjsonÊý×é
+	// ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½jsonï¿½ï¿½ï¿½ï¿½
 	cJSON *langXArrayToJson(XArrayRef *ref);
-	// °ÑÒ»¸ö¶ÔÏó×ª»»³ÉÒ»¸ö json ¶ÔÏó
+	// ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ json ï¿½ï¿½ï¿½ï¿½
 	cJSON *langXObjectToJson(langXObjectRef *objRef);
-	// Ìí¼ÓÔªËØµ½¶ÔÏóÉÏ
+	// ï¿½ï¿½ï¿½Ôªï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	Object* jsonAddItemToObject(cJSON *, const char *, Object *);
 	Object* jsonAddItemToObjectOrArray(cJSON *root, const char *key, Object *b, bool isArray);
-	// Ìí¼ÓÔªËØµ½Êý×éÉÏ
+	// ï¿½ï¿½ï¿½Ôªï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	Object* jsonAddItemToArray(cJSON *, Object *);
-	// ½«Ò»¸öjson ¶ÔÏó½âÎö³ÉÒ»¸ö¶ÔÏó !!!  ´Ëº¯Êý²¢Î´ÊµÏÖ
+	// ï¿½ï¿½Ò»ï¿½ï¿½json ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ !!!  ï¿½Ëºï¿½ï¿½ï¿½ï¿½ï¿½Î´Êµï¿½ï¿½
 	void jsonDecodeToObj(cJSON *, Object *);
-	// ½«json ½âÎö³ÉÒ»¸öÊý×é  !!!  ´Ëº¯Êý²¢Î´ÊµÏÖ
+	// ï¿½ï¿½json ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  !!!  ï¿½Ëºï¿½ï¿½ï¿½ï¿½ï¿½Î´Êµï¿½ï¿½
 	void jsonDecodeToArr(cJSON *, XArray *);
-	// »ñµÃÕâ¸öjson ¶ÔÏóµÄÖµ£¬ Ö÷ÒªÓÃÓÚÊý×é½âÎöÊ¹ÓÃ¡£ 
-	// ´Ëº¯ÊýÖ»·µ»Ø string/number
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½json ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã¡ï¿½ 
+	// ï¿½Ëºï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ string/number
 	Object* getSimpleJsonValue(cJSON *);
 
-	// json ×ª³ÉlangX¶ÔÏóµÄ´úÂë²¿·Ö
+	// json ×ªï¿½ï¿½langXï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ë²¿ï¿½ï¿½
 	Object * langX_JsonObject_langXObj(X3rdFunction *func, const X3rdArgs &args);
 	Object *cJsonToLangXObject(cJSON *root, langXState *state);
 	Object * cJsonToLangXObject_obj(cJSON *root, ClassInfo *empty);
 	Object * cJsonToLangXObject_array(cJSON *root, ClassInfo *empty);
 
-	// Ò»Ð©Êý¾Ý½á¹¹
+	// Ò»Ð©ï¿½ï¿½ï¿½Ý½á¹¹
 
-	//  json Êý¾ÝµÄ±£´æ
+	//  json ï¿½ï¿½ï¿½ÝµÄ±ï¿½ï¿½ï¿½
 	struct MyJsonData
 	{
 		cJSON * pJsonRoot;

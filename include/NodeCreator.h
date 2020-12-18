@@ -51,6 +51,8 @@ extern "C" {
 	XNode *objectArrayElementNode(XNode *, XNode *);
 	// 创建一个int类型的常量节点
 	XNode *intNode(int);
+    // 创建一个bool类型的常量节点
+    XNode *boolNode(int);
 	// 预处理 switch 节点
 	void pretreatSwitch(XNode *);
 

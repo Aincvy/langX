@@ -1,14 +1,7 @@
 ﻿#include "../include/RegJsonModule.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
-#include "../../../include/Environment.h"
-#include "../../../include/XArray.h"
+#include <langXSimple.h>
+#include <Environment.h>
 
 #include <map>
 

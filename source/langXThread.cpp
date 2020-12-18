@@ -465,6 +465,18 @@ namespace langX {
 
 	void langXThread::setFunctionResult(Object *obj)
 	{
+        if (obj) {
+            auto type = obj->getType();
+
+            logger->debug("[function result] return type %d", type);
+            if (type == OBJECT) {
+                auto className= ((langXObjectRef*) obj)->getRefObject()->getClassName();
+                logger->debug("[function result] return a object of %s", className);
+            }
+        } else {
+            logger->debug("[function result] return nullptr");
+        }
+
 	    this->m_thread_env->putObject(FE_KEY_PREV_RESULT, obj );
 	}
 

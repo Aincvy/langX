@@ -534,9 +534,7 @@ namespace langX {
             } else {
                 // 存在返回值
                 Node *a = n->opr_obj->op[0];
-                if (a == nullptr) {
-                    n->value = nullptr;
-                } else {
+                if (a ) {
                     thread->beginExecute(a, true);
                 }
             }
@@ -546,10 +544,19 @@ namespace langX {
         }
 
         Node *a = n->opr_obj->op[0];
-        if (a == NULL) {
-            n->value = NULL;
+        if (a == nullptr) {
+            n->value = nullptr;
+
+            logger->debug("return nullptr..");
         } else {
             n->value = a->value->clone();
+
+            auto type = n->value->getType();
+            logger->debug("return type %d", type);
+            if (type == OBJECT) {
+                auto className= ((langXObjectRef*) n->value)->getRefObject()->getClassName();
+                logger->debug("return a object of %s", className);
+            }
         }
 
         freeSubNodes(n);
@@ -814,8 +821,8 @@ namespace langX {
 
         // 这里判断一下是否调用了 中断语句
         auto & topStatus = thread->getStackTraceTopStatus();
-        if (topStatus.flagBreak) {
-            // 调用了 break 语句
+        if (topStatus.flagBreak || thread->isBackInExec()) {
+            // 调用了 break 语句  | 或者使用了return 语句
             topStatus.flagBreak = false;
 
             thread->setInLoop(false);
@@ -883,8 +890,8 @@ namespace langX {
 
         // 这里判断一下是否调用了 中断语句
         auto & topStatus = thread->getStackTraceTopStatus();
-        if (topStatus.flagBreak) {
-            // 调用了 break 语句
+        if (topStatus.flagBreak || thread->isBackInExec()) {
+            // 调用了 break 语句  | 或者使用 return
             topStatus.flagBreak = false;
 
             thread->setInLoop(false);
@@ -1752,7 +1759,9 @@ namespace langX {
             return;
         } else if (node->type == NODE_CONSTANT_INTEGER) {
             // logger->debug("__execNode NODE_CONSTANT_INTEGER: %d", node->con_obj->iValue);
-            node->value = Allocator::allocateNumber(node->con_obj->iValue);
+            auto number = Allocator::allocateNumber(node->con_obj->iValue);
+            number->flagBool(node->con_obj->flagBool);
+            node->value = number;
             return;
         } else if (node->type == NODE_CONSTANT_STRING) {
             //  因为匹配出的字符串是带有 双引号的， 现在要去掉这个双引号

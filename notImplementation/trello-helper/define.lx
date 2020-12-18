@@ -42,41 +42,41 @@ TrelloCard {
 // List
 TrelloList {
 
-  id, name;
-  // 卡片列表
-  cardList;
-  // 所在看板
-  board;
+    id, name;
+    // 卡片列表
+    cardList;
+    // 所在看板
+    board;
 
-  // 根据一个 id 获取一张卡
-  // return:  a card.
-  getCardById => ( id ){
-    return null;
-  }
+    // 根据一个 id 获取一张卡
+    // return:  a card.
+    getCardById => ( id ){
+        return null;
+    }
 
-  // 根据一个 name 获取一张卡
-  // return:  a card.
-  getCardByName => ( name ){
-    return null;
-  }
+    // 根据一个 name 获取一张卡
+    // return:  a card.
+    getCardByName => ( name ){
+        return null;
+    }
 
-  // 建立一张 新的卡
-  // return:  a card.
-  newCard => ( name, description, dueDate ){
-    return null;
-  }
+    // 建立一张 新的卡
+    // return:  a card.
+    newCard => ( name, description, dueDate ){
+        return null;
+    }
 
-  // 随机一张卡
-  // return a card.
-  randomCard => (){
-    return null;
-  }
+    // 随机一张卡
+    // return a card.
+    randomCard => (){
+        return null;
+    }
 
-  // 添加一个卡片到当前得列表
-  // card: 需要是一个 TrelloCard 对象
-  addCard => (card) {
+    // 添加一个卡片到当前得列表
+    // card: 需要是一个 TrelloCard 对象
+    addCardEntity => (card) {
 
-  }
+    }
 
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../include/X3rdModule.h"
-#include "../../../include/langX.h"
+#include "X3rdModule.h"
+#include "langX.h"
 
 namespace langX {
 
@@ -12,10 +12,10 @@ namespace langX {
 		~JsonModule();
 
 
-		// ³õÊ¼»¯ jsonÄ£¿é
+		// ï¿½ï¿½Ê¼ï¿½ï¿½ jsonÄ£ï¿½ï¿½
 		int init(langXState *);
 
-		// Ð¶ÔØ jsonÄ£¿é
+		// Ð¶ï¿½ï¿½ jsonÄ£ï¿½ï¿½
 		int unload(langXState *);
 
 	private:

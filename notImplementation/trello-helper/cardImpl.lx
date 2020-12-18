@@ -17,11 +17,43 @@ auto TrelloCard {
 
 
     setName => (newName){
-
+        _py_card.get("set_name").callMethod(newName);
     }
 
     moveTo => ( list, board ){
+        if(!list){
+            return;
+        }
 
+        local listId;
+        if( list is String){
+            listId = list;
+        } else if ( list is TrelloList){
+            listId = list.id;
+        } else {
+            println("Unsupported list types.. ");
+            return;
+        }
+
+        if(board){
+            // 同时改变 board 和 list
+
+            local boardId;
+            if(board is String){
+                boardId = board;
+            } else if (board is TrelloBoard){
+                boardId = board.id;
+            } else {
+                println("Unsupported board types.. ");
+                return ;
+            }
+
+            _py_card.get("change_board").callMethod(boardId, listId);
+
+        } else {
+            // 只改变list
+            _py_card.get("change_list").callMethod(listId);
+        }
     }
 
 
@@ -31,11 +63,20 @@ auto TrelloCard {
 
         if ( list ){
             list.cardList.remove(this);
+            list = null;
         }
     }
 
     archive => (){
+        local args = PythonHook::newTuple(1);
+        args.setItem(0, 1);
 
+        _py_card.get("set_closed").callMethod(args);
+
+        if ( list ){
+            list.cardList.remove(this);
+            list = null;
+        }
     }
 
 }
