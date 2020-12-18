@@ -1,0 +1,129 @@
+
+projectList[20];
+projectIndex = 0;
+
+projectList[0] = "langX-Core";
+projectList[1] = "langX-Json";
+projectList[2] = "langX-libevent";
+projectList[3] = "langX-Python";
+projectList[4] = "langX-Mysql";
+
+// modProjects 目录所在得文件夹
+BasePath = "/Users/alias/langX/modProjects/";
+
+argc = sy_argc();
+println("argc=" + argc);
+
+
+foreachProjects => ( callback ){
+    if( !callback) {
+        println("no callback, jump execute...");
+        return ;
+    }
+
+    for(i = 0; i < projectList.length; i++){
+        projectName = projectList[i];
+        if(!projectName){
+            break;
+        }
+
+        println("projectName=" + projectName);
+
+        // 执行操作
+        callback(projectName);
+        // installMod(projectName);
+    }
+}
+
+// 文件夹得操作
+ModsOperation {
+
+    // 编译
+    const Compile = 1;
+    // make clean
+    const Clean = 2;
+    // rm -fR *
+    const FullClean = 3;
+    // cmake && make
+    const FirstMake = 4;
+    // make install
+    const Install = 5;
+}
+
+
+operateMod => ( projectDir, operation ){
+    println("try to compile project: " + projectDir);
+	exist = sy_exists(projectDir) ;
+	if( !exist ){
+		println("工程目录" + projectDir + " 不存在，跳过" );
+		return 1;
+	}
+
+	buildDir = projectDir + "/build" ;
+	exist = sy_exists(buildDir) ;
+	if ( !exist ){
+		sy_mkdir(buildDir);
+	}
+
+	// 把工作目录定位到build 里面
+	sy_chdir(buildDir);
+
+    if ( operation == ModsOperation::Compile){
+        sy_run_and_print("make");
+    } else if (operation == ModsOperation::Clean) {
+        sy_run_and_print("make clean");
+    } else if (operation == ModsOperation::FullClean){
+        sy_run_and_print("rm -fR *");
+    } else if (operation == ModsOperation::FirstMake){
+        sy_run_and_print("cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local");  //
+    	sy_run_and_print("make");
+    } else if (operation == ModsOperation::Install){
+        sy_run_and_print("make install");
+    } else {
+        println("Unknown operation, jump it.  " + operation);
+    }
+
+	println("=========================================================");
+	println("|   AAA< " + projectDir + " over");
+	println("=========================================================");
+
+    return 0;
+}
+
+
+// 安装所有得 mod
+doAllMods => (){
+    foreachProjects( p => {
+        modWork(BasePath + p);
+    });
+}
+
+// 根据 args 得内容进行 安装
+doModByArgs => (argc){
+
+    for( i = 0; i < argc; i++){
+        str = sy_arg(i);
+
+        println("projectName=" + str);
+        tmp = modWork(BasePath + str);
+        if( tmp == 1){
+            // 不存在， 添加前缀后尝试下
+            modWork(BasePath + "langX-" +str);
+        }
+
+    }
+
+}
+
+// 主方法
+main => (){
+
+    if(argc > 0){
+        // 安装部分得几个指定得Mod
+        doModByArgs();
+    } else {
+        doAllMods();
+    }
+
+    println("==== END =====");
+}

@@ -1,18 +1,9 @@
 ﻿#include "../include/RegHttpServer.h"
+#include "../include/libeventModule.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
+#include <langXSimple.h>
 
-#ifdef WIN32
-#include "../../../lib/libevent-2.0.21-stable/include/event2/buffer.h"
-
-#else
 #include <event2/buffer.h>
-#endif
 
 
 namespace langX {
@@ -90,12 +81,6 @@ namespace langX {
 		const char *httpsqs_query_part;
 		httpsqs_query_part = evhttp_uri_get_query(req->uri_elems);
 		evhttp_parse_query_str(httpsqs_query_part, &reqInfo->params);
-		//char *decoded_uri;
-		//decoded_uri = evhttp_decode_uri(uri);
-		//evhttp_parse_query(decoded_uri, &reqInfo->params);
-		//char tmp[1024] = { 0 };
-		//sprintf(tmp, "q=%s\n", evhttp_find_header(&reqInfo->params, "q"));
-		//printf("%s",tmp);
 
 		// 将请求传递到 langX 脚本内
 		langXObject *request = createHttpReq(reqInfo);
@@ -119,12 +104,11 @@ namespace langX {
 		evhttp_add_header(req->output_headers, "Content-Type", "text/html; charset=UTF-8");
 		evhttp_add_header(req->output_headers, "Connection", "close");
 
+
+		auto thread = getCurrentState()->curThread();
 		if (cb != nullptr)
 		{
-			Object *list1[2];
-			list1[0] = request->addRef();
-			list1[1] = response->addRef();
-			cb->call(list1,2,"in libevent httpd_handler");
+			cb->call(thread, "from libevent httpd_handler", 2, request->addRef(), response->addRef());
 		}
 
 		
@@ -137,7 +121,7 @@ namespace langX {
 	Object * langX_HttpServer_close(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_HttpServer_close error! NO OBJ!\n");
+			moduleLogger->error("langX_HttpServer_close error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -153,7 +137,7 @@ namespace langX {
 	Object * langX_HttpServer_serv(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_HttpServer_serv error! NO OBJ!\n");
+			moduleLogger->error("langX_HttpServer_serv error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -168,7 +152,7 @@ namespace langX {
 	Object * langX_HttpServer_getRoute(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_HttpServer_getRoute error! NO OBJ!\n");
+			moduleLogger->error("langX_HttpServer_getRoute error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -182,7 +166,7 @@ namespace langX {
 	Object * langX_HttpServer_listen(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_HttpServer_listen error! NO OBJ!\n");
+			moduleLogger->error("langX_HttpServer_listen error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -209,7 +193,7 @@ namespace langX {
 	Object * langX_HttpServer_HttpServer_Dtor(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_HttpServer_HttpServer_Dtor error! NO OBJ!\n");
+			moduleLogger->error("langX_HttpServer_HttpServer_Dtor error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -226,7 +210,7 @@ namespace langX {
 	Object * langX_HttpServer_HttpServer(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_HttpServer_HttpServer error! NO OBJ!\n");
+			moduleLogger->error("langX_HttpServer_HttpServer error! NO OBJ!");
 			return nullptr;
 		}
 

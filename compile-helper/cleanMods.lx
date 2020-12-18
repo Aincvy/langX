@@ -1,0 +1,8 @@
+include("define.lx");
+
+// 清理
+modWork => ( projectDir ){
+    return operateMod(projectDir, ModsOperation::Clean);
+}
+
+main();

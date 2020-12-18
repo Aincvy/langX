@@ -1,0 +1,9 @@
+
+include("define.lx");
+
+// 实际工作得函数
+modWork => (projectDir) {
+    return operateMod(projectDir, ModsOperation::Install);
+}
+
+main();

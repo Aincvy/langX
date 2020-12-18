@@ -7,3 +7,6 @@ include("clientImpl.lx");
 include("boardImpl.lx");
 include("listImpl.lx");
 include("cardImpl.lx");
+include("labelImpl.lx");
+include("checkListImpl.lx");
+include("customFieldImpl.lx");

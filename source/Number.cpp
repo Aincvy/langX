@@ -139,4 +139,12 @@ namespace langX {
         return (long)this->m_value;
     }
 
+    bool Number::flagBool() const {
+        return this->m_flagBool;
+    }
+
+    void Number::flagBool(bool flag) {
+        this->m_flagBool = flag;
+    }
+
 }

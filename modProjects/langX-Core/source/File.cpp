@@ -2,16 +2,11 @@
 #include <fstream>
 #include <string.h>
 
-#include "../include/RegCoreModule.h"
-#include "../include/CoreFileStream.h"
+#include "RegCoreModule.h"
+#include "CoreFileStream.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
+#include "langXSimple.h"
+
 
 namespace langX {
 

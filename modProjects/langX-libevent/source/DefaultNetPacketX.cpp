@@ -1,12 +1,8 @@
 #include "../include/ReglibeventModule.h"
 
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
+#include "ClassInfo.h"
+#include "TypeHelper.h"
 
 namespace langX {
 

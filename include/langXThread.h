@@ -26,6 +26,8 @@ namespace langX {
 		Sleep,
 		// 就绪状态
 		Runnable,
+		// 刚刚初始化完毕
+		Init,
 	};
 	
 	// 调用栈的栈顶状态 
@@ -62,6 +64,12 @@ namespace langX {
 		bool createNameSpace = false;
 		// 当前解析的文件是否已经结束了
 		bool endOfFile = false;
+
+		// 是否执行了 break 语句
+		bool flagBreak = false;
+		// 是否执行了 continue 语句
+		bool flagContinue = false;
+
 	};
 	
 
@@ -173,6 +181,13 @@ namespace langX {
 		// 重置当前的环境深度
 		void resetCurrentDeep();
 
+		/**
+		 * 获取当前得线程id
+		 * @return
+		 */
+		int getThreadId() const;
+
+
 	private:
 
 		// 线程id
@@ -221,8 +236,23 @@ namespace langX {
 		// 释放掉所有的线程信息
 		void freeAllThreads();
 
-		// 获得当前线程的对象
+		/**
+		 * 获得当前线程的对象
+		 * 如果从一个未有 langXThread 对象得线程里面调用了这个方法， 则新建一个
+		 * todo 如果那个线程挂了，  langXThread 则没有回收， 会造成内存泄露
+		 * @return
+		 */
 		langXThread *currentThread();
+
+		// 获取 主线程得对象
+        langXThread *getMainThread() const;
+
+        /**
+         * 生成一个 新的 线程信息
+         * @param name    线程得名字
+         * @return
+         */
+        langXThread *requireNewThreadInfo(const char *name);
 
 	private:
 		
@@ -232,10 +262,12 @@ namespace langX {
 		std::map<int, langXThread*> m_selfmap;
 		
 		// id 自增量
-		int m_id_gen;
+		int m_id_gen = 0;
 		// 用于id自增量的互斥锁
 		std::mutex m_mutex_id_gen;
 
+		// 主线程
+		langXThread* m_mainThread = nullptr;
 
 	};
 

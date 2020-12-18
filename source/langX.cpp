@@ -23,9 +23,9 @@
 #include "X3rdModule.h"
 #include "langXThread.h"
 #include "LogManager.h"
-#include "langXrtlib.h"
 #include "Utils.h"
 #include "ScriptModule.h"
+#include "TypeHelper.h"
 
 
 #ifdef WIN32
@@ -48,14 +48,17 @@ namespace langX {
 
 	langXState::langXState()
 	{
+	    // 优先初始化 日志管理器， 好让下面得功能使用日志
+        this->m_log_manager = new LogManager();
+        this->m_log_manager->init("/etc/langX/log4cpp.properties");
+
+        // 一次初始化 其他组件
 		this->m_global_env = new GlobalEnvironment();
 		this->m_global_env->setParent(NULL);
 		this->m_global_env->setDeep(0);
 		this->m_disposing = false;
 		this->m_thread_mgr = new langXThreadMgr();
 		this->m_thread_mgr->initMainThreadInfo();
-		this->m_log_manager = new LogManager();
-		this->m_log_manager->init("/etc/langX/log4cpp.properties");
 	}
 
 	langXState::~langXState()
@@ -119,11 +122,7 @@ namespace langX {
 
 	void langXState::reg3rd(const char *name, X3rdFuncWorker worker)
 	{
-		X3rdFunction *func = new X3rdFunction();
-		func->setName(name);
-		func->setWorker(worker);
-		func->setParamsList(nullptr);
-		func->setLangX(this);
+		auto func = create3rdFunc(name, worker);
 		this->m_global_env->putFunction(name, func);
 	}
 
@@ -657,6 +656,7 @@ namespace langX {
         }
 
         // 初始化 Mod
+        mod->setState(this);
         mod->initLogger(this);
         int ret = mod->init(this);
         if (ret != 0) {
@@ -686,8 +686,10 @@ namespace langX {
 	}
 #endif
 
-	int langXState::loadConfig(const char * path)
+	int langXState::loadConfig(const char *path, const langXStateConfig &stateConfig)
 	{
+	    this->m_stateConfig = stateConfig;
+
 		logger->debug("using config file %s", path);
 		int a = this->m_config.loadFrom(path);
 		if (a < 0)
@@ -695,25 +697,26 @@ namespace langX {
 			return -1;
 		}
 
-		logger->debug("load module(s).");
-		std::string &dir = this->m_config.getLibDir();
-		std::vector<std::string> & paths = this->m_config.getLibPath();
-		for (auto i = paths.begin(); i != paths.end(); i++)
-		{
-			std::string abc = dir + "/" + (*i);
-			// logger->debug("load module: %s" ,abc.c_str());
-			a = this->loadModule(abc.c_str());
-			if (a < 0)
-			{
-				return -1;
-			}
-		}
+        if (m_stateConfig.disableLoadModules) {
+            logger->info("disableLoadModules = true, jump load modules..");
+        } else {
+            logger->debug("load module(s).");
+            std::string &dir = this->m_config.getLibDir();
+            std::vector<std::string> & paths = this->m_config.getLibPath();
+            for (auto i = paths.begin(); i != paths.end(); i++)
+            {
+                std::string abc = dir + "/" + (*i);
+                // logger->debug("load module: %s" ,abc.c_str());
+                a = this->loadModule(abc.c_str());
+                if (a < 0)
+                {
+                    return -1;
+                }
+            }
+        }
 
 		logger->debug("init ScriptModule ClassInfo...");
 		initScriptModuleClassInfo(this);
-
-		logger->debug("load rt-lib.  [jump ...]");
-		// loadRTLib(this);
 
 		logger->debug("load config file over.");
 		return 0;
@@ -727,6 +730,10 @@ namespace langX {
 	langXThread* langXState::curThread() const
 	{
 		return this->m_thread_mgr->currentThread();
+	}
+
+	langXThreadMgr * langXState::getThreadManager() const {
+        return this->m_thread_mgr;
 	}
 
 	const ConfigX & langXState::getConfig() const
@@ -791,6 +798,7 @@ namespace langX {
         if (S_ISDIR(buf.st_mode)) {
             // 是一个目录
             auto module = new ScriptModule(path, this);
+            module->setState(this);
 
             // todo add error handle
             module->loadPackageScript();
@@ -835,6 +843,14 @@ namespace langX {
 
 	}
 
+	void langXModule::setState(langXState *state) {
+        this->m_state = state;
+	}
+
+	langXState * langXModule::getState() const {
+        return this->m_state;
+	}
+
     void includeFile(const char *filename) {
 	    char result[1024] = { 0 };
 	    convertToAbsolutePath(filename, getParsingFilename(), result);
@@ -856,5 +872,8 @@ namespace langX {
         getState()->require_onceFile(result);
 	}
 
+    langXState *getCurrentState() {
+        return getState();
+    }
 
 }

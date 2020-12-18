@@ -243,7 +243,7 @@ namespace langX{
             {
                 double a = ((Number*)leftNode->value)->getDoubleValue();
                 double b = ((Number*)rightNode->value)->getDoubleValue();
-                logger->debug("eq op: a: %.4f, b: %.4f", a, b);
+//                logger->debug("eq op: a: %.4f, b: %.4f", a, b);
 
                 if (a == b)
                 {

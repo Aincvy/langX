@@ -1,0 +1,8 @@
+include("define.lx");
+
+// 编译一个 mod, 参数为项目路径
+modWork => ( projectDir ){
+    return operateMod(projectDir, ModsOperation::Compile);
+}
+
+main();

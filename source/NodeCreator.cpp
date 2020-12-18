@@ -33,7 +33,7 @@ extern int getParseLineNo();
 
 static langXState* state = nullptr;
 
-void initLangX(int argc, char *argv[])
+void initLangX(int argc, char **argv, const langXStateConfig &stateConfig)
 {
 	if (state == nullptr)
 	{
@@ -45,7 +45,7 @@ void initLangX(int argc, char *argv[])
 		regExceptions();
 		regObjects(state);
 
-		state->loadConfig("/etc/langX/langX.properties");
+        state->loadConfig("/etc/langX/langX.properties", stateConfig);
 	}
 }
 
@@ -138,17 +138,6 @@ std::string fileInfoString(const NodeFileInfo & f) {
 	return std::string(ss.str());
 }
 
-XFunction * create3rdFunc(const char *name, langX::X3rdFuncWorker worker)
-{
-	X3rdFunction *func = new X3rdFunction();
-	func->setName(name);
-	func->setWorker(worker);
-	func->setParamsList(NULL);
-	func->setLangX(state);
-
-	return func;
-}
-
 void getObjStringDesc(langX::Object * obj, char *tmp, int maxSize)
 {
 	if (!obj) {
@@ -173,33 +162,6 @@ void getObjStringDesc(langX::Object * obj, char *tmp, int maxSize)
 	default:
 		break;
 	}
-}
-
-void objToString(langX::Object * obj, char *p, int offset, int maxSize)
-{
-	std::stringstream ss;
-	auto ref = (langXObjectRef*)obj;
-	auto thread = getState()->curThread();
-	Function *func = ref->getFunction("toString");
-	if (func == nullptr)
-	{
-		ss << "|[" << obj->characteristic();
-	}
-	else {
-
-        Object *retObj = callFunction(thread, func, emptyArgs, ref->getRefObject(), "<call toString() from cpp>");
-		if (retObj->getType() == STRING)
-		{
-			ss << ((String*)retObj)->getValue();
-		}
-		Allocator::free(retObj);
-		retObj = nullptr;
-	}
-
-	std::string str = ss.str();
-	int size = min(maxSize, (int) str.size());
-
-	memcpy(p + offset, str.c_str(), size);
 }
 
 XNode * string(char *v)
@@ -274,6 +236,13 @@ XNode * intNode(int i)
 	node->con_obj->sValue = NULL;
 
 	return node;
+}
+
+XNode *boolNode(int i) {
+
+    XNode * node = intNode(i);
+    node->con_obj->flagBool = true;
+    return node;
 }
 
 XNode * opr(int opr, int size, ...)
@@ -612,5 +581,7 @@ void execAndFreeNode(XNode *n) {
 
     getState()->checkEndOfFile(thread);
 }
+
+
 
 

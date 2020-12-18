@@ -1,0 +1,354 @@
+attr public = langX.ext.trello;
+
+using langX.python;
+using langX.core.util;
+
+// Card
+TrelloCard {
+
+  // 卡的 id, 名字(显示出来的那一行)， 描述（ 在里面的描述信息）
+  id, name, description;
+  // 卡片的所在列表
+  list;
+
+  /*
+  * 移动一个卡片到别的列表 或者别的 看板的列表
+  * @param list   列表    可为列表id或者 TrelloList 对象
+  * @param board  看板    可为空
+  */
+  moveTo => ( list, board ){
+
+  }
+
+  // 删除当前这张卡 | 永久删除
+  deleteCard => () {
+
+  }
+
+  // 归档这张卡
+  archive => (){
+
+  }
+
+  /*
+   * 给卡片设置新的名字
+  */
+  setName => (newName){
+
+  }
+
+  /**
+   * 设置卡片得过期日期
+   * @param date  日期和时间， langX.core.DateTime 对象
+   * @param dateFlag  是否禁用日期时区得修正， 如果没给参数，则会进行一个 -13小时得修正 (Asia/Shanghai)
+   * @return 0成功， 1表示日期有误
+   */
+  setDueDate => (date, dateFlag){
+    return -1;
+  }
+
+  /**
+   * 获取当前卡片得过期日期
+   */
+  getDueDate => (){}
+
+  /**
+   * 清除 卡片得过期日期
+   */
+  clearDueDate => () {
+
+  }
+
+  /**
+   * 设置 过期日期得完成状态
+   */
+  setDueComplete => (flag){
+
+  }
+
+  /**
+   * 当前过期日期 是否完成了
+   */
+  isDueComplete => (){
+
+  }
+
+  /**
+   * 添加一个标签到当前得卡片上
+   */
+  addLabel => (label){
+
+  }
+
+  /**
+   * 从当前卡片上删除一个标签
+  */
+  removeLabel => (label){
+
+  }
+
+  /**
+   * 添加一条评论到这张卡片上
+   */
+  addComment => (text){
+
+  }
+
+  /**
+   * 添加一个新的 check list
+   * checkList: 需要是一个TrelloCheckList 或者具有相同属性得对象
+   * updateStatus:  是否更新状态？  !!!参数暂未实现!!!
+   */
+  addCheckList => (checkList, updateStatus) {
+
+  }
+
+  /**
+   * 获取 一个自定义字段， 如果不存在， 就创建一个
+   *
+   */
+  getCustomField => (name){
+
+  }
+
+  /**
+   * 设置一个自定义变量得值
+   * field:  需要是一个TrelloCardCustomField 对象，你可以直接使用TrelloCardCustomField.setValue() 函数
+   * value: 要设置得值， 需要类型需要保持一致
+   */
+  setCustomFieldValue => (field, value){
+
+  }
+
+}
+
+// List
+TrelloList {
+
+    id, name;
+    // 卡片列表
+    cardList;
+    // 所在看板
+    board;
+
+    // 根据一个 id 获取一张卡
+    // return:  a card.
+    getCardById => ( id ){
+        return null;
+    }
+
+    // 根据一个 name 获取一张卡
+    // return:  a card.
+    getCardByName => ( name ){
+        return null;
+    }
+
+    // 建立一张 新的卡
+    // return:  a card.
+    newCard => ( name, description, dueDate ){
+        return null;
+    }
+
+    // 随机一张卡
+    // return a card.
+    randomCard => (){
+        return null;
+    }
+
+}
+
+
+// Board
+TrelloBoard{
+  id, name, description;
+  // 列表的列表
+  listList;
+  // 标签得列表
+  labelList;
+  // 自定义字段得列表
+  customFieldList;
+
+
+  // 根据一个列表的名字 来获取列表
+  // return a list
+  getListByName => ( name ) {
+    return null;
+  }
+
+  // 根据一个列表的id 来获取列表
+  // return a list.
+  getListById => ( id ) {
+    return null;
+  }
+
+  /**
+   * 初始化 标签列表
+   */
+  initLabelList => (){
+
+  }
+
+  /**
+   * 根据一个名字获取 标签
+   */
+  getLabelByName => (name) {
+
+  }
+
+  /**
+   * 更具一个颜色获取标签
+   */
+  getLabelByColor => (color) {
+
+  }
+
+  /**
+   *
+   */
+  initCustomFieldList => (){
+
+  }
+
+}
+
+// Client
+TrelloClient {
+
+  // 用于请求数据的 三个 属性
+  apiKey, apiSecret, token ;
+  // 看板列表
+  boardList;
+
+  // 构造方法
+  TrelloClient => (apiKey, apiSecret, token){
+    this.apiKey = apiKey;
+    this.apiSecret = apiSecret;
+    this.token = token;
+  }
+
+  // 初始化 client
+  // 返回 100 说明未知错误
+  // 返回 102 说明 没有找到 trello 库
+  // 返回 103 说明 传入的 参数可能有问题
+  // 返回 0 表示初始化成功
+  init => (){
+    return 100;
+  }
+
+  // 根据名字 获取一个 看板
+  getBoardByName => ( name ){
+    return null;
+  }
+
+  // 根据id 来获取一个看板
+  getBoardById => ( id ) {
+    return null;
+  }
+
+}
+
+/**
+ * 一个 trello 得标签
+ */
+TrelloLabel{
+    id, name, color;
+
+
+}
+
+/**
+ * 标签得颜色
+ *
+ */
+TrelloLabelColor {
+
+    // 黄色
+    const yellow = "yellow";
+    // 紫色
+    const purple = "purple";
+    // 蓝色
+    const blue = "blue";
+    // 红色
+    const red = "red";
+    // 绿色
+    const green = "green";
+    // 橙色
+    const orange = "orange";
+    // 黑色
+    const black = "black";
+    // 天空蓝..?
+    const sky = "sky";
+    // 粉色
+    const pink = "pink";
+    // 酸橙色
+    const lime = "lime";
+
+}
+
+
+/**
+ *
+ */
+TrelloCheckListItem{
+
+    name, checked;
+
+}
+
+/**
+ *
+ */
+TrelloCheckList {
+    // check list 得标题
+    title;
+
+    // item 得列表
+    itemList;
+
+    /**
+     * 添加一个新的 item
+     */
+    addItem => (name, checked) {
+
+    }
+
+    /**
+     *  添加一个新的 item | 需要为 TrelloCheckListItem 类型，或者具有相同属性得对象
+     */
+    addItemEntity => ( item ){
+
+    }
+
+}
+
+/**
+ * 自定义字段
+ */
+TrelloCustomField{
+    //
+    id, name;
+
+}
+
+/**
+ * 和一个卡绑定得自定义字段
+ */
+TrelloCardCustomField {
+
+    card, fieldName;
+
+    /**
+     * 设置自定义字段得值
+     */
+    setValue => (value){
+
+    }
+
+    /**
+     * 获取这个自定义字段得值
+     */
+    getValueAsNumber => (){ }
+
+    getValueAsString => (){ }
+
+}

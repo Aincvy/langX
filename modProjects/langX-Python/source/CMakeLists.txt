@@ -1,9 +1,20 @@
 FIND_PACKAGE(Log4cpp REQUIRED)
-AUX_SOURCE_DIRECTORY(. SRC_LIST)
+
+SET(SRC_LIST
+		PyException.cpp
+		PyObject.cpp
+		PyObjectEasy.cpp
+		PyObjectType.cpp
+		PySomeFunction.cpp
+		PythonHook.cpp
+		PythonLib.cpp
+		PythonModule.cpp
+		pyModule/PyDateTime.cpp
+)
 
 link_directories("/usr/local/lib")
 
-ADD_LIBRARY(python SHARED ${SRC_LIST} )
+ADD_LIBRARY(python SHARED ${SRC_LIST})
 target_link_libraries(python "langX")
 #target_link_libraries(python "python3")
 

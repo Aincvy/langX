@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../include/langX.h"
-#include "../../../include/XNameSpace.h"
+#include "langX.h"
+#include "XNameSpace.h"
 
 namespace langX {
 
@@ -12,6 +12,8 @@ namespace langX {
 
 
 	int regDateTime(langXState *state, XNameSpace* space);
+
+    void regTimeSpan(langXState *state, XNameSpace *space);
 
 	int regConvert(langXState *state, XNameSpace* space);
 

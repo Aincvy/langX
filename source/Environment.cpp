@@ -540,6 +540,8 @@ namespace langX {
 		{
 			return this->m_parent->getObjectSelf(name);
 		}
+
+        return nullptr;
 	}
 
 	void TryEnvironment::putFunction(const char *name, Function *f)

@@ -4,6 +4,8 @@ using langX.core;
 printDate => (date) {
     println("year=" + date.year + ",month="+ date.month + ",date=" + date.date);
     println("hour=" + date.hour + ",minute=" + date.minute + ",second=" + date.second );
+
+    println(date);
 }
 
 date = new DateTime();

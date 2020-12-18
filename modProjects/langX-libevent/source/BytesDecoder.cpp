@@ -1,7 +1,7 @@
 #include "../include/BytesDecoder.h"
 
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
+#include "Object.h"
+#include "langXObject.h"
 
 #include <stdlib.h>
 

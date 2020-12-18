@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../include/X3rdModule.h"
+#include <X3rdModule.h>
 
 #include <Python.h>
 
@@ -87,7 +87,19 @@ namespace langX {
 	Object * langX_PyObject_get_impl(XClassPyObject *obj, Object *a);
 	Object * langX_PyObject_set_impl(XClassPyObject * obj, Object * key, Object *value);
 
+	/**
+	 * 转换langX 对象成一个 PyObject
+	 * 支持 Number, String, Array(=> Tuple), langXObject(only PyObject instance..)
+	 *
+	 * @return 新的引用， 需要手动释放 ,使用下面得 freePyObjectRef() 函数来释放引用
+	 */
 	PyObject * langXToPyObject(Object *);
+
+	/**
+	 * 释放一个 PyObject* 得引用(计数 ？)
+	 *
+	 */
+	void freePyObjectRef(PyObject *obj);
 
 	/**
 	 * 尝试矫正 对象得 python 类型
@@ -108,7 +120,7 @@ namespace langX {
     PyObject * langXToPyObject(Object *obj);
 
 	extern PythonModule* pythonModule;
-	// python module 得日志
+	// python pyModule 得日志
 	extern Logger* pythonModuleLogger;
 
 }

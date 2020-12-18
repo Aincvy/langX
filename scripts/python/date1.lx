@@ -1,0 +1,21 @@
+using langX.python;
+using langX.core;
+
+date = new DateTime();
+println(date);
+
+PythonLib::load();
+PyDateTime::init();
+
+pyDate = PyDateTime::fromDateTime(date);
+if( !pyDate || pyDate.isNull()){
+    println("python date time is null");
+} else {
+    println("python date time is NOT null");
+
+    year = pyDate.get("year").toNumber();
+    println("year=" + year);
+
+    newDate = PyDateTime::toDateTime(pyDate);
+    println("convertd date: " + newDate);
+}

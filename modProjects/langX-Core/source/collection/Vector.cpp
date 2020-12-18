@@ -1,20 +1,18 @@
 #include <vector>
 #include <string.h>
 
-#include "../include/RegCoreModule.h"
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
+#include "RegCoreModule.h"
+#include "CoreModule.h"
+
+#include "langXSimple.h"
+
 
 namespace langX {
 
 	Object * langX_Vector_Vector(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Vector_Vector error! NO OBJ!\n");
+			coreModuleLogger->error("langX_Vector_Vector error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -27,7 +25,7 @@ namespace langX {
 	Object * langX_Vector_Vector_Dtor(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Vector_Vector_Dtor error! NO OBJ!\n");
+            coreModuleLogger->error("langX_Vector_Vector_Dtor error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -49,7 +47,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_Vector_Add error! NO OBJ!\n");
+            coreModuleLogger->error("langX_Vector_Add error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -69,7 +67,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_Vector_Remove error! NO OBJ!\n");
+            coreModuleLogger->error("langX_Vector_Remove error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -112,7 +110,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_Vector_Get error! NO OBJ!\n");
+            coreModuleLogger->error("langX_Vector_Get error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -137,7 +135,7 @@ namespace langX {
 	Object * langX_Vector_Size(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Vector_Size error! NO OBJ!\n");
+            coreModuleLogger->error("langX_Vector_Size error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -151,7 +149,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_Vector_First error! NO OBJ!\n");
+            coreModuleLogger->error("langX_Vector_First error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -169,7 +167,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_Vector_Last error! NO OBJ!\n");
+            coreModuleLogger->error("langX_Vector_Last error! NO OBJ!");
 			return nullptr;
 		}
 

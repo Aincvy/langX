@@ -1,20 +1,13 @@
 ﻿
 #include "../include/RegHttpServer.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
+#include "ClassInfo.h"
+#include "TypeHelper.h"
+#include "Allocator.h"
+#include "Number.h"
+#include "StringType.h"
 
-#ifdef WIN32
-#include "../../../lib/libevent-2.0.21-stable/include/event2/buffer.h"
-
-#else
 #include <event2/buffer.h>
-#endif
 
 static langX::ClassInfo *httpResponseClass;
 
@@ -66,7 +59,7 @@ namespace langX {
 			str->simpleEscape();
 			const char * text = str->getValue();
 
-			evbuffer_add_printf(reqInfo->buffer, text);
+			evbuffer_add_printf(reqInfo->buffer, "%s", text);
 		}
 
 		return nullptr;

@@ -1,15 +1,11 @@
 #include <list>
 #include <string.h>
 
-#include "../include/CoreModule.h"
-#include "../include/RegCoreModule.h"
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/LogManager.h"
+#include "CoreModule.h"
+#include "RegCoreModule.h"
+
+#include "langXSimple.h"
+
 
 namespace langX {
 
@@ -206,6 +202,24 @@ namespace langX {
 		return nullptr;
 	}
 
+    Object * langX_List_ToArray(X3rdFunction *func, const X3rdArgs &args) {
+
+        if (args.object == nullptr)
+        {
+            coreModuleLogger->error("langX_List_ToArray error! NO OBJ!");
+            return nullptr;
+        }
+
+        auto list = (std::list<Object*> *)args.object->get3rdObj();
+
+        auto array = Allocator::allocateArray(list->size());
+        for (auto i = list->begin(); i != list->end() ; i++){
+            array->add( *i );
+        }
+
+        return array->addRef();
+    }
+
 
 	Object * langX_List_Iterator(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
@@ -214,6 +228,7 @@ namespace langX {
 			return nullptr;
 		}
 
+		// todo
 		std::list<Object*> * list = (std::list<Object*> *)args.object->get3rdObj();
 
 		return nullptr;
@@ -232,9 +247,13 @@ namespace langX {
 		list->addFunction(create3rdFunc("size", langX_List_Size));
 		list->addFunction(create3rdFunc("set", langX_List_Set));
 		list->addFunction(create3rdFunc("iterator", langX_List_Iterator));
+		list->addFunction(create3rdFunc("clear", langX_List_Clear));
+		list->addFunction(create3rdFunc("toArray", langX_List_ToArray));
 		space->putClass(list);
 
 		return 0;
 	}
+
+
 
 }

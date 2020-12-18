@@ -43,7 +43,18 @@ auto TrelloList {
     }
 
     newCard => ( name, description, dueDate ){
-      return null;
+        local tmp, tmpCard;
+        tmp = _py_list.get("add_card").callMethod(name, description);
+        if( !tmp || tmp.isNull()){
+            return null;
+        }
+
+        tmpCard = new TrelloCard();
+        tmpCard._py_card = tmp;
+        tmpCard.updateSelf();
+        tmpCard.list = this;
+
+        return tmpCard;
     }
 
     randomCard => (){
@@ -58,6 +69,14 @@ auto TrelloList {
         r = new Random();
 
         index = r.nextInt(size);
+
+        if(index < 0){
+            index = 0;
+        }
+        if(index >= size){
+            index = size - 1;
+        }
+
         return cardList[index];
     }
 

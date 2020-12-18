@@ -171,17 +171,19 @@ namespace langX {
         // 设置这个对象的成员的产生环境
         void setMembersEmergeEnv(Environment *);
 
-        bool isTrue() const;
-        ObjectType getType() const;
-        Object* clone() const;
+        bool isTrue() const override;
+        ObjectType getType() const override;
+        Object* clone() const override;
         //  更新当前引用， 引用到另外一个对象身上
-        void update(Object *);
+        void update(Object *) override;
 
         // 设置当前引用的是哪个对象
         void setRefObject(langXObject *);
 
+        const char * characteristic() const override;
+
     private:
-        void finalize();
+        void finalize() override;
 
         // 引用的哪个object
         langXObject *m_object_ref = nullptr;

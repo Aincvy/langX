@@ -1,0 +1,24 @@
+
+auto TrelloLabel{
+
+    _py_label;
+
+    /**
+     * 更新当前label 得属性
+     */
+    updateSelf => (){
+        id = _py_label.get("id").toString();
+        name = _py_label.get("name").toString();
+        color = _py_label.get("color").toString();
+    }
+
+    /**
+     * 输出标签信息
+     */
+    toString => (){
+        local string;
+        string = "TrelloLabel[" + id + ", " + name +", " + color + "]";
+        return string;
+    }
+
+}

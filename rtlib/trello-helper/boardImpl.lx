@@ -64,4 +64,59 @@ auto TrelloBoard {
         return null;
     }
 
+
+    initLabelList => (){
+        local allList, l;
+        allList = _py_board.get("get_labels").callMethod();
+
+        labelList = new List();
+        for ( i = 0; i < allList.size(); i++){
+            l = new TrelloLabel();
+            l._py_label = allList.get(i);
+            l.updateSelf();
+
+            // println("got label: " + l );
+            labelList.add(l);
+        }
+    }
+
+    getLabelByName => (name) {
+        return filterLabel( (l,arg) => { return l.name == arg; } ,name);
+    }
+
+    getLabelByColor => (color) {
+        return filterLabel( (l,arg) => { return l.color == arg; } ,color);
+    }
+
+    filterLabel => (filter, arg){
+        if(!filter){
+            return null;
+        }
+
+        local l;
+        for(i = 0; i < labelList.size(); i++){
+            l = labelList.get(i);
+
+            if(filter(l, arg)){
+                return l;
+            }
+        }
+    }
+
+
+    initCustomFieldList => (){
+        local allList, l;
+        allList = _py_board.get("get_custom_field_definitions").callMethod();
+
+        customFieldList = new List();
+        for(i = 0; i < allList.size(); i++){
+            l = new TrelloCustomField();
+            l._py_customField = allList.get(i);
+            l.updateSelf();
+
+            customFieldList.add(l);
+        }
+
+    }
+
 }

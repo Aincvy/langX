@@ -1,10 +1,7 @@
-#include "../include/RegCoreModule.h"
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
+#include "RegCoreModule.h"
+#include "CoreModule.h"
+
+#include "langXSimple.h"
 
 namespace langX {
 
@@ -12,7 +9,7 @@ namespace langX {
 	Object * langX_Matcher_Matcher(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Matcher_Matcher error! NO OBJ!\n");
+			coreModuleLogger->error("langX_Matcher_Matcher error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -23,7 +20,7 @@ namespace langX {
 	Object * langX_Matcher_Matcher_Dtor(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Matcher_Matcher_Dtor error! NO OBJ!\n");
+            coreModuleLogger->error("langX_Matcher_Matcher_Dtor error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -34,7 +31,7 @@ namespace langX {
 	Object * langX_Matcher_find(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Matcher_find error! NO OBJ!\n");
+            coreModuleLogger->error("langX_Matcher_find error! NO OBJ!\n");
 			return nullptr;
 		}
 
@@ -45,7 +42,7 @@ namespace langX {
 	Object * langX_Matcher_group(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Matcher_group error! NO OBJ!\n");
+            coreModuleLogger->error("langX_Matcher_group error! NO OBJ!\n");
 			return nullptr;
 		}
 

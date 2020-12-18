@@ -1,29 +1,20 @@
-#include "../include/langXThread.h"
-#include "../include/Environment.h"
-#include "../include/Function.h"
-#include "../include/ExecNode.h"
-#include "../include/Allocator.h"
-#include "../include/langX.h"
-#include "../include/NodeCreator.h"
-#include "../include/Object.h"
-#include "../include/langXObject.h"
-#include "../include/Function.h"
-#include "../include/LogManager.h"
-#include "../include/langXCommon.h"
+#include "langXThread.h"
+#include "Environment.h"
+#include "Function.h"
+#include "ExecNode.h"
+#include "Allocator.h"
+#include "langX.h"
+#include "NodeCreator.h"
+#include "Object.h"
+#include "langXObject.h"
+#include "Function.h"
+#include "LogManager.h"
+#include "langXCommon.h"
 
-#ifdef WIN32
-// win32的库
-#else
-// linux 库
 #include <pthread.h>
 #include <thread>
 #include <unistd.h>
-#endif
-
-#ifdef SHOW_DETAILS
-#include <iostream>
-#include <stdio.h>
-#endif
+#include <sstream>
 
 // 释放环境内存
 void freeEnv(langX::Environment **env) {
@@ -474,6 +465,18 @@ namespace langX {
 
 	void langXThread::setFunctionResult(Object *obj)
 	{
+        if (obj) {
+            auto type = obj->getType();
+
+            logger->debug("[function result] return type %d", type);
+            if (type == OBJECT) {
+                auto className= ((langXObjectRef*) obj)->getRefObject()->getClassName();
+                logger->debug("[function result] return a object of %s", className);
+            }
+        } else {
+            logger->debug("[function result] return nullptr");
+        }
+
 	    this->m_thread_env->putObject(FE_KEY_PREV_RESULT, obj );
 	}
 
@@ -595,6 +598,10 @@ namespace langX {
 		return this->m_exec_status;
 	}
 
+	int langXThread::getThreadId() const {
+        return this->m_thread_id;
+	}
+
 	langXThreadMgr::langXThreadMgr()
 	{
 		this->m_id_gen = 0;
@@ -608,12 +615,17 @@ namespace langX {
 	{
 		std::thread::id curThreadId = std::this_thread::get_id();
 
-		int id = this->m_id_gen++;
-		langXThread *thread = new langXThread(id);
-		thread->setName("main");   // 设置线程名字为主线程
-		thread->setStatus(langXThreadStatus::Running);
-		this->m_selfmap[id] = thread;
+		auto thread = requireNewThreadInfo("main");
+		thread->setMainThread(true);
+		thread->setStatus(Running);
+
 		this->m_idmap[curThreadId] = thread;
+
+		this->m_mainThread = thread;
+	}
+
+	langXThread* langXThreadMgr::getMainThread() const{
+        return this->m_mainThread;
 	}
 
 	void langXThreadMgr::freeAllThreads()
@@ -647,8 +659,36 @@ namespace langX {
 		if (it != this->m_idmap.end())
 		{
 			return it->second;
+		} else {
+		    auto thread = requireNewThreadInfo(nullptr);
+            thread->setStatus(Running);
+		    this->m_idmap[curThreadId] = thread;
+
+		    std::stringstream  ss;
+		    ss << curThreadId;
+
+		    std::string str = ss.str();
+		    logger->info("no current thread info, new it. cpp thread id: %s", str.c_str());
+            return thread;
 		}
 
 		return nullptr;
 	}
+
+    langXThread *langXThreadMgr::requireNewThreadInfo(const char *name) {
+        int id = this->m_id_gen++;
+        auto thread = new langXThread(id);
+        thread->setStatus(langXThreadStatus::Init);
+
+        this->m_selfmap[id] = thread;
+
+        if (name) {
+            thread->setName(name);
+        }
+
+        logger->info("new thread name: %s, langX thread id: %d", thread->getName(), thread->getThreadId());
+
+        return thread;
+    }
+
 }

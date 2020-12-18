@@ -1,15 +1,7 @@
-#include "../../../include/LogManager.h"
+#include <langXSimple.h>
 
 #include "../include/RegPythonModule.h"
 #include "../include/PythonModule.h"
-
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-
 
 
 namespace langX {

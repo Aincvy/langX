@@ -20,6 +20,7 @@
 #include "langXObject.h"
 #include "Allocator.h"
 #include "XArray.h"
+#include "TypeHelper.h"
 
 static struct termios old, newone;
 
@@ -106,7 +107,7 @@ namespace langX {
 			{
 				char tmp[2048] = {0 };
 				objToString(obj, tmp, 0, 2048);
-				printf(tmp);
+				printf("%s", tmp);
 			}
 		}
 
@@ -136,7 +137,7 @@ namespace langX {
 				String * str = (String*)obj;
 				str->simpleEscape();
 
-				printf(str->getValue());
+				printf("%s",str->getValue());
 			}
 			else if (obj->getType() == NUMBER)
 			{
@@ -145,13 +146,13 @@ namespace langX {
 
 			else if (obj->getType() == OBJECT)
 			{
-				char atmp[2048] = { 0 };
-				objToString(obj, atmp, 0, 2048);
-				printf(atmp);
+				char buf[2048] = {0 };
+				objToString(obj, buf, 0, 2048);
+				printf("%s", buf);
 			}
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	//  c system 函数的桥接
@@ -618,6 +619,7 @@ namespace langX {
 		state->reg3rd("sy_to_int", langX_sy_to_int);
 		state->reg3rd("sy_cwd", langX_sy_cwd);
 		state->reg3rd("sy_chdir", langX_sy_chdir);
+		state->reg3rd("sy_cd", langX_sy_chdir);
 		state->reg3rd("sy_run_and_print", langX_sy_run_and_print);
 		state->reg3rd("sy_metadata", langX_sy_metadata);
 		state->reg3rd("co_typeof", langX_co_typeof);

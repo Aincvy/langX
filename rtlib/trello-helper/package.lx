@@ -2,6 +2,6 @@
 
 name = "trello-helper";
 description = "WIP ";
-author = "aincvy";
+author = "Aincvy(aincvy@gmail.com)";
 version = "0.0.1";
-repository="";     // git 或者之前的仓库地址
+repository="";     // 仓库地址  git 或者别什么的地址

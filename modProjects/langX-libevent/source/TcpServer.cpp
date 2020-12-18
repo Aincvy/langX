@@ -8,13 +8,15 @@
 #include "../include/DefaultBytesDecoder.h"
 #include "../include/DefaultBytesEncoder.h"
 #include "../include/DefaultNetPacket.h"
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
+
+#include "ClassInfo.h"
+#include "TypeHelper.h"
+#include "Object.h"
+#include "langXObject.h"
+#include "Allocator.h"
+#include "Number.h"
+#include "StringType.h"
+#include "langXThread.h"
 
 #ifdef WIN32
 #include "../../../lib/libevent-2.0.21-stable/include/event2/buffer.h"
@@ -53,12 +55,16 @@ namespace langX {
 			if (arg->readcb)
 			{
 				// server,client,data
-				Object *arglist[3] = { 0 };
-				arglist[0] = arg->xobject->addRef();
-				arglist[1] = clientArgs->clientObject->addRef();
-				arglist[2] = &astr;
-				arg->readcb->call(arglist, 3, "in libevent conn_readcb");
+//				Object *arglist[3] = { 0 };
+//				arglist[0] = arg->xobject->addRef();
+//				arglist[1] = clientArgs->clientObject->addRef();
+//				arglist[2] = &astr;
+//				arg->readcb->call(arglist, 3, "in libevent conn_readcb");
 
+                auto thread = getCurrentState()->curThread();
+
+                // server,client,data
+                arg->readcb->call(thread, "in libevent conn_readcb", 3,arg->xobject->addRef(), clientArgs->clientObject->addRef(), &astr);
 			}
 		}
 		else {
@@ -114,7 +120,7 @@ namespace langX {
 		}
 
 		// 调用 onaccept 回调
-		langXObject * clientObject = getState()->getNameSpace("langX.libevent")->getClass("TcpClient")->newObject();
+		langXObject * clientObject = getCurrentState()->getNameSpace("langX.libevent")->getClass("TcpClient")->newObject();
 		TcpClientArgs *clientArgs = (TcpClientArgs*)calloc(1, sizeof(TcpClientArgs));
 		clientArgs->bev = bev;
 		clientArgs->clientObject = clientObject;
@@ -124,11 +130,17 @@ namespace langX {
 		if (arg->acceptcb != nullptr)
 		{
 			// server,client
-			Object *arglist[2] = { 0 };
-			arglist[0] = arg->xobject->addRef();
-			arglist[1] = clientObject->addRef();
-			arg->acceptcb->call(arglist, 2, "in libevent listener_cb");
+//			Object *arglist[2] = { 0 };
+//			arglist[0] = arg->xobject->addRef();
+//			arglist[1] = clientObject->addRef();
+//			arg->acceptcb->call(arglist, 2, "in libevent listener_cb");
 			//printf("call acceptcb cb\n");
+
+
+			auto thread = getCurrentState()->curThread();
+
+            // server,client
+			arg->acceptcb->call(thread, "in libevent listener_cb", 2, arg->xobject->addRef(), clientObject->addRef());
 		}
 
 		bufferevent_setcb(bev, conn_readcb, conn_writecb, conn_eventcb, clientArgs);

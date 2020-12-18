@@ -11,6 +11,7 @@ auto TrelloClient {
     // 实现 define.lx 文件的内容
     init => (){
         PythonLib::load();
+        PyDateTime::init();
         _py_hook = new PythonHook();
 
         _py_trello = _py_hook.importModule("trello");
@@ -65,7 +66,11 @@ auto TrelloClient {
 
     // 实现函数
     getBoardByName => ( name ){
-        return filterBoard( (tmp, arg) => { return tmp.name == arg; } , name);
+        local tmp;
+        tmp = filterBoard( (tmp, arg) => { return tmp.name == arg; } , name);
+        // println("getBoardByName ==" + tmp);
+
+        return tmp;
     }
 
     // 实现函数
@@ -82,7 +87,9 @@ auto TrelloClient {
         for ( i = 0; i < boardList.size(); i++ ){
             tmp = boardList.get(i);
 
+            // println("filterBoard: "+tmp);
             if( filter(tmp, arg) ){
+                println("filterBoard return : "+tmp);
                 return tmp;
             }
         }

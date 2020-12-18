@@ -9,7 +9,7 @@ namespace langX {
 	DefaultBytesEncoder::~DefaultBytesEncoder()
 	{
 	}
-	char * DefaultBytesEncoder::encord(void *, int *)
+	char * DefaultBytesEncoder::encode(void *, int *)
 	{
 		return nullptr;
 	}

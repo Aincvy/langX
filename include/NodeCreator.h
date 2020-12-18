@@ -20,12 +20,12 @@ typedef langX::ArgsList XArgsList;
 typedef langX::Object XObject;
 typedef langX::Function XFunction;
 typedef langX::NodeLink NodeLink;
-
+typedef langX::langXStateConfig langXStateConfig;
 
 //  lex/yacc 是C语言的
 extern "C" {
 
-	void initLangX(int argc,char *argv[]);
+	void initLangX(int argc, char **argv, const langXStateConfig &stateConfig);
 
 	void closeLangX();
 
@@ -51,6 +51,8 @@ extern "C" {
 	XNode *objectArrayElementNode(XNode *, XNode *);
 	// 创建一个int类型的常量节点
 	XNode *intNode(int);
+    // 创建一个bool类型的常量节点
+    XNode *boolNode(int);
 	// 预处理 switch 节点
 	void pretreatSwitch(XNode *);
 
@@ -92,11 +94,6 @@ langX::langXState * getState();
 // 把文件信息变一下
 std::string fileInfoString(const langX::NodeFileInfo & f);
 
-// 创建一个第三方函数
-XFunction* create3rdFunc(const char *, langX::X3rdFuncWorker);
-
-// 将一个 langXObject 转成字符串， 可能会调用该对象的 toString() 方法
-void objToString(langX::Object * obj,char *, int offset, int maxSize);
 
 //  获取一个对象的字符串描述
 void getObjStringDesc(langX::Object *obj, char *, int maxSize);

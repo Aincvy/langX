@@ -1,7 +1,7 @@
 #include "RegObjects.h"
 
 #include "ClassInfo.h"
-#include "NodeCreator.h"
+#include "TypeHelper.h"
 #include "langXObject.h"
 #include "XNameSpace.h"
 #include "StringType.h"

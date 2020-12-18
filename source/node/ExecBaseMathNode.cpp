@@ -13,6 +13,7 @@
 #include "Allocator.h"
 #include "langXObject.h"
 #include "LogManager.h"
+#include "TypeHelper.h"
 
 namespace langX {
 

@@ -1,12 +1,13 @@
 #include "Exception.h"
 #include "Object.h"
-#include "NodeCreator.h"
+#include "TypeHelper.h"
 #include "ClassInfo.h"
 #include "StringType.h"
 #include "Function.h"
 #include "langXObject.h"
 #include "langXThread.h"
 #include "LogManager.h"
+#include "NodeCreator.h"
 
 namespace langX {
 	// 构造方法

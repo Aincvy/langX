@@ -1,16 +1,8 @@
-#include "../../../include/LogManager.h"
+
+#include "langXSimple.h"
 
 #include "../include/RegPythonModule.h"
 #include "../include/PythonModule.h"
-
-#include "../../../include/Function.h"
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
 
 
 namespace langX {
@@ -26,7 +18,7 @@ namespace langX {
 
 			PyObject *ret = PyImport_ImportModule(str->getValue());
             if (ret == nullptr) {
-                pythonModuleLogger->error("module %s import failed.", str->getValue());
+                pythonModuleLogger->error("pyModule %s import failed.", str->getValue());
                 logPythonErrorMsg();
                 return nullptr;
             }
@@ -52,6 +44,7 @@ namespace langX {
 			str->simpleEscape();
 
 			PyRun_SimpleString(str->getValue());
+
 		}
 
 		return nullptr;

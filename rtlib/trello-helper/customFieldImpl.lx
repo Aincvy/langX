@@ -1,0 +1,39 @@
+
+auto TrelloCustomField{
+
+    // python 得自定义字段类型
+    _py_customField;
+
+    updateSelf => (){
+        id = _py_customField.get("id").toString();
+        name = _py_customField.get("name").toString();
+    }
+
+}
+
+
+auto TrelloCardCustomField{
+
+    // 在 card 上得 获取到得 custom field
+    _customFieldInCard;
+
+    TrelloCardCustomField => (card, fieldName, fieldInCard){
+        this.card = card;
+        this.fieldName = fieldName;
+        this._customFieldInCard = fieldInCard;
+    }
+
+    setValue => (value){
+        // card.setCustomFieldValue(_customFieldInCard, value);
+        _customFieldInCard.set("value", value);
+    }
+
+    getValueAsNumber => (){
+        return _customFieldInCard.get("value").toNumber();
+    }
+
+    getValueAsString => (){
+        return _customFieldInCard.get("value").toString();
+    }
+
+}

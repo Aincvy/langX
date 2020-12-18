@@ -1,12 +1,14 @@
-#include <stdio.h>
+#include <XNameSpace.h>
+#include <LogManager.h>
 
-#include "../include/libeventModule.h"
-#include "../include/ReglibeventModule.h"
-#include "../include/RegHttpServer.h"
-#include "../../../include/XNameSpace.h"
-#include "../../../include/LogManager.h"
+#include "libeventModule.h"
+#include "ReglibeventModule.h"
+#include "RegHttpServer.h"
 
 namespace langX {
+
+    libeventModule* module = nullptr;
+    Logger* moduleLogger = nullptr;
 
 	libeventModule::libeventModule()
 	{
@@ -20,8 +22,10 @@ namespace langX {
 	int libeventModule::init(langXState *state)
 	{
 		// 初始化 libevent 库
-		logger->debug("初始化libevent库 ");
-    
+		moduleLogger = this->m_logger;
+        m_state = state;
+        m_logger->debug("初始化libevent库 ");
+
 		initServerSupportTools();
 
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.libevent");
@@ -33,6 +37,10 @@ namespace langX {
 		regHttpRequest(state, space);
 		regHttpResponse(state, space);
 
+		// event base && timer
+		regEventBase(state, space);
+        regTimerEvent(state, space);
+
 		return 0;
 	}
 
@@ -41,11 +49,36 @@ namespace langX {
 		return 0;
 	}
 
+    const char *libeventModule::getName() const {
+        return X3rdModule::getName();
+    }
+
+    const char *libeventModule::getVersion() const {
+        return "0.0.1";
+    }
+
+    const char *libeventModule::getRepository() const {
+        return "-";
+    }
+
+    const char *libeventModule::getAuthor() const {
+        return "Aincvy(aincvy@gmail.com)";
+    }
+
+    const char *libeventModule::getDescription() const {
+        return "Bridge libevent, provide socket functions..";
+    }
+
+    const char *libeventModule::getEntrypoint() const {
+        return nullptr;
+    }
+
 }
 
 int loadModule(langX::X3rdModule *& mod)
 {
-	mod = new langX::libeventModule();
+    langX::module = new langX::libeventModule();
+	mod = langX::module;
 
 	return 0;
 }

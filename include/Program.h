@@ -18,10 +18,4 @@ extern "C" {
  */
 int programRun(int argc, char **args);
 
-/**
- * 拼接命名空间
- * @return
- */
-char *namespaceNameCat(char *,char *);
-
 #endif //LANGX_PROGRAM_H

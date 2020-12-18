@@ -20,7 +20,7 @@ namespace langX {
 	{
 	}
 
-	char * langXBytesEncoder::encord(void *, int *)
+	char * langXBytesEncoder::encode(void *, int *)
 	{
 		return nullptr;
 	}

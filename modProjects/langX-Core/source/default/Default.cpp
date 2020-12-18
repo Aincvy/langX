@@ -1,5 +1,5 @@
-#include "../include/RegCoreModule.h"
-#include "../include/RegDefaultClasses.h"
+#include "RegCoreModule.h"
+#include "RegDefaultClasses.h"
 
 namespace langX {
 
@@ -8,6 +8,8 @@ namespace langX {
 
 		regMath(state, space);
 		regDateTime(state, space);
+		regTimeSpan(state, space);
+
 		regConvert(state, space);
 		regThread(state, space);
 		regApplication(state, space);

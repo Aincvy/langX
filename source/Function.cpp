@@ -73,7 +73,7 @@ void setStateToCanFree(langX::Node *n) {
 namespace langX {
 
     // 实例化 空参数指针
-    X3rdArgs *emptyArgs = {};
+    X3rdArgs *emptyArgs = new X3rdArgs();
 
     // Function  以及相关的类实现
 
@@ -162,10 +162,18 @@ namespace langX {
 
 		langXThread *thread = getState()->curThread();
 		Node *lastFuncCallRoot = thread->getFuncRootNode();
-		thread->setInFunction(true);
+        thread->setInFunction(true);
+
+		auto backInExec = thread->isBackInExec();
+		thread->setBackInExec(false);
+
+		// 执行节点
 		thread->setFuncRootNode(this->m_node_root);
 		thread->beginExecute(this->m_node_root, true);
 		execNodeButLimit(nullptr, this->m_node_root);
+
+		// 还原状态
+		thread->setBackInExec(backInExec);
 		thread->setInFunction(false);
 		thread->setFuncRootNode(lastFuncCallRoot);
 
@@ -504,7 +512,9 @@ namespace langX {
         thread->setInFunction(true);
 
         auto result = realCallFunction(thread, function, args);
-        thread->setFunctionResult(result);
+        if (function->is3rd()) {
+            thread->setFunctionResult(result);
+        }
 
         // 执行层次 出栈
         stackTrace.popFrame();

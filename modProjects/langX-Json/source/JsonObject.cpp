@@ -1,14 +1,7 @@
 ﻿#include "../include/RegJsonModule.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
-#include "../../../include/Environment.h"
-#include "../../../include/XArray.h"
+#include <langXSimple.h>
+#include <Environment.h>
 
 #include <map>
 
@@ -195,7 +188,7 @@ namespace langX {
 			else {
 				// 其他的正常对象
 				// 先看看 该对象有无 toJSONString 函数， 如果有的话就调用一下
-				Object *ret= ref->callFunction("toJSONString");
+				Object *ret= ref->getRefObject()->callFunction("toJSONString", "from json library..", 0);
 				cJSON *data = nullptr;
 				if (ret && ret->getType() == ObjectType::STRING)
 				{

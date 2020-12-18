@@ -54,7 +54,7 @@ namespace langX {
 		static langXObject * newObject(const char *);
 		static langXObject * newObject(const char*, bool );
 		// 创建一个对象 
-		static langXObject * newObject(ClassInfo *, bool ,bool );
+		static langXObject * newObject(ClassInfo *, bool extend,bool callCtor);
 		static langXObject * newObject(ClassInfo *) ;                              //  创建一个对象
 		static langXObjectExtend * newExtendObject(ClassInfo * );			// 创建一个具有拓展能力的对象
 		static void freeObject(langXObject *);                                     //  释放掉一个对象

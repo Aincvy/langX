@@ -1,12 +1,8 @@
 
-#include "../../../include/LogManager.h"
+#include <langXSimple.h>
 
 #include "../include/PythonModule.h"
 #include "../include/RegPythonModule.h"
-#include "../../../include/StringType.h"
-#include "../../../include/Number.h"
-#include "../../../include/XArray.h"
-#include "../../../include/langXObject.h"
 
 namespace langX {
 
@@ -38,6 +34,8 @@ namespace langX {
 		regPyObjectEasy(state, space);
 
 		regPySomeFunction(state, space);
+
+		regPyDateTime(state,space);
 
 		return 0;
 	}
@@ -145,7 +143,13 @@ namespace langX {
         else if (value->getType() == ObjectType::NUMBER)
         {
             Number *t = (Number*)value;
-            if (t->isInteger())
+            if (t->flagBool()) {
+                if (t->isTrue()) {
+                    Py_RETURN_TRUE;
+                } else {
+                    Py_RETURN_FALSE;
+                }
+            } else if (t->isInteger())
             {
                 pyValue = Py_BuildValue("i", t->getIntValue());
             }
@@ -170,10 +174,29 @@ namespace langX {
         else if (value->getType() == ObjectType::NULLOBJECT)
         {
             Py_RETURN_NONE;
+        } else if (value->getType() == ObjectType::OBJECT) {
+            auto ref = (langXObjectRef*)value;
+            if (ref->getClassInfo()->isInstanceOf("PyObject")) {
+                auto ptr = (XClassPyObject*) ref->getRefObject()->get3rdObj();
+                pyValue = ptr->pyObj;
+            } else{
+                moduleLogger->error("Unsupported type %s, on langXToPyObject", ref->getClassInfo()->getName());
+                Py_RETURN_NONE;
+            }
         }
 
         return pyValue;
     }
+
+    void freePyObjectRef(PyObject *obj){
+        if (PyTuple_Check(obj)) {
+            // 是一个元组， 需要释放里面得每个元素得值
+
+        } else {
+            // 只释放这个就好了
+            Py_DECREF(obj);
+        }
+	}
 
 }
 

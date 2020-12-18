@@ -1,0 +1,185 @@
+
+
+// 对 card 类进行扩展和实现
+auto TrelloCard {
+
+    // card 的 python 库对象
+    _py_card;
+
+    // 更新当前卡的数据
+    updateSelf => (){
+        name = _py_card.get("name").toStr();
+        id = _py_card.get("id").toStr();
+        description = _py_card.get("desc").toStr();
+
+        // 评论， 自定义字段， 过期日期等。
+    }
+
+
+    setName => (newName){
+        _py_card.get("set_name").callMethod(newName);
+        name = newName;
+    }
+
+    moveTo => ( list, board ){
+        if(!list){
+            return;
+        }
+
+        local listId;
+        if( list is String){
+            listId = list;
+        } else if ( list is TrelloList){
+            listId = list.id;
+        } else {
+            println("Unsupported list types.. ");
+            return;
+        }
+
+        if(board){
+            // 同时改变 board 和 list
+
+            local boardId;
+            if(board is String){
+                boardId = board;
+            } else if (board is TrelloBoard){
+                boardId = board.id;
+            } else {
+                println("Unsupported board types.. ");
+                return ;
+            }
+
+            _py_card.get("change_board").callMethod(boardId, listId);
+
+        } else {
+            // 只改变list
+            _py_card.get("change_list").callMethod(listId);
+        }
+    }
+
+
+    deleteCard => () {
+
+        _py_card.get("delete").callMethod();
+
+        if ( list ){
+            list.cardList.remove(this);
+            list = null;
+        }
+    }
+
+    archive => (){
+        local args = PythonHook::newTuple(1);
+        args.setItem(0, true);
+
+        _py_card.get("set_closed").callMethod(args);
+
+        if ( list ){
+            list.cardList.remove(this);
+            list = null;
+        }
+    }
+
+    setDueDate => (date, dateFlag){
+        // 将 langX.core.DateTime 转换成 python 得对象
+
+        if ( !dateFlag) {
+            date.plus(-13, TimeUnit::Hour);
+        }
+
+        pyDate = PyDateTime::fromDateTime(date);
+        if(!pyDate || pyDate.isNull()){
+            return 1;
+        }
+
+        // 调用方法
+        _py_card.get("set_due").callMethod(pyDate);
+        return 0;
+    }
+
+    getDueDate => (){
+        local pyDate = _py_card.get("due_date");
+
+        return PyDateTime::toDateTime(pyDate);
+    }
+
+    clearDueDate => () {
+        _py_card.get("remove_due").callMethod();
+    }
+
+    setDueComplete => (flag){
+        if(flag) {
+            _py_card.get("set_due_complete").callMethod();
+        } else {
+            _py_card.get("remove_due_complete").callMethod();
+        }
+    }
+
+    isDueComplete => (){
+        local tmp = _py_card.get("is_due_complete").toNumber();
+        return tmp;
+    }
+
+    addLabel => (label){
+        if(label is TrelloLabel){
+            _py_card.get("add_label").callMethod(label._py_label);
+            return 0;
+        }
+        return 1;
+    }
+
+    removeLabel => (label){
+        if(label is TrelloLabel){
+            _py_card.get("remove_label").callMethod(label._py_label);
+            return 0;
+        }
+        return 1;
+    }
+
+    addComment => (text){
+        if ( !text){
+            return 1;
+        }
+
+        _py_card.get("comment").callMethod(text);
+        return 0;
+    }
+
+    addCheckList => (checkList, updateStatus) {
+
+        // 构造参数
+        local argItems,argItemstates, itemList,tmp;
+        itemList = checkList.itemList;
+        argItems = new List();
+        argItemstates = new List();
+
+        for(i = 0; i < itemList.size(); i++){
+            tmp = itemList.get(i);
+
+            argItems.add(tmp.name);
+
+            if(tmp.checked){
+                argItemstates.add(true);
+            } else {
+                argItemstates.add(false);
+            }
+        }
+
+        // 调用函数
+        _py_card.get("add_checklist").callMethod(checkList.title, argItems.toArray());
+    }
+
+
+    getCustomField => (name){
+        local customField;
+        customField = _py_card.get("get_custom_field_by_name").callMethod(name);
+
+        r = new TrelloCardCustomField(this, name, customField);
+        return r;
+    }
+
+    setCustomFieldValue => (field, value){
+        _py_card.get("set_custom_field").callMethod(value, field);
+    }
+
+}

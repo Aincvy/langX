@@ -1,0 +1,50 @@
+
+auto TrelloCheckListItem{
+
+    /**
+     * 构造函数
+     */
+    TrelloCheckListItem => (name, checked) {
+        if(name){
+            this.name = name;
+        }
+        if(checked) {
+            this.checked = checked;
+        }
+
+    }
+
+
+
+}
+
+auto TrelloCheckList{
+
+    /**
+     * 构造函数
+     */
+    TrelloCheckList => (title){
+        if(title){
+            this.title = title;
+        }
+
+        itemList = new List();
+    }
+
+
+    addItem => (name, checked) {
+        local item;
+        item = new TrelloCheckListItem(name, checked);
+        itemList.add(item);
+
+        return this;
+    }
+
+    addItemEntity => ( item ){
+        itemList.add(item);
+
+        return this;
+    }
+
+    
+}
