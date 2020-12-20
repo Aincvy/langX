@@ -89,7 +89,7 @@ auto TrelloClient {
 
             // println("filterBoard: "+tmp);
             if( filter(tmp, arg) ){
-                println("filterBoard return : "+tmp);
+                // println("filterBoard return : "+tmp);
                 return tmp;
             }
         }

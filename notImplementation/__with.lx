@@ -1,0 +1,56 @@
+
+////////////////////////////////////////////////////
+//  __extend   扩展方法
+////////////////////////////////////////////////////
+
+getList => (){
+    return null;
+}
+
+// 过滤一个列表里面得元素
+filter => (list, filter){
+
+}
+
+// 打印列表
+printList => (list){
+
+}
+
+/*
+ * 理论上来说， 我可以直接 auto List {}  然后添加一个filter 得方法。 虽然这会破坏原类， 而且。。 如果提供const 关键字给 类使用， 那么auto 就不能使用了。。
+ * 所以可能需要一个 添加拓展方法得关键字。、。
+ * __extend [class] __with [method list]
+ * class 可以是类名 或者类全名，   method list 则是使用空格划分得 函数列表
+ * 表示给某个类添加这些扩展方法
+ * 因为考虑到 直接全局搜索 可能会特别影响性能。。
+ */
+// __extend langX.core.List __with filter printList
+// __extend langX.core.List /> filter printList
+
+// 之后就可以使用下面得方法调用了
+getList().filter( l => { return l.id == 1; }).printList();
+
+////////////////////////////////////////////////////
+//  __with   用XX  ， 一般作为后缀关键字 表示附加什么
+//  可以使用 符号 />   来表示相同意思， 只是写法不同
+////////////////////////////////////////////////////
+
+// 添加这个得本意是 转换 调用得意思。 还是上面得例子， 有时候， 你可能不能添加拓展方法
+// 当这个时候， 你得写法 可能如下
+list = getList();
+tmpList = filter(list, l => { return l.id == 1; });
+printList(tmpList);
+
+// 上面得写法是 从上到下得那种写法
+// 加上 __with 关键字得想法， 是让写法变成 从左到右
+// 修改之后， 如下
+// getList() __with filter( l => { return l.id == 1; }) __with printList();
+// 因为语法描述文件还没实现这个功能， 所以注释了语句
+// 这减少了 临时变量得数量， 且转换到了一行， 看起来应该也更好明白了
+// 符号版本如下
+// getList() /> filter( l => { return l.id == 1; }) /> printList();
+
+
+
+//  /> hello, i am jack .

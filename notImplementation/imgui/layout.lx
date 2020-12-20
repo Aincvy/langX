@@ -1,0 +1,19 @@
+
+// 一个布局
+Layout {
+
+
+
+}
+
+
+// 水平布局
+HorizontalLayout extends Layout {
+
+
+}
+
+// 垂直布局
+VerticalLayout extends Layout{
+
+}

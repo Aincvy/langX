@@ -1,0 +1,29 @@
+// 表示一个窗体
+// 草稿内容，  并不代表最终完成得内容。。
+attr public = langX.ext.imgui;
+
+Form {
+    
+    // 标题
+    title;
+    // 尺寸    Size 得实例
+    size;
+    
+    
+    /**
+     * 设置窗口得标题
+     */
+    setTitle => (title) {
+    
+    }
+    
+    /**
+     * 调整当前窗口得尺寸
+     */
+    resize => (size){
+    
+    }
+    
+    
+    
+}
