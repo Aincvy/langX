@@ -38,7 +38,7 @@ extern void lexEOFWork();
 %type <node> id_expr bool_expr double_expr uminus_expr uminus_expr_values string_expr number_expr positive_number_expr int_expr
 %type <node> this_stmt array_ele_stmt static_member_stmt class_member_stmt
 %type <node> selection_stmt loop_stmt code_block block_item_list block_item
-%type <node> case_stmt_list case_stmt logic_stmt
+%type <node> case_stmt_list case_stmt case_block logic_stmt
 %type <node> common_types_expr common_others_values_expr common_values_expr common_result_of_call_expr common_assignable_expr common_number_expr
 %type <node> common_object_expr common_string_expr common_expr number_parentheses_stmt string_plus_stmt lambda_stmt
 %type <node> func_param_list func_name_types multiple_id_expr args_list args_list_with_parentheses lambda_args_stmt
@@ -301,9 +301,15 @@ case_stmt_list
 	;
 
 case_stmt
-	: KEY_CASE int_expr ':' code_block        { $$ = opr(KEY_CASE, 2 , $2, $4); }
-	| KEY_DEFAULT ':' code_block                 { $$ = opr(KEY_DEFAULT , 1, $3); }
+	: KEY_CASE int_expr ':' case_block        { $$ = opr(KEY_CASE, 2 , $2, $4); }
+	| KEY_DEFAULT ':' case_block                 { $$ = opr(KEY_DEFAULT , 1, $3); }
 	;
+
+case_block
+    : code_block        %dprec 2 { $$ = $1; }
+    | block_item_list   %dprec 1 { $$ = $1; }
+    |       { $$ = NULL; }
+    ;
 
 loop_stmt
 	: KEY_WHILE '(' logic_stmt ')' code_block { $$ = opr(KEY_WHILE , 2, $3, $5 ); }
