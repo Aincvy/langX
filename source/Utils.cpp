@@ -112,16 +112,61 @@ namespace langX {
                     case '\'':
                         dst[j] = t;
                         break;
-                    case 'x':
-                        break;
-                    case 'u':
-                        break;
-                    case 'z': {  /* zap following span of spaces */
+                    case 'x': {
+                        //  十六进制 表示得字符串， 大概是 \x00  得形式， 两位
+                        char tmpNumberString[3] = {0};
+
+                        for (int a = 0; a < 2 && i < srcLen; a++){
+                            i++;
+                            t = *src++;
+
+                            if (!ishexnumber(t)){
+                                if (a == 0) {
+                                    // 首个字符就大于F， 说明有问题 \xG  这种字符串肯定是错误得
+                                    // 应该报个错， 但是我先忽略把
+                                } else {
+                                    // 应该是  \xF 类似得格式， 这里回退字符串
+                                    src--, i--;
+                                }
+                                break;
+                            } else{
+                                tmpNumberString[a] = t;
+                            }
+                        }
+
+                        int tmpNumber = std::stoi(tmpNumberString, 0, 16);
+                        dst[j] = (char)tmpNumber;
                         break;
                     }
-                    default:
+                    case 'u':
+                        // todo unicode
+                        break;
+                    default:{
+                        if (isdigit(t)) {
+                            // 也许是 \000 得数字形式
+
+                            // 把后续得符合格式得字符串全部读取出来
+                            char tmpNumberString[4] = {0};
+                            tmpNumberString[0] = t;
+                            for (int a = 0; a < 2 && i < srcLen; a++){
+                                i++;
+                                t = *src++;
+                                if (isdigit(t)) {
+                                    tmpNumberString[a+1] = t;
+                                }else {
+                                    // 非数字， 回退字符串
+                                    src--, i--;
+                                    break;
+                                }
+                            }
+
+                            int tmpNumber = std::stoi(tmpNumberString, 0, 8);
+                            dst[j] = (char)tmpNumber;
+                        }
+
                         // maybe need throw error ..
                         break;
+                    }
                 }
             } else if ( t != '\\'){
                 dst[j] = t;
