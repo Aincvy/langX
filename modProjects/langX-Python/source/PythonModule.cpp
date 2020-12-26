@@ -191,11 +191,16 @@ namespace langX {
     void freePyObjectRef(PyObject *obj){
         if (PyTuple_Check(obj)) {
             // 是一个元组， 需要释放里面得每个元素得值
-
-        } else {
-            // 只释放这个就好了
-            Py_DECREF(obj);
+            auto size = PyTuple_Size(obj);
+            for (int i = 0; i < size; ++i) {
+                // 减少元素得引用
+                auto tmp = PyTuple_GetItem(obj, i);
+                Py_DECREF(tmp);
+            }
         }
+
+        // 减少原对象得引用
+        Py_DECREF(obj);
 	}
 
 }

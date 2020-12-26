@@ -87,6 +87,12 @@ namespace langX {
 	Object * langX_PyObject_get_impl(XClassPyObject *obj, Object *a);
 	Object * langX_PyObject_set_impl(XClassPyObject * obj, Object * key, Object *value);
 
+    /**
+     * 释放一个 PyObject* 得引用(计数 ？)
+     *
+     */
+    void freePyObjectRef(PyObject *obj);
+
 	/**
 	 * 转换langX 对象成一个 PyObject
 	 * 支持 Number, String, Array(=> Tuple), langXObject(only PyObject instance..)
@@ -95,11 +101,6 @@ namespace langX {
 	 */
 	PyObject * langXToPyObject(Object *);
 
-	/**
-	 * 释放一个 PyObject* 得引用(计数 ？)
-	 *
-	 */
-	void freePyObjectRef(PyObject *obj);
 
 	/**
 	 * 尝试矫正 对象得 python 类型
