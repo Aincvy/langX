@@ -58,9 +58,17 @@ namespace langX{
         // 右值
         auto right = oprObj->op[1];
 
+
         if (nodeLink->index == 0) {
             // 第一阶段， 预处理部分的值
             nodeLink->index = 1;
+
+            // 先暂存前缀属性
+            auto varDeclarePrefix = thread->getVarDeclarePrefix();
+            if (varDeclarePrefix > 0) {
+                nodeLink->tempInt = varDeclarePrefix;
+                thread->setVarDeclarePrefix(-1);
+            }
 
             // 分情况对待左值
             __exec61LeftStep0(left, thread);
@@ -78,7 +86,7 @@ namespace langX{
         auto rightValue = right->value ? right->value : Allocator::allocateNull() ;
 
         // 更新 右值的 前缀属性
-        auto varDeclarePrefix = thread->getVarDeclarePrefix();
+        auto varDeclarePrefix = nodeLink->tempInt;
         if (varDeclarePrefix > 0) {
             // 存在 声明 限制符 的时候再更新前缀
             updateVariablePrefix(rightValue, varDeclarePrefix);
@@ -170,6 +178,14 @@ namespace langX{
 
         if (nodeLink->index == 2) {
             // 到了结束的时候
+
+            // 还原前缀属性
+            auto tmp = nodeLink->tempInt;
+            if (tmp > 0) {
+                thread->setVarDeclarePrefix(tmp);
+            }
+
+            // 值释放
             auto node = nodeLink->node;
             doSuffixOperation(node);
             freeSubNodes(node);

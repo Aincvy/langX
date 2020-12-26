@@ -13,11 +13,16 @@ namespace langX {
 
     std::vector<std::string> splitString(const std::string &str, const std::string &pattern);
 
-    // 处理字符串内的转义字符
-    std::string unescape(const std::string &s);
-
     // 判定一个字符串是否是另外一个的结尾
     bool endsWith(std::string const &fullString, std::string const &ending);
+
+    /**
+     * 处理转义字符   |   从 src 转义到 dst 里面
+     * @param src    包含带有 \a \b 之类字符串得 字符串
+     * @param dst    会转义上述得字符
+     * @return 0 表示成功， 1表示有问题
+     */
+    int workEscapeStr(const char *src, char *dst, size_t srcLen);
 
     /**
      * 释放一个 char ** 类型的占用内存

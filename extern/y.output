@@ -29,8 +29,8 @@ Terminals unused in grammar
 
 Rules useless in grammar
 
-  227 common_string_expr: string_expr
-  228                   | common_object_expr
+  228 common_string_expr: string_expr
+  229                   | common_object_expr
 
 
 State 2 conflicts: 1 shift/reduce
@@ -154,263 +154,264 @@ Grammar
 
    67 single_if_stmt: KEY_IF '(' logic_stmt ')' code_block
 
-   68 else_stmt: else_if_stmts single_else_stmt
-   69          | single_else_stmt
+   68 else_stmt: else_if_stmts
+   69          | else_if_stmts single_else_stmt
+   70          | single_else_stmt
 
-   70 else_if_stmts: else_if_stmt
-   71              | else_if_stmts else_if_stmt
+   71 else_if_stmts: else_if_stmt
+   72              | else_if_stmts else_if_stmt
 
-   72 else_if_stmt: KEY_ELSE single_if_stmt
+   73 else_if_stmt: KEY_ELSE single_if_stmt
 
-   73 single_else_stmt: KEY_ELSE code_block
+   74 single_else_stmt: KEY_ELSE code_block
 
-   74 case_stmt_list: case_stmt
-   75               | case_stmt_list case_stmt
+   75 case_stmt_list: case_stmt
+   76               | case_stmt_list case_stmt
 
-   76 case_stmt: KEY_CASE int_expr ':' case_block
-   77          | KEY_DEFAULT ':' case_block
+   77 case_stmt: KEY_CASE int_expr ':' case_block
+   78          | KEY_DEFAULT ':' case_block
 
-   78 case_block: code_block
-   79           | block_item_list
-   80           | %empty
+   79 case_block: code_block
+   80           | block_item_list
+   81           | %empty
 
-   81 loop_stmt: KEY_WHILE '(' logic_stmt ')' code_block
-   82          | KEY_FOR '(' for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list ')' code_block
+   82 loop_stmt: KEY_WHILE '(' logic_stmt ')' code_block
+   83          | KEY_FOR '(' for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list ')' code_block
 
-   83 for_1_stmt_list: %empty
-   84                | for_1_stmt
-   85                | for_1_stmt_list ',' for_1_stmt
+   84 for_1_stmt_list: %empty
+   85                | for_1_stmt
+   86                | for_1_stmt_list ',' for_1_stmt
 
-   86 for_1_stmt: assign_stmt
+   87 for_1_stmt: assign_stmt
 
-   87 for_3_stmt_list: %empty
-   88                | for_3_stmt
-   89                | for_3_stmt_list ',' for_3_stmt
+   88 for_3_stmt_list: %empty
+   89                | for_3_stmt
+   90                | for_3_stmt_list ',' for_3_stmt
 
-   90 for_3_stmt: assign_stmt
-   91           | self_inc_dec_stmt
+   91 for_3_stmt: assign_stmt
+   92           | self_inc_dec_stmt
 
-   92 simple_stmt: simple_stmt_types ';'
+   93 simple_stmt: simple_stmt_types ';'
 
-   93 simple_stmt_types: self_inc_dec_stmt
-   94                  | assign_stmt
-   95                  | call_statement
-   96                  | delete_expr
-   97                  | interrupt_stmt
-   98                  | new_expr
-   99                  | restrict_stmt
-  100                  | var_declare_stmt
+   94 simple_stmt_types: self_inc_dec_stmt
+   95                  | assign_stmt
+   96                  | call_statement
+   97                  | delete_expr
+   98                  | interrupt_stmt
+   99                  | new_expr
+  100                  | restrict_stmt
+  101                  | var_declare_stmt
 
-  101 restrict_stmt: KEY_RESTRICT
-  102              | KEY_RESTRICT bool_expr
+  102 restrict_stmt: KEY_RESTRICT
+  103              | KEY_RESTRICT bool_expr
 
-  103 interrupt_stmt: KEY_BREAK
-  104               | KEY_RETURN
-  105               | KEY_RETURN common_expr
-  106               | KEY_CONTINUE
+  104 interrupt_stmt: KEY_BREAK
+  105               | KEY_RETURN
+  106               | KEY_RETURN common_expr
+  107               | KEY_CONTINUE
 
-  107 call_statement: common_values_expr args_list_with_parentheses
+  108 call_statement: common_values_expr args_list_with_parentheses
 
-  108 arithmetic_stmt: common_number_expr '+' common_number_expr
-  109                | common_number_expr '-' common_number_expr
-  110                | common_number_expr '*' common_number_expr
-  111                | common_number_expr '/' common_number_expr
-  112                | common_number_expr '%' common_number_expr
-  113                | common_number_expr '&' common_number_expr
-  114                | common_number_expr '|' common_number_expr
-  115                | common_number_expr '^' common_number_expr
-  116                | common_number_expr LEFT_SHIFT common_number_expr
-  117                | common_number_expr RIGHT_SHIFT common_number_expr
-  118                | '~' common_number_expr
+  109 arithmetic_stmt: common_number_expr '+' common_number_expr
+  110                | common_number_expr '-' common_number_expr
+  111                | common_number_expr '*' common_number_expr
+  112                | common_number_expr '/' common_number_expr
+  113                | common_number_expr '%' common_number_expr
+  114                | common_number_expr '&' common_number_expr
+  115                | common_number_expr '|' common_number_expr
+  116                | common_number_expr '^' common_number_expr
+  117                | common_number_expr LEFT_SHIFT common_number_expr
+  118                | common_number_expr RIGHT_SHIFT common_number_expr
+  119                | '~' common_number_expr
 
-  119 new_expr: KEY_NEW id_expr args_list_with_parentheses
+  120 new_expr: KEY_NEW id_expr args_list_with_parentheses
 
-  120 args_list_with_parentheses: '(' ')'
-  121                           | '(' args_list ')'
+  121 args_list_with_parentheses: '(' ')'
+  122                           | '(' args_list ')'
 
-  122 args_list: common_expr
-  123          | args_list ',' common_expr
+  123 args_list: common_expr
+  124          | args_list ',' common_expr
 
-  124 delete_expr: KEY_DELETE multiple_id_expr
+  125 delete_expr: KEY_DELETE multiple_id_expr
 
-  125 logic_stmt: bool_param_expr
-  126           | not_bool_param_expr
-  127           | type_judge_stmt
-  128           | compare_expr
-  129           | logic_stmt AND_OP logic_stmt
-  130           | logic_stmt OR_OP logic_stmt
+  126 logic_stmt: bool_param_expr
+  127           | not_bool_param_expr
+  128           | type_judge_stmt
+  129           | compare_expr
+  130           | logic_stmt AND_OP logic_stmt
+  131           | logic_stmt OR_OP logic_stmt
 
-  131 bool_param_expr: assign_stmt_value_eq
-  132                | bool_expr
+  132 bool_param_expr: assign_stmt_value_eq
+  133                | bool_expr
 
-  133 type_judge_stmt: common_object_expr KEY_IS id_expr
+  134 type_judge_stmt: common_object_expr KEY_IS id_expr
 
-  134 not_bool_param_expr: '!' bool_param_expr
+  135 not_bool_param_expr: '!' bool_param_expr
 
-  135 compare_expr: number_compare_expr
-  136             | object_compare_expr
+  136 compare_expr: number_compare_expr
+  137             | object_compare_expr
 
-  137 number_compare_expr: common_number_expr _symbol_compare common_number_expr
+  138 number_compare_expr: common_number_expr _symbol_compare common_number_expr
 
-  138 object_compare_expr: common_object_expr _symbol_equals_not common_types_expr
+  139 object_compare_expr: common_object_expr _symbol_equals_not common_types_expr
 
-  139 _symbol_compare: '>'
-  140                | '<'
-  141                | GE_OP
-  142                | LE_OP
-  143                | NE_OP
-  144                | EQ_OP
+  140 _symbol_compare: '>'
+  141                | '<'
+  142                | GE_OP
+  143                | LE_OP
+  144                | NE_OP
+  145                | EQ_OP
 
-  145 _symbol_equals_not: NE_OP
-  146                   | EQ_OP
+  146 _symbol_equals_not: NE_OP
+  147                   | EQ_OP
 
-  147 self_inc_dec_stmt: self_inc_dec_operators common_values_expr
-  148                  | common_values_expr self_inc_dec_operators
+  148 self_inc_dec_stmt: self_inc_dec_operators common_values_expr
+  149                  | common_values_expr self_inc_dec_operators
 
-  149 self_inc_dec_operators: INC_OP
-  150                       | DEC_OP
+  150 self_inc_dec_operators: INC_OP
+  151                       | DEC_OP
 
-  151 assign_stmt_value_eq: number_expr
-  152                     | common_values_expr
-  153                     | common_result_of_call_expr
+  152 assign_stmt_value_eq: number_expr
+  153                     | common_values_expr
+  154                     | common_result_of_call_expr
 
-  154 array_ele_stmt: common_object_expr '[' common_number_expr ']'
+  155 array_ele_stmt: common_object_expr '[' common_number_expr ']'
 
-  155 assign_stmt: single_assign_stmt
-  156            | number_change_assign_stmt
+  156 assign_stmt: single_assign_stmt
+  157            | number_change_assign_stmt
 
-  157 single_assign_stmt: common_assignable_expr '=' single_assign_stmt_value
+  158 single_assign_stmt: common_assignable_expr '=' single_assign_stmt_value
 
-  158 single_assign_stmt_value: common_expr
-  159                         | single_assign_stmt
+  159 single_assign_stmt_value: common_expr
+  160                         | single_assign_stmt
 
-  160 number_change_assign_stmt: common_assignable_expr symbol_change_assign common_number_expr
+  161 number_change_assign_stmt: common_assignable_expr symbol_change_assign common_number_expr
 
-  161 symbol_change_assign: ADD_EQ
-  162                     | SUB_EQ
-  163                     | MUL_EQ
-  164                     | DIV_EQ
-  165                     | MOD_EQ
+  162 symbol_change_assign: ADD_EQ
+  163                     | SUB_EQ
+  164                     | MUL_EQ
+  165                     | DIV_EQ
+  166                     | MOD_EQ
 
-  166 code_block: '{' '}'
-  167           | '{' block_item_list '}'
+  167 code_block: '{' '}'
+  168           | '{' block_item_list '}'
 
-  168 block_item_list: block_item
-  169                | block_item_list block_item
+  169 block_item_list: block_item
+  170                | block_item_list block_item
 
-  170 block_item: try_stmt
-  171           | simple_stmt
-  172           | con_ctl_stmt
-  173           | _extra_nothing
+  171 block_item: try_stmt
+  172           | simple_stmt
+  173           | con_ctl_stmt
+  174           | _extra_nothing
 
-  174 string_plus_stmt: string_expr '+' string_plus_stmt_value
-  175                 | string_plus_stmt_value '+' string_expr
-  176                 | string_plus_stmt_value '+' string_plus_stmt
-  177                 | string_plus_stmt '+' string_plus_stmt_value
+  175 string_plus_stmt: string_expr '+' string_plus_stmt_value
+  176                 | string_plus_stmt_value '+' string_expr
+  177                 | string_plus_stmt_value '+' string_plus_stmt
+  178                 | string_plus_stmt '+' string_plus_stmt_value
 
-  178 string_plus_stmt_value: common_object_expr
-  179                       | common_types_expr
-  180                       | self_inc_dec_stmt
-  181                       | number_parentheses_stmt
+  179 string_plus_stmt_value: common_object_expr
+  180                       | common_types_expr
+  181                       | self_inc_dec_stmt
+  182                       | number_parentheses_stmt
 
-  182 number_parentheses_stmt: '(' common_number_expr ')'
+  183 number_parentheses_stmt: '(' common_number_expr ')'
 
-  183 id_expr: IDENTIFIER
+  184 id_expr: IDENTIFIER
 
-  184 multiple_id_expr: id_expr
-  185                 | multiple_id_expr ',' id_expr
+  185 multiple_id_expr: id_expr
+  186                 | multiple_id_expr ',' id_expr
 
-  186 bool_expr: TBOOL
+  187 bool_expr: TBOOL
 
-  187 number_expr: positive_number_expr
-  188            | uminus_expr
+  188 number_expr: positive_number_expr
+  189            | uminus_expr
 
-  189 positive_number_expr: double_expr
-  190                     | int_expr
+  190 positive_number_expr: double_expr
+  191                     | int_expr
 
-  191 int_expr: TINTEGER
+  192 int_expr: TINTEGER
 
-  192 double_expr: TDOUBLE
+  193 double_expr: TDOUBLE
 
-  193 uminus_expr: '-' uminus_expr_values
+  194 uminus_expr: '-' uminus_expr_values
 
-  194 uminus_expr_values: positive_number_expr
-  195                   | common_others_values_expr
-  196                   | call_statement
-  197                   | number_parentheses_stmt
+  195 uminus_expr_values: positive_number_expr
+  196                   | common_others_values_expr
+  197                   | call_statement
+  198                   | number_parentheses_stmt
 
-  198 string_expr: TSTRING
+  199 string_expr: TSTRING
 
-  199 null_expr: KEY_NULL
+  200 null_expr: KEY_NULL
 
-  200 common_types_expr: number_expr
-  201                  | string_expr
-  202                  | null_expr
-  203                  | lambda_stmt
-  204                  | bool_expr
+  201 common_types_expr: number_expr
+  202                  | string_expr
+  203                  | null_expr
+  204                  | lambda_stmt
+  205                  | bool_expr
 
-  205 common_others_values_expr: id_expr
-  206                          | array_ele_stmt
-  207                          | class_member_stmt
-  208                          | static_member_stmt
+  206 common_others_values_expr: id_expr
+  207                          | array_ele_stmt
+  208                          | class_member_stmt
+  209                          | static_member_stmt
 
-  209 common_values_expr: common_others_values_expr
-  210                   | this_stmt
-  211                   | new_expr
+  210 common_values_expr: common_others_values_expr
+  211                   | this_stmt
+  212                   | new_expr
 
-  212 common_result_of_call_expr: self_inc_dec_stmt
-  213                           | call_statement
-  214                           | arithmetic_stmt
-  215                           | number_parentheses_stmt
+  213 common_result_of_call_expr: self_inc_dec_stmt
+  214                           | call_statement
+  215                           | arithmetic_stmt
+  216                           | number_parentheses_stmt
 
-  216 common_assignable_expr: common_others_values_expr
+  217 common_assignable_expr: common_others_values_expr
 
-  217 common_number_expr: number_expr
-  218                   | common_values_expr
-  219                   | common_result_of_call_expr
+  218 common_number_expr: number_expr
+  219                   | common_values_expr
+  220                   | common_result_of_call_expr
 
-  220 common_object_expr: common_values_expr
-  221                   | call_statement
+  221 common_object_expr: common_values_expr
+  222                   | call_statement
 
-  222 common_expr: common_types_expr
-  223            | common_values_expr
-  224            | common_result_of_call_expr
-  225            | string_plus_stmt
-  226            | logic_stmt
+  223 common_expr: common_types_expr
+  224            | common_values_expr
+  225            | common_result_of_call_expr
+  226            | string_plus_stmt
+  227            | logic_stmt
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    '!' (33) 134
-    '%' (37) 112
-    '&' (38) 113
-    '(' (40) 17 43 44 46 47 64 67 81 82 120 121 182
-    ')' (41) 17 43 44 46 47 64 67 81 82 120 121 182
-    '*' (42) 110
-    '+' (43) 108 174 175 176 177
-    ',' (44) 54 58 85 89 123 185
-    '-' (45) 109 193
+    '!' (33) 135
+    '%' (37) 113
+    '&' (38) 114
+    '(' (40) 17 43 44 46 47 64 67 82 83 121 122 183
+    ')' (41) 17 43 44 46 47 64 67 82 83 121 122 183
+    '*' (42) 111
+    '+' (43) 109 175 176 177 178
+    ',' (44) 54 58 86 90 124 186
+    '-' (45) 110 194
     '.' (46) 21 36
-    '/' (47) 111
-    ':' (58) 76 77
-    ';' (59) 10 31 32 82 92
-    '<' (60) 140
-    '=' (61) 18 157
-    '>' (62) 139
-    '[' (91) 56 154
-    ']' (93) 56 154
-    '^' (94) 115
-    '{' (123) 27 28 64 166 167
-    '|' (124) 114
-    '}' (125) 27 28 64 166 167
-    '~' (126) 41 118
+    '/' (47) 112
+    ':' (58) 77 78
+    ';' (59) 10 31 32 83 93
+    '<' (60) 141
+    '=' (61) 18 158
+    '>' (62) 140
+    '[' (91) 56 155
+    ']' (93) 56 155
+    '^' (94) 116
+    '{' (123) 27 28 64 167 168
+    '|' (124) 115
+    '}' (125) 27 28 64 167 168
+    '~' (126) 41 119
     error (256)
-    TINTEGER <iValue> (258) 191
-    TBOOL <iValue> (259) 186
-    TDOUBLE <dValue> (260) 192
-    IDENTIFIER <sValue> (261) 183
-    TSTRING <sValue> (262) 198
+    TINTEGER <iValue> (258) 192
+    TBOOL <iValue> (259) 187
+    TDOUBLE <dValue> (260) 193
+    IDENTIFIER <sValue> (261) 184
+    TSTRING <sValue> (262) 199
     OPERATOR_X__ <sValue> (263) 42
     FUNC_OP (264) 38 39 45
     FUNC_CALL (265)
@@ -419,37 +420,37 @@ Terminals, with rules where they appear
     KEY_TRY (268) 15 16
     KEY_PUBLIC (269) 18
     KEY_SET (270) 18
-    KEY_IS (271) 133
+    KEY_IS (271) 134
     KEY_REF (272) 19
-    KEY_CONTINUE (273) 106
-    KEY_NEW (274) 119
+    KEY_CONTINUE (273) 107
+    KEY_NEW (274) 120
     KEY_CATCH (275) 17
     KEY_THIS (276) 35
     KEY_EXTENDS (277) 26
-    KEY_RESTRICT (278) 101 102
+    KEY_RESTRICT (278) 102 103
     KEY_AUTO (279) 24
     KEY_CONST (280) 51
     KEY_LOCAL (281) 52
     KEY_IF (282) 67
-    KEY_ELSE (283) 72 73
-    KEY_WHILE (284) 81
-    KEY_FOR (285) 82
-    KEY_DELETE (286) 124
-    KEY_BREAK (287) 103
-    KEY_RETURN (288) 104 105
+    KEY_ELSE (283) 73 74
+    KEY_WHILE (284) 82
+    KEY_FOR (285) 83
+    KEY_DELETE (286) 125
+    KEY_BREAK (287) 104
+    KEY_RETURN (288) 105 106
     KEY_SWITCH (289) 64
-    KEY_CASE (290) 76
-    KEY_DEFAULT (291) 77
-    KEY_NULL (292) 199
+    KEY_CASE (290) 77
+    KEY_DEFAULT (291) 78
+    KEY_NULL (292) 200
     CASE_LIST (293)
     CLAXX_BODY (294)
     CLAXX_MEMBER (295)
     CLAXX_FUNC_CALL (296)
     SCOPE (297) 37
-    LEFT_SHIFT (298) 116
-    RIGHT_SHIFT (299) 117
-    INC_OP (300) 149
-    DEC_OP (301) 150
+    LEFT_SHIFT (298) 117
+    RIGHT_SHIFT (299) 118
+    INC_OP (300) 150
+    DEC_OP (301) 151
     OPR_NODE_LIST (302)
     OPR_CHANGE_NAME_SPACE (303)
     OPR_GET_NAME_SPACE (304)
@@ -462,17 +463,17 @@ Terminals, with rules where they appear
     KEY_REQUIRE (311)
     KEY_REQUIRE_ONCE (312)
     KEY_INCLUDE (313)
-    ADD_EQ (314) 161
-    SUB_EQ (315) 162
-    MUL_EQ (316) 163
-    DIV_EQ (317) 164
-    MOD_EQ (318) 165
-    LE_OP (319) 142
-    GE_OP (320) 141
-    EQ_OP (321) 144 146
-    NE_OP (322) 143 145
-    AND_OP (323) 129
-    OR_OP (324) 130
+    ADD_EQ (314) 162
+    SUB_EQ (315) 163
+    MUL_EQ (316) 164
+    DIV_EQ (317) 165
+    MOD_EQ (318) 166
+    LE_OP (319) 143
+    GE_OP (320) 142
+    EQ_OP (321) 145 147
+    NE_OP (322) 144 146
+    AND_OP (323) 130
+    OR_OP (324) 131
     TOKEN_END_OF_FILE (325) 9
     PIPELINE_OP (326)
     INC_OP_BACK (327)
@@ -494,13 +495,13 @@ Nonterminals, with rules where they appear
         on right: 2
     _extra_nothing <node> (101)
         on left: 10
-        on right: 4 34 173
+        on right: 4 34 174
     out_declare_stmt <node> (102)
         on left: 11 12 13 14
         on right: 5
     try_stmt <node> (103)
         on left: 15 16
-        on right: 8 170
+        on right: 8 171
     catch_block_stmt <node> (104)
         on left: 17
         on right: 16
@@ -533,13 +534,13 @@ Nonterminals, with rules where they appear
         on right: 29 30
     this_stmt <node> (114)
         on left: 35
-        on right: 210
+        on right: 211
     class_member_stmt <node> (115)
         on left: 36
-        on right: 207
+        on right: 208
     static_member_stmt <node> (116)
         on left: 37
-        on right: 208
+        on right: 209
     func_declare_stmt <node> (117)
         on left: 38 39
         on right: 11 33
@@ -551,13 +552,13 @@ Nonterminals, with rules where they appear
         on right: 39
     lambda_stmt <node> (120)
         on left: 45
-        on right: 203
+        on right: 204
     lambda_args_stmt <node> (121)
         on left: 46 47 48
         on right: 45
     var_declare_stmt <node> (122)
         on left: 49 50
-        on right: 31 100
+        on right: 31 101
     var_prefix <iValue> (123)
         on left: 51 52
         on right: 50
@@ -575,7 +576,7 @@ Nonterminals, with rules where they appear
         on right: 57 58
     con_ctl_stmt <node> (128)
         on left: 61 62
-        on right: 6 172
+        on right: 6 173
     selection_stmt <node> (129)
         on left: 63 64
         on right: 61
@@ -584,202 +585,202 @@ Nonterminals, with rules where they appear
         on right: 63
     single_if_stmt <node> (131)
         on left: 67
-        on right: 65 66 72
+        on right: 65 66 73
     else_stmt <node> (132)
-        on left: 68 69
+        on left: 68 69 70
         on right: 66
     else_if_stmts <node> (133)
-        on left: 70 71
-        on right: 68 71
+        on left: 71 72
+        on right: 68 69 72
     else_if_stmt <node> (134)
-        on left: 72
-        on right: 70 71
-    single_else_stmt <node> (135)
         on left: 73
-        on right: 68 69
+        on right: 71 72
+    single_else_stmt <node> (135)
+        on left: 74
+        on right: 69 70
     case_stmt_list <node> (136)
-        on left: 74 75
-        on right: 64 75
+        on left: 75 76
+        on right: 64 76
     case_stmt <node> (137)
-        on left: 76 77
-        on right: 74 75
+        on left: 77 78
+        on right: 75 76
     case_block <node> (138)
-        on left: 78 79 80
-        on right: 76 77
+        on left: 79 80 81
+        on right: 77 78
     loop_stmt <node> (139)
-        on left: 81 82
+        on left: 82 83
         on right: 62
     for_1_stmt_list <node> (140)
-        on left: 83 84 85
-        on right: 82 85
+        on left: 84 85 86
+        on right: 83 86
     for_1_stmt <node> (141)
-        on left: 86
-        on right: 84 85
+        on left: 87
+        on right: 85 86
     for_3_stmt_list <node> (142)
-        on left: 87 88 89
-        on right: 82 89
+        on left: 88 89 90
+        on right: 83 90
     for_3_stmt <node> (143)
-        on left: 90 91
-        on right: 88 89
+        on left: 91 92
+        on right: 89 90
     simple_stmt <node> (144)
-        on left: 92
-        on right: 7 171
+        on left: 93
+        on right: 7 172
     simple_stmt_types <node> (145)
-        on left: 93 94 95 96 97 98 99 100
-        on right: 92
+        on left: 94 95 96 97 98 99 100 101
+        on right: 93
     restrict_stmt <node> (146)
-        on left: 101 102
-        on right: 99
+        on left: 102 103
+        on right: 100
     interrupt_stmt <node> (147)
-        on left: 103 104 105 106
-        on right: 97
+        on left: 104 105 106 107
+        on right: 98
     call_statement <node> (148)
-        on left: 107
-        on right: 95 196 213 221
+        on left: 108
+        on right: 96 197 214 222
     arithmetic_stmt <node> (149)
-        on left: 108 109 110 111 112 113 114 115 116 117 118
-        on right: 214
+        on left: 109 110 111 112 113 114 115 116 117 118 119
+        on right: 215
     new_expr <node> (150)
-        on left: 119
-        on right: 98 211
+        on left: 120
+        on right: 99 212
     args_list_with_parentheses <node> (151)
-        on left: 120 121
-        on right: 107 119
+        on left: 121 122
+        on right: 108 120
     args_list <node> (152)
-        on left: 122 123
-        on right: 121 123
+        on left: 123 124
+        on right: 122 124
     delete_expr <node> (153)
-        on left: 124
-        on right: 96
+        on left: 125
+        on right: 97
     logic_stmt <node> (154)
-        on left: 125 126 127 128 129 130
-        on right: 67 81 82 129 130 226
+        on left: 126 127 128 129 130 131
+        on right: 67 82 83 130 131 227
     bool_param_expr <node> (155)
-        on left: 131 132
-        on right: 125 134
+        on left: 132 133
+        on right: 126 135
     type_judge_stmt <node> (156)
-        on left: 133
-        on right: 127
-    not_bool_param_expr <node> (157)
         on left: 134
-        on right: 126
-    compare_expr <node> (158)
-        on left: 135 136
         on right: 128
+    not_bool_param_expr <node> (157)
+        on left: 135
+        on right: 127
+    compare_expr <node> (158)
+        on left: 136 137
+        on right: 129
     number_compare_expr <node> (159)
-        on left: 137
-        on right: 135
-    object_compare_expr <node> (160)
         on left: 138
         on right: 136
-    _symbol_compare <iValue> (161)
-        on left: 139 140 141 142 143 144
+    object_compare_expr <node> (160)
+        on left: 139
         on right: 137
-    _symbol_equals_not <iValue> (162)
-        on left: 145 146
+    _symbol_compare <iValue> (161)
+        on left: 140 141 142 143 144 145
         on right: 138
+    _symbol_equals_not <iValue> (162)
+        on left: 146 147
+        on right: 139
     self_inc_dec_stmt <node> (163)
-        on left: 147 148
-        on right: 91 93 180 212
+        on left: 148 149
+        on right: 92 94 181 213
     self_inc_dec_operators <iValue> (164)
-        on left: 149 150
-        on right: 147 148
+        on left: 150 151
+        on right: 148 149
     assign_stmt_value_eq <node> (165)
-        on left: 151 152 153
-        on right: 131
+        on left: 152 153 154
+        on right: 132
     array_ele_stmt <node> (166)
-        on left: 154
-        on right: 206
+        on left: 155
+        on right: 207
     assign_stmt <node> (167)
-        on left: 155 156
-        on right: 86 90 94
+        on left: 156 157
+        on right: 87 91 95
     single_assign_stmt <node> (168)
-        on left: 157
-        on right: 32 60 155 159
+        on left: 158
+        on right: 32 60 156 160
     single_assign_stmt_value <node> (169)
-        on left: 158 159
-        on right: 157
+        on left: 159 160
+        on right: 158
     number_change_assign_stmt <node> (170)
-        on left: 160
-        on right: 156
+        on left: 161
+        on right: 157
     symbol_change_assign <iValue> (171)
-        on left: 161 162 163 164 165
-        on right: 160
+        on left: 162 163 164 165 166
+        on right: 161
     code_block <node> (172)
-        on left: 166 167
-        on right: 15 16 17 38 39 45 67 73 78 81 82
+        on left: 167 168
+        on right: 15 16 17 38 39 45 67 74 79 82 83
     block_item_list <node> (173)
-        on left: 168 169
-        on right: 79 167 169
+        on left: 169 170
+        on right: 80 168 170
     block_item <node> (174)
-        on left: 170 171 172 173
-        on right: 168 169
+        on left: 171 172 173 174
+        on right: 169 170
     string_plus_stmt <node> (175)
-        on left: 174 175 176 177
-        on right: 176 177 225
+        on left: 175 176 177 178
+        on right: 177 178 226
     string_plus_stmt_value <node> (176)
-        on left: 178 179 180 181
-        on right: 174 175 176 177
+        on left: 179 180 181 182
+        on right: 175 176 177 178
     number_parentheses_stmt <node> (177)
-        on left: 182
-        on right: 181 197 215
-    id_expr <node> (178)
         on left: 183
-        on right: 17 20 21 22 36 37 40 41 55 56 119 133 184 185 205
+        on right: 182 198 216
+    id_expr <node> (178)
+        on left: 184
+        on right: 17 20 21 22 36 37 40 41 55 56 120 134 185 186 206
     multiple_id_expr <node> (179)
-        on left: 184 185
-        on right: 26 44 47 48 124 185
+        on left: 185 186
+        on right: 26 44 47 48 125 186
     bool_expr <node> (180)
-        on left: 186
-        on right: 102 132 204
+        on left: 187
+        on right: 103 133 205
     number_expr <node> (181)
-        on left: 187 188
-        on right: 151 200 217
+        on left: 188 189
+        on right: 152 201 218
     positive_number_expr <node> (182)
-        on left: 189 190
-        on right: 187 194
+        on left: 190 191
+        on right: 188 195
     int_expr <node> (183)
-        on left: 191
-        on right: 76 190
-    double_expr <node> (184)
         on left: 192
-        on right: 189
-    uminus_expr <node> (185)
+        on right: 77 191
+    double_expr <node> (184)
         on left: 193
-        on right: 188
+        on right: 190
+    uminus_expr <node> (185)
+        on left: 194
+        on right: 189
     uminus_expr_values <node> (186)
-        on left: 194 195 196 197
-        on right: 193
+        on left: 195 196 197 198
+        on right: 194
     string_expr <node> (187)
-        on left: 198
-        on right: 174 175 201
-    null_expr <node> (188)
         on left: 199
-        on right: 202
+        on right: 175 176 202
+    null_expr <node> (188)
+        on left: 200
+        on right: 203
     common_types_expr <node> (189)
-        on left: 200 201 202 203 204
-        on right: 138 179 222
+        on left: 201 202 203 204 205
+        on right: 139 180 223
     common_others_values_expr <node> (190)
-        on left: 205 206 207 208
-        on right: 195 209 216
+        on left: 206 207 208 209
+        on right: 196 210 217
     common_values_expr <node> (191)
-        on left: 209 210 211
-        on right: 107 147 148 152 218 220 223
+        on left: 210 211 212
+        on right: 108 148 149 153 219 221 224
     common_result_of_call_expr <node> (192)
-        on left: 212 213 214 215
-        on right: 153 219 224
+        on left: 213 214 215 216
+        on right: 154 220 225
     common_assignable_expr <node> (193)
-        on left: 216
-        on right: 157 160
+        on left: 217
+        on right: 158 161
     common_number_expr <node> (194)
-        on left: 217 218 219
-        on right: 56 64 108 109 110 111 112 113 114 115 116 117 118 137 154 160 182
+        on left: 218 219 220
+        on right: 56 64 109 110 111 112 113 114 115 116 117 118 119 138 155 161 183
     common_object_expr <node> (195)
-        on left: 220 221
-        on right: 36 133 138 154 178
+        on left: 221 222
+        on right: 36 134 139 155 179
     common_expr <node> (196)
-        on left: 222 223 224 225 226
-        on right: 105 122 123 158
+        on left: 223 224 225 226 227
+        on right: 106 123 124 159
 
 
 State 0
@@ -883,9 +884,9 @@ State 3
 
 State 4
 
-  183 id_expr: IDENTIFIER •
+  184 id_expr: IDENTIFIER •
 
-    $default  reduce using rule 183 (id_expr)
+    $default  reduce using rule 184 (id_expr)
 
 
 State 5
@@ -924,14 +925,14 @@ State 8
 
 State 9
 
-  106 interrupt_stmt: KEY_CONTINUE •
+  107 interrupt_stmt: KEY_CONTINUE •
 
-    $default  reduce using rule 106 (interrupt_stmt)
+    $default  reduce using rule 107 (interrupt_stmt)
 
 
 State 10
 
-  119 new_expr: KEY_NEW • id_expr args_list_with_parentheses
+  120 new_expr: KEY_NEW • id_expr args_list_with_parentheses
 
     IDENTIFIER  shift, and go to state 4
 
@@ -947,12 +948,12 @@ State 11
 
 State 12
 
-  101 restrict_stmt: KEY_RESTRICT •
-  102              | KEY_RESTRICT • bool_expr
+  102 restrict_stmt: KEY_RESTRICT •
+  103              | KEY_RESTRICT • bool_expr
 
     TBOOL  shift, and go to state 74
 
-    $default  reduce using rule 101 (restrict_stmt)
+    $default  reduce using rule 102 (restrict_stmt)
 
     bool_expr  go to state 75
 
@@ -987,21 +988,21 @@ State 16
 
 State 17
 
-   81 loop_stmt: KEY_WHILE • '(' logic_stmt ')' code_block
+   82 loop_stmt: KEY_WHILE • '(' logic_stmt ')' code_block
 
     '('  shift, and go to state 77
 
 
 State 18
 
-   82 loop_stmt: KEY_FOR • '(' for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list ')' code_block
+   83 loop_stmt: KEY_FOR • '(' for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list ')' code_block
 
     '('  shift, and go to state 78
 
 
 State 19
 
-  124 delete_expr: KEY_DELETE • multiple_id_expr
+  125 delete_expr: KEY_DELETE • multiple_id_expr
 
     IDENTIFIER  shift, and go to state 4
 
@@ -1011,15 +1012,15 @@ State 19
 
 State 20
 
-  103 interrupt_stmt: KEY_BREAK •
+  104 interrupt_stmt: KEY_BREAK •
 
-    $default  reduce using rule 103 (interrupt_stmt)
+    $default  reduce using rule 104 (interrupt_stmt)
 
 
 State 21
 
-  104 interrupt_stmt: KEY_RETURN •
-  105               | KEY_RETURN • common_expr
+  105 interrupt_stmt: KEY_RETURN •
+  106               | KEY_RETURN • common_expr
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -1036,7 +1037,7 @@ State 21
     '~'         shift, and go to state 87
     '('         shift, and go to state 88
 
-    $default  reduce using rule 104 (interrupt_stmt)
+    $default  reduce using rule 105 (interrupt_stmt)
 
     this_stmt                   go to state 36
     class_member_stmt           go to state 37
@@ -1088,16 +1089,16 @@ State 22
 
 State 23
 
-  149 self_inc_dec_operators: INC_OP •
+  150 self_inc_dec_operators: INC_OP •
 
-    $default  reduce using rule 149 (self_inc_dec_operators)
+    $default  reduce using rule 150 (self_inc_dec_operators)
 
 
 State 24
 
-  150 self_inc_dec_operators: DEC_OP •
+  151 self_inc_dec_operators: DEC_OP •
 
-    $default  reduce using rule 150 (self_inc_dec_operators)
+    $default  reduce using rule 151 (self_inc_dec_operators)
 
 
 State 25
@@ -1183,23 +1184,23 @@ State 35
 
 State 36
 
-  210 common_values_expr: this_stmt •
+  211 common_values_expr: this_stmt •
 
-    $default  reduce using rule 210 (common_values_expr)
+    $default  reduce using rule 211 (common_values_expr)
 
 
 State 37
 
-  207 common_others_values_expr: class_member_stmt •
+  208 common_others_values_expr: class_member_stmt •
 
-    $default  reduce using rule 207 (common_others_values_expr)
+    $default  reduce using rule 208 (common_others_values_expr)
 
 
 State 38
 
-  208 common_others_values_expr: static_member_stmt •
+  209 common_others_values_expr: static_member_stmt •
 
-    $default  reduce using rule 208 (common_others_values_expr)
+    $default  reduce using rule 209 (common_others_values_expr)
 
 
 State 39
@@ -1219,9 +1220,9 @@ State 40
 
 State 41
 
-  100 simple_stmt_types: var_declare_stmt •
+  101 simple_stmt_types: var_declare_stmt •
 
-    $default  reduce using rule 100 (simple_stmt_types)
+    $default  reduce using rule 101 (simple_stmt_types)
 
 
 State 42
@@ -1318,60 +1319,60 @@ State 50
 
 State 51
 
-   92 simple_stmt: simple_stmt_types • ';'
+   93 simple_stmt: simple_stmt_types • ';'
 
     ';'  shift, and go to state 141
 
 
 State 52
 
-   99 simple_stmt_types: restrict_stmt •
+  100 simple_stmt_types: restrict_stmt •
 
-    $default  reduce using rule 99 (simple_stmt_types)
+    $default  reduce using rule 100 (simple_stmt_types)
 
 
 State 53
 
-   97 simple_stmt_types: interrupt_stmt •
+   98 simple_stmt_types: interrupt_stmt •
 
-    $default  reduce using rule 97 (simple_stmt_types)
+    $default  reduce using rule 98 (simple_stmt_types)
 
 
 State 54
 
-   95 simple_stmt_types: call_statement •
-  221 common_object_expr: call_statement •
+   96 simple_stmt_types: call_statement •
+  222 common_object_expr: call_statement •
 
-    ';'       reduce using rule 95 (simple_stmt_types)
-    $default  reduce using rule 221 (common_object_expr)
+    ';'       reduce using rule 96 (simple_stmt_types)
+    $default  reduce using rule 222 (common_object_expr)
 
 
 State 55
 
-   98 simple_stmt_types: new_expr •
-  211 common_values_expr: new_expr •
+   99 simple_stmt_types: new_expr •
+  212 common_values_expr: new_expr •
 
-    ';'       reduce using rule 98 (simple_stmt_types)
-    $default  reduce using rule 211 (common_values_expr)
+    ';'       reduce using rule 99 (simple_stmt_types)
+    $default  reduce using rule 212 (common_values_expr)
 
 
 State 56
 
-   96 simple_stmt_types: delete_expr •
+   97 simple_stmt_types: delete_expr •
 
-    $default  reduce using rule 96 (simple_stmt_types)
+    $default  reduce using rule 97 (simple_stmt_types)
 
 
 State 57
 
-   93 simple_stmt_types: self_inc_dec_stmt •
+   94 simple_stmt_types: self_inc_dec_stmt •
 
-    $default  reduce using rule 93 (simple_stmt_types)
+    $default  reduce using rule 94 (simple_stmt_types)
 
 
 State 58
 
-  147 self_inc_dec_stmt: self_inc_dec_operators • common_values_expr
+  148 self_inc_dec_stmt: self_inc_dec_operators • common_values_expr
 
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
@@ -1391,30 +1392,30 @@ State 58
 
 State 59
 
-  206 common_others_values_expr: array_ele_stmt •
+  207 common_others_values_expr: array_ele_stmt •
 
-    $default  reduce using rule 206 (common_others_values_expr)
+    $default  reduce using rule 207 (common_others_values_expr)
 
 
 State 60
 
-   94 simple_stmt_types: assign_stmt •
+   95 simple_stmt_types: assign_stmt •
 
-    $default  reduce using rule 94 (simple_stmt_types)
+    $default  reduce using rule 95 (simple_stmt_types)
 
 
 State 61
 
-  155 assign_stmt: single_assign_stmt •
+  156 assign_stmt: single_assign_stmt •
 
-    $default  reduce using rule 155 (assign_stmt)
+    $default  reduce using rule 156 (assign_stmt)
 
 
 State 62
 
-  156 assign_stmt: number_change_assign_stmt •
+  157 assign_stmt: number_change_assign_stmt •
 
-    $default  reduce using rule 156 (assign_stmt)
+    $default  reduce using rule 157 (assign_stmt)
 
 
 State 63
@@ -1423,43 +1424,43 @@ State 63
    40 func_name_types: id_expr •
    55 element_var_declare_stmt: id_expr •
    56                         | id_expr • '[' common_number_expr ']'
-  205 common_others_values_expr: id_expr •
+  206 common_others_values_expr: id_expr •
 
     SCOPE  shift, and go to state 144
     '['    shift, and go to state 145
 
     FUNC_OP   reduce using rule 40 (func_name_types)
     ','       reduce using rule 55 (element_var_declare_stmt)
-    '['       [reduce using rule 205 (common_others_values_expr)]
+    '['       [reduce using rule 206 (common_others_values_expr)]
     ';'       reduce using rule 55 (element_var_declare_stmt)
-    $default  reduce using rule 205 (common_others_values_expr)
+    $default  reduce using rule 206 (common_others_values_expr)
 
 
 State 64
 
-  209 common_values_expr: common_others_values_expr •
-  216 common_assignable_expr: common_others_values_expr •
+  210 common_values_expr: common_others_values_expr •
+  217 common_assignable_expr: common_others_values_expr •
 
-    ADD_EQ    reduce using rule 216 (common_assignable_expr)
-    SUB_EQ    reduce using rule 216 (common_assignable_expr)
-    MUL_EQ    reduce using rule 216 (common_assignable_expr)
-    DIV_EQ    reduce using rule 216 (common_assignable_expr)
-    MOD_EQ    reduce using rule 216 (common_assignable_expr)
-    '='       reduce using rule 216 (common_assignable_expr)
-    $default  reduce using rule 209 (common_values_expr)
+    ADD_EQ    reduce using rule 217 (common_assignable_expr)
+    SUB_EQ    reduce using rule 217 (common_assignable_expr)
+    MUL_EQ    reduce using rule 217 (common_assignable_expr)
+    DIV_EQ    reduce using rule 217 (common_assignable_expr)
+    MOD_EQ    reduce using rule 217 (common_assignable_expr)
+    '='       reduce using rule 217 (common_assignable_expr)
+    $default  reduce using rule 210 (common_values_expr)
 
 
 State 65
 
-  107 call_statement: common_values_expr • args_list_with_parentheses
-  148 self_inc_dec_stmt: common_values_expr • self_inc_dec_operators
-  220 common_object_expr: common_values_expr •
+  108 call_statement: common_values_expr • args_list_with_parentheses
+  149 self_inc_dec_stmt: common_values_expr • self_inc_dec_operators
+  221 common_object_expr: common_values_expr •
 
     INC_OP  shift, and go to state 23
     DEC_OP  shift, and go to state 24
     '('     shift, and go to state 146
 
-    $default  reduce using rule 220 (common_object_expr)
+    $default  reduce using rule 221 (common_object_expr)
 
     args_list_with_parentheses  go to state 147
     self_inc_dec_operators      go to state 148
@@ -1467,8 +1468,8 @@ State 65
 
 State 66
 
-  157 single_assign_stmt: common_assignable_expr • '=' single_assign_stmt_value
-  160 number_change_assign_stmt: common_assignable_expr • symbol_change_assign common_number_expr
+  158 single_assign_stmt: common_assignable_expr • '=' single_assign_stmt_value
+  161 number_change_assign_stmt: common_assignable_expr • symbol_change_assign common_number_expr
 
     ADD_EQ  shift, and go to state 149
     SUB_EQ  shift, and go to state 150
@@ -1483,7 +1484,7 @@ State 66
 State 67
 
    36 class_member_stmt: common_object_expr • '.' id_expr
-  154 array_ele_stmt: common_object_expr • '[' common_number_expr ']'
+  155 array_ele_stmt: common_object_expr • '[' common_number_expr ']'
 
     '['  shift, and go to state 156
     '.'  shift, and go to state 157
@@ -1491,8 +1492,8 @@ State 67
 
 State 68
 
-  166 code_block: '{' • '}'
-  167           | '{' • block_item_list '}'
+  167 code_block: '{' • '}'
+  168           | '{' • block_item_list '}'
 
     IDENTIFIER    shift, and go to state 4
     KEY_TRY       shift, and go to state 6
@@ -1588,7 +1589,7 @@ State 72
 
 State 73
 
-  119 new_expr: KEY_NEW id_expr • args_list_with_parentheses
+  120 new_expr: KEY_NEW id_expr • args_list_with_parentheses
 
     '('  shift, and go to state 146
 
@@ -1597,16 +1598,16 @@ State 73
 
 State 74
 
-  186 bool_expr: TBOOL •
+  187 bool_expr: TBOOL •
 
-    $default  reduce using rule 186 (bool_expr)
+    $default  reduce using rule 187 (bool_expr)
 
 
 State 75
 
-  102 restrict_stmt: KEY_RESTRICT bool_expr •
+  103 restrict_stmt: KEY_RESTRICT bool_expr •
 
-    $default  reduce using rule 102 (restrict_stmt)
+    $default  reduce using rule 103 (restrict_stmt)
 
 
 State 76
@@ -1660,7 +1661,7 @@ State 76
 
 State 77
 
-   81 loop_stmt: KEY_WHILE '(' • logic_stmt ')' code_block
+   82 loop_stmt: KEY_WHILE '(' • logic_stmt ')' code_block
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -1709,13 +1710,13 @@ State 77
 
 State 78
 
-   82 loop_stmt: KEY_FOR '(' • for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list ')' code_block
+   83 loop_stmt: KEY_FOR '(' • for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list ')' code_block
 
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
     KEY_THIS    shift, and go to state 11
 
-    $default  reduce using rule 83 (for_1_stmt_list)
+    $default  reduce using rule 84 (for_1_stmt_list)
 
     this_stmt                  go to state 36
     class_member_stmt          go to state 37
@@ -1737,52 +1738,52 @@ State 78
 
 State 79
 
-  184 multiple_id_expr: id_expr •
+  185 multiple_id_expr: id_expr •
 
-    $default  reduce using rule 184 (multiple_id_expr)
+    $default  reduce using rule 185 (multiple_id_expr)
 
 
 State 80
 
-  124 delete_expr: KEY_DELETE multiple_id_expr •
-  185 multiple_id_expr: multiple_id_expr • ',' id_expr
+  125 delete_expr: KEY_DELETE multiple_id_expr •
+  186 multiple_id_expr: multiple_id_expr • ',' id_expr
 
     ','  shift, and go to state 183
 
-    $default  reduce using rule 124 (delete_expr)
+    $default  reduce using rule 125 (delete_expr)
 
 
 State 81
 
-  191 int_expr: TINTEGER •
+  192 int_expr: TINTEGER •
 
-    $default  reduce using rule 191 (int_expr)
+    $default  reduce using rule 192 (int_expr)
 
 
 State 82
 
-  192 double_expr: TDOUBLE •
+  193 double_expr: TDOUBLE •
 
-    $default  reduce using rule 192 (double_expr)
+    $default  reduce using rule 193 (double_expr)
 
 
 State 83
 
-  198 string_expr: TSTRING •
+  199 string_expr: TSTRING •
 
-    $default  reduce using rule 198 (string_expr)
+    $default  reduce using rule 199 (string_expr)
 
 
 State 84
 
-  199 null_expr: KEY_NULL •
+  200 null_expr: KEY_NULL •
 
-    $default  reduce using rule 199 (null_expr)
+    $default  reduce using rule 200 (null_expr)
 
 
 State 85
 
-  193 uminus_expr: '-' • uminus_expr_values
+  194 uminus_expr: '-' • uminus_expr_values
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -1810,7 +1811,7 @@ State 85
 
 State 86
 
-  134 not_bool_param_expr: '!' • bool_param_expr
+  135 not_bool_param_expr: '!' • bool_param_expr
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -1852,7 +1853,7 @@ State 86
 
 State 87
 
-  118 arithmetic_stmt: '~' • common_number_expr
+  119 arithmetic_stmt: '~' • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -1892,7 +1893,7 @@ State 88
 
    46 lambda_args_stmt: '(' • ')'
    47                 | '(' • multiple_id_expr ')'
-  182 number_parentheses_stmt: '(' • common_number_expr ')'
+  183 number_parentheses_stmt: '(' • common_number_expr ')'
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -1932,9 +1933,9 @@ State 88
 
 State 89
 
-  203 common_types_expr: lambda_stmt •
+  204 common_types_expr: lambda_stmt •
 
-    $default  reduce using rule 203 (common_types_expr)
+    $default  reduce using rule 204 (common_types_expr)
 
 
 State 90
@@ -1946,154 +1947,154 @@ State 90
 
 State 91
 
-  213 common_result_of_call_expr: call_statement •
-  221 common_object_expr: call_statement •
+  214 common_result_of_call_expr: call_statement •
+  222 common_object_expr: call_statement •
 
-    KEY_IS    reduce using rule 221 (common_object_expr)
-    EQ_OP     reduce using rule 213 (common_result_of_call_expr)
-    EQ_OP     [reduce using rule 221 (common_object_expr)]
-    NE_OP     reduce using rule 213 (common_result_of_call_expr)
-    NE_OP     [reduce using rule 221 (common_object_expr)]
-    '+'       reduce using rule 213 (common_result_of_call_expr)
-    '+'       [reduce using rule 221 (common_object_expr)]
-    '['       reduce using rule 221 (common_object_expr)
-    '.'       reduce using rule 221 (common_object_expr)
-    $default  reduce using rule 213 (common_result_of_call_expr)
+    KEY_IS    reduce using rule 222 (common_object_expr)
+    EQ_OP     reduce using rule 214 (common_result_of_call_expr)
+    EQ_OP     [reduce using rule 222 (common_object_expr)]
+    NE_OP     reduce using rule 214 (common_result_of_call_expr)
+    NE_OP     [reduce using rule 222 (common_object_expr)]
+    '+'       reduce using rule 214 (common_result_of_call_expr)
+    '+'       [reduce using rule 222 (common_object_expr)]
+    '['       reduce using rule 222 (common_object_expr)
+    '.'       reduce using rule 222 (common_object_expr)
+    $default  reduce using rule 214 (common_result_of_call_expr)
 
 
 State 92
 
-  214 common_result_of_call_expr: arithmetic_stmt •
+  215 common_result_of_call_expr: arithmetic_stmt •
 
-    $default  reduce using rule 214 (common_result_of_call_expr)
+    $default  reduce using rule 215 (common_result_of_call_expr)
 
 
 State 93
 
-  211 common_values_expr: new_expr •
+  212 common_values_expr: new_expr •
 
-    $default  reduce using rule 211 (common_values_expr)
+    $default  reduce using rule 212 (common_values_expr)
 
 
 State 94
 
-  129 logic_stmt: logic_stmt • AND_OP logic_stmt
-  130           | logic_stmt • OR_OP logic_stmt
-  226 common_expr: logic_stmt •
+  130 logic_stmt: logic_stmt • AND_OP logic_stmt
+  131           | logic_stmt • OR_OP logic_stmt
+  227 common_expr: logic_stmt •
 
     AND_OP  shift, and go to state 199
     OR_OP   shift, and go to state 200
 
-    $default  reduce using rule 226 (common_expr)
+    $default  reduce using rule 227 (common_expr)
 
 
 State 95
 
-  125 logic_stmt: bool_param_expr •
-
-    $default  reduce using rule 125 (logic_stmt)
-
-
-State 96
-
-  127 logic_stmt: type_judge_stmt •
-
-    $default  reduce using rule 127 (logic_stmt)
-
-
-State 97
-
-  126 logic_stmt: not_bool_param_expr •
+  126 logic_stmt: bool_param_expr •
 
     $default  reduce using rule 126 (logic_stmt)
 
 
-State 98
+State 96
 
-  128 logic_stmt: compare_expr •
+  128 logic_stmt: type_judge_stmt •
 
     $default  reduce using rule 128 (logic_stmt)
 
 
+State 97
+
+  127 logic_stmt: not_bool_param_expr •
+
+    $default  reduce using rule 127 (logic_stmt)
+
+
+State 98
+
+  129 logic_stmt: compare_expr •
+
+    $default  reduce using rule 129 (logic_stmt)
+
+
 State 99
 
-  135 compare_expr: number_compare_expr •
-
-    $default  reduce using rule 135 (compare_expr)
-
-
-State 100
-
-  136 compare_expr: object_compare_expr •
+  136 compare_expr: number_compare_expr •
 
     $default  reduce using rule 136 (compare_expr)
 
 
+State 100
+
+  137 compare_expr: object_compare_expr •
+
+    $default  reduce using rule 137 (compare_expr)
+
+
 State 101
 
-  180 string_plus_stmt_value: self_inc_dec_stmt •
-  212 common_result_of_call_expr: self_inc_dec_stmt •
+  181 string_plus_stmt_value: self_inc_dec_stmt •
+  213 common_result_of_call_expr: self_inc_dec_stmt •
 
-    '+'       reduce using rule 180 (string_plus_stmt_value)
-    '+'       [reduce using rule 212 (common_result_of_call_expr)]
-    $default  reduce using rule 212 (common_result_of_call_expr)
+    '+'       reduce using rule 181 (string_plus_stmt_value)
+    '+'       [reduce using rule 213 (common_result_of_call_expr)]
+    $default  reduce using rule 213 (common_result_of_call_expr)
 
 
 State 102
 
-  131 bool_param_expr: assign_stmt_value_eq •
+  132 bool_param_expr: assign_stmt_value_eq •
 
-    $default  reduce using rule 131 (bool_param_expr)
+    $default  reduce using rule 132 (bool_param_expr)
 
 
 State 103
 
-  177 string_plus_stmt: string_plus_stmt • '+' string_plus_stmt_value
-  225 common_expr: string_plus_stmt •
+  178 string_plus_stmt: string_plus_stmt • '+' string_plus_stmt_value
+  226 common_expr: string_plus_stmt •
 
     '+'  shift, and go to state 201
 
-    $default  reduce using rule 225 (common_expr)
+    $default  reduce using rule 226 (common_expr)
 
 
 State 104
 
-  175 string_plus_stmt: string_plus_stmt_value • '+' string_expr
-  176                 | string_plus_stmt_value • '+' string_plus_stmt
+  176 string_plus_stmt: string_plus_stmt_value • '+' string_expr
+  177                 | string_plus_stmt_value • '+' string_plus_stmt
 
     '+'  shift, and go to state 202
 
 
 State 105
 
-  181 string_plus_stmt_value: number_parentheses_stmt •
-  215 common_result_of_call_expr: number_parentheses_stmt •
+  182 string_plus_stmt_value: number_parentheses_stmt •
+  216 common_result_of_call_expr: number_parentheses_stmt •
 
-    '+'       reduce using rule 181 (string_plus_stmt_value)
-    '+'       [reduce using rule 215 (common_result_of_call_expr)]
-    $default  reduce using rule 215 (common_result_of_call_expr)
+    '+'       reduce using rule 182 (string_plus_stmt_value)
+    '+'       [reduce using rule 216 (common_result_of_call_expr)]
+    $default  reduce using rule 216 (common_result_of_call_expr)
 
 
 State 106
 
    37 static_member_stmt: id_expr • SCOPE id_expr
-  184 multiple_id_expr: id_expr •
-  205 common_others_values_expr: id_expr •
+  185 multiple_id_expr: id_expr •
+  206 common_others_values_expr: id_expr •
 
     SCOPE  shift, and go to state 144
 
-    FUNC_OP   reduce using rule 184 (multiple_id_expr)
-    ','       reduce using rule 184 (multiple_id_expr)
-    ','       [reduce using rule 205 (common_others_values_expr)]
-    ')'       reduce using rule 184 (multiple_id_expr)
-    ')'       [reduce using rule 205 (common_others_values_expr)]
-    $default  reduce using rule 205 (common_others_values_expr)
+    FUNC_OP   reduce using rule 185 (multiple_id_expr)
+    ','       reduce using rule 185 (multiple_id_expr)
+    ','       [reduce using rule 206 (common_others_values_expr)]
+    ')'       reduce using rule 185 (multiple_id_expr)
+    ')'       [reduce using rule 206 (common_others_values_expr)]
+    $default  reduce using rule 206 (common_others_values_expr)
 
 
 State 107
 
    48 lambda_args_stmt: multiple_id_expr •
-  185 multiple_id_expr: multiple_id_expr • ',' id_expr
+  186 multiple_id_expr: multiple_id_expr • ',' id_expr
 
     ','  shift, and go to state 183
 
@@ -2102,131 +2103,131 @@ State 107
 
 State 108
 
-  132 bool_param_expr: bool_expr •
-  204 common_types_expr: bool_expr •
+  133 bool_param_expr: bool_expr •
+  205 common_types_expr: bool_expr •
 
-    ','       reduce using rule 132 (bool_param_expr)
-    ','       [reduce using rule 204 (common_types_expr)]
-    '+'       reduce using rule 204 (common_types_expr)
-    ')'       reduce using rule 132 (bool_param_expr)
-    ')'       [reduce using rule 204 (common_types_expr)]
-    ';'       reduce using rule 132 (bool_param_expr)
-    ';'       [reduce using rule 204 (common_types_expr)]
-    $default  reduce using rule 132 (bool_param_expr)
+    ','       reduce using rule 133 (bool_param_expr)
+    ','       [reduce using rule 205 (common_types_expr)]
+    '+'       reduce using rule 205 (common_types_expr)
+    ')'       reduce using rule 133 (bool_param_expr)
+    ')'       [reduce using rule 205 (common_types_expr)]
+    ';'       reduce using rule 133 (bool_param_expr)
+    ';'       [reduce using rule 205 (common_types_expr)]
+    $default  reduce using rule 133 (bool_param_expr)
 
 
 State 109
 
-  151 assign_stmt_value_eq: number_expr •
-  200 common_types_expr: number_expr •
-  217 common_number_expr: number_expr •
+  152 assign_stmt_value_eq: number_expr •
+  201 common_types_expr: number_expr •
+  218 common_number_expr: number_expr •
 
-    AND_OP    reduce using rule 151 (assign_stmt_value_eq)
-    OR_OP     reduce using rule 151 (assign_stmt_value_eq)
-    ','       reduce using rule 151 (assign_stmt_value_eq)
-    ','       [reduce using rule 200 (common_types_expr)]
-    '+'       reduce using rule 200 (common_types_expr)
-    '+'       [reduce using rule 217 (common_number_expr)]
-    ')'       reduce using rule 151 (assign_stmt_value_eq)
-    ')'       [reduce using rule 200 (common_types_expr)]
-    ';'       reduce using rule 151 (assign_stmt_value_eq)
-    ';'       [reduce using rule 200 (common_types_expr)]
-    $default  reduce using rule 217 (common_number_expr)
+    AND_OP    reduce using rule 152 (assign_stmt_value_eq)
+    OR_OP     reduce using rule 152 (assign_stmt_value_eq)
+    ','       reduce using rule 152 (assign_stmt_value_eq)
+    ','       [reduce using rule 201 (common_types_expr)]
+    '+'       reduce using rule 201 (common_types_expr)
+    '+'       [reduce using rule 218 (common_number_expr)]
+    ')'       reduce using rule 152 (assign_stmt_value_eq)
+    ')'       [reduce using rule 201 (common_types_expr)]
+    ';'       reduce using rule 152 (assign_stmt_value_eq)
+    ';'       [reduce using rule 201 (common_types_expr)]
+    $default  reduce using rule 218 (common_number_expr)
 
 
 State 110
 
-  187 number_expr: positive_number_expr •
-
-    $default  reduce using rule 187 (number_expr)
-
-
-State 111
-
-  190 positive_number_expr: int_expr •
-
-    $default  reduce using rule 190 (positive_number_expr)
-
-
-State 112
-
-  189 positive_number_expr: double_expr •
-
-    $default  reduce using rule 189 (positive_number_expr)
-
-
-State 113
-
-  188 number_expr: uminus_expr •
+  188 number_expr: positive_number_expr •
 
     $default  reduce using rule 188 (number_expr)
 
 
+State 111
+
+  191 positive_number_expr: int_expr •
+
+    $default  reduce using rule 191 (positive_number_expr)
+
+
+State 112
+
+  190 positive_number_expr: double_expr •
+
+    $default  reduce using rule 190 (positive_number_expr)
+
+
+State 113
+
+  189 number_expr: uminus_expr •
+
+    $default  reduce using rule 189 (number_expr)
+
+
 State 114
 
-  174 string_plus_stmt: string_expr • '+' string_plus_stmt_value
-  201 common_types_expr: string_expr •
+  175 string_plus_stmt: string_expr • '+' string_plus_stmt_value
+  202 common_types_expr: string_expr •
 
     '+'  shift, and go to state 203
 
-    '+'       [reduce using rule 201 (common_types_expr)]
-    $default  reduce using rule 201 (common_types_expr)
+    '+'       [reduce using rule 202 (common_types_expr)]
+    $default  reduce using rule 202 (common_types_expr)
 
 
 State 115
 
-  202 common_types_expr: null_expr •
+  203 common_types_expr: null_expr •
 
-    $default  reduce using rule 202 (common_types_expr)
+    $default  reduce using rule 203 (common_types_expr)
 
 
 State 116
 
-  179 string_plus_stmt_value: common_types_expr •
-  222 common_expr: common_types_expr •
+  180 string_plus_stmt_value: common_types_expr •
+  223 common_expr: common_types_expr •
 
-    '+'       reduce using rule 179 (string_plus_stmt_value)
-    $default  reduce using rule 222 (common_expr)
+    '+'       reduce using rule 180 (string_plus_stmt_value)
+    $default  reduce using rule 223 (common_expr)
 
 
 State 117
 
-  209 common_values_expr: common_others_values_expr •
+  210 common_values_expr: common_others_values_expr •
 
-    $default  reduce using rule 209 (common_values_expr)
+    $default  reduce using rule 210 (common_values_expr)
 
 
 State 118
 
-  107 call_statement: common_values_expr • args_list_with_parentheses
-  148 self_inc_dec_stmt: common_values_expr • self_inc_dec_operators
-  152 assign_stmt_value_eq: common_values_expr •
-  218 common_number_expr: common_values_expr •
-  220 common_object_expr: common_values_expr •
-  223 common_expr: common_values_expr •
+  108 call_statement: common_values_expr • args_list_with_parentheses
+  149 self_inc_dec_stmt: common_values_expr • self_inc_dec_operators
+  153 assign_stmt_value_eq: common_values_expr •
+  219 common_number_expr: common_values_expr •
+  221 common_object_expr: common_values_expr •
+  224 common_expr: common_values_expr •
 
     INC_OP  shift, and go to state 23
     DEC_OP  shift, and go to state 24
     '('     shift, and go to state 146
 
-    KEY_IS    reduce using rule 220 (common_object_expr)
-    EQ_OP     reduce using rule 218 (common_number_expr)
-    EQ_OP     [reduce using rule 220 (common_object_expr)]
-    NE_OP     reduce using rule 218 (common_number_expr)
-    NE_OP     [reduce using rule 220 (common_object_expr)]
-    AND_OP    reduce using rule 152 (assign_stmt_value_eq)
-    OR_OP     reduce using rule 152 (assign_stmt_value_eq)
-    ','       reduce using rule 152 (assign_stmt_value_eq)
-    ','       [reduce using rule 223 (common_expr)]
-    '+'       reduce using rule 218 (common_number_expr)
-    '+'       [reduce using rule 220 (common_object_expr)]
-    ')'       reduce using rule 152 (assign_stmt_value_eq)
-    ')'       [reduce using rule 223 (common_expr)]
-    '['       reduce using rule 220 (common_object_expr)
-    '.'       reduce using rule 220 (common_object_expr)
-    ';'       reduce using rule 152 (assign_stmt_value_eq)
-    ';'       [reduce using rule 223 (common_expr)]
-    $default  reduce using rule 218 (common_number_expr)
+    KEY_IS    reduce using rule 221 (common_object_expr)
+    EQ_OP     reduce using rule 219 (common_number_expr)
+    EQ_OP     [reduce using rule 221 (common_object_expr)]
+    NE_OP     reduce using rule 219 (common_number_expr)
+    NE_OP     [reduce using rule 221 (common_object_expr)]
+    AND_OP    reduce using rule 153 (assign_stmt_value_eq)
+    OR_OP     reduce using rule 153 (assign_stmt_value_eq)
+    ','       reduce using rule 153 (assign_stmt_value_eq)
+    ','       [reduce using rule 224 (common_expr)]
+    '+'       reduce using rule 219 (common_number_expr)
+    '+'       [reduce using rule 221 (common_object_expr)]
+    ')'       reduce using rule 153 (assign_stmt_value_eq)
+    ')'       [reduce using rule 224 (common_expr)]
+    '['       reduce using rule 221 (common_object_expr)
+    '.'       reduce using rule 221 (common_object_expr)
+    ';'       reduce using rule 153 (assign_stmt_value_eq)
+    ';'       [reduce using rule 224 (common_expr)]
+    $default  reduce using rule 219 (common_number_expr)
 
     args_list_with_parentheses  go to state 147
     self_inc_dec_operators      go to state 148
@@ -2234,34 +2235,34 @@ State 118
 
 State 119
 
-  153 assign_stmt_value_eq: common_result_of_call_expr •
-  219 common_number_expr: common_result_of_call_expr •
-  224 common_expr: common_result_of_call_expr •
+  154 assign_stmt_value_eq: common_result_of_call_expr •
+  220 common_number_expr: common_result_of_call_expr •
+  225 common_expr: common_result_of_call_expr •
 
-    AND_OP    reduce using rule 153 (assign_stmt_value_eq)
-    OR_OP     reduce using rule 153 (assign_stmt_value_eq)
-    ','       reduce using rule 153 (assign_stmt_value_eq)
-    ','       [reduce using rule 224 (common_expr)]
-    ')'       reduce using rule 153 (assign_stmt_value_eq)
-    ')'       [reduce using rule 224 (common_expr)]
-    ';'       reduce using rule 153 (assign_stmt_value_eq)
-    ';'       [reduce using rule 224 (common_expr)]
-    $default  reduce using rule 219 (common_number_expr)
+    AND_OP    reduce using rule 154 (assign_stmt_value_eq)
+    OR_OP     reduce using rule 154 (assign_stmt_value_eq)
+    ','       reduce using rule 154 (assign_stmt_value_eq)
+    ','       [reduce using rule 225 (common_expr)]
+    ')'       reduce using rule 154 (assign_stmt_value_eq)
+    ')'       [reduce using rule 225 (common_expr)]
+    ';'       reduce using rule 154 (assign_stmt_value_eq)
+    ';'       [reduce using rule 225 (common_expr)]
+    $default  reduce using rule 220 (common_number_expr)
 
 
 State 120
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
-  137 number_compare_expr: common_number_expr • _symbol_compare common_number_expr
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
+  138 number_compare_expr: common_number_expr • _symbol_compare common_number_expr
 
     LEFT_SHIFT   shift, and go to state 204
     RIGHT_SHIFT  shift, and go to state 205
@@ -2286,10 +2287,10 @@ State 120
 State 121
 
    36 class_member_stmt: common_object_expr • '.' id_expr
-  133 type_judge_stmt: common_object_expr • KEY_IS id_expr
-  138 object_compare_expr: common_object_expr • _symbol_equals_not common_types_expr
-  154 array_ele_stmt: common_object_expr • '[' common_number_expr ']'
-  178 string_plus_stmt_value: common_object_expr •
+  134 type_judge_stmt: common_object_expr • KEY_IS id_expr
+  139 object_compare_expr: common_object_expr • _symbol_equals_not common_types_expr
+  155 array_ele_stmt: common_object_expr • '[' common_number_expr ']'
+  179 string_plus_stmt_value: common_object_expr •
 
     KEY_IS  shift, and go to state 221
     EQ_OP   shift, and go to state 222
@@ -2297,16 +2298,16 @@ State 121
     '['     shift, and go to state 156
     '.'     shift, and go to state 157
 
-    $default  reduce using rule 178 (string_plus_stmt_value)
+    $default  reduce using rule 179 (string_plus_stmt_value)
 
     _symbol_equals_not  go to state 224
 
 
 State 122
 
-  105 interrupt_stmt: KEY_RETURN common_expr •
+  106 interrupt_stmt: KEY_RETURN common_expr •
 
-    $default  reduce using rule 105 (interrupt_stmt)
+    $default  reduce using rule 106 (interrupt_stmt)
 
 
 State 123
@@ -2403,9 +2404,9 @@ State 129
 
 State 130
 
-  221 common_object_expr: call_statement •
+  222 common_object_expr: call_statement •
 
-    $default  reduce using rule 221 (common_object_expr)
+    $default  reduce using rule 222 (common_object_expr)
 
 
 State 131
@@ -2420,32 +2421,32 @@ State 132
    37 static_member_stmt: id_expr • SCOPE id_expr
    55 element_var_declare_stmt: id_expr •
    56                         | id_expr • '[' common_number_expr ']'
-  205 common_others_values_expr: id_expr •
+  206 common_others_values_expr: id_expr •
 
     SCOPE  shift, and go to state 144
     '['    shift, and go to state 145
 
     ','       reduce using rule 55 (element_var_declare_stmt)
-    '['       [reduce using rule 205 (common_others_values_expr)]
+    '['       [reduce using rule 206 (common_others_values_expr)]
     ';'       reduce using rule 55 (element_var_declare_stmt)
-    $default  reduce using rule 205 (common_others_values_expr)
+    $default  reduce using rule 206 (common_others_values_expr)
 
 
 State 133
 
-  107 call_statement: common_values_expr • args_list_with_parentheses
-  220 common_object_expr: common_values_expr •
+  108 call_statement: common_values_expr • args_list_with_parentheses
+  221 common_object_expr: common_values_expr •
 
     '('  shift, and go to state 146
 
-    $default  reduce using rule 220 (common_object_expr)
+    $default  reduce using rule 221 (common_object_expr)
 
     args_list_with_parentheses  go to state 147
 
 
 State 134
 
-  157 single_assign_stmt: common_assignable_expr • '=' single_assign_stmt_value
+  158 single_assign_stmt: common_assignable_expr • '=' single_assign_stmt_value
 
     '='  shift, and go to state 154
 
@@ -2462,8 +2463,8 @@ State 135
 
 State 136
 
-   72 else_if_stmt: KEY_ELSE • single_if_stmt
-   73 single_else_stmt: KEY_ELSE • code_block
+   73 else_if_stmt: KEY_ELSE • single_if_stmt
+   74 single_else_stmt: KEY_ELSE • code_block
 
     KEY_IF  shift, and go to state 16
     '{'     shift, and go to state 68
@@ -2481,10 +2482,13 @@ State 137
 
 State 138
 
-   68 else_stmt: else_if_stmts • single_else_stmt
-   71 else_if_stmts: else_if_stmts • else_if_stmt
+   68 else_stmt: else_if_stmts •
+   69          | else_if_stmts • single_else_stmt
+   72 else_if_stmts: else_if_stmts • else_if_stmt
 
     KEY_ELSE  shift, and go to state 136
+
+    $default  reduce using rule 68 (else_stmt)
 
     else_if_stmt      go to state 236
     single_else_stmt  go to state 237
@@ -2492,46 +2496,46 @@ State 138
 
 State 139
 
-   70 else_if_stmts: else_if_stmt •
+   71 else_if_stmts: else_if_stmt •
 
-    $default  reduce using rule 70 (else_if_stmts)
+    $default  reduce using rule 71 (else_if_stmts)
 
 
 State 140
 
-   69 else_stmt: single_else_stmt •
+   70 else_stmt: single_else_stmt •
 
-    $default  reduce using rule 69 (else_stmt)
+    $default  reduce using rule 70 (else_stmt)
 
 
 State 141
 
-   92 simple_stmt: simple_stmt_types ';' •
+   93 simple_stmt: simple_stmt_types ';' •
 
-    $default  reduce using rule 92 (simple_stmt)
+    $default  reduce using rule 93 (simple_stmt)
 
 
 State 142
 
    37 static_member_stmt: id_expr • SCOPE id_expr
-  205 common_others_values_expr: id_expr •
+  206 common_others_values_expr: id_expr •
 
     SCOPE  shift, and go to state 144
 
-    $default  reduce using rule 205 (common_others_values_expr)
+    $default  reduce using rule 206 (common_others_values_expr)
 
 
 State 143
 
-  107 call_statement: common_values_expr • args_list_with_parentheses
-  147 self_inc_dec_stmt: self_inc_dec_operators common_values_expr •
-  220 common_object_expr: common_values_expr •
+  108 call_statement: common_values_expr • args_list_with_parentheses
+  148 self_inc_dec_stmt: self_inc_dec_operators common_values_expr •
+  221 common_object_expr: common_values_expr •
 
     '('  shift, and go to state 146
 
-    '['       reduce using rule 220 (common_object_expr)
-    '.'       reduce using rule 220 (common_object_expr)
-    $default  reduce using rule 147 (self_inc_dec_stmt)
+    '['       reduce using rule 221 (common_object_expr)
+    '.'       reduce using rule 221 (common_object_expr)
+    $default  reduce using rule 148 (self_inc_dec_stmt)
 
     args_list_with_parentheses  go to state 147
 
@@ -2585,8 +2589,8 @@ State 145
 
 State 146
 
-  120 args_list_with_parentheses: '(' • ')'
-  121                           | '(' • args_list ')'
+  121 args_list_with_parentheses: '(' • ')'
+  122                           | '(' • args_list ')'
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -2648,56 +2652,56 @@ State 146
 
 State 147
 
-  107 call_statement: common_values_expr args_list_with_parentheses •
+  108 call_statement: common_values_expr args_list_with_parentheses •
 
-    $default  reduce using rule 107 (call_statement)
+    $default  reduce using rule 108 (call_statement)
 
 
 State 148
 
-  148 self_inc_dec_stmt: common_values_expr self_inc_dec_operators •
+  149 self_inc_dec_stmt: common_values_expr self_inc_dec_operators •
 
-    $default  reduce using rule 148 (self_inc_dec_stmt)
+    $default  reduce using rule 149 (self_inc_dec_stmt)
 
 
 State 149
 
-  161 symbol_change_assign: ADD_EQ •
-
-    $default  reduce using rule 161 (symbol_change_assign)
-
-
-State 150
-
-  162 symbol_change_assign: SUB_EQ •
+  162 symbol_change_assign: ADD_EQ •
 
     $default  reduce using rule 162 (symbol_change_assign)
 
 
-State 151
+State 150
 
-  163 symbol_change_assign: MUL_EQ •
+  163 symbol_change_assign: SUB_EQ •
 
     $default  reduce using rule 163 (symbol_change_assign)
 
 
-State 152
+State 151
 
-  164 symbol_change_assign: DIV_EQ •
+  164 symbol_change_assign: MUL_EQ •
 
     $default  reduce using rule 164 (symbol_change_assign)
 
 
-State 153
+State 152
 
-  165 symbol_change_assign: MOD_EQ •
+  165 symbol_change_assign: DIV_EQ •
 
     $default  reduce using rule 165 (symbol_change_assign)
 
 
+State 153
+
+  166 symbol_change_assign: MOD_EQ •
+
+    $default  reduce using rule 166 (symbol_change_assign)
+
+
 State 154
 
-  157 single_assign_stmt: common_assignable_expr '=' • single_assign_stmt_value
+  158 single_assign_stmt: common_assignable_expr '=' • single_assign_stmt_value
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -2760,7 +2764,7 @@ State 154
 
 State 155
 
-  160 number_change_assign_stmt: common_assignable_expr symbol_change_assign • common_number_expr
+  161 number_change_assign_stmt: common_assignable_expr symbol_change_assign • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -2798,7 +2802,7 @@ State 155
 
 State 156
 
-  154 array_ele_stmt: common_object_expr '[' • common_number_expr ']'
+  155 array_ele_stmt: common_object_expr '[' • common_number_expr ']'
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -2845,43 +2849,43 @@ State 157
 
 State 158
 
-  166 code_block: '{' '}' •
+  167 code_block: '{' '}' •
 
-    $default  reduce using rule 166 (code_block)
+    $default  reduce using rule 167 (code_block)
 
 
 State 159
 
-  173 block_item: _extra_nothing •
+  174 block_item: _extra_nothing •
 
-    $default  reduce using rule 173 (block_item)
+    $default  reduce using rule 174 (block_item)
 
 
 State 160
 
-  170 block_item: try_stmt •
-
-    $default  reduce using rule 170 (block_item)
-
-
-State 161
-
-  172 block_item: con_ctl_stmt •
-
-    $default  reduce using rule 172 (block_item)
-
-
-State 162
-
-  171 block_item: simple_stmt •
+  171 block_item: try_stmt •
 
     $default  reduce using rule 171 (block_item)
 
 
+State 161
+
+  173 block_item: con_ctl_stmt •
+
+    $default  reduce using rule 173 (block_item)
+
+
+State 162
+
+  172 block_item: simple_stmt •
+
+    $default  reduce using rule 172 (block_item)
+
+
 State 163
 
-  167 code_block: '{' block_item_list • '}'
-  169 block_item_list: block_item_list • block_item
+  168 code_block: '{' block_item_list • '}'
+  170 block_item_list: block_item_list • block_item
 
     IDENTIFIER    shift, and go to state 4
     KEY_TRY       shift, and go to state 6
@@ -2940,9 +2944,9 @@ State 163
 
 State 164
 
-  168 block_item_list: block_item •
+  169 block_item_list: block_item •
 
-    $default  reduce using rule 168 (block_item_list)
+    $default  reduce using rule 169 (block_item_list)
 
 
 State 165
@@ -2980,14 +2984,14 @@ State 168
 
 State 169
 
-  119 new_expr: KEY_NEW id_expr args_list_with_parentheses •
+  120 new_expr: KEY_NEW id_expr args_list_with_parentheses •
 
-    $default  reduce using rule 119 (new_expr)
+    $default  reduce using rule 120 (new_expr)
 
 
 State 170
 
-  182 number_parentheses_stmt: '(' • common_number_expr ')'
+  183 number_parentheses_stmt: '(' • common_number_expr ')'
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -3026,8 +3030,8 @@ State 170
 State 171
 
    67 single_if_stmt: KEY_IF '(' logic_stmt • ')' code_block
-  129 logic_stmt: logic_stmt • AND_OP logic_stmt
-  130           | logic_stmt • OR_OP logic_stmt
+  130 logic_stmt: logic_stmt • AND_OP logic_stmt
+  131           | logic_stmt • OR_OP logic_stmt
 
     AND_OP  shift, and go to state 199
     OR_OP   shift, and go to state 200
@@ -3036,63 +3040,63 @@ State 171
 
 State 172
 
-  212 common_result_of_call_expr: self_inc_dec_stmt •
+  213 common_result_of_call_expr: self_inc_dec_stmt •
 
-    $default  reduce using rule 212 (common_result_of_call_expr)
+    $default  reduce using rule 213 (common_result_of_call_expr)
 
 
 State 173
 
-  215 common_result_of_call_expr: number_parentheses_stmt •
+  216 common_result_of_call_expr: number_parentheses_stmt •
 
-    $default  reduce using rule 215 (common_result_of_call_expr)
+    $default  reduce using rule 216 (common_result_of_call_expr)
 
 
 State 174
 
-  132 bool_param_expr: bool_expr •
+  133 bool_param_expr: bool_expr •
 
-    $default  reduce using rule 132 (bool_param_expr)
+    $default  reduce using rule 133 (bool_param_expr)
 
 
 State 175
 
-  151 assign_stmt_value_eq: number_expr •
-  217 common_number_expr: number_expr •
+  152 assign_stmt_value_eq: number_expr •
+  218 common_number_expr: number_expr •
 
-    AND_OP    reduce using rule 151 (assign_stmt_value_eq)
-    OR_OP     reduce using rule 151 (assign_stmt_value_eq)
-    ','       reduce using rule 151 (assign_stmt_value_eq)
-    ')'       reduce using rule 151 (assign_stmt_value_eq)
-    ';'       reduce using rule 151 (assign_stmt_value_eq)
-    $default  reduce using rule 217 (common_number_expr)
+    AND_OP    reduce using rule 152 (assign_stmt_value_eq)
+    OR_OP     reduce using rule 152 (assign_stmt_value_eq)
+    ','       reduce using rule 152 (assign_stmt_value_eq)
+    ')'       reduce using rule 152 (assign_stmt_value_eq)
+    ';'       reduce using rule 152 (assign_stmt_value_eq)
+    $default  reduce using rule 218 (common_number_expr)
 
 
 State 176
 
-  107 call_statement: common_values_expr • args_list_with_parentheses
-  148 self_inc_dec_stmt: common_values_expr • self_inc_dec_operators
-  152 assign_stmt_value_eq: common_values_expr •
-  218 common_number_expr: common_values_expr •
-  220 common_object_expr: common_values_expr •
+  108 call_statement: common_values_expr • args_list_with_parentheses
+  149 self_inc_dec_stmt: common_values_expr • self_inc_dec_operators
+  153 assign_stmt_value_eq: common_values_expr •
+  219 common_number_expr: common_values_expr •
+  221 common_object_expr: common_values_expr •
 
     INC_OP  shift, and go to state 23
     DEC_OP  shift, and go to state 24
     '('     shift, and go to state 146
 
-    KEY_IS    reduce using rule 220 (common_object_expr)
-    EQ_OP     reduce using rule 218 (common_number_expr)
-    EQ_OP     [reduce using rule 220 (common_object_expr)]
-    NE_OP     reduce using rule 218 (common_number_expr)
-    NE_OP     [reduce using rule 220 (common_object_expr)]
-    AND_OP    reduce using rule 152 (assign_stmt_value_eq)
-    OR_OP     reduce using rule 152 (assign_stmt_value_eq)
-    ','       reduce using rule 152 (assign_stmt_value_eq)
-    ')'       reduce using rule 152 (assign_stmt_value_eq)
-    '['       reduce using rule 220 (common_object_expr)
-    '.'       reduce using rule 220 (common_object_expr)
-    ';'       reduce using rule 152 (assign_stmt_value_eq)
-    $default  reduce using rule 218 (common_number_expr)
+    KEY_IS    reduce using rule 221 (common_object_expr)
+    EQ_OP     reduce using rule 219 (common_number_expr)
+    EQ_OP     [reduce using rule 221 (common_object_expr)]
+    NE_OP     reduce using rule 219 (common_number_expr)
+    NE_OP     [reduce using rule 221 (common_object_expr)]
+    AND_OP    reduce using rule 153 (assign_stmt_value_eq)
+    OR_OP     reduce using rule 153 (assign_stmt_value_eq)
+    ','       reduce using rule 153 (assign_stmt_value_eq)
+    ')'       reduce using rule 153 (assign_stmt_value_eq)
+    '['       reduce using rule 221 (common_object_expr)
+    '.'       reduce using rule 221 (common_object_expr)
+    ';'       reduce using rule 153 (assign_stmt_value_eq)
+    $default  reduce using rule 219 (common_number_expr)
 
     args_list_with_parentheses  go to state 147
     self_inc_dec_operators      go to state 148
@@ -3100,23 +3104,23 @@ State 176
 
 State 177
 
-  153 assign_stmt_value_eq: common_result_of_call_expr •
-  219 common_number_expr: common_result_of_call_expr •
+  154 assign_stmt_value_eq: common_result_of_call_expr •
+  220 common_number_expr: common_result_of_call_expr •
 
-    AND_OP    reduce using rule 153 (assign_stmt_value_eq)
-    OR_OP     reduce using rule 153 (assign_stmt_value_eq)
-    ','       reduce using rule 153 (assign_stmt_value_eq)
-    ')'       reduce using rule 153 (assign_stmt_value_eq)
-    ';'       reduce using rule 153 (assign_stmt_value_eq)
-    $default  reduce using rule 219 (common_number_expr)
+    AND_OP    reduce using rule 154 (assign_stmt_value_eq)
+    OR_OP     reduce using rule 154 (assign_stmt_value_eq)
+    ','       reduce using rule 154 (assign_stmt_value_eq)
+    ')'       reduce using rule 154 (assign_stmt_value_eq)
+    ';'       reduce using rule 154 (assign_stmt_value_eq)
+    $default  reduce using rule 220 (common_number_expr)
 
 
 State 178
 
    36 class_member_stmt: common_object_expr • '.' id_expr
-  133 type_judge_stmt: common_object_expr • KEY_IS id_expr
-  138 object_compare_expr: common_object_expr • _symbol_equals_not common_types_expr
-  154 array_ele_stmt: common_object_expr • '[' common_number_expr ']'
+  134 type_judge_stmt: common_object_expr • KEY_IS id_expr
+  139 object_compare_expr: common_object_expr • _symbol_equals_not common_types_expr
+  155 array_ele_stmt: common_object_expr • '[' common_number_expr ']'
 
     KEY_IS  shift, and go to state 221
     EQ_OP   shift, and go to state 222
@@ -3129,9 +3133,9 @@ State 178
 
 State 179
 
-   81 loop_stmt: KEY_WHILE '(' logic_stmt • ')' code_block
-  129 logic_stmt: logic_stmt • AND_OP logic_stmt
-  130           | logic_stmt • OR_OP logic_stmt
+   82 loop_stmt: KEY_WHILE '(' logic_stmt • ')' code_block
+  130 logic_stmt: logic_stmt • AND_OP logic_stmt
+  131           | logic_stmt • OR_OP logic_stmt
 
     AND_OP  shift, and go to state 199
     OR_OP   shift, and go to state 200
@@ -3140,8 +3144,8 @@ State 179
 
 State 180
 
-   82 loop_stmt: KEY_FOR '(' for_1_stmt_list • ';' logic_stmt ';' for_3_stmt_list ')' code_block
-   85 for_1_stmt_list: for_1_stmt_list • ',' for_1_stmt
+   83 loop_stmt: KEY_FOR '(' for_1_stmt_list • ';' logic_stmt ';' for_3_stmt_list ')' code_block
+   86 for_1_stmt_list: for_1_stmt_list • ',' for_1_stmt
 
     ','  shift, and go to state 256
     ';'  shift, and go to state 257
@@ -3149,21 +3153,21 @@ State 180
 
 State 181
 
-   84 for_1_stmt_list: for_1_stmt •
+   85 for_1_stmt_list: for_1_stmt •
 
-    $default  reduce using rule 84 (for_1_stmt_list)
+    $default  reduce using rule 85 (for_1_stmt_list)
 
 
 State 182
 
-   86 for_1_stmt: assign_stmt •
+   87 for_1_stmt: assign_stmt •
 
-    $default  reduce using rule 86 (for_1_stmt)
+    $default  reduce using rule 87 (for_1_stmt)
 
 
 State 183
 
-  185 multiple_id_expr: multiple_id_expr ',' • id_expr
+  186 multiple_id_expr: multiple_id_expr ',' • id_expr
 
     IDENTIFIER  shift, and go to state 4
 
@@ -3172,65 +3176,65 @@ State 183
 
 State 184
 
-  196 uminus_expr_values: call_statement •
-  221 common_object_expr: call_statement •
+  197 uminus_expr_values: call_statement •
+  222 common_object_expr: call_statement •
 
-    '['       reduce using rule 221 (common_object_expr)
-    '.'       reduce using rule 221 (common_object_expr)
-    $default  reduce using rule 196 (uminus_expr_values)
+    '['       reduce using rule 222 (common_object_expr)
+    '.'       reduce using rule 222 (common_object_expr)
+    $default  reduce using rule 197 (uminus_expr_values)
 
 
 State 185
 
-  197 uminus_expr_values: number_parentheses_stmt •
+  198 uminus_expr_values: number_parentheses_stmt •
 
-    $default  reduce using rule 197 (uminus_expr_values)
+    $default  reduce using rule 198 (uminus_expr_values)
 
 
 State 186
 
-  194 uminus_expr_values: positive_number_expr •
+  195 uminus_expr_values: positive_number_expr •
 
-    $default  reduce using rule 194 (uminus_expr_values)
+    $default  reduce using rule 195 (uminus_expr_values)
 
 
 State 187
 
-  193 uminus_expr: '-' uminus_expr_values •
+  194 uminus_expr: '-' uminus_expr_values •
 
-    $default  reduce using rule 193 (uminus_expr)
+    $default  reduce using rule 194 (uminus_expr)
 
 
 State 188
 
-  195 uminus_expr_values: common_others_values_expr •
-  209 common_values_expr: common_others_values_expr •
+  196 uminus_expr_values: common_others_values_expr •
+  210 common_values_expr: common_others_values_expr •
 
-    '('       reduce using rule 209 (common_values_expr)
-    '['       reduce using rule 209 (common_values_expr)
-    '.'       reduce using rule 209 (common_values_expr)
-    $default  reduce using rule 195 (uminus_expr_values)
+    '('       reduce using rule 210 (common_values_expr)
+    '['       reduce using rule 210 (common_values_expr)
+    '.'       reduce using rule 210 (common_values_expr)
+    $default  reduce using rule 196 (uminus_expr_values)
 
 
 State 189
 
-  134 not_bool_param_expr: '!' bool_param_expr •
+  135 not_bool_param_expr: '!' bool_param_expr •
 
-    $default  reduce using rule 134 (not_bool_param_expr)
+    $default  reduce using rule 135 (not_bool_param_expr)
 
 
 State 190
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
 
     LEFT_SHIFT   shift, and go to state 204
     RIGHT_SHIFT  shift, and go to state 205
@@ -3246,25 +3250,25 @@ State 190
 
 State 191
 
-  217 common_number_expr: number_expr •
+  218 common_number_expr: number_expr •
 
-    $default  reduce using rule 217 (common_number_expr)
+    $default  reduce using rule 218 (common_number_expr)
 
 
 State 192
 
-  107 call_statement: common_values_expr • args_list_with_parentheses
-  148 self_inc_dec_stmt: common_values_expr • self_inc_dec_operators
-  218 common_number_expr: common_values_expr •
-  220 common_object_expr: common_values_expr •
+  108 call_statement: common_values_expr • args_list_with_parentheses
+  149 self_inc_dec_stmt: common_values_expr • self_inc_dec_operators
+  219 common_number_expr: common_values_expr •
+  221 common_object_expr: common_values_expr •
 
     INC_OP  shift, and go to state 23
     DEC_OP  shift, and go to state 24
     '('     shift, and go to state 146
 
-    '['       reduce using rule 220 (common_object_expr)
-    '.'       reduce using rule 220 (common_object_expr)
-    $default  reduce using rule 218 (common_number_expr)
+    '['       reduce using rule 221 (common_object_expr)
+    '.'       reduce using rule 221 (common_object_expr)
+    $default  reduce using rule 219 (common_number_expr)
 
     args_list_with_parentheses  go to state 147
     self_inc_dec_operators      go to state 148
@@ -3272,26 +3276,26 @@ State 192
 
 State 193
 
-  219 common_number_expr: common_result_of_call_expr •
+  220 common_number_expr: common_result_of_call_expr •
 
-    $default  reduce using rule 219 (common_number_expr)
+    $default  reduce using rule 220 (common_number_expr)
 
 
 State 194
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
-  118                | '~' common_number_expr •
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
+  119                | '~' common_number_expr •
 
-    $default  reduce using rule 118 (arithmetic_stmt)
+    $default  reduce using rule 119 (arithmetic_stmt)
 
 
 State 195
@@ -3304,7 +3308,7 @@ State 195
 State 196
 
    47 lambda_args_stmt: '(' multiple_id_expr • ')'
-  185 multiple_id_expr: multiple_id_expr • ',' id_expr
+  186 multiple_id_expr: multiple_id_expr • ',' id_expr
 
     ','  shift, and go to state 183
     ')'  shift, and go to state 259
@@ -3312,17 +3316,17 @@ State 196
 
 State 197
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
-  182 number_parentheses_stmt: '(' common_number_expr • ')'
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
+  183 number_parentheses_stmt: '(' common_number_expr • ')'
 
     LEFT_SHIFT   shift, and go to state 204
     RIGHT_SHIFT  shift, and go to state 205
@@ -3348,7 +3352,7 @@ State 198
 
 State 199
 
-  129 logic_stmt: logic_stmt AND_OP • logic_stmt
+  130 logic_stmt: logic_stmt AND_OP • logic_stmt
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -3397,7 +3401,7 @@ State 199
 
 State 200
 
-  130 logic_stmt: logic_stmt OR_OP • logic_stmt
+  131 logic_stmt: logic_stmt OR_OP • logic_stmt
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -3446,7 +3450,7 @@ State 200
 
 State 201
 
-  177 string_plus_stmt: string_plus_stmt '+' • string_plus_stmt_value
+  178 string_plus_stmt: string_plus_stmt '+' • string_plus_stmt_value
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -3491,8 +3495,8 @@ State 201
 
 State 202
 
-  175 string_plus_stmt: string_plus_stmt_value '+' • string_expr
-  176                 | string_plus_stmt_value '+' • string_plus_stmt
+  176 string_plus_stmt: string_plus_stmt_value '+' • string_expr
+  177                 | string_plus_stmt_value '+' • string_plus_stmt
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -3538,7 +3542,7 @@ State 202
 
 State 203
 
-  174 string_plus_stmt: string_expr '+' • string_plus_stmt_value
+  175 string_plus_stmt: string_expr '+' • string_plus_stmt_value
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -3583,7 +3587,7 @@ State 203
 
 State 204
 
-  116 arithmetic_stmt: common_number_expr LEFT_SHIFT • common_number_expr
+  117 arithmetic_stmt: common_number_expr LEFT_SHIFT • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -3621,7 +3625,7 @@ State 204
 
 State 205
 
-  117 arithmetic_stmt: common_number_expr RIGHT_SHIFT • common_number_expr
+  118 arithmetic_stmt: common_number_expr RIGHT_SHIFT • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -3659,49 +3663,49 @@ State 205
 
 State 206
 
-  142 _symbol_compare: LE_OP •
-
-    $default  reduce using rule 142 (_symbol_compare)
-
-
-State 207
-
-  141 _symbol_compare: GE_OP •
-
-    $default  reduce using rule 141 (_symbol_compare)
-
-
-State 208
-
-  144 _symbol_compare: EQ_OP •
-
-    $default  reduce using rule 144 (_symbol_compare)
-
-
-State 209
-
-  143 _symbol_compare: NE_OP •
+  143 _symbol_compare: LE_OP •
 
     $default  reduce using rule 143 (_symbol_compare)
 
 
+State 207
+
+  142 _symbol_compare: GE_OP •
+
+    $default  reduce using rule 142 (_symbol_compare)
+
+
+State 208
+
+  145 _symbol_compare: EQ_OP •
+
+    $default  reduce using rule 145 (_symbol_compare)
+
+
+State 209
+
+  144 _symbol_compare: NE_OP •
+
+    $default  reduce using rule 144 (_symbol_compare)
+
+
 State 210
 
-  139 _symbol_compare: '>' •
-
-    $default  reduce using rule 139 (_symbol_compare)
-
-
-State 211
-
-  140 _symbol_compare: '<' •
+  140 _symbol_compare: '>' •
 
     $default  reduce using rule 140 (_symbol_compare)
 
 
+State 211
+
+  141 _symbol_compare: '<' •
+
+    $default  reduce using rule 141 (_symbol_compare)
+
+
 State 212
 
-  114 arithmetic_stmt: common_number_expr '|' • common_number_expr
+  115 arithmetic_stmt: common_number_expr '|' • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -3739,7 +3743,7 @@ State 212
 
 State 213
 
-  115 arithmetic_stmt: common_number_expr '^' • common_number_expr
+  116 arithmetic_stmt: common_number_expr '^' • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -3777,7 +3781,7 @@ State 213
 
 State 214
 
-  113 arithmetic_stmt: common_number_expr '&' • common_number_expr
+  114 arithmetic_stmt: common_number_expr '&' • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -3815,7 +3819,7 @@ State 214
 
 State 215
 
-  108 arithmetic_stmt: common_number_expr '+' • common_number_expr
+  109 arithmetic_stmt: common_number_expr '+' • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -3853,7 +3857,7 @@ State 215
 
 State 216
 
-  109 arithmetic_stmt: common_number_expr '-' • common_number_expr
+  110 arithmetic_stmt: common_number_expr '-' • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -3891,7 +3895,7 @@ State 216
 
 State 217
 
-  110 arithmetic_stmt: common_number_expr '*' • common_number_expr
+  111 arithmetic_stmt: common_number_expr '*' • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -3929,7 +3933,7 @@ State 217
 
 State 218
 
-  111 arithmetic_stmt: common_number_expr '/' • common_number_expr
+  112 arithmetic_stmt: common_number_expr '/' • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -3967,7 +3971,7 @@ State 218
 
 State 219
 
-  112 arithmetic_stmt: common_number_expr '%' • common_number_expr
+  113 arithmetic_stmt: common_number_expr '%' • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -4005,7 +4009,7 @@ State 219
 
 State 220
 
-  137 number_compare_expr: common_number_expr _symbol_compare • common_number_expr
+  138 number_compare_expr: common_number_expr _symbol_compare • common_number_expr
 
     TINTEGER    shift, and go to state 81
     TDOUBLE     shift, and go to state 82
@@ -4043,7 +4047,7 @@ State 220
 
 State 221
 
-  133 type_judge_stmt: common_object_expr KEY_IS • id_expr
+  134 type_judge_stmt: common_object_expr KEY_IS • id_expr
 
     IDENTIFIER  shift, and go to state 4
 
@@ -4052,21 +4056,21 @@ State 221
 
 State 222
 
-  146 _symbol_equals_not: EQ_OP •
+  147 _symbol_equals_not: EQ_OP •
 
-    $default  reduce using rule 146 (_symbol_equals_not)
+    $default  reduce using rule 147 (_symbol_equals_not)
 
 
 State 223
 
-  145 _symbol_equals_not: NE_OP •
+  146 _symbol_equals_not: NE_OP •
 
-    $default  reduce using rule 145 (_symbol_equals_not)
+    $default  reduce using rule 146 (_symbol_equals_not)
 
 
 State 224
 
-  138 object_compare_expr: common_object_expr _symbol_equals_not • common_types_expr
+  139 object_compare_expr: common_object_expr _symbol_equals_not • common_types_expr
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -4095,16 +4099,16 @@ State 224
 State 225
 
    64 selection_stmt: KEY_SWITCH '(' common_number_expr • ')' '{' case_stmt_list '}'
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
 
     LEFT_SHIFT   shift, and go to state 204
     RIGHT_SHIFT  shift, and go to state 205
@@ -4209,30 +4213,30 @@ State 233
 
 State 234
 
-   72 else_if_stmt: KEY_ELSE single_if_stmt •
+   73 else_if_stmt: KEY_ELSE single_if_stmt •
 
-    $default  reduce using rule 72 (else_if_stmt)
+    $default  reduce using rule 73 (else_if_stmt)
 
 
 State 235
 
-   73 single_else_stmt: KEY_ELSE code_block •
+   74 single_else_stmt: KEY_ELSE code_block •
 
-    $default  reduce using rule 73 (single_else_stmt)
+    $default  reduce using rule 74 (single_else_stmt)
 
 
 State 236
 
-   71 else_if_stmts: else_if_stmts else_if_stmt •
+   72 else_if_stmts: else_if_stmts else_if_stmt •
 
-    $default  reduce using rule 71 (else_if_stmts)
+    $default  reduce using rule 72 (else_if_stmts)
 
 
 State 237
 
-   68 else_stmt: else_if_stmts single_else_stmt •
+   69 else_stmt: else_if_stmts single_else_stmt •
 
-    $default  reduce using rule 68 (else_stmt)
+    $default  reduce using rule 69 (else_stmt)
 
 
 State 238
@@ -4245,16 +4249,16 @@ State 238
 State 239
 
    56 element_var_declare_stmt: id_expr '[' common_number_expr • ']'
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
 
     LEFT_SHIFT   shift, and go to state 204
     RIGHT_SHIFT  shift, and go to state 205
@@ -4271,15 +4275,15 @@ State 239
 
 State 240
 
-  120 args_list_with_parentheses: '(' ')' •
+  121 args_list_with_parentheses: '(' ')' •
 
-    $default  reduce using rule 120 (args_list_with_parentheses)
+    $default  reduce using rule 121 (args_list_with_parentheses)
 
 
 State 241
 
-  121 args_list_with_parentheses: '(' args_list • ')'
-  123 args_list: args_list • ',' common_expr
+  122 args_list_with_parentheses: '(' args_list • ')'
+  124 args_list: args_list • ',' common_expr
 
     ','  shift, and go to state 298
     ')'  shift, and go to state 299
@@ -4287,45 +4291,45 @@ State 241
 
 State 242
 
-  122 args_list: common_expr •
+  123 args_list: common_expr •
 
-    $default  reduce using rule 122 (args_list)
+    $default  reduce using rule 123 (args_list)
 
 
 State 243
 
-  159 single_assign_stmt_value: single_assign_stmt •
+  160 single_assign_stmt_value: single_assign_stmt •
 
-    $default  reduce using rule 159 (single_assign_stmt_value)
+    $default  reduce using rule 160 (single_assign_stmt_value)
 
 
 State 244
 
-  157 single_assign_stmt: common_assignable_expr '=' single_assign_stmt_value •
+  158 single_assign_stmt: common_assignable_expr '=' single_assign_stmt_value •
 
-    $default  reduce using rule 157 (single_assign_stmt)
+    $default  reduce using rule 158 (single_assign_stmt)
 
 
 State 245
 
-  158 single_assign_stmt_value: common_expr •
+  159 single_assign_stmt_value: common_expr •
 
-    $default  reduce using rule 158 (single_assign_stmt_value)
+    $default  reduce using rule 159 (single_assign_stmt_value)
 
 
 State 246
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
-  160 number_change_assign_stmt: common_assignable_expr symbol_change_assign common_number_expr •
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
+  161 number_change_assign_stmt: common_assignable_expr symbol_change_assign common_number_expr •
 
     LEFT_SHIFT   shift, and go to state 204
     RIGHT_SHIFT  shift, and go to state 205
@@ -4338,22 +4342,22 @@ State 246
     '/'          shift, and go to state 218
     '%'          shift, and go to state 219
 
-    $default  reduce using rule 160 (number_change_assign_stmt)
+    $default  reduce using rule 161 (number_change_assign_stmt)
 
 
 State 247
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
-  154 array_ele_stmt: common_object_expr '[' common_number_expr • ']'
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
+  155 array_ele_stmt: common_object_expr '[' common_number_expr • ']'
 
     LEFT_SHIFT   shift, and go to state 204
     RIGHT_SHIFT  shift, and go to state 205
@@ -4377,16 +4381,16 @@ State 248
 
 State 249
 
-  167 code_block: '{' block_item_list '}' •
+  168 code_block: '{' block_item_list '}' •
 
-    $default  reduce using rule 167 (code_block)
+    $default  reduce using rule 168 (code_block)
 
 
 State 250
 
-  169 block_item_list: block_item_list block_item •
+  170 block_item_list: block_item_list block_item •
 
-    $default  reduce using rule 169 (block_item_list)
+    $default  reduce using rule 170 (block_item_list)
 
 
 State 251
@@ -4426,7 +4430,7 @@ State 254
 
 State 255
 
-   81 loop_stmt: KEY_WHILE '(' logic_stmt ')' • code_block
+   82 loop_stmt: KEY_WHILE '(' logic_stmt ')' • code_block
 
     '{'  shift, and go to state 68
 
@@ -4435,7 +4439,7 @@ State 255
 
 State 256
 
-   85 for_1_stmt_list: for_1_stmt_list ',' • for_1_stmt
+   86 for_1_stmt_list: for_1_stmt_list ',' • for_1_stmt
 
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
@@ -4460,7 +4464,7 @@ State 256
 
 State 257
 
-   82 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' • logic_stmt ';' for_3_stmt_list ')' code_block
+   83 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' • logic_stmt ';' for_3_stmt_list ')' code_block
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -4509,9 +4513,9 @@ State 257
 
 State 258
 
-  185 multiple_id_expr: multiple_id_expr ',' id_expr •
+  186 multiple_id_expr: multiple_id_expr ',' id_expr •
 
-    $default  reduce using rule 185 (multiple_id_expr)
+    $default  reduce using rule 186 (multiple_id_expr)
 
 
 State 259
@@ -4523,9 +4527,9 @@ State 259
 
 State 260
 
-  182 number_parentheses_stmt: '(' common_number_expr ')' •
+  183 number_parentheses_stmt: '(' common_number_expr ')' •
 
-    $default  reduce using rule 182 (number_parentheses_stmt)
+    $default  reduce using rule 183 (number_parentheses_stmt)
 
 
 State 261
@@ -4537,147 +4541,124 @@ State 261
 
 State 262
 
-  129 logic_stmt: logic_stmt • AND_OP logic_stmt
-  129           | logic_stmt AND_OP logic_stmt •
-  130           | logic_stmt • OR_OP logic_stmt
-
-    $default  reduce using rule 129 (logic_stmt)
-
-
-State 263
-
-  129 logic_stmt: logic_stmt • AND_OP logic_stmt
-  130           | logic_stmt • OR_OP logic_stmt
-  130           | logic_stmt OR_OP logic_stmt •
-
-    AND_OP  shift, and go to state 199
+  130 logic_stmt: logic_stmt • AND_OP logic_stmt
+  130           | logic_stmt AND_OP logic_stmt •
+  131           | logic_stmt • OR_OP logic_stmt
 
     $default  reduce using rule 130 (logic_stmt)
 
 
+State 263
+
+  130 logic_stmt: logic_stmt • AND_OP logic_stmt
+  131           | logic_stmt • OR_OP logic_stmt
+  131           | logic_stmt OR_OP logic_stmt •
+
+    AND_OP  shift, and go to state 199
+
+    $default  reduce using rule 131 (logic_stmt)
+
+
 State 264
 
-  180 string_plus_stmt_value: self_inc_dec_stmt •
-
-    $default  reduce using rule 180 (string_plus_stmt_value)
-
-
-State 265
-
-  177 string_plus_stmt: string_plus_stmt '+' string_plus_stmt_value •
-
-    $default  reduce using rule 177 (string_plus_stmt)
-
-
-State 266
-
-  181 string_plus_stmt_value: number_parentheses_stmt •
+  181 string_plus_stmt_value: self_inc_dec_stmt •
 
     $default  reduce using rule 181 (string_plus_stmt_value)
 
 
+State 265
+
+  178 string_plus_stmt: string_plus_stmt '+' string_plus_stmt_value •
+
+    $default  reduce using rule 178 (string_plus_stmt)
+
+
+State 266
+
+  182 string_plus_stmt_value: number_parentheses_stmt •
+
+    $default  reduce using rule 182 (string_plus_stmt_value)
+
+
 State 267
 
-  204 common_types_expr: bool_expr •
+  205 common_types_expr: bool_expr •
 
-    $default  reduce using rule 204 (common_types_expr)
+    $default  reduce using rule 205 (common_types_expr)
 
 
 State 268
 
-  200 common_types_expr: number_expr •
-
-    $default  reduce using rule 200 (common_types_expr)
-
-
-State 269
-
-  201 common_types_expr: string_expr •
+  201 common_types_expr: number_expr •
 
     $default  reduce using rule 201 (common_types_expr)
 
 
+State 269
+
+  202 common_types_expr: string_expr •
+
+    $default  reduce using rule 202 (common_types_expr)
+
+
 State 270
 
-  179 string_plus_stmt_value: common_types_expr •
+  180 string_plus_stmt_value: common_types_expr •
 
-    $default  reduce using rule 179 (string_plus_stmt_value)
+    $default  reduce using rule 180 (string_plus_stmt_value)
 
 
 State 271
 
    36 class_member_stmt: common_object_expr • '.' id_expr
-  154 array_ele_stmt: common_object_expr • '[' common_number_expr ']'
-  178 string_plus_stmt_value: common_object_expr •
+  155 array_ele_stmt: common_object_expr • '[' common_number_expr ']'
+  179 string_plus_stmt_value: common_object_expr •
 
     '['  shift, and go to state 156
     '.'  shift, and go to state 157
 
-    $default  reduce using rule 178 (string_plus_stmt_value)
+    $default  reduce using rule 179 (string_plus_stmt_value)
 
 
 State 272
 
-  176 string_plus_stmt: string_plus_stmt_value '+' string_plus_stmt •
-  177                 | string_plus_stmt • '+' string_plus_stmt_value
+  177 string_plus_stmt: string_plus_stmt_value '+' string_plus_stmt •
+  178                 | string_plus_stmt • '+' string_plus_stmt_value
 
-    $default  reduce using rule 176 (string_plus_stmt)
+    $default  reduce using rule 177 (string_plus_stmt)
 
 
 State 273
 
-  174 string_plus_stmt: string_expr • '+' string_plus_stmt_value
-  175                 | string_plus_stmt_value '+' string_expr •
-  201 common_types_expr: string_expr •
+  175 string_plus_stmt: string_expr • '+' string_plus_stmt_value
+  176                 | string_plus_stmt_value '+' string_expr •
+  202 common_types_expr: string_expr •
 
-    '+'       reduce using rule 175 (string_plus_stmt)
-    '+'       [reduce using rule 201 (common_types_expr)]
-    $default  reduce using rule 175 (string_plus_stmt)
+    '+'       reduce using rule 176 (string_plus_stmt)
+    '+'       [reduce using rule 202 (common_types_expr)]
+    $default  reduce using rule 176 (string_plus_stmt)
 
 
 State 274
 
-  174 string_plus_stmt: string_expr '+' string_plus_stmt_value •
+  175 string_plus_stmt: string_expr '+' string_plus_stmt_value •
 
-    $default  reduce using rule 174 (string_plus_stmt)
+    $default  reduce using rule 175 (string_plus_stmt)
 
 
 State 275
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  116                | common_number_expr LEFT_SHIFT common_number_expr •
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
-
-    '+'  shift, and go to state 215
-    '-'  shift, and go to state 216
-    '*'  shift, and go to state 217
-    '/'  shift, and go to state 218
-    '%'  shift, and go to state 219
-
-    $default  reduce using rule 116 (arithmetic_stmt)
-
-
-State 276
-
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
-  117                | common_number_expr RIGHT_SHIFT common_number_expr •
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  117                | common_number_expr LEFT_SHIFT common_number_expr •
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
 
     '+'  shift, and go to state 215
     '-'  shift, and go to state 216
@@ -4688,19 +4669,42 @@ State 276
     $default  reduce using rule 117 (arithmetic_stmt)
 
 
+State 276
+
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
+  118                | common_number_expr RIGHT_SHIFT common_number_expr •
+
+    '+'  shift, and go to state 215
+    '-'  shift, and go to state 216
+    '*'  shift, and go to state 217
+    '/'  shift, and go to state 218
+    '%'  shift, and go to state 219
+
+    $default  reduce using rule 118 (arithmetic_stmt)
+
+
 State 277
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  114                | common_number_expr '|' common_number_expr •
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  115                | common_number_expr '|' common_number_expr •
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
 
     LEFT_SHIFT   shift, and go to state 204
     RIGHT_SHIFT  shift, and go to state 205
@@ -4712,22 +4716,22 @@ State 277
     '/'          shift, and go to state 218
     '%'          shift, and go to state 219
 
-    $default  reduce using rule 114 (arithmetic_stmt)
+    $default  reduce using rule 115 (arithmetic_stmt)
 
 
 State 278
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  115                | common_number_expr '^' common_number_expr •
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  116                | common_number_expr '^' common_number_expr •
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
 
     LEFT_SHIFT   shift, and go to state 204
     RIGHT_SHIFT  shift, and go to state 205
@@ -4738,22 +4742,22 @@ State 278
     '/'          shift, and go to state 218
     '%'          shift, and go to state 219
 
-    $default  reduce using rule 115 (arithmetic_stmt)
+    $default  reduce using rule 116 (arithmetic_stmt)
 
 
 State 279
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  113                | common_number_expr '&' common_number_expr •
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  114                | common_number_expr '&' common_number_expr •
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
 
     LEFT_SHIFT   shift, and go to state 204
     RIGHT_SHIFT  shift, and go to state 205
@@ -4763,43 +4767,22 @@ State 279
     '/'          shift, and go to state 218
     '%'          shift, and go to state 219
 
-    $default  reduce using rule 113 (arithmetic_stmt)
+    $default  reduce using rule 114 (arithmetic_stmt)
 
 
 State 280
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  108                | common_number_expr '+' common_number_expr •
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
-
-    '*'  shift, and go to state 217
-    '/'  shift, and go to state 218
-    '%'  shift, and go to state 219
-
-    $default  reduce using rule 108 (arithmetic_stmt)
-
-
-State 281
-
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  109                | common_number_expr '-' common_number_expr •
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  109                | common_number_expr '+' common_number_expr •
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
 
     '*'  shift, and go to state 217
     '/'  shift, and go to state 218
@@ -4808,70 +4791,91 @@ State 281
     $default  reduce using rule 109 (arithmetic_stmt)
 
 
-State 282
+State 281
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  110                | common_number_expr '*' common_number_expr •
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  110                | common_number_expr '-' common_number_expr •
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
+
+    '*'  shift, and go to state 217
+    '/'  shift, and go to state 218
+    '%'  shift, and go to state 219
 
     $default  reduce using rule 110 (arithmetic_stmt)
 
 
-State 283
+State 282
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  111                | common_number_expr '/' common_number_expr •
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  111                | common_number_expr '*' common_number_expr •
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
 
     $default  reduce using rule 111 (arithmetic_stmt)
 
 
-State 284
+State 283
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  112                | common_number_expr '%' common_number_expr •
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  112                | common_number_expr '/' common_number_expr •
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
 
     $default  reduce using rule 112 (arithmetic_stmt)
 
 
+State 284
+
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  113                | common_number_expr '%' common_number_expr •
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
+
+    $default  reduce using rule 113 (arithmetic_stmt)
+
+
 State 285
 
-  108 arithmetic_stmt: common_number_expr • '+' common_number_expr
-  109                | common_number_expr • '-' common_number_expr
-  110                | common_number_expr • '*' common_number_expr
-  111                | common_number_expr • '/' common_number_expr
-  112                | common_number_expr • '%' common_number_expr
-  113                | common_number_expr • '&' common_number_expr
-  114                | common_number_expr • '|' common_number_expr
-  115                | common_number_expr • '^' common_number_expr
-  116                | common_number_expr • LEFT_SHIFT common_number_expr
-  117                | common_number_expr • RIGHT_SHIFT common_number_expr
-  137 number_compare_expr: common_number_expr _symbol_compare common_number_expr •
+  109 arithmetic_stmt: common_number_expr • '+' common_number_expr
+  110                | common_number_expr • '-' common_number_expr
+  111                | common_number_expr • '*' common_number_expr
+  112                | common_number_expr • '/' common_number_expr
+  113                | common_number_expr • '%' common_number_expr
+  114                | common_number_expr • '&' common_number_expr
+  115                | common_number_expr • '|' common_number_expr
+  116                | common_number_expr • '^' common_number_expr
+  117                | common_number_expr • LEFT_SHIFT common_number_expr
+  118                | common_number_expr • RIGHT_SHIFT common_number_expr
+  138 number_compare_expr: common_number_expr _symbol_compare common_number_expr •
 
     LEFT_SHIFT   shift, and go to state 204
     RIGHT_SHIFT  shift, and go to state 205
@@ -4884,14 +4888,14 @@ State 285
     '/'          shift, and go to state 218
     '%'          shift, and go to state 219
 
-    $default  reduce using rule 137 (number_compare_expr)
+    $default  reduce using rule 138 (number_compare_expr)
 
 
 State 286
 
-  133 type_judge_stmt: common_object_expr KEY_IS id_expr •
+  134 type_judge_stmt: common_object_expr KEY_IS id_expr •
 
-    $default  reduce using rule 133 (type_judge_stmt)
+    $default  reduce using rule 134 (type_judge_stmt)
 
 
 State 287
@@ -4908,9 +4912,9 @@ State 287
 
 State 288
 
-  138 object_compare_expr: common_object_expr _symbol_equals_not common_types_expr •
+  139 object_compare_expr: common_object_expr _symbol_equals_not common_types_expr •
 
-    $default  reduce using rule 138 (object_compare_expr)
+    $default  reduce using rule 139 (object_compare_expr)
 
 
 State 289
@@ -4923,7 +4927,7 @@ State 289
 State 290
 
    26 class_name_suffix: KEY_EXTENDS multiple_id_expr •
-  185 multiple_id_expr: multiple_id_expr • ',' id_expr
+  186 multiple_id_expr: multiple_id_expr • ',' id_expr
 
     ','  shift, and go to state 183
 
@@ -4985,7 +4989,7 @@ State 293
 State 294
 
    44 func_param_list: '(' multiple_id_expr • ')'
-  185 multiple_id_expr: multiple_id_expr • ',' id_expr
+  186 multiple_id_expr: multiple_id_expr • ',' id_expr
 
     ','  shift, and go to state 183
     ')'  shift, and go to state 314
@@ -5014,7 +5018,7 @@ State 297
 
 State 298
 
-  123 args_list: args_list ',' • common_expr
+  124 args_list: args_list ',' • common_expr
 
     TINTEGER    shift, and go to state 81
     TBOOL       shift, and go to state 74
@@ -5074,16 +5078,16 @@ State 298
 
 State 299
 
-  121 args_list_with_parentheses: '(' args_list ')' •
+  122 args_list_with_parentheses: '(' args_list ')' •
 
-    $default  reduce using rule 121 (args_list_with_parentheses)
+    $default  reduce using rule 122 (args_list_with_parentheses)
 
 
 State 300
 
-  154 array_ele_stmt: common_object_expr '[' common_number_expr ']' •
+  155 array_ele_stmt: common_object_expr '[' common_number_expr ']' •
 
-    $default  reduce using rule 154 (array_ele_stmt)
+    $default  reduce using rule 155 (array_ele_stmt)
 
 
 State 301
@@ -5102,23 +5106,23 @@ State 302
 
 State 303
 
-   81 loop_stmt: KEY_WHILE '(' logic_stmt ')' code_block •
+   82 loop_stmt: KEY_WHILE '(' logic_stmt ')' code_block •
 
-    $default  reduce using rule 81 (loop_stmt)
+    $default  reduce using rule 82 (loop_stmt)
 
 
 State 304
 
-   85 for_1_stmt_list: for_1_stmt_list ',' for_1_stmt •
+   86 for_1_stmt_list: for_1_stmt_list ',' for_1_stmt •
 
-    $default  reduce using rule 85 (for_1_stmt_list)
+    $default  reduce using rule 86 (for_1_stmt_list)
 
 
 State 305
 
-   82 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' logic_stmt • ';' for_3_stmt_list ')' code_block
-  129 logic_stmt: logic_stmt • AND_OP logic_stmt
-  130           | logic_stmt • OR_OP logic_stmt
+   83 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' logic_stmt • ';' for_3_stmt_list ')' code_block
+  130 logic_stmt: logic_stmt • AND_OP logic_stmt
+  131           | logic_stmt • OR_OP logic_stmt
 
     AND_OP  shift, and go to state 199
     OR_OP   shift, and go to state 200
@@ -5224,9 +5228,9 @@ State 314
 
 State 315
 
-  123 args_list: args_list ',' common_expr •
+  124 args_list: args_list ',' common_expr •
 
-    $default  reduce using rule 123 (args_list)
+    $default  reduce using rule 124 (args_list)
 
 
 State 316
@@ -5240,7 +5244,7 @@ State 316
 
 State 317
 
-   82 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' logic_stmt ';' • for_3_stmt_list ')' code_block
+   83 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' logic_stmt ';' • for_3_stmt_list ')' code_block
 
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
@@ -5248,7 +5252,7 @@ State 317
     INC_OP      shift, and go to state 23
     DEC_OP      shift, and go to state 24
 
-    $default  reduce using rule 87 (for_3_stmt_list)
+    $default  reduce using rule 88 (for_3_stmt_list)
 
     this_stmt                  go to state 36
     class_member_stmt          go to state 37
@@ -5272,7 +5276,7 @@ State 317
 
 State 318
 
-   76 case_stmt: KEY_CASE • int_expr ':' case_block
+   77 case_stmt: KEY_CASE • int_expr ':' case_block
 
     TINTEGER  shift, and go to state 81
 
@@ -5281,7 +5285,7 @@ State 318
 
 State 319
 
-   77 case_stmt: KEY_DEFAULT • ':' case_block
+   78 case_stmt: KEY_DEFAULT • ':' case_block
 
     ':'  shift, and go to state 332
 
@@ -5289,7 +5293,7 @@ State 319
 State 320
 
    64 selection_stmt: KEY_SWITCH '(' common_number_expr ')' '{' case_stmt_list • '}'
-   75 case_stmt_list: case_stmt_list • case_stmt
+   76 case_stmt_list: case_stmt_list • case_stmt
 
     KEY_CASE     shift, and go to state 318
     KEY_DEFAULT  shift, and go to state 319
@@ -5300,9 +5304,9 @@ State 320
 
 State 321
 
-   74 case_stmt_list: case_stmt •
+   75 case_stmt_list: case_stmt •
 
-    $default  reduce using rule 74 (case_stmt_list)
+    $default  reduce using rule 75 (case_stmt_list)
 
 
 State 322
@@ -5342,8 +5346,8 @@ State 326
 
 State 327
 
-   82 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list • ')' code_block
-   89 for_3_stmt_list: for_3_stmt_list • ',' for_3_stmt
+   83 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list • ')' code_block
+   90 for_3_stmt_list: for_3_stmt_list • ',' for_3_stmt
 
     ','  shift, and go to state 335
     ')'  shift, and go to state 336
@@ -5351,35 +5355,35 @@ State 327
 
 State 328
 
-   88 for_3_stmt_list: for_3_stmt •
+   89 for_3_stmt_list: for_3_stmt •
 
-    $default  reduce using rule 88 (for_3_stmt_list)
+    $default  reduce using rule 89 (for_3_stmt_list)
 
 
 State 329
 
-   91 for_3_stmt: self_inc_dec_stmt •
+   92 for_3_stmt: self_inc_dec_stmt •
 
-    $default  reduce using rule 91 (for_3_stmt)
+    $default  reduce using rule 92 (for_3_stmt)
 
 
 State 330
 
-   90 for_3_stmt: assign_stmt •
+   91 for_3_stmt: assign_stmt •
 
-    $default  reduce using rule 90 (for_3_stmt)
+    $default  reduce using rule 91 (for_3_stmt)
 
 
 State 331
 
-   76 case_stmt: KEY_CASE int_expr • ':' case_block
+   77 case_stmt: KEY_CASE int_expr • ':' case_block
 
     ':'  shift, and go to state 337
 
 
 State 332
 
-   77 case_stmt: KEY_DEFAULT ':' • case_block
+   78 case_stmt: KEY_DEFAULT ':' • case_block
 
     IDENTIFIER    shift, and go to state 4
     KEY_TRY       shift, and go to state 6
@@ -5401,7 +5405,7 @@ State 332
     ';'           shift, and go to state 27
     '{'           shift, and go to state 68
 
-    $default  reduce using rule 80 (case_block)
+    $default  reduce using rule 81 (case_block)
 
     _extra_nothing              go to state 159
     try_stmt                    go to state 160
@@ -5450,14 +5454,14 @@ State 333
 
 State 334
 
-   75 case_stmt_list: case_stmt_list case_stmt •
+   76 case_stmt_list: case_stmt_list case_stmt •
 
-    $default  reduce using rule 75 (case_stmt_list)
+    $default  reduce using rule 76 (case_stmt_list)
 
 
 State 335
 
-   89 for_3_stmt_list: for_3_stmt_list ',' • for_3_stmt
+   90 for_3_stmt_list: for_3_stmt_list ',' • for_3_stmt
 
     IDENTIFIER  shift, and go to state 4
     KEY_NEW     shift, and go to state 10
@@ -5486,7 +5490,7 @@ State 335
 
 State 336
 
-   82 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list ')' • code_block
+   83 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list ')' • code_block
 
     '{'  shift, and go to state 68
 
@@ -5495,7 +5499,7 @@ State 336
 
 State 337
 
-   76 case_stmt: KEY_CASE int_expr ':' • case_block
+   77 case_stmt: KEY_CASE int_expr ':' • case_block
 
     IDENTIFIER    shift, and go to state 4
     KEY_TRY       shift, and go to state 6
@@ -5517,7 +5521,7 @@ State 337
     ';'           shift, and go to state 27
     '{'           shift, and go to state 68
 
-    $default  reduce using rule 80 (case_block)
+    $default  reduce using rule 81 (case_block)
 
     _extra_nothing              go to state 159
     try_stmt                    go to state 160
@@ -5559,22 +5563,22 @@ State 337
 
 State 338
 
-   77 case_stmt: KEY_DEFAULT ':' case_block •
+   78 case_stmt: KEY_DEFAULT ':' case_block •
 
-    $default  reduce using rule 77 (case_stmt)
+    $default  reduce using rule 78 (case_stmt)
 
 
 State 339
 
-   78 case_block: code_block •
+   79 case_block: code_block •
 
-    $default  reduce using rule 78 (case_block)
+    $default  reduce using rule 79 (case_block)
 
 
 State 340
 
-   79 case_block: block_item_list •
-  169 block_item_list: block_item_list • block_item
+   80 case_block: block_item_list •
+  170 block_item_list: block_item_list • block_item
 
     IDENTIFIER    shift, and go to state 4
     KEY_TRY       shift, and go to state 6
@@ -5595,7 +5599,7 @@ State 340
     DEC_OP        shift, and go to state 24
     ';'           shift, and go to state 27
 
-    $default  reduce using rule 79 (case_block)
+    $default  reduce using rule 80 (case_block)
 
     _extra_nothing              go to state 159
     try_stmt                    go to state 160
@@ -5634,20 +5638,20 @@ State 340
 
 State 341
 
-   89 for_3_stmt_list: for_3_stmt_list ',' for_3_stmt •
+   90 for_3_stmt_list: for_3_stmt_list ',' for_3_stmt •
 
-    $default  reduce using rule 89 (for_3_stmt_list)
+    $default  reduce using rule 90 (for_3_stmt_list)
 
 
 State 342
 
-   82 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list ')' code_block •
+   83 loop_stmt: KEY_FOR '(' for_1_stmt_list ';' logic_stmt ';' for_3_stmt_list ')' code_block •
 
-    $default  reduce using rule 82 (loop_stmt)
+    $default  reduce using rule 83 (loop_stmt)
 
 
 State 343
 
-   76 case_stmt: KEY_CASE int_expr ':' case_block •
+   77 case_stmt: KEY_CASE int_expr ':' case_block •
 
-    $default  reduce using rule 76 (case_stmt)
+    $default  reduce using rule 77 (case_stmt)

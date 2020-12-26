@@ -278,7 +278,8 @@ single_if_stmt
     ;
 
 else_stmt
-    : else_if_stmts single_else_stmt    { $$ =  opr(OPR_IF_ELSE, 2, $1, $2); }
+    : else_if_stmts                     { $$ =  $1; }
+    | else_if_stmts single_else_stmt    { $$ =  opr(OPR_IF_ELSE, 2, $1, $2); }
     | single_else_stmt        { $$ = $1; }
     ;
 

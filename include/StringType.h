@@ -24,10 +24,7 @@ namespace langX {
 
 		const std::string & getStrValue() const;
 
-		// 对当前字符串进行转义。   \n 会变成换行符
-		void simpleEscape();
-
-		// 如果当前字符串 为字符串则返回 false , 否则返回null 
+        // 如果当前字符串 为字符串则返回 false , 否则返回null
 		bool isTrue() const;
 
 		ObjectType getType() const;

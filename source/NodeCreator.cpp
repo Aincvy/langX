@@ -164,14 +164,26 @@ void getObjStringDesc(langX::Object * obj, char *tmp, int maxSize)
 	}
 }
 
-XNode * string(char *v)
+XNode * string(char *str)
 {
+
+    // 对 str 进行转义
+    auto size = strlen(str) + 1;
+    auto tmpBuf = (char*) calloc(size, sizeof(char ));
+    workEscapeStr(str, tmpBuf, size);
+
+    // str 已经使用完了，释放内存
+    free(str);
+
 	XNode * node = newNode();
 	node->con_obj = (langX::Constant*) calloc(1, sizeof(langX::Constant) * 1);
 
 	node->type = NODE_CONSTANT_STRING;
-	// v 是已经申请过的内存 ， 直接赋值就OK
-	node->con_obj->sValue = v;
+	// sValue 将会使用新申请得内存
+	node->con_obj->sValue = strdup(tmpBuf);
+
+	// 释放 tmpBuf 得内存。  因为转义之后得字符串可能比原来得字符串小， 所以这样操作
+	free(tmpBuf);
 
 	return node;
 }

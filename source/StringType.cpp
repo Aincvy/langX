@@ -39,11 +39,8 @@ namespace langX {
 	{
 		return this->m_value;
 	}
-	void String::simpleEscape()
-	{
-		this->m_value = unescape(this->m_value);
-	}
-	bool String::isTrue() const
+
+    bool String::isTrue() const
 	{
 		return this->m_value.length() != 0;
 	}

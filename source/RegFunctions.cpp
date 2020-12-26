@@ -70,58 +70,11 @@ namespace langX {
 		state->regClassToGlobal(c_empty_class);
 	}
 
-	// 打印语句之后自动换行
-	Object * langX_println(X3rdFunction *func, const X3rdArgs & args) {
-		if (args.index <= 0)
-		{
-			printf("\n");
-			return nullptr;
-		}
-
-		for (size_t i = 0; i < args.index; i++)
-		{
-			Object *obj = args.args[i];
-
-			if (obj == nullptr || obj->getType() == NULLOBJECT)
-			{
-				printf("null");
-			}
-			else if (obj->getType() == STRING)
-			{
-				auto str = (String*)obj;
-				str->simpleEscape();
-
-				printf("%s", str->getValue());
-			}
-			else if (obj->getType() == NUMBER)
-			{
-			    auto num = (Number*) obj;
-                if (num->isInteger()) {
-                    printf("%d", num->getIntValue());
-                } else {
-                    printf("%f", num->getDoubleValue());
-                }
-			}
-
-			else if (obj->getType() == OBJECT)
-			{
-				char tmp[2048] = {0 };
-				objToString(obj, tmp, 0, 2048);
-				printf("%s", tmp);
-			}
-		}
-
-		printf("\n");
-
-		return nullptr;
-	}
-
 	// c printf 函数 的桥接
 	Object * langX_print(X3rdFunction *func, const X3rdArgs & args) {
 		if (args.index <= 0)
 		{
-			printf("function %s need at least 1 param!\n", func->getName());
-			return NULL;
+			return nullptr;
 		}
 
 		for (size_t i = 0; i < args.index; i++)
@@ -135,7 +88,6 @@ namespace langX {
 			else if (obj->getType() == STRING)
 			{
 				String * str = (String*)obj;
-				str->simpleEscape();
 
 				printf("%s",str->getValue());
 			}
@@ -155,6 +107,14 @@ namespace langX {
 		return nullptr;
 	}
 
+    // 打印语句之后自动换行
+    Object * langX_println(X3rdFunction *func, const X3rdArgs & args) {
+        langX_print(func, args);
+        printf("\n");
+
+        return nullptr;
+    }
+
 	//  c system 函数的桥接
 	Object * langX_system_run(X3rdFunction *func, const X3rdArgs & args) {
 		if (args.index <= 0)
@@ -173,7 +133,6 @@ namespace langX {
 		if (obj->getType() == STRING)
 		{
 			String * str = (String*)obj;
-			str->simpleEscape();
 			system(str->getValue());
 		}
 
@@ -197,7 +156,6 @@ namespace langX {
 		if (obj->getType() == STRING)
 		{
 			String * str = (String*)obj;
-			//str->simpleEscape();
 			getState()->doFile(str->getValue());
 		}
 
