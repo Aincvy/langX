@@ -306,7 +306,7 @@ namespace langX {
 		return r;
 	}
 
-	void FunctionRef::update(Object * a)
+	void FunctionRef::update(const Object * a)
 	{
 		if (a->getType() != FUNCTION)
 		{

@@ -12,6 +12,7 @@
 #include "../include/XArray.h"
 #include "../include/NodeCreator.h"
 #include "../include/XNameSpace.h"
+#include "../include/LogManager.h"
 
 namespace langX {
 	const int Allocator::GC_OBJECT_COUNT = 85000;
@@ -206,6 +207,11 @@ namespace langX {
 		return Allocator::newObject(c,false, false);
 	}
 
+	langXObject *Allocator::newObjectWithCtor(ClassInfo *clz) {
+		return Allocator::newObject(clz,false, true);
+	}
+
+
 	langXObjectExtend * Allocator::newExtendObject(ClassInfo *c)
 	{
 		return (langXObjectExtend*) newObject(c, true, true);
@@ -248,7 +254,7 @@ namespace langX {
 
 	void Allocator::gc()
 	{
-		printf("gc start \n");
+		logger->info("gc start ");
 
 		int count = 0;
 		for (auto i = m_object_map.begin(); i != m_object_map.end(); i++)
@@ -263,7 +269,7 @@ namespace langX {
 		}
 
 		m_a_count -= count;
-		printf("free %d object(s)\n", count);
+		logger->info("free %d object(s)", count);
 	}
 
 	void Allocator::checkGC()
@@ -308,6 +314,8 @@ namespace langX {
 			}
 		}
 
-		printf("free %d array \n", count);
+		logger->info("free %d array \n", count);
 	}
+
+
 }

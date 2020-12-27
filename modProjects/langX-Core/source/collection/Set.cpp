@@ -1,6 +1,7 @@
 #include <set>
 
 #include "RegCoreModule.h"
+#include "CoreModule.h"
 
 #include "langX/langXSimple.h"
 
@@ -9,7 +10,7 @@ namespace langX {
 	Object * langX_Set_Set(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_List_List error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_List error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -22,7 +23,7 @@ namespace langX {
 	Object * langX_Set_Set_Dtor(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_List_List_Dtor error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_List_Dtor error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -44,7 +45,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_List_Add error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_Add error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -63,7 +64,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_List_Add error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_Add error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -80,7 +81,7 @@ namespace langX {
 
 		if (args.object == nullptr)
 		{
-			printf("langX_List_Add error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_Add error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -94,7 +95,7 @@ namespace langX {
 	Object * langX_Set_Size(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_List_Size error! NO OBJ!\n");
+			coreModuleLogger->error("langX_List_Size error! NO OBJ!");
 			return nullptr;
 		}
 

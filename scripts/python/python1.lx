@@ -1,4 +1,4 @@
-ref langX.python ;
+using langX.python ;
 
 PythonLib::load();
 

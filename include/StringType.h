@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Object.h"
 #include <string>
 #include <vector>
@@ -23,15 +24,6 @@ namespace langX {
 		const char * getValue() const;
 
 		const std::string & getStrValue() const;
-
-        // 如果当前字符串 为字符串则返回 false , 否则返回null
-		bool isTrue() const;
-
-		ObjectType getType() const;
-
-		Object* clone() const;
-
-		void update(Object *);
 
 		// 获得这个字符串的长度
 		int size();
@@ -63,16 +55,25 @@ namespace langX {
 		// 分割字符串
 		std::vector<std::string> split(const char *);
 
-
 		void trim();
 
+
+        // 如果当前字符串 为字符串则返回 false , 否则返回null
+        bool isTrue() const override;
+
+        ObjectType getType() const override;
+
+        Object* clone() const override;
+
+        void update(const Object *) override;
+
 		// 获得这个字符串的特性字符串 
-		const char * characteristic() const;
+		const char * characteristic() const override;
 
 	private:
 		std::string m_value;
 
-		void finalize();
+		void finalize() override;
 
 
 		const char *ccPrefix = "string@[";

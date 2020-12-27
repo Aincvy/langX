@@ -74,7 +74,7 @@ namespace langX {
 
 		// Exception
 		ClassInfo *exception = new ClassInfo("Exception");
-		exception->addMember("message", new String(""));
+		exception->addMember("message", shortcutEmptyString);
 		exception->addFunction("Exception", create3rdFunc("Exception", langX_Exception_Exception));
 		exception->addFunction("getMessage", create3rdFunc("getMessage", langX_Exception_getMessage));
 		exception->addFunction("printStackTrace", create3rdFunc("printStackTrace", langX_Exception_printStackTrace));

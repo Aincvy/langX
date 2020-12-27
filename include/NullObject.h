@@ -12,14 +12,14 @@ namespace langX {
 		NullObject();
 		~NullObject();
 
-		bool isTrue() const;
-		ObjectType getType() const;
-		Object* clone() const;
-		void update(Object *);
+		bool isTrue() const override;
+		ObjectType getType() const override;
+		Object* clone() const override;
+		void update(const Object *) override;
 
 	private:
 
-		void finalize();
+		void finalize() override;
 
 	};
 

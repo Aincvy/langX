@@ -22,6 +22,28 @@ if (args.index < num) { \
     return nullptr; \
 } void(0)
 
+
+
+/**
+ * 强转一个 Object* 类型得指针成 Number*
+ */
+#define LX_NUMBER(obj) ((Number*)obj)
+
+/**
+ * 强转一个 Object* 类型得指针成 String*
+ */
+#define LX_STRING(obj) ((String*)obj)
+
+/**
+ * 强转一个 Object* 类型得指针成 langXObjectRef*
+ */
+#define LX_OBJECT_REF(obj) ((langXObjectRef*)obj)
+
+/**
+ * 获取一个 Object* 类型指针， 指向得 langXObject对象得指针
+ */
+#define LX_OBJECT(obj) LX_OBJECT_REF(obj)->getRefObject()
+
 /**
  * 获取一个对象得某个属性， 并把该属性转换成 number 类型指针
  */
@@ -30,7 +52,7 @@ if (args.index < num) { \
 /**
  * 获取一个 Number* 得整形值  | 并不检测指针得有效性
  */
-#define NUMBER_INT_VALUE(object) ((Number*)object)->getIntValue()
+#define LX_NUMBER_INT_VALUE(object) ((Number*)object)->getIntValue()
 
 /**
  * 获取一个 Number* 得双精度浮点值  | 并不检测指针得有效性
@@ -50,7 +72,21 @@ if (args.index < num) { \
 /**
  * 转换 str 成一个 String* , 然后尝试获取 const char* 类型得值  | 并不检测指针得有效性
  */
-#define STRING_VALUE(str) ((String*)str)->getValue()
+#define LX_STRING_VALUE(str) ((String*)str)->getValue()
+
+/**
+ * 设置一个 langXObjectRef 对象得 3rd 属性
+ * obj 可以是一个 Object* 类型得指针参数
+ */
+#define LX_SET_OBJECT_REF_3RD(obj, _3rd) LX_OBJECT(obj)->set3rdObj(_3rd)
+
+/**
+ * 获取一个 langXObject 得 3rdObj 指针， 并把它强转成指定得类型
+ */
+#define LX_GET_OBJECT_REF_3RD(type, obj) ((type)LX_OBJECT(obj)->get3rdObj())
+
+
+
 
 
 namespace langX {
@@ -59,6 +95,7 @@ namespace langX {
     class langXObjectRef;
     class Number;
     class NullObject;
+    class String;
 
 
     //  一些属性
@@ -69,6 +106,8 @@ namespace langX {
     extern Number* shortcutNumberOne;
     // 空对象
     extern NullObject* shortcutNullObject;
+    // 空字符串
+    extern String* shortcutEmptyString;
 
 
     // 一些函数

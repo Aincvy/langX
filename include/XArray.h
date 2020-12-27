@@ -62,20 +62,20 @@ namespace langX {
 		int getLength() const;
 
 		/* 当前值可以表示为真么？  null,0,false 都不会表示为真  */
-		bool isTrue() const ;
+		bool isTrue() const override;
 		/* 获得当前对象的类型  */
-		ObjectType getType() const ;
+		ObjectType getType() const override;
 		/* 克隆当前对象， 返回出一个新的对象 */
-		Object* clone() const ;
-		Object* clone(bool) const;
+		Object* clone() const override;
+		Object* clone(bool) const override;
 
 		/* 把自己Update 成目标的值
 		这个函数不应该， 也不会update 所在的环境   */
-		void update(Object *) ;
+		void update(const Object *) override;
 
 	private:
 
-		void finalize();
+		void finalize() override;
 
 		XArray* m_array;
 

@@ -9,13 +9,13 @@ namespace langX {
 	int regPyObjectType(langXState *state, XNameSpace* space) {
 
 		ClassInfo *info = new ClassInfo("PyObjectType");
-		info->addMember("Module", Allocator::allocateNumber((int) PyObjectType::Unknown));
-		info->addMember("Module", Allocator::allocateNumber((int) PyObjectType::Module));
-		info->addMember("PyInstance", Allocator::allocateNumber((int)PyObjectType::PyInstance));
-		info->addMember("PyClass", Allocator::allocateNumber((int)PyObjectType::PyClass));
-		info->addMember("Function", Allocator::allocateNumber((int)PyObjectType::PyFunction));
-		info->addMember("Tuple", Allocator::allocateNumber((int)PyObjectType::Tuple));
-		info->addMember("Dict", Allocator::allocateNumber((int)PyObjectType::Dict));
+		info->addMember("Module", Number((int) PyObjectType::Unknown));
+		info->addMember("Module", Number((int) PyObjectType::Module));
+		info->addMember("PyInstance", Number((int)PyObjectType::PyInstance));
+		info->addMember("PyClass", Number((int)PyObjectType::PyClass));
+		info->addMember("Function", Number((int)PyObjectType::PyFunction));
+		info->addMember("Tuple", Number((int)PyObjectType::Tuple));
+		info->addMember("Dict", Number((int)PyObjectType::Dict));
 
 		space->putClass(info);
 

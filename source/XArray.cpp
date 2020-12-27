@@ -240,12 +240,11 @@ namespace langX {
 		return obj;
 	}
 
-	void XArrayRef::update(Object * obj)
+	void XArrayRef::update(const Object * obj)
 	{
 		if (obj == NULL || obj->getType() != XARRAY)
 		{
 			getState()->curThread()->throwException(newException("Inner Error! cannot update.. target is not array!")->addRef());
-			//printf("cannot update.. target is not array\n");
 			return;
 		}
 

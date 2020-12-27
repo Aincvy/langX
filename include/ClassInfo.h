@@ -23,7 +23,18 @@ namespace langX {
 		ClassInfo(const char*);
 		~ClassInfo();
 
-		void addMember(const char*, Object *);
+		/**
+		 * 添加一个成员到当前得类里面
+		 */
+		void addMember(const char*,const Object *);
+
+		/**
+		 * 添加一个成员到当前类里
+		 * @param name
+		 * @param obj
+		 */
+		void addMember(const char*name, const Object &obj);
+
 		// 是否包含那个 成员
 		bool hasMember(const char*) const;
 		// 这个请求是否从子类而来

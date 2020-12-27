@@ -86,12 +86,12 @@ namespace langX {
 		return m_class_info->isInstanceOf(name);
 	}
 
-	void langXObject::setMember(const char *name, Object *obj)
+	void langXObject::setMember(const char *name, const Object *obj)
 	{
 		setMember(name, obj, false);
 	}
 
-	void langXObject::setMember(const char *name, Object *obj, bool flag)
+	void langXObject::setMember(const char *name,const Object *obj, bool flag)
 	{
 		if (name == nullptr)
 		{
@@ -123,6 +123,10 @@ namespace langX {
 			this->m_members.find(name)->second = a;
 		}
 	}
+
+    void langXObject::setMember(const char *name, const Object &object) {
+        this->setMember(name, &object);
+    }
 
 	bool langXObject::hasMember(const char *name) const
 	{
@@ -316,6 +320,7 @@ namespace langX {
 
 
 
+
     langXObjectExtend::langXObjectExtend(ClassInfo *c) : langXObject(c)
 	{
 
@@ -475,7 +480,7 @@ namespace langX {
         return obj;
     }
 
-    void langXObjectRef::update(Object *obj)
+    void langXObjectRef::update(const Object *obj)
     {
         if (obj == NULL)
         {

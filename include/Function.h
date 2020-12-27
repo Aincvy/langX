@@ -142,7 +142,7 @@ namespace langX {
 		ObjectType getType() const;
 		/* 函数返回一个自己的指针 */
 		Object* clone() const;
-		void update(Object *);
+		void update(const Object *);
 
 		// 获得引用是哪个函数
 		Function * getRefFunction();

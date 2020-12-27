@@ -75,7 +75,7 @@ namespace langX {
 
 		/* 把自己Update 成目标的值
 		   这个函数不应该， 也不会update 所在的环境   */
-		virtual void update(Object *) = 0;
+		virtual void update(const Object *) = 0;
 
 		// 返回这个对象的特性字符串  | 相当于唯一标识的意思
 		virtual const char * characteristic() const;

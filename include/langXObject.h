@@ -31,9 +31,16 @@ namespace langX {
 
 		//  设置 arg1 的值为 arg2 ，如果arg1的类型和arg2的类型不一样， 会释放arg1的内存
 		//  更新arg1 为arg2 或者 设置arg1 为 arg2 的一个副本
-		void setMember(const char*, Object *);
+		void setMember(const char*, const Object *);
 		//  这个请求是否是来自子类 
-		void setMember(const char*, Object *,bool);
+		void setMember(const char*, const Object *,bool);
+
+		/**
+		 * 设置一个成员变量得值
+		 * @param object
+		 */
+		void setMember(const char*, const Object &object);
+
 		//  是否存在某个成员
 		bool hasMember(const char *) const;
 
@@ -175,7 +182,7 @@ namespace langX {
         ObjectType getType() const override;
         Object* clone() const override;
         //  更新当前引用， 引用到另外一个对象身上
-        void update(Object *) override;
+        void update(const Object *) override;
 
         // 设置当前引用的是哪个对象
         void setRefObject(langXObject *);

@@ -2,6 +2,7 @@
 #include <string>
 
 #include "RegCoreModule.h"
+#include "CoreModule.h"
 
 #include "langX/langXSimple.h"
 
@@ -10,7 +11,7 @@ namespace langX {
 	Object * langX_Map_Map(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Map_Map error! NO OBJ!\n");
+			coreModuleLogger->error("langX_Map_Map error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -23,7 +24,7 @@ namespace langX {
 	Object * langX_Map_Map_Dtor(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Map_Map_Dtor error! NO OBJ!\n");
+			coreModuleLogger->error("langX_Map_Map_Dtor error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -44,7 +45,7 @@ namespace langX {
 	Object * langX_Map_Put(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Map_Map_Dtor error! NO OBJ!\n");
+			coreModuleLogger->error("langX_Map_Map_Dtor error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -74,7 +75,7 @@ namespace langX {
 	Object * langX_Map_Size(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Map_Map_Dtor error! NO OBJ!\n");
+			coreModuleLogger->error("langX_Map_Map_Dtor error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -86,7 +87,7 @@ namespace langX {
 	Object * langX_Map_Get(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Map_Map_Dtor error! NO OBJ!\n");
+			coreModuleLogger->error("langX_Map_Map_Dtor error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -110,7 +111,7 @@ namespace langX {
 	Object * langX_Map_Remove(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Map_Map_Dtor error! NO OBJ!\n");
+			coreModuleLogger->error("langX_Map_Map_Dtor error! NO OBJ!");
 			return nullptr;
 		}
 
@@ -137,7 +138,7 @@ namespace langX {
 	Object * langX_Map_ContainsKey(X3rdFunction *func, const X3rdArgs &args) {
 		if (args.object == nullptr)
 		{
-			printf("langX_Map_Map_Dtor error! NO OBJ!\n");
+			coreModuleLogger->error("langX_Map_Map_Dtor error! NO OBJ!");
 			return nullptr;
 		}
 

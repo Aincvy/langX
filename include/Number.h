@@ -19,11 +19,13 @@ namespace langX {
 		long getLongValue() const;
 
 		void setValue(double);
+        void setIntValue(int i);
+        void setLongValue(long l);
 
-		bool isTrue() const;
-		ObjectType getType() const;
-		Object* clone() const;
-		void update(Object *);
+		bool isTrue() const override;
+		ObjectType getType() const override;
+		Object* clone() const override;
+		void update(const Object *) override;
 
 		// 判断当前值是否是一个int , 判断方式比较简单
 		bool isInteger() const;
@@ -41,7 +43,8 @@ namespace langX {
 		 */
 		void flagBool(bool flag);
 
-		const char * characteristic() const;
+		const char * characteristic() const override;
+
 
 		operator int() const;
 		operator double() const;
@@ -56,7 +59,7 @@ namespace langX {
 		// 当前数字是否是一个 Bool
 		bool m_flagBool = false;
 
-		void finalize();
+		void finalize() override;
 
 		
 	};

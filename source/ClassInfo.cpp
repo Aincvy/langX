@@ -31,7 +31,7 @@ namespace langX {
 		delete this->m_classEnv;
 	}
 
-	void ClassInfo::addMember(const char *name, Object *obj)
+	void ClassInfo::addMember(const char *name,const Object *obj)
 	{
 		if (obj == nullptr)
 		{
@@ -47,6 +47,10 @@ namespace langX {
 		t->setName(name);
 		this->m_members[name] = t;
 	}
+
+    void ClassInfo::addMember(const char *name, const Object &obj) {
+        this->addMember(name, &obj);
+    }
 
 	bool ClassInfo::hasMember(const char *name) const
 	{
@@ -251,6 +255,8 @@ namespace langX {
 	{
 		this->m_local = f;
 	}
+
+
 
 
 }

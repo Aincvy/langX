@@ -568,13 +568,13 @@ namespace langX {
         //  DateTime
 
 		ClassInfo *info = new ClassInfo("DateTime");
-		info->addMember("millisecond", Allocator::allocateNumber(0));
-		info->addMember("second", Allocator::allocateNumber(0));
-		info->addMember("minute", Allocator::allocateNumber(0));
-		info->addMember("hour", Allocator::allocateNumber(0));
-		info->addMember("date", Allocator::allocateNumber(1));
-		info->addMember("month", Allocator::allocateNumber(1));
-		info->addMember("year", Allocator::allocateNumber(1900));
+		info->addMember("millisecond", shortcutNumberZero);
+		info->addMember("second", shortcutNumberZero);
+		info->addMember("minute", shortcutNumberZero);
+		info->addMember("hour", shortcutNumberZero);
+		info->addMember("date", shortcutNumberOne);
+		info->addMember("month", shortcutNumberOne);
+		info->addMember("year", Number(1900));
 		info->addFunction(create3rdFunc("update", langX_DateTime_update));
 		info->addFunction(create3rdFunc("plus", langX_DateTime_plus));
 		info->addFunction(create3rdFunc("~DateTime", langX_DateTime_DateTime_Dtor));

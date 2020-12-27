@@ -58,7 +58,7 @@ namespace langX {
 		str->setName(this->getName());
 		return str;
 	}
-	void String::update(Object *right)
+	void String::update(const Object *right)
 	{
 		if (right == NULL || right->getType() != STRING)
 		{

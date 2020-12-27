@@ -88,9 +88,9 @@ namespace langX {
 		return obj;
 	}
 
-	void Number::update(Object *right)
+	void Number::update(const Object *right)
 	{
-		if (right == NULL || right->getType() != NUMBER)
+		if (right == nullptr || right->getType() != NUMBER)
 		{
 			return;
 		}
@@ -145,6 +145,14 @@ namespace langX {
 
     void Number::flagBool(bool flag) {
         this->m_flagBool = flag;
+    }
+
+    void Number::setIntValue(int i) {
+        setValue(i);
+    }
+
+    void Number::setLongValue(long l) {
+        setValue( (double ) l );
     }
 
 }

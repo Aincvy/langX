@@ -31,7 +31,7 @@ namespace langX {
 		obj->setName(this->getName());
 		return obj;
 	}
-	void NullObject::update(Object *)
+	void NullObject::update(const Object *)
 	{
 		// do nothing.
 	}

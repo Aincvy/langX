@@ -19,6 +19,7 @@ namespace langX {
     Number* shortcutNumberZero = new Number(0);
     Number* shortcutNumberOne = new Number(1);
     NullObject* shortcutNullObject = new NullObject();
+    String* shortcutEmptyString = new String("");
 
 
     void readNumber(const X3rdArgs &args, int index, int *value) {

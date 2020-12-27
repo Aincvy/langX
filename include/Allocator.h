@@ -51,11 +51,32 @@ namespace langX {
 		static FunctionRef *allocateFunctionRef(Function *);
 		static void freeFunctionRef(FunctionRef *);
 
+		/**
+		 * 根据类名创建一个该类得对象 ， 会调用该类得构造函数
+		 * @return
+		 */
 		static langXObject * newObject(const char *);
+
+		/**
+		 * 根据类名创建一个该类得对象 | 第二个参数可以指定是否调用构造函数
+		 * @return
+		 */
 		static langXObject * newObject(const char*, bool );
 		// 创建一个对象 
 		static langXObject * newObject(ClassInfo *, bool extend,bool callCtor);
-		static langXObject * newObject(ClassInfo *) ;                              //  创建一个对象
+
+		/**
+		 *  创建一个对象
+		 * @return
+		 */
+		static langXObject * newObject(ClassInfo *) ;
+
+		/**
+		 * 创建该类得对象， 并调用该类得构造函数
+		 * @return
+		 */
+        static langXObject * newObjectWithCtor(ClassInfo *clz) ;
+
 		static langXObjectExtend * newExtendObject(ClassInfo * );			// 创建一个具有拓展能力的对象
 		static void freeObject(langXObject *);                                     //  释放掉一个对象
 
