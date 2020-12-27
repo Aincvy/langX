@@ -56,7 +56,6 @@ namespace langX {
 		if (a && a->getType() == ObjectType::STRING)
 		{
 			String *str = (String*)a;
-			str->simpleEscape();
 			const char * text = str->getValue();
 
 			evbuffer_add_printf(reqInfo->buffer, "%s", text);

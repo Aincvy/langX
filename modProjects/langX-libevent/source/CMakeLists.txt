@@ -1,4 +1,5 @@
 FIND_PACKAGE(Log4cpp REQUIRED)
+FIND_PACKAGE(langX REQUIRED)
 
 link_directories("/usr/local/lib")
 
@@ -20,8 +21,11 @@ SET(SRC_LIST
 
 ADD_LIBRARY(libevent SHARED ${SRC_LIST} TimerEvent.cpp)
 
-target_link_libraries(libevent "langX")
 target_link_libraries(libevent "event")
+
+#langX
+INCLUDE_DIRECTORIES(${langX_INCLUDE_DIR})
+target_link_libraries(libevent ${langX_LIBRARY})
 
 # LOG4CPP
 INCLUDE_DIRECTORIES(${Log4cpp_INCLUDE_DIR})

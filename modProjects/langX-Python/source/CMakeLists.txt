@@ -1,4 +1,5 @@
 FIND_PACKAGE(Log4cpp REQUIRED)
+FIND_PACKAGE(langX REQUIRED)
 
 SET(SRC_LIST
 		PyException.cpp
@@ -12,11 +13,12 @@ SET(SRC_LIST
 		pyModule/PyDateTime.cpp
 )
 
-link_directories("/usr/local/lib")
 
 ADD_LIBRARY(python SHARED ${SRC_LIST})
-target_link_libraries(python "langX")
-#target_link_libraries(python "python3")
+
+# langX
+INCLUDE_DIRECTORIES(python ${langX_INCLUDE_DIR})
+target_link_libraries(python ${langX_LIBRARY})
 
 # LOG4CPP
 INCLUDE_DIRECTORIES(${Log4cpp_INCLUDE_DIR})

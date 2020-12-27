@@ -22,8 +22,7 @@ namespace langX {
 		}
 
 		String *str = (String*)a;
-		str->simpleEscape();
-		const char * name = str->getValue();
+		// const char * name = str->getValue();
 		PyObject *ret = PyImport_ImportModule(str->getValue());
 		langXObject *aobj = claxxPyObj->newObject();
 		XClassPyObject * bobj = createXClassPyObject();

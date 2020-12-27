@@ -14,7 +14,6 @@ namespace langX {
 		if (a && a->getType() == STRING)
 		{
 			auto str = (String*)a;
-			str->simpleEscape();
 
 			PyObject *ret = PyImport_ImportModule(str->getValue());
             if (ret == nullptr) {
@@ -41,8 +40,6 @@ namespace langX {
 		if (a && a->getType() == STRING)
 		{
 			String *str = (String*)a;
-			str->simpleEscape();
-
 			PyRun_SimpleString(str->getValue());
 
 		}
