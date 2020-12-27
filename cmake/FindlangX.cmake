@@ -7,10 +7,10 @@
 #  langX_FOUND       - True if langX found.
 
 # find headers
-find_path(langX_INCLUDE_DIR langXSimple.h
-  /opt/local/include/langX
-  /usr/local/include/langX
-  /usr/include/langX
+find_path(langX_INCLUDE_DIR langX/langXSimple.h
+  /opt/local/include
+  /usr/local/include
+  /usr/include
 )
 
 # find library

@@ -4,7 +4,7 @@
 
 #include "RegDefaultClasses.h"
 
-#include "langXSimple.h"
+#include "langX/langXSimple.h"
 
 namespace langX {
 
@@ -25,7 +25,7 @@ namespace langX {
 			}
 			else if (a->getType() == ObjectType::STRING) {
 				String *str = (String*)a;
-				str->simpleEscape();
+
 				ss << str->getValue();
 			}
 			else if (a->getType() == NULLOBJECT)

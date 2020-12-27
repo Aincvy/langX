@@ -5,7 +5,7 @@
 #include "CoreModule.h"
 #include "RegDefaultClasses.h"
 
-#include "langXSimple.h"
+#include "langX/langXSimple.h"
 
 langX::ClassInfo *timeSpanClass;
 

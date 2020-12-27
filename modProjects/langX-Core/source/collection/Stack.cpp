@@ -2,7 +2,7 @@
 
 #include "RegCoreModule.h"
 
-#include "langXSimple.h"
+#include "langX/langXSimple.h"
 
 namespace langX {
 

@@ -4,8 +4,8 @@
 #include <string>
 #include <map>
 
-#include "../../../include/langX.h"
-#include "../../../include/XNameSpace.h"
+#include "langX/langX.h"
+#include "langX/XNameSpace.h"
 
 namespace langX {
 

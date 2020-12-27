@@ -1,6 +1,6 @@
 FIND_PACKAGE(Log4cpp REQUIRED)
+FIND_PACKAGE(langX REQUIRED)
 
-# AUX_SOURCE_DIRECTORY(. SRC_LIST)
 
 SET(SRC_LIST
 		Application.cpp
@@ -28,9 +28,11 @@ SET(SRC_LIST
 		collection/Vector.cpp
 		)
 
-link_directories("/usr/local/lib")
-ADD_LIBRARY(core SHARED ${SRC_LIST} default/TimeSpan.cpp)
-target_link_libraries(core "langX")
+ADD_LIBRARY(core SHARED ${SRC_LIST})
+
+#langX
+target_link_libraries(core ${langX_LIBRARY})
+INCLUDE_DIRECTORIES(core ${langX_INCLUDE_DIR})
 
 # LOG4CPP
 INCLUDE_DIRECTORIES(${Log4cpp_INCLUDE_DIR})

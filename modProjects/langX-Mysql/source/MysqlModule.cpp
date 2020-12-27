@@ -1,6 +1,7 @@
 #include "../include/MysqlModule.h"
 #include "../include/RegMysqlModule.h"
-#include "../../../include/LogManager.h"
+
+#include <langX/LogManager.h>
 
 namespace langX {
 

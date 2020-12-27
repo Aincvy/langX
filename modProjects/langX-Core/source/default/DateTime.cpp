@@ -4,7 +4,7 @@
 #include "RegDefaultClasses.h"
 #include "CoreModule.h"
 
-#include "langXSimple.h"
+#include "langX/langXSimple.h"
 
 
 #define TimeUnitMilliSecond 1

@@ -1,8 +1,8 @@
 #pragma once
 
 
-#include "../../../include/X3rdModule.h"
-#include "../../../include/langX.h"
+#include "langX/X3rdModule.h"
+#include "langX/langX.h"
 
 namespace langX {
 

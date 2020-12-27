@@ -7,14 +7,8 @@
 #include <vector>
 #include <stdlib.h>
 #include "../include/RegMysqlModule.h"
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
 
+#include <langX/langXSimple.h>
 
 namespace langX {
 
@@ -285,7 +279,7 @@ namespace langX {
 					double colNum = mysql_num_fields(res_ptr);
 					MYSQL_ROW row;
 
-					XNameSpace *space = getState()->getNameSpace("langX.mysql");
+					XNameSpace *space = func->getLangX()->getNameSpace("langX.mysql");
 					langXObject * dataTable = space->getClass("DataTable")->newObject();
 					dataTable->callConstructor(nullptr, "in langX_MysqlClient_ExecQuery");
 					((Number*)dataTable->getMember("rowNum"))->setValue(rowNum);

@@ -2,8 +2,8 @@
 #include "CoreModule.h"
 #include "RegCoreModule.h"
 
-#include "ClassInfo.h"
-#include "LogManager.h"
+#include "langX/ClassInfo.h"
+#include "langX/LogManager.h"
 
 namespace langX {
 

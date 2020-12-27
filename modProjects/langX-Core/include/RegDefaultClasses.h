@@ -1,7 +1,7 @@
 #pragma once
 
-#include "langX.h"
-#include "XNameSpace.h"
+#include "langX/langX.h"
+#include "langX/XNameSpace.h"
 
 namespace langX {
 

@@ -5,7 +5,7 @@
 #include "RegCoreModule.h"
 #include "CoreFileStream.h"
 
-#include "langXSimple.h"
+#include "langX/langXSimple.h"
 
 
 namespace langX {
@@ -146,7 +146,6 @@ namespace langX {
       }
 
       String *str = ((String*)b);
-      str->simpleEscape();
 
       fout << str->getValue();
       int size = fout.tellp();

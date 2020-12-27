@@ -2,8 +2,8 @@
 
 #include "RegCoreModule.h"
 
-#include "langXSimple.h"
-#include "Utils.h"
+#include "langX/langXSimple.h"
+#include "langX/Utils.h"
 
 
 namespace langX {
