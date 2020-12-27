@@ -1,8 +1,8 @@
 #include "../include/ReglibeventModule.h"
 
 
-#include "ClassInfo.h"
-#include "TypeHelper.h"
+#include "langX/ClassInfo.h"
+#include "langX/TypeHelper.h"
 
 namespace langX {
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "X3rdModule.h"
-#include "langX.h"
+#include "langX/X3rdModule.h"
+#include "langX/langX.h"
 
 // 重置一个 3rd object 属性
 #define RESET_3RD_OBJECT(args) args.object->set3rdObj(nullptr)

@@ -1,11 +1,7 @@
 ﻿
 #include "../include/RegHttpServer.h"
 
-#include "ClassInfo.h"
-#include "TypeHelper.h"
-#include "Allocator.h"
-#include "Number.h"
-#include "StringType.h"
+#include "langX/langXSimple.h"
 
 #include <event2/buffer.h>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <X3rdModule.h>
+#include <langX/X3rdModule.h>
 
 #include <Python.h>
 

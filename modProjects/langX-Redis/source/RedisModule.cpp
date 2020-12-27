@@ -1,9 +1,9 @@
 #include "../include/RedisModule.h"
 #include "../include/RegRedisModule.h"
 
-#include "../../../include/langX.h"
-#include "../../../include/XNameSpace.h"
-#include "../../../include/LogManager.h"
+#include "langX/langX.h"
+#include "langX/XNameSpace.h"
+#include "langX/LogManager.h"
 
 namespace langX {
 
@@ -23,7 +23,7 @@ namespace langX {
 		XNameSpace *space = state->getNameSpaceOrCreate("langX.redis");
 		regRedisClient(state, space);
 
-		regRedisExcceptions(state, space);
+		regRedisExceptions(state, space);
 
 		return 0;
 	}

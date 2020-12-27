@@ -1,5 +1,5 @@
 
-#include <langXSimple.h>
+#include <langX/langXSimple.h>
 
 #include "../include/PythonModule.h"
 #include "../include/RegPythonModule.h"

@@ -7,7 +7,7 @@
  *         
  **************************************************************************************/
 
-#include "../../../include/X3rdModule.h"
+#include "langX/X3rdModule.h"
 
 #ifndef ZLIBMODULE_H
 #define ZLIBMODULE_H

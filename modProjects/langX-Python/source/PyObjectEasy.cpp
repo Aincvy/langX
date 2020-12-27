@@ -1,4 +1,4 @@
-#include <langXSimple.h>
+#include <langX/langXSimple.h>
 
 #include "../include/RegPythonModule.h"
 #include "../include/PythonModule.h"

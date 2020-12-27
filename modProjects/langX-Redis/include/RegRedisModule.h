@@ -1,15 +1,11 @@
 #pragma once
 
-#include "../../../include/langX.h"
-#include "../../../include/XNameSpace.h"
-#include "../../../include/Object.h"
+#include "langX/langX.h"
+#include "langX/XNameSpace.h"
+#include "langX/Object.h"
 
-
-#ifdef WIN32
-#include "../../../lib/hiredis-0.14.0/hiredis.h"
-#else
 #include <hiredis/hiredis.h>
-#endif
+
 
 namespace langX {
 
@@ -24,7 +20,7 @@ namespace langX {
 
 	struct langXRedisInfo* buildLangXRedisInfo(const char*ip, int port, redisContext *redisContext);
 
-	// ��һ�� redis reply ת�� һ�� langX ����
+	// convert redisReply to langX
 	Object * replyToObject(redisReply *);
 
 	int regRedisClient(langXState *state, XNameSpace* space);

@@ -1,7 +1,7 @@
 ﻿#include "../include/RegJsonModule.h"
 
-#include <langXSimple.h>
-#include <Environment.h>
+#include <langX/langXSimple.h>
+#include <langX/Environment.h>
 
 #include <map>
 

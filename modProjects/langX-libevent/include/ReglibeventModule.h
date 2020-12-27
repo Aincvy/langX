@@ -8,11 +8,11 @@
 
 #include <list>
 
-#include "X3rdModule.h"
-#include "langX.h"
-#include "XNameSpace.h"
-#include "langXObject.h"
-#include "Function.h"
+#include "langX/X3rdModule.h"
+#include "langX/langX.h"
+#include "langX/XNameSpace.h"
+#include "langX/langXObject.h"
+#include "langX/Function.h"
 
 #include "BytesDecoder.h"
 #include "BytesEncoder.h"

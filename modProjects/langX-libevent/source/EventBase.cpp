@@ -5,7 +5,7 @@
 #include "libeventModule.h"
 #include "ReglibeventModule.h"
 
-#include <langXSimple.h>
+#include <langX/langXSimple.h>
 
 #include <event2/buffer.h>
 #include <event2/event.h>

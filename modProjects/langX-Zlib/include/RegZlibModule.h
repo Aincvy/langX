@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../../../include/langX.h"
-#include "../../../include/XNameSpace.h"
-#include "../../../include/Object.h"
+#include "langX/langX.h"
+#include "langX/XNameSpace.h"
+#include "langX/Object.h"
 
 
 namespace langX {
 
-	// ×¢²á zlib
+	// æ³¨å†Œ zlib
 	int regZlib(langXState *state, XNameSpace* space);
 
 }

@@ -10,8 +10,8 @@
 #include "../include/ZlibModule.h"
 #include "../include/RegZlibModule.h"
 
-#include "../../../include/LogManager.h"
-#include "../../../include/langX.h"
+#include "langX/LogManager.h"
+#include "langX/langX.h"
 
 namespace langX{
 

@@ -1,12 +1,11 @@
 #include "../include/RegRedisModule.h"
 
-#include "../../../include/Exception.h"
-#include "../../../include/ClassInfo.h"
-#include "../../../include/Environment.h"
+#include "langX/Exception.h"
+#include "langX/ClassInfo.h"
+#include "langX/Environment.h"
 
 
 namespace langX {
-
 
 
 	int regRedisExceptions(langXState * state, XNameSpace * space)

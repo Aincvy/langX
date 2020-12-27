@@ -1,13 +1,8 @@
 ﻿
 #include "../include/RegHttpServer.h"
 
-#include "ClassInfo.h"
-#include "TypeHelper.h"
-#include "Object.h"
-#include "langXObject.h"
-#include "Allocator.h"
-#include "Number.h"
-#include "StringType.h"
+#include "langX/langXSimple.h"
+
 
 static langX::ClassInfo *httpRequestClass;
 

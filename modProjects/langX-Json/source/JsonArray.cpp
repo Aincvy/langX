@@ -1,6 +1,6 @@
 ﻿#include "../include/RegJsonModule.h"
 
-#include <langXSimple.h>
+#include <langX/langXSimple.h>
 
 static langX::ClassInfo *jsonArrayClass;
 

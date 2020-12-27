@@ -1,5 +1,5 @@
-#include <XNameSpace.h>
-#include <LogManager.h>
+#include <langX/XNameSpace.h>
+#include <langX/LogManager.h>
 
 #include "libeventModule.h"
 #include "ReglibeventModule.h"

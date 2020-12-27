@@ -2,7 +2,7 @@
 // Created by Aincvy(aincvy@gmail.com) on 2020/12/18.
 //
 
-#include <langXSimple.h>
+#include <langX/langXSimple.h>
 
 #include "RegPythonModule.h"
 #include "PythonModule.h"

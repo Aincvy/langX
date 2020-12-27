@@ -9,14 +9,7 @@
 #include "../include/DefaultBytesEncoder.h"
 #include "../include/DefaultNetPacket.h"
 
-#include "ClassInfo.h"
-#include "TypeHelper.h"
-#include "Object.h"
-#include "langXObject.h"
-#include "Allocator.h"
-#include "Number.h"
-#include "StringType.h"
-#include "langXThread.h"
+#include "langX/langXSimple.h"
 
 #ifdef WIN32
 #include "../../../lib/libevent-2.0.21-stable/include/event2/buffer.h"

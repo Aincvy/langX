@@ -2,15 +2,7 @@
 
 #include "../include/RegJsonModule.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
-#include "../../../include/XArray.h"
-#include "../../../include/LogManager.h"
+#include "langX/langXSimple.h"
 
 namespace langX {
 

@@ -1,20 +1,10 @@
 #include "../include/RegRedisModule.h"
 
-#include "../../../include/ClassInfo.h"
-#include "../../../include/NodeCreator.h"
-#include "../../../include/Object.h"
-#include "../../../include/langXObject.h"
-#include "../../../include/Allocator.h"
-#include "../../../include/Number.h"
-#include "../../../include/StringType.h"
+#include "langX/langXSimple.h"
 
 #include <string.h>
 
-#ifdef WIN32
-#include "../../../lib/hiredis-0.14.0/hiredis.h"
-#else
 #include <hiredis/hiredis.h>
-#endif
 
 namespace langX {
 
@@ -159,7 +149,7 @@ namespace langX {
 			// 对象
 			langXObjectRef *objectRef = (langXObjectRef*)b;
 
-			Object *str1 = objectRef->callFunction("toRedisString");
+			Object *str1 = objectRef->getRefObject()->callFunction("toRedisString", "from redis mod", 0);
 			if (str1 != NULL)
 			{
 				if (str1->getType() == ObjectType::STRING)
@@ -293,7 +283,7 @@ namespace langX {
 			// 对象
 			langXObjectRef *objectRef = (langXObjectRef*)c;
 
-			Object *str1 = objectRef->callFunction("toRedisString");
+			Object *str1 = objectRef->getRefObject()->callFunction("toRedisString", "from redis mod", 0);
 			if (str1 != NULL)
 			{
 				if (str1->getType() == ObjectType::STRING)

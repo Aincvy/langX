@@ -1,5 +1,5 @@
-#include <langXSimple.h>
-#include <XArray.h>
+#include <langX/langXSimple.h>
+#include <langX/XArray.h>
 
 #include "RegPythonModule.h"
 #include "PythonModule.h"

@@ -3,7 +3,7 @@
 #include "../include/JsonModule.h"
 #include "../include/RegJsonModule.h"
 
-#include <langXSimple.h>
+#include <langX/langXSimple.h>
 
 namespace langX {
 

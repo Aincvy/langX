@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../include/X3rdModule.h"
+#include "langX/X3rdModule.h"
 
 namespace langX {
 
@@ -21,5 +21,5 @@ namespace langX {
 
 }
 
-// lang x  会调用这个方法尝试获取一个 mod 
+
 int loadModule(langX::X3rdModule *& mod);
