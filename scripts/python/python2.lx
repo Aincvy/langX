@@ -23,6 +23,6 @@ pFunc = pModule.get("update");
 pFunc.callMethod();
 
 
-PythonLib::unload();
+// PythonLib::unload();
 
 print("file over!\n");

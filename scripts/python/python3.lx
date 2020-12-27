@@ -11,7 +11,7 @@ pFunc = pModule.get("getTuple");
 pRet = pFunc.callMethod();
 // pRet.toTuple();
 
-
-PythonLib::unload();
+// 卸载python 之后， 在回收python 对象就会有内存错误。。。 
+// PythonLib::unload();
 
 print("file over!\n");
