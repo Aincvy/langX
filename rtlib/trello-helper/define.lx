@@ -63,6 +63,7 @@ TrelloCard {
 
   /**
    * 设置 过期日期得完成状态
+   * @param flag   true 完成， false  未完成
    */
   setDueComplete => (flag){
 
