@@ -69,6 +69,7 @@ namespace langX {
 
 	int String::size()
 	{
+
 		return this->m_value.size();
 	}
 
@@ -182,6 +183,23 @@ namespace langX {
 		s.erase(s.find_last_not_of(" ") + 1);
 	}
 
+    bool String::startWith(const char *str) {
+        return this->m_value.rfind(str, 0) == 0;
+    }
+
+    bool String::endWith(const char *str) {
+	    std::string ending(str);
+        auto & fullString = this->m_value;
+
+        if (fullString.length() >= ending.length()) {
+            return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+        } else {
+            return false;
+        }
+
+        // return false;
+    }
+
 	const char * String::characteristic() const
 	{
 		std::stringstream ss;
@@ -197,4 +215,6 @@ namespace langX {
 	{
 		delete this;
 	}
+
+
 }

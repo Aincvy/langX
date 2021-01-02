@@ -10,6 +10,8 @@ TrelloCard {
   id, name, description;
   // 卡片的所在列表
   list;
+  // 当前卡片得标签列表
+  labelList;
 
   /*
   * 移动一个卡片到别的列表 或者别的 看板的列表
@@ -155,6 +157,57 @@ TrelloList {
         return null;
     }
 
+    // 将当前列表里面得所有卡片 归档了
+    archiveCards => (){
+    
+    }
+
+    // 将当前列表里面得所有卡片删除了
+    deleteCards => (){
+    
+    }
+    
+    // 归档当前列表
+    archive => (){
+    
+    }
+    
+    // 从归档状态中恢复， 重新发送到看板
+    reopen => (){
+    
+    }
+    
+    // 删除当前列表
+    // 未实现， 因为 trello 似乎并不能删除一个列表， 只能归档
+    delete => (){
+    
+    }
+        
+    /*
+     * 根据标签过滤 卡片
+     * @return 一次只会返回一张卡
+     */
+    getCardByLabel => (label){
+    
+    }
+    
+    /*
+     * 根据卡片名称得前缀来获取一张卡。 
+     * @return 一次只会返回一张卡
+     */
+    getCardByNamePrefix => (prefix){
+    
+    }
+    
+    /**
+     * 检测列表中是否存在 `[jump once]`  这张卡
+     * @param flag  true 删除那张卡， false: 不删除
+     * @return  true: 存在， false: 不存在
+     */
+    checkJumpOnce => (flag){
+    
+    }
+    
 }
 
 

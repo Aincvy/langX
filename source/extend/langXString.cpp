@@ -298,21 +298,62 @@ namespace langX{
         return nullptr;
     }
 
+    /**
+     *
+     * @param func
+     * @param args
+     * @return
+     */
+    Object *langX_langXString_startWith(X3rdFunction *func, const X3rdArgs &args){
+        CHECK_ARGS_SIZE(args, 2);
+
+        auto str = args.args[0];
+        auto check = args.args[1];
+
+        if (str && str->getType() == STRING && check && check->getType() == STRING) {
+            auto ret = LX_STRING(str)->startWith(LX_STRING_VALUE(check)) ? 1 : 0;
+            return Allocator::allocateNumber(ret);
+        }
+
+        return Allocator::allocateFalse();
+    }
+
+    /**
+     *
+     * @param func
+     * @param args
+     * @return
+     */
+    Object *langX_langXString_endWith(X3rdFunction *func, const X3rdArgs &args){
+        CHECK_ARGS_SIZE(args, 2);
+
+        auto str = args.args[0];
+        auto check = args.args[1];
+
+        if (str && str->getType() == STRING && check && check->getType() == STRING) {
+            auto ret = LX_STRING(str)->endWith(LX_STRING_VALUE(check)) ? 1 : 0;
+            return Allocator::allocateNumber(ret);
+        }
+
+        return Allocator::allocateFalse();
+    }
 
     // 注册类
     ClassInfo *regStringClass(langXState *state) {
 
         auto info = new ClassInfo("String");
-        info->addFunction("isEmpty", create3rdFunc("isEmpty", langX_langXString_isEmpty));
-        info->addFunction("length", create3rdFunc("length", langX_langXString_length));
-        info->addFunction("subString", create3rdFunc("subString", langX_langXString_subString));
-        info->addFunction("contains", create3rdFunc("contains", langX_langXString_contains));
-        info->addFunction("indexOf", create3rdFunc("indexOf", langX_langXString_indexOf));
-        info->addFunction("replace", create3rdFunc("replace", langX_langXString_replace));
-        info->addFunction("replaceFirst", create3rdFunc("replaceFirst", langX_langXString_replaceFirst));
-        info->addFunction("split", create3rdFunc("split", langX_langXString_split));
-        info->addFunction("lowerCase", create3rdFunc("lowerCase", langX_langXString_lowerCase));
-        info->addFunction("upperCase", create3rdFunc("upperCase", langX_langXString_upperCase));
+        info->addFunction(create3rdFunc("isEmpty", langX_langXString_isEmpty));
+        info->addFunction(create3rdFunc("length", langX_langXString_length));
+        info->addFunction(create3rdFunc("subString", langX_langXString_subString));
+        info->addFunction(create3rdFunc("contains", langX_langXString_contains));
+        info->addFunction(create3rdFunc("indexOf", langX_langXString_indexOf));
+        info->addFunction(create3rdFunc("replace", langX_langXString_replace));
+        info->addFunction(create3rdFunc("replaceFirst", langX_langXString_replaceFirst));
+        info->addFunction(create3rdFunc("split", langX_langXString_split));
+        info->addFunction(create3rdFunc("lowerCase", langX_langXString_lowerCase));
+        info->addFunction(create3rdFunc("upperCase", langX_langXString_upperCase));
+        info->addFunction(create3rdFunc("startWith", langX_langXString_startWith));
+        info->addFunction(create3rdFunc("endWith", langX_langXString_endWith));
 
         state->getNameSpace("langX.extend")->putClass(info);
 

@@ -65,7 +65,7 @@ void lexEOFWork();
 "else" {count(); return KEY_ELSE;}
 "while" {count(); return KEY_WHILE;}
 "for" {count(); return KEY_FOR;}
-"delete" {count(); return KEY_DELETE;}
+"delete_var" {count(); return KEY_DELETE;}
 "false" {count();  yylval.iValue = 0; return TBOOL;}
 "true" {count();  yylval.iValue = 1; return TBOOL;}
 "break" {count(); return KEY_BREAK;}

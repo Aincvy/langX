@@ -57,6 +57,19 @@ namespace langX {
 
 		void trim();
 
+		/**
+		 * 当前得字符串是否是以 str 开始得？
+		 * @param str
+		 * @return  true: 是, false: 否
+		 */
+		bool startWith(const char *str);
+
+		/**
+		 * 当前得字符串是否是以 str 结尾得 ？
+		 * @param str
+		 * @return true: 是， false: 否
+		 */
+		bool endWith(const char*str);
 
         // 如果当前字符串 为字符串则返回 false , 否则返回null
         bool isTrue() const override;

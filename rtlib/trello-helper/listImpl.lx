@@ -41,6 +41,14 @@ auto TrelloList {
     getCardByName => ( name ){
       return filterCard( (card,arg) => { return card.name == arg; }, name);
     }
+    
+    getCardByLabel => (label){
+        return null;
+    }
+    
+    getCardByNamePrefix => (prefix){
+        return filterCard( (card,arg) => { return card.name.startWith(arg); }, prefix);
+    }
 
     newCard => ( name, description, dueDate ){
         local tmp, tmpCard;
@@ -102,5 +110,61 @@ auto TrelloList {
 
         return null;
     }
+    
+    clearList => (){
+        if(cardList){
+            cardList.clear();
+            cardList = null;
+        }
+    }
+    
+    
+    archiveCards => (){
+        _py_list.get("archive_all_cards").callMethod();
+        
+        clearList();
+    }
+    
+    deleteCards => (){
+        if (cardList){
+            local i,c;
+            for (i = 0; i < cardList.size(); i++){
+                c = cardList.get(i);
+                if( c ){
+                    c.deleteCard();
+                }
+            }
+        }
+        
+        clearList();
+    }
+    
+    archive => (){
+        _py_list.get("close").callMethod();
+    }
+    
+    reopen => (){
+        _py_list.get("open").callMethod();
+    }
+    
+    delete => (){
+        // do nothing.
+    }
+    
+    checkJumpOnce => (flag){
+        local jumpCheck = getCardByName("[jump once]");
+        if(jumpCheck){
+            if(flag){
+                jumpCheck.deleteCard();
+                cardList.remove(jumpCheck);
+            }
+            
+            println("checkJumpOnce: return true");
+            return true;
+        }
+        
+        println("checkJumpOnce: return false");
+        return false;
+    }    
 
 }

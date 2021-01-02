@@ -5,7 +5,7 @@ auto TrelloCard {
 
     // card 的 python 库对象
     _py_card;
-
+    
     // 更新当前卡的数据
     updateSelf => (){
         name = _py_card.get("name").toStr();
@@ -13,6 +13,7 @@ auto TrelloCard {
         description = _py_card.get("desc").toStr();
 
         // 评论， 自定义字段， 过期日期等。
+        
     }
 
 
