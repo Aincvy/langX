@@ -70,10 +70,7 @@ auto TrelloCard {
     }
 
     archive => (){
-        local args = PythonHook::newTuple(1);
-        args.setItem(0, true);
-
-        _py_card.get("set_closed").callMethod(args);
+        _py_card.get("set_closed").callMethod(true);
 
         if ( list ){
             list.cardList.remove(this);

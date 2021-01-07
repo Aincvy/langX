@@ -85,6 +85,8 @@ namespace langX {
 		obj->setConst(this->isConst());
 		obj->setLocal(this->isLocal());
 		obj->setName(this->getName());
+		obj->flagBool(this->flagBool());
+
 		return obj;
 	}
 
