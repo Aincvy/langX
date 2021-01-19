@@ -5,6 +5,8 @@
 // 类的声明相关，   this 语句，  类或者对象的属性取出行为，  类或者对象的方法调用行为
 // new, delete 语句
 
+#include <string.h>
+
 #include <LogManager.h>
 #include "ExecNode.h"
 #include "ExecNodeImpl.h"

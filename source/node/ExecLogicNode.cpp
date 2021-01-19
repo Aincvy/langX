@@ -2,6 +2,8 @@
 // Created by Aincvy(aincvy@gmail.com) on 2020/11/7.
 // 执行 逻辑判断相关的节点
 
+#include <string.h>
+
 #include "LogManager.h"
 #include "ExecNode.h"
 #include "ExecNodeImpl.h"

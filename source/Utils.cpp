@@ -122,7 +122,7 @@ namespace langX {
                             i++;
                             t = *src++;
 
-                            if (!ishexnumber(t)){
+                            if (!isxdigit(t)){
                                 if (a == 0) {
                                     // 首个字符就大于F， 说明有问题 \xG  这种字符串肯定是错误得
                                     // 应该报个错， 但是我先忽略把

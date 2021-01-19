@@ -9,7 +9,7 @@ projectList[3] = "langX-Python";
 projectList[4] = "langX-Mysql";
 
 // modProjects 目录所在得文件夹
-BasePath = "/Users/alias/langX/modProjects/";
+BasePath = "../modProjects/";
 
 argc = sy_argc();
 println("argc=" + argc);

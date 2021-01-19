@@ -3,6 +3,7 @@
 //
 
 #include <sstream>
+#include <memory.h>
 
 #include "TypeHelper.h"
 #include "Number.h"
