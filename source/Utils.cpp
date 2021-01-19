@@ -8,6 +8,7 @@
 #endif // WIN32
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "Utils.h"
 
