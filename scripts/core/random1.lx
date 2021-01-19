@@ -1,4 +1,4 @@
-ref langX.core.util;
+using langX.core.util;
 
 r = new Random();
 println("next: " + r.nextInt() );

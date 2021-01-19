@@ -1,4 +1,4 @@
-ref langX.core ;
+using langX.core ;
 
 a = "123.04" ;
 b = Convert::toNumber(a);

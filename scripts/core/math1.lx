@@ -1,4 +1,4 @@
-ref langX.core;
+using langX.core;
 
 a = 4;
 b = Math::sqrt(a);

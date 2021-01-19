@@ -1,4 +1,4 @@
-ref langX.core.io;
+using langX.core.io;
 
 a = File::readLines("1.txt");
 println("first line: " + a.get(0));

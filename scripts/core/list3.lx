@@ -1,4 +1,4 @@
-ref langX.core.util;
+using langX.core.util;
 
 a = "first" ;
 list = new List();

@@ -1,4 +1,4 @@
-ref langX.core.io;
+using langX.core.io;
 
 File::writeText("temp.txt","hello,world!");
 File::appendText("temp1.txt",",hello,world!1321");
