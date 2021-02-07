@@ -1,7 +1,7 @@
 // 此脚本并没有经过测试， 请注意。。 
 
-ref langX.libevent ;
-ref langX.core.util;
+using langX.libevent ;
+using langX.core.util;
 
 patternHello => (request,response){
 	response.addHeader("Content-Type=text/plain;charset=utf8");

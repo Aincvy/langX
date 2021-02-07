@@ -1,5 +1,5 @@
-ref langX.libevent ;
-ref langX.core.util;
+using langX.libevent ;
+using langX.core.util;
 
 patternHello => (request,response){
 	response.write("hello, 1231" );
