@@ -96,7 +96,7 @@ namespace langX{
             if (!number->isInteger()) {
                 // 存在小数部分
                 auto tmp = number->getDoubleValue() - time.tv_sec;
-                time.tv_usec = (__darwin_suseconds_t)(tmp * 1000000) ;
+                time.tv_usec = (int)(tmp * 1000000) ;
             }
 
         } else{
