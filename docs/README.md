@@ -12,7 +12,7 @@ It's in developing stage.
 - Easy rules.
 - Bridge other languages library.
 - The last user have power to change the library's behavior.
-- No `private` keyword, field and variable are public.
+- ~~No `private` keyword, field and variable are public.~~
 
 
 
@@ -26,7 +26,7 @@ Use **Atom** as editor.
 
 **Document**
 
-[langX in Gitbook](https://aincvy.gitbook.io/langx/v/dev/langs)
+[langX in Gitbook](https://aincvy.gitbook.io/langx/)
 
 
 
@@ -145,6 +145,9 @@ https://github.com/Aincvy/langX-atom#screenshot
       3. `brew install log4cpp`
    2. Debian
       1. Todo.
+   3. Centos
+      1. `yum install flex-devel bison-devel`
+      2. Download and compile log4cpp.
 
 3. Install `cmake`.
 
@@ -155,9 +158,7 @@ https://github.com/Aincvy/langX-atom#screenshot
    sudo make install 
    ```
 
-5. Now, the simplest program is installed, you can use `langX [filename]` to test it.
-
-6. Note: langX do not have any options now(**include --version**).
+5. Now, the simplest program is installed, you can use `langX --version` to test it.
 
 7. You can try to compile mods now. 
 
@@ -169,7 +170,7 @@ https://github.com/Aincvy/langX-atom#screenshot
 
 - flex
 - yacc(bison)
-- Log4cpp
+- log4cpp
 
 ### lib core
 

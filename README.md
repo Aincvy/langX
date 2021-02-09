@@ -145,6 +145,9 @@ https://github.com/Aincvy/langX-atom#screenshot
       3. `brew install log4cpp`
    2. Debian
       1. Todo.
+   3. Centos
+      1. `yum install flex-devel bison-devel`
+      2. Download and compile log4cpp.
 
 3. Install `cmake`.
 
