@@ -68,7 +68,7 @@ namespace langX {
         return nullptr;
     }
 
-    int langX::getIntFromObject(langXObject *object, const char *memberName) {
+    int getIntFromObject(langXObject *object, const char *memberName) {
         auto ptr = OBJECT_NUMBER_MEMBER_PTR(object, memberName);
         if (!ptr) {
             return 0;
@@ -77,7 +77,7 @@ namespace langX {
         return ptr->getIntValue();
     }
 
-    int langX::getIntFromObject(langXObjectRef *object, const char *memberName) {
+    int getIntFromObject(langXObjectRef *object, const char *memberName) {
         return getIntFromObject(object->getRefObject(), memberName);
     }
 
@@ -90,11 +90,11 @@ namespace langX {
         return ptr->getDoubleValue();
     }
 
-    double langX::getDoubleFromObject(langXObjectRef *object, const char *memberName) {
+    double getDoubleFromObject(langXObjectRef *object, const char *memberName) {
         return getDoubleFromObject(object->getRefObject(), memberName);
     }
 
-    Function *create3rdFunc(const char *name, langX::X3rdFuncWorker worker) {
+    Function *create3rdFunc(const char *name, X3rdFuncWorker worker) {
         auto func = new X3rdFunction();
         func->setName(name);
         func->setWorker(worker);
@@ -104,7 +104,7 @@ namespace langX {
         return func;
     }
 
-    void objToString(langX::Object * obj, char *p, int offset, int maxSize)
+    void objToString(Object * obj, char *p, int offset, int maxSize)
     {
         std::stringstream ss;
         auto ref = (langXObjectRef*)obj;
