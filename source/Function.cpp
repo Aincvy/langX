@@ -524,7 +524,7 @@ namespace langX {
     }
 
 
-    Object *callFunction(langXThread *thread, Function *function,langXObject *object,  const char *remark, int argc, ...){
+    Object * callFunction(langXThread *thread, Function *function,langXObject *object,  const char *remark, int argc, ...){
 
 	    va_list ap;
 	    va_start(ap, argc);
@@ -602,7 +602,7 @@ namespace langX {
         return callFunction(thread, functionRef, &_3rdArgs, remark);
     }
 
-    Object *langX::callFunction(langXThread *thread, FunctionRef *functionRef, const char *remark, int argc, ...) {
+    Object *callFunction(langXThread *thread, FunctionRef *functionRef, const char *remark, int argc, ...) {
 	    va_list ap;
 	    va_start(ap, argc);
 	    auto result = vCallFunction(thread, functionRef, remark, argc, ap);
@@ -611,8 +611,7 @@ namespace langX {
         return result;
     }
 
-    Object *
-    langX::vCallFunction(langXThread *thread, FunctionRef *functionRef, const char *remark, int argc, va_list ap) {
+    Object *vCallFunction(langXThread *thread, FunctionRef *functionRef, const char *remark, int argc, va_list ap) {
 	    // 转换 va_list 变成一个 3rdArgs
         X3rdArgs _3rdArgs = {};
         copyVaListTo3rdArgs(ap, _3rdArgs, argc, functionRef->getObject());
