@@ -62,6 +62,8 @@ auto TrelloList {
         tmpCard.updateSelf();
         tmpCard.list = this;
 
+        // TODO:  dueDate 
+
         return tmpCard;
     }
 
@@ -166,5 +168,14 @@ auto TrelloList {
         println("checkJumpOnce: return false");
         return false;
     }    
+    
+    
+    size => (){
+        checkCardList();
+    
+        local s;
+        s = cardList.size();
+        return s; 
+    }
 
 }

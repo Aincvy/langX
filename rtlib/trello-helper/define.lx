@@ -206,7 +206,14 @@ TrelloList {
      * @return  true: 存在， false: 不存在
      */
     checkJumpOnce => (flag){
+        return false; 
+    }
     
+    /**
+     *    获取当前列表的卡片数量
+     */
+    size => (){
+        return 0; 
     }
     
 }
