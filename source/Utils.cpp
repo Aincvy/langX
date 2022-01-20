@@ -206,12 +206,12 @@ namespace langX {
     }
 
     template<typename T, typename>
-    T langX::max(T a, T b) {
+    T max(T a, T b) {
         return a >= b ? a : b;
     }
 
     template<typename T, typename>
-    T langX::min(T a, T b) {
+    T min(T a, T b) {
         return a <= b ? a : b;
     }
 
